@@ -6,7 +6,8 @@ export default function Hero() {
     <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-center text-center overflow-hidden">
       {/* Başlık */}
       <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight z-10">
-        Trade wherever you are <br />
+        Manage your treasury with Treasurio
+        <br />
         with <span className="text-teal-400">Treasurio</span>
       </h1>
 
