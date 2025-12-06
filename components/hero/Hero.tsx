@@ -1,33 +1,71 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Globe from "@/components/globe/Globe";
 
 export default function Hero() {
   return (
     <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-center text-center overflow-hidden">
-      {/* Başlık */}
-      <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight z-10">
-        Manage your treasury with Treasurio
+      {/* Tittle */}
+      <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight z-10 drop-shadow-lg">
+        Manage your treasury anywhere
         <br />
-        with <span className="text-teal-400">Treasurio</span>
+        with{" "}
+        <span
+          className="
+            bg-gradient-to-r from-teal-300 to-teal-500 
+            bg-clip-text text-transparent 
+            drop-shadow-[0_0_18px_rgba(0,255,200,0.35)]
+          "
+        >
+          Treasurio
+        </span>
       </h1>
 
-      {/* Açıklama */}
-      <p className="mt-4 max-w-xl text-gray-300 z-10">
+      <p className="mt-4 max-w-xl text-gray-300 z-10 text-lg leading-relaxed">
         A high-performance trading terminal that doesn’t slow you down.
       </p>
 
-      {/* CTA Buttons */}
-      <div className="mt-6 flex gap-4 z-10">
-        <Button className="bg-teal-400 text-black hover:bg-teal-300">
-          START TRADING FOR FREE
+      <div className="mt-8 flex gap-4 z-10">
+        <Button
+          className="
+            relative px-8 py-3 rounded-2xl font-semibold text-white
+            bg-white/5 border border-white/20 backdrop-blur-xl
+            overflow-hidden transition-all duration-300
+            hover:bg-white/10 hover:border-teal-300
+            cursor-pointer group
+          "
+        >
+          <span className="relative z-10">START TRADING FOR FREE</span>
+
+          <div
+            className="
+              absolute top-0 left-[-150%] w-[200%] h-full
+              bg-gradient-to-r from-transparent via-white/40 to-transparent
+              opacity-40
+              transition-all duration-700
+              group-hover:left-[150%]
+            "
+          ></div>
         </Button>
-        <Button variant="outline" className="text-black-200 border-gray-400">
+
+        {/* LEARN HOW TO TRADE */}
+        <Button
+          className="
+            px-6 py-3 rounded-2xl font-semibold text-white
+            border border-white/30 bg-white/5
+            hover:border-teal-300 hover:text-teal-200
+            hover:shadow-[0_0_15px_rgba(0,255,200,0.25)]
+            transition-all duration-300
+            cursor-pointer
+          "
+        >
           LEARN HOW TO TRADE
         </Button>
       </div>
 
-      {/* YAZILAR İLE DÜNYA ARASINA BOŞLUK EKLEDİK */}
-      <div className="h-[140px] z-10" />
+      {/* Yazılar ile globe arasına boşluk */}
+      <div className="h-[130px] z-10" />
 
       {/* Globe Animation */}
       <div className="absolute bottom-[-260px] left-1/2 -translate-x-1/2 z-0 scale-[0.9] opacity-90">
