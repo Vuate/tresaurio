@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
   const [hideNavbar, setHideNavbar] = useState(false);
+  const router = useRouter();
 
   // === Navbar Hide Logic ===
   useEffect(() => {
@@ -13,11 +15,7 @@ export default function Navbar() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setHideNavbar(true);
-        } else {
-          setHideNavbar(false);
-        }
+        setHideNavbar(entry.isIntersecting);
       },
       { threshold: 0.2 }
     );
@@ -53,12 +51,15 @@ export default function Navbar() {
         bg-[#031A1C]/80 backdrop-blur-2xl
       `}
     >
-      {/* === Sol Logo === */}
-      <div className="flex items-center gap-3">
+      {/* === Logo === */}
+      <div
+        className="flex items-center gap-3 cursor-pointer"
+        onClick={() => router.push("/")}
+      >
         <img
           src="/treasurio.png"
           alt="Treasurio Logo"
-          className="w-18 h-18 object-contain"
+          className="w-16 h-16 object-contain"
         />
         <span className="text-white font-semibold text-3xl leading-none">
           Treasurio
@@ -77,15 +78,16 @@ export default function Navbar() {
           [&>button:hover]:-translate-y-0.5
         "
       >
-        <button>REWARDS</button>
-        <button>TERMINAL</button>
-        <button>LEARN</button>
-        <button>DOWNLOAD</button>
+        <button onClick={() => router.push("/rewards")}>REWARDS</button>
+        <button onClick={() => router.push("/terminal/home")}>TERMINAL</button>
+        <button onClick={() => router.push("/learn")}>LEARN</button>
+        <button onClick={() => router.push("/download")}>DOWNLOAD</button>
       </div>
 
       {/* === Sağ Butonlar === */}
       <div className="flex items-center gap-4">
         <Button
+          onClick={() => router.push("/trade")}
           className={
             glassBase +
             " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200"
@@ -95,6 +97,7 @@ export default function Navbar() {
         </Button>
 
         <Button
+          onClick={() => router.push("/docs")}
           className={
             glassBase + " border border-white/40 bg-white/5 hover:text-teal-200"
           }
