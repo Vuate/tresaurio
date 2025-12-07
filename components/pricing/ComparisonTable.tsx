@@ -24,11 +24,11 @@ export default function ComparisonTable() {
   const visibleRows = open ? allRows : allRows.slice(0, visibleCount);
 
   return (
-    <section className="w-full pt-40 pb-32 bg-[#031A1C] text-white">
+    <section className="w-full pt-10 pb-32 bg-[#031A1C] text-white">
       {/* FULL WIDTH – NO CONTAINER */}
       <div className="w-full px-0">
         {/* TITLE */}
-        <h2 className="text-5xl font-bold text-center mb-20">
+        <h2 className="text-5xl font-bold text-center mb-10">
           Özellikleri <span className="text-teal-400">kıyasla</span>
         </h2>
 
@@ -82,21 +82,24 @@ export default function ComparisonTable() {
           ))}
         </div>
 
-        {/* BUTTON */}
+        {/* BUTTON – MODERN BLACK STYLE */}
         <div className="flex justify-center mt-12">
           <button
             onClick={() => setOpen(!open)}
             className="
-              px-12 py-5 rounded-xl text-lg font-semibold 
+              px-12 py-5 
+              rounded-2xl
+              text-lg font-semibold 
               text-white 
-              bg-gradient-to-r from-[#064b48] to-[#0b6b67]
-              hover:from-[#0b6b67] hover:to-[#129187]
-              border border-teal-400/30
-              shadow-lg shadow-black/40
+              bg-black/20 
+              border border-white/20
+              hover:bg-white/10
+              transition-all duration-300
               flex items-center gap-3
             "
           >
             {open ? "Daha az göster" : "Tüm özellikleri göster"}
+
             {open ? (
               <ChevronUp className="w-5 h-5" />
             ) : (

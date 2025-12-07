@@ -27,13 +27,20 @@ export default function Globe() {
     renderer.setPixelRatio(window.devicePixelRatio);
     mountRef.current.appendChild(renderer.domElement);
 
+    // 🌐 TEXTURE
     const textureLoader = new THREE.TextureLoader();
-    const dotMap = textureLoader.load("/textures/dots.png");
+    const dotMap = textureLoader.load("/textures/dots5.png", (texture) => {
+      texture.wrapS = THREE.ClampToEdgeWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+
+      // 🔥 LOGO'YU KÜREDE YUKARI KAYDIR
+      texture.offset.y = -0.16; // 0 → default, -0.18 yukarı taşır
+      texture.needsUpdate = true;
+    });
 
     const material = new THREE.MeshBasicMaterial({
       map: dotMap,
       transparent: true,
-      color: new THREE.Color("#14f4c6"),
     });
 
     const geometry = new THREE.SphereGeometry(1, 64, 64);
@@ -41,8 +48,7 @@ export default function Globe() {
     scene.add(sphere);
 
     const animate = () => {
-      console.log("rotating");
-      sphere.rotation.y += 0.1;
+      sphere.rotation.y += 0.005;
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
@@ -55,9 +61,11 @@ export default function Globe() {
   }, []);
 
   return (
-    <div
-      ref={mountRef}
-      className="w-[500px] h-[500px] mx-auto pointer-events-none select-none"
-    />
+    <div className="relative w-[500px] h-[500px] mx-auto">
+      <div
+        ref={mountRef}
+        className="w-full h-full pointer-events-none select-none"
+      />
+    </div>
   );
 }

@@ -27,17 +27,33 @@ export default function Hero() {
       </p>
 
       <div className="mt-8 flex gap-4 z-10">
+        {/* LEARN HOW TO TRADE */}
+        <Button
+          className="
+    px-6 py-3 rounded-2xl font-semibold text-white
+    border border-white/30 bg-white/5
+    hover:border-teal-300 hover:text-teal-200
+    transition-all duration-300
+    cursor-pointer
+    overflow-hidden
+  "
+        >
+          START TRADING FOR FREE
+        </Button>
+
+        {/* START TRADING FOR FREE */}
         <Button
           className="
             relative px-8 py-3 rounded-2xl font-semibold text-white
             bg-white/5 border border-white/20 backdrop-blur-xl
             overflow-hidden transition-all duration-300
             hover:bg-white/10 hover:border-teal-300
-            cursor-pointer group
+            cursor-pointer
           "
         >
-          <span className="relative z-10">START TRADING FOR FREE</span>
+          <span className="relative z-10">LEARN HOW TO TRADE</span>
 
+          {/* Reflection line */}
           <div
             className="
               absolute top-0 left-[-150%] w-[200%] h-full
@@ -47,20 +63,6 @@ export default function Hero() {
               group-hover:left-[150%]
             "
           ></div>
-        </Button>
-
-        {/* LEARN HOW TO TRADE */}
-        <Button
-          className="
-            px-6 py-3 rounded-2xl font-semibold text-white
-            border border-white/30 bg-white/5
-            hover:border-teal-300 hover:text-teal-200
-            hover:shadow-[0_0_15px_rgba(0,255,200,0.25)]
-            transition-all duration-300
-            cursor-pointer
-          "
-        >
-          LEARN HOW TO TRADE
         </Button>
       </div>
 

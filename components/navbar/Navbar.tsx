@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 export default function Navbar() {
   const [hideNavbar, setHideNavbar] = useState(false);
 
-  // === Navbar Hide Logic (Senin yazdığın) ===
+  // === Navbar Hide Logic ===
   useEffect(() => {
     const pricingSection = document.getElementById("pricing-table");
     if (!pricingSection) return;
@@ -14,9 +14,9 @@ export default function Navbar() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setHideNavbar(true); // pricing görünüyorsa navbar kaybolur
+          setHideNavbar(true);
         } else {
-          setHideNavbar(false); // pricing yoksa navbar geri gelir
+          setHideNavbar(false);
         }
       },
       { threshold: 0.2 }
@@ -26,7 +26,7 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // === Ömer’in Cam Efekti Base Class ===
+  // === Ömer’in Glass Base Class ===
   const glassBase = `
     relative overflow-hidden rounded-2xl px-6 py-3 text-white
     backdrop-blur-xl transition-all duration-300
@@ -38,7 +38,7 @@ export default function Navbar() {
 
     after:content-[''] after:absolute after:-left-20 after:top-0
     after:w-24 after:h-full after:rounded-full
-    after:bg-gradient-to-r from-transparent via-teal-300/70 to-transparent
+    after:bg-gradient-to-r after:from-transparent after:via-teal-300/70 after:to-transparent
     after:opacity-60 after:transition-all after:duration-700 after:ease-out
     hover:after:left-full
   `;
@@ -53,19 +53,19 @@ export default function Navbar() {
         bg-[#031A1C]/80 backdrop-blur-2xl
       `}
     >
-      {/* Logo */}
+      {/* === Sol Logo === */}
       <div className="flex items-center gap-3">
         <img
-          src="/logo2.png"
+          src="/treasurio.png"
           alt="Treasurio Logo"
-          className="w-14 h-14 object-contain"
+          className="w-18 h-18 object-contain"
         />
         <span className="text-white font-semibold text-3xl leading-none">
           Treasurio
         </span>
       </div>
 
-      {/* Menu */}
+      {/* === Menü === */}
       <div
         className="
           flex-1 flex items-center gap-10 ml-16 text-gray-300 text-sm
@@ -78,12 +78,12 @@ export default function Navbar() {
         "
       >
         <button>REWARDS</button>
-        <button>BLOG</button>
+        <button>TERMINAL</button>
         <button>LEARN</button>
         <button>DOWNLOAD</button>
       </div>
 
-      {/* Right Buttons */}
+      {/* === Sağ Butonlar === */}
       <div className="flex items-center gap-4">
         <Button
           className={
