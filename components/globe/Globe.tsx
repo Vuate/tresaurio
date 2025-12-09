@@ -3,12 +3,22 @@
 import * as THREE from "three";
 import { useEffect, useRef } from "react";
 
+// 🔥 SADECE TEK SEFER INIT İÇİN FLAG
+let globeInstance: any = null;
+
 export default function Globe() {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
+    // ★ Eğer globe daha önce oluşturulduysa tekrar oluşturma
+    if (globeInstance) {
+      mountRef.current.appendChild(globeInstance.renderer.domElement);
+      return;
+    }
+
+    // ▼ İlk defa oluşturuluyor
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
@@ -25,16 +35,13 @@ export default function Globe() {
       mountRef.current.clientHeight
     );
     renderer.setPixelRatio(window.devicePixelRatio);
+
     mountRef.current.appendChild(renderer.domElement);
 
     // 🌐 TEXTURE
     const textureLoader = new THREE.TextureLoader();
     const dotMap = textureLoader.load("/textures/dots5.png", (texture) => {
-      texture.wrapS = THREE.ClampToEdgeWrapping;
-      texture.wrapT = THREE.ClampToEdgeWrapping;
-
-      // 🔥 LOGO'YU KÜREDE YUKARI KAYDIR
-      texture.offset.y = -0.16; // 0 → default, -0.18 yukarı taşır
+      texture.offset.y = -0.16;
       texture.needsUpdate = true;
     });
 
@@ -55,8 +62,14 @@ export default function Globe() {
 
     animate();
 
+    // ★ İlk Globe oluşturuldu → kaydediyoruz
+    globeInstance = { renderer };
+
     return () => {
-      mountRef.current?.removeChild(renderer.domElement);
+      // Unmount sırasında DOM’u temizle ama instance kalacak
+      try {
+        mountRef.current?.removeChild(renderer.domElement);
+      } catch {}
     };
   }, []);
 
