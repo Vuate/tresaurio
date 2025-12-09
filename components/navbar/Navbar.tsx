@@ -81,7 +81,7 @@ export default function Navbar() {
         <button onClick={() => router.push("/rewards")}>REWARDS</button>
         <button onClick={() => router.push("/terminal/home")}>TERMINAL</button>
         <button onClick={() => router.push("/learn")}>LEARN</button>
-        <button onClick={() => router.push("/download")}>DOWNLOAD</button>
+        <button onClick={() => router.push("/download")}>API</button>
       </div>
 
       {/* === Sağ Butonlar === */}
@@ -93,7 +93,7 @@ export default function Navbar() {
             " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200"
           }
         >
-          START TRADING
+          LOG IN
         </Button>
 
         <Button
@@ -102,7 +102,7 @@ export default function Navbar() {
             glassBase + " border border-white/40 bg-white/5 hover:text-teal-200"
           }
         >
-          READ THE DOCS
+          SIGN UP
         </Button>
       </div>
     </nav>

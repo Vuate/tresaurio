@@ -19,17 +19,17 @@ export default function QuickStats() {
 
   useEffect(() => {
     fetchStats();
-    const interval = setInterval(fetchStats, 60000); // 1 dk'da bir güncelle
+    const interval = setInterval(fetchStats, 60000);
     return () => clearInterval(interval);
   }, []);
 
   if (loading || !stats) {
     return (
-      <div className="grid grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
         {[1, 2, 3, 4].map((n) => (
           <div
             key={n}
-            className="bg-[#13141a] border border-white/10 p-6 rounded-xl animate-pulse"
+            className="bg-[#0F121A] border border-white/10 p-6 rounded-2xl animate-pulse"
           >
             <div className="h-4 w-24 bg-white/10 rounded mb-3"></div>
             <div className="h-6 w-20 bg-white/20 rounded"></div>
@@ -45,32 +45,59 @@ export default function QuickStats() {
   const activeCoins = stats.active_cryptocurrencies;
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-      <StatCard
-        label="Toplam Piyasa Değeri"
-        value={`$${formatNumber(marketCap)}`}
-        trend=""
-      />
-      <StatCard
-        label="24h İşlem Hacmi"
-        value={`$${formatNumber(volume)}`}
-        trend=""
-      />
+    <section className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12 mt-[17px] ">
+      <StatCard label="Toplam Piyasa Değeri" value={`$${formatNumber(marketCap)}`} />
+      <StatCard label="24h İşlem Hacmi" value={`$${formatNumber(volume)}`} />
       <StatCard label="BTC Dominansı" value={`${btcDominance.toFixed(2)}%`} />
       <StatCard label="Aktif Kripto Sayısı" value={activeCoins} />
     </section>
   );
 }
-
-function StatCard({ label, value, trend }: any) {
+function StatCard({ label, value }: any) {
   return (
-    <div className="bg-[#13141a] border border-white/10 p-6 rounded-xl">
-      <p className="text-gray-500 text-sm mb-1 uppercase">{label}</p>
-      <p className="text-2xl font-bold">{value}</p>
-      {trend && <p className="text-gray-400 text-sm">{trend}</p>}
+    <div
+      className="
+        relative p-6 rounded-3xl 
+        bg-[#0C0F14]/80 border border-white/5 
+        backdrop-blur-xl
+        overflow-hidden
+        shadow-[0_0_25px_-8px_rgba(0,0,0,0.6)]
+      "
+    >
+
+      {/* SAĞ ÜST KÖŞE PREMIUM BLOB */}
+      <div
+        className="
+          absolute -top-25 -right-25 w-40 h-40
+          bg-gradient-to-br from-cyan-400/20 via-teal-500/10 to-transparent
+          rounded-full blur-2xl
+          pointer-events-none
+        "
+      />
+
+      {/* İÇ PARLAKLIK (çok hafif) */}
+      <div
+        className="
+          absolute inset-0 rounded-2xl
+          ring-1 ring-white/5 
+          pointer-events-none
+        "
+      />
+
+      <p className="text-gray-400 text-xs mb-1 uppercase tracking-wide relative z-10">
+        {label}
+      </p>
+
+      <p className="text-4xl font-bold text-white tracking-tight relative z-10">
+        {value}
+      </p>
     </div>
   );
 }
+
+
+
+
 
 function formatNumber(num: number) {
   return Intl.NumberFormat("en-US", {
