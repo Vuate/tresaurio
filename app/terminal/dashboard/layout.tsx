@@ -1,8 +1,8 @@
 "use client";
 
-import Sidebar from "./components/Sidebar";
-import Topbar from "./components/Topbar";
-import Watchlist from "./components/Watchlist";
+import Sidebar from "@/components/terminal/dashboard/Sidebar";
+import Topbar from "@/components/terminal/dashboard/Topbar";
+import Watchlist from "@/components/terminal/dashboard/Watchlist";
 
 export default function DashboardLayout({
   children,
@@ -11,10 +11,9 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex w-full min-h-screen bg-[#0a0b0f] text-white">
-      {/* SOL SABİT MENÜ */}
       {/* <Sidebar /> */}
 
-      {/* ORTA WATCHLIST KOLONU */}
+      {/*  WATCHLIST  */}
       <div className="w-[300px] border-r border-white/10 bg-[#0d0f14] p-4">
         <Watchlist />
       </div>

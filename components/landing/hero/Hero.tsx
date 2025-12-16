@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import Globe from "@/components/globe/Globe";
+import Globe from "@/components/landing/globe/Globe";
 
 export default function Hero() {
   return (

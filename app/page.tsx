@@ -1,7 +1,7 @@
-import Navbar from "@/components/navbar/Navbar";
-import Hero from "@/components/hero/Hero";
-import Connect from "@/components/connect/Connect";
-import ComparisonTable from "@/components/pricing/ComparisonTable";
+import Navbar from "@/components/landing/navbar/Navbar";
+import Hero from "@/components/landing/hero/Hero";
+import Connect from "@/components/landing/connect/Connect";
+import ComparisonTable from "@/components/landing/pricing/ComparisonTable";
 
 export default function Home() {
   return (

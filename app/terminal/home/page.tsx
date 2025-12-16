@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Header from "./components/Header";
-import LivePrices from "./components/LivePrices";
-import QuickStats from "./components/QuickStats";
-import Movers from "./components/Movers";
-import FearGreed from "./components/FearGreed";
-import FreeTierBanner from "./components/FreeTierBanner";
+import Header from "@/components/terminal/home/Header";
+import LivePrices from "@/components/terminal/home/LivePrices";
+import QuickStats from "@/components/terminal/home/QuickStats";
+import Movers from "@/components/terminal/home/Movers";
+import FearGreed from "@/components/terminal/home/FearGreed";
+import FreeTierBanner from "@/components/terminal/home/FreeTierBanner";
 
 export default function TerminalHome() {
   return (

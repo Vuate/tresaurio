@@ -16,7 +16,7 @@ export async function GET() {
       fetch(urls.bybit).then((r) => r.json()),
     ]);
 
-    // Helper: Derinliğe göre status belirleyen fonksiyon
+    // Helper
     const getStatus = (depth: number) => {
       if (depth >= 90) return "healthy";
       if (depth >= 80) return "warning";

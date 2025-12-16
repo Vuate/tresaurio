@@ -14,7 +14,7 @@ export async function GET() {
     );
     const okx = (await okxRes.json()).data?.[0];
 
-    // VERİ YOKSA GÜVENLİ DEFAULT
+    //  DEFAULT
     if (!binance || !okx) {
       return Response.json({
         binance: null,
@@ -47,7 +47,7 @@ export async function GET() {
   } catch (err) {
     console.error("COMPARISON ERROR:", err);
 
-    // PATLAMA OLMASIN → AYNI ANAHTARLARLA SAFE DEFAULT
+    // Safe Default
     return Response.json({
       binance: {
         price: 0,

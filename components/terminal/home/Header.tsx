@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-const Globe = dynamic(() => import("@/components/globe/Globe"), {
+const Globe = dynamic(() => import("@/components/landing/globe/Globe"), {
   ssr: false,
 });
 
