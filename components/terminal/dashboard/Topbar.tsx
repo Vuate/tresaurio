@@ -30,7 +30,7 @@ export default function Topbar() {
     <div className="w-full flex items-center justify-between px-6 py-5 border-b border-white/10 bg-[#0d0e13]/80 backdrop-blur-xl">
       {/* Sol - Dashboard Title */}
       <div className="flex flex-col">
-        <h1 className="text-3xl font-bold bg-gradient-to-br from-white to-teal-300 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-linear-to-br from-white to-teal-300 bg-clip-text text-transparent">
           Dashboard
         </h1>
         <p className="text-sm text-gray-400">
