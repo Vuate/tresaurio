@@ -1,15 +1,21 @@
 import Navbar from "@/components/landing/navbar/Navbar";
 import Hero from "@/components/landing/hero/Hero";
-import Connect from "@/components/landing/connect/Connect";
-import ComparisonTable from "@/components/landing/pricing/ComparisonTable";
+import Features from "@/components/landing/features/Features";
+import ExchangeFlow from "@/components/landing/exchange/ExchangeFlow";
+import Stats from "@/components/landing/stats/Stats";
+import Footer from "@/components/landing/footer/Footer";
+import TickerBar from "@/components/landing/ticker/TickerBar";
 
-export default function Home() {
+export default function Page() {
   return (
-    <main className="bg-[#031A1C] w-full">
+    <>
       <Navbar />
       <Hero />
-      <ComparisonTable />
-      <Connect />
-    </main>
+      <TickerBar />
+      <Features />
+      <ExchangeFlow />
+      <Stats />
+      <Footer />
+    </>
   );
 }

@@ -82,6 +82,7 @@ export default function Navbar() {
         <button onClick={() => router.push("/terminal/home")}>TERMINAL</button>
         <button onClick={() => router.push("/learn")}>LEARN</button>
         <button onClick={() => router.push("/download")}>API</button>
+        <button onClick={() => router.push("/pricing")}>PRICING</button>
       </div>
 
       {/* === Sağ Butonlar === */}
