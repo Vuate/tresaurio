@@ -3,10 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import AuthModal from "@/components/auth/AuthModal";
 
 export default function Navbar() {
   const [hideNavbar, setHideNavbar] = useState(false);
   const router = useRouter();
+
+  // === AUTH MODAL STATE ===
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   // === Navbar Hide Logic ===
   useEffect(() => {
@@ -14,9 +19,7 @@ export default function Navbar() {
     if (!pricingSection) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        setHideNavbar(entry.isIntersecting);
-      },
+      ([entry]) => setHideNavbar(entry.isIntersecting),
       { threshold: 0.2 }
     );
 
@@ -24,7 +27,7 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // === Ömer’in Glass Base Class ===
+  // === Glass Base Class ===
   const glassBase = `
     relative overflow-hidden rounded-2xl px-6 py-3 text-white
     backdrop-blur-xl transition-all duration-300
@@ -42,70 +45,87 @@ export default function Navbar() {
   `;
 
   return (
-    <nav
-      className={`
-        fixed top-0 left-0 w-full h-20 z-50 px-8
-        flex items-center justify-between
-        transition-transform duration-300
-        ${hideNavbar ? "-translate-y-full" : "translate-y-0"}
-        bg-[#031A1C]/80 backdrop-blur-2xl
-      `}
-    >
-      {/* === Logo === */}
-      <div
-        className="flex items-center gap-3 cursor-pointer"
-        onClick={() => router.push("/")}
+    <>
+      <nav
+        className={`
+          fixed top-0 left-0 w-full h-20 z-50 px-8
+          flex items-center justify-between
+          transition-transform duration-300
+          ${hideNavbar ? "-translate-y-full" : "translate-y-0"}
+          bg-[#031A1C]/80 backdrop-blur-2xl
+        `}
       >
-        <img
-          src="/treasurio.png"
-          alt="Treasurio Logo"
-          className="w-16 h-16 object-contain"
-        />
-        <span className="text-white font-semibold text-3xl leading-none">
-          Treasurio
-        </span>
-      </div>
-
-      {/* === Menü === */}
-      <div
-        className="
-          flex-1 flex items-center gap-10 ml-16 text-gray-300 text-sm
-          [&>button]:inline-block [&>button]:px-1 [&>button]:font-medium
-          [&>button]:transition [&>button]:duration-150 [&>button]:ease-out
-          [&>button]:cursor-pointer [&>button]:transform
-          [&>button:hover]:text-teal-300
-          [&>button:hover]:opacity-90
-          [&>button:hover]:-translate-y-0.5
-        "
-      >
-        <button onClick={() => router.push("/rewards")}>REWARDS</button>
-        <button onClick={() => router.push("/terminal/home")}>TERMINAL</button>
-        <button onClick={() => router.push("/learn")}>LEARN</button>
-        <button onClick={() => router.push("/download")}>API</button>
-        <button onClick={() => router.push("/pricing")}>PRICING</button>
-      </div>
-
-      {/* === Sağ Butonlar === */}
-      <div className="flex items-center gap-4">
-        <Button
-          onClick={() => router.push("/trade")}
-          className={
-            glassBase +
-            " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200"
-          }
+        {/* === Logo === */}
+        <div
+          className="flex items-center gap-3 cursor-pointer"
+          onClick={() => router.push("/")}
         >
-          LOG IN
-        </Button>
+          <img
+            src="/treasurio.png"
+            alt="Treasurio Logo"
+            className="w-16 h-16 object-contain"
+          />
+          <span className="text-white font-semibold text-3xl leading-none">
+            Treasurio
+          </span>
+        </div>
 
-        <Button
-          onClick={() => router.push("/docs")}
-          className={
-            glassBase + " border border-white/40 bg-white/5 hover:text-teal-200"
-          }
+        {/* === Menü === */}
+        <div
+          className="
+            flex-1 flex items-center gap-10 ml-16 text-gray-300 text-sm
+            [&>button]:inline-block [&>button]:px-1 [&>button]:font-medium
+            [&>button]:transition [&>button]:duration-150 [&>button]:ease-out
+            [&>button]:cursor-pointer [&>button]:transform
+            [&>button:hover]:text-teal-300
+            [&>button:hover]:opacity-90
+            [&>button:hover]:-translate-y-0.5
+          "
         >
-          SIGN UP
-        </Button>
-      </div>
-    </nav>
+          <button onClick={() => router.push("/rewards")}>REWARDS</button>
+          <button onClick={() => router.push("/terminal/home")}>TERMINAL</button>
+          <button onClick={() => router.push("/learn")}>LEARN</button>
+          <button onClick={() => router.push("/download")}>API</button>
+          <button onClick={() => router.push("/pricing")}>PRICING</button>
+        </div>
+
+        {/* === Sağ Butonlar (Auth) === */}
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={() => {
+              setAuthMode("login");
+              setAuthOpen(true);
+            }}
+            className={
+              glassBase +
+              " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200"
+            }
+          >
+            LOG IN
+          </Button>
+
+          <Button
+            onClick={() => {
+              setAuthMode("signup");
+              setAuthOpen(true);
+            }}
+            className={
+              glassBase +
+              " border border-white/40 bg-white/5 hover:text-teal-200"
+            }
+          >
+            SIGN UP
+          </Button>
+        </div>
+      </nav>
+
+      {/* === AUTH MODAL === */}
+      <AuthModal
+        open={authOpen}
+        mode={authMode}
+        onClose={() => setAuthOpen(false)}
+        onChange={setAuthMode}
+      />
+    </>
   );
 }
