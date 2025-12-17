@@ -53,17 +53,17 @@ export default function Sidebar() {
         </Link>
       </div>
 
-      <div className="text-gray-500 text-xs px-2 mt-2">ANALTK</div>
+      <div className="text-gray-500 text-xs px-2 mt-2">ANALİTİK</div>
 
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
           <BarChart2 size={18} />
-          Sat Ç-zeti
+          Satış Özeti
         </div>
 
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
           <ShoppingBag size={18} />
-          En yi ÇorÇ¬nler
+          En iyi Ürünler
         </div>
 
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
@@ -75,7 +75,7 @@ export default function Sidebar() {
       <div className="flex flex-col gap-1 mt-4">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
           <ShoppingCart size={18} />
-          ÇorÇ¬nler
+          Yorumlar
         </div>
 
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
@@ -85,7 +85,7 @@ export default function Sidebar() {
 
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
           <Receipt size={18} />
-          SipariYler
+          Siparişler
         </div>
 
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
@@ -95,7 +95,7 @@ export default function Sidebar() {
 
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
           <Users size={18} />
-          MYteriler
+          Müşteriler
         </div>
       </div>
     </div>
