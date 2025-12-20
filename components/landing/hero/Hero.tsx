@@ -12,7 +12,15 @@ export default function Hero() {
       "
     >
       {/* CONTENT (üst katman) */}
-      <div className="relative z-[5] mt-[140px]">
+      <div
+        className="
+          relative z-[5] mt-[140px]
+
+          /* LAPTOP OPTİK DENGE – MİKRO FIX */
+          min-[1280px]:pr-10
+          min-[1536px]:pr-0
+        "
+      >
         {/* TITLE */}
         <h1 className="text-[4rem] font-black leading-tight">
           Manage your treasury anywhere <br />

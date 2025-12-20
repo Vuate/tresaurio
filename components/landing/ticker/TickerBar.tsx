@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Item = {
   name: string;
@@ -26,6 +26,7 @@ const getIcon = (symbol: string) =>
 
 export default function TickerBar() {
   const [items, setItems] = useState<Item[]>([]);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,16 +56,29 @@ export default function TickerBar() {
     return () => clearInterval(i);
   }, []);
 
+  // 🔒 GERÇEK GENİŞLİĞE GÖRE AKIŞ
+  useEffect(() => {
+    if (!trackRef.current) return;
+
+    const block = trackRef.current.children[0] as HTMLElement;
+    if (!block) return;
+
+    const width = block.scrollWidth;
+    trackRef.current.style.setProperty("--marquee-distance", `-${width}px`);
+  }, [items]);
+
   if (!items.length) return null;
 
   return (
     <div className="relative w-full overflow-hidden border-y border-white/10 bg-[#041f20]/95 py-4">
-      {/* TRACK */}
-      <div className="ticker-track flex flex-nowrap">
+      <div
+        ref={trackRef}
+        className="ticker-track flex flex-nowrap"
+      >
         {[...Array(3)].map((_, blockIndex) => (
           <div
             key={blockIndex}
-            className="ticker-block flex items-center gap-6 px-6"
+            className="flex items-center gap-6 px-6"
           >
             {items.map((item, i) => (
               <TickerItem key={`${blockIndex}-${i}`} item={item} />
@@ -85,7 +99,7 @@ export default function TickerBar() {
             transform: translateX(0);
           }
           to {
-            transform: translateX(-33.333%);
+            transform: translateX(var(--marquee-distance));
           }
         }
       `}</style>
@@ -95,17 +109,7 @@ export default function TickerBar() {
 
 function TickerItem({ item }: { item: Item }) {
   return (
-    <div
-      className="
-        flex items-center gap-3
-        min-w-[220px]
-        whitespace-nowrap
-        rounded-full
-        bg-white/5
-        px-6 py-3
-        text-sm
-      "
-    >
+    <div className="flex min-w-[220px] items-center gap-3 whitespace-nowrap rounded-full bg-white/5 px-6 py-3 text-sm">
       <img
         src={item.icon}
         alt={item.name}
@@ -115,7 +119,7 @@ function TickerItem({ item }: { item: Item }) {
       <span className="text-gray-400">{item.price}</span>
       <span
         className={`font-semibold ${
-          item.change >= 0 ? "text-[#19d8d0]" : "text-red-500"
+          item.change >= 0 ? "text-green-500" : "text-red-500"
         }`}
       >
         {item.change >= 0 ? "+" : ""}

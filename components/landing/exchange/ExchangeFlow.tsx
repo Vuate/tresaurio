@@ -20,17 +20,20 @@ const EXCHANGES = [
   { name: "Gate.io", symbol: "SOLUSDT", token: "ZRO" },
 ];
 
-const ICON_MAP: Record<string, number> = {
-  BTC: 1,
-  ETH: 1027,
-  BNB: 1839,
-  SOL: 5426,
+const ICON_MAP: Record<string, string> = {
+  Binance: "/binance.jpg",
+  Coinbase: "/coinbase.jpg",
+  OKX: "/okx.jpg",
+  Bybit: "/bybit.jpg",
+  KuCoin: "/kucoin.jpg",
+  "Gate.io": "/gate.jpg",
 };
 
-const getIcon = (symbol: string) =>
-  `https://s2.coinmarketcap.com/static/img/coins/64x64/${
-    ICON_MAP[symbol.replace("USDT", "")] || 1
-  }.png`;
+
+
+const getIcon = (exchangeName: string) => {
+  return ICON_MAP[exchangeName] || "/logo.png";
+};
 
 export default function ExchangeFlow() {
   const [flows, setFlows] = useState<FlowItem[]>([]);
@@ -45,14 +48,18 @@ export default function ExchangeFlow() {
           const coin = data.find((c: any) => c.symbol === ex.symbol);
           const change = coin ? Number(coin.priceChangePercent) : 0;
 
-          return {
-            name: ex.name,
-            symbol: ex.symbol,
-            amount: Math.round(change * 1200),
-            token: ex.token,
-            time: "Live",
-            icon: getIcon(ex.symbol),
-          };
+          // 🔑 MİKRO SAPMA (aynı symbol'lerin birebir aynı görünmemesi için)
+          const randomFactor = 1 + (Math.random() - 0.5) * 0.2;
+
+return {
+  name: ex.name,
+  symbol: ex.symbol,
+  amount: Math.round(change * 1200 * randomFactor),
+  token: ex.token,
+  time: "Live",
+  icon: getIcon(ex.name), 
+};
+
         })
       );
     };
@@ -71,8 +78,16 @@ export default function ExchangeFlow() {
         </span>
       </h2>
 
-      <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-4 gap-6
-                      max-[1024px]:grid-cols-2 max-[600px]:grid-cols-1">
+      <div
+        className="
+          max-w-[1400px] mx-auto px-6
+          grid grid-cols-4 gap-6
+          max-[1024px]:grid-cols-2
+          max-[600px]:grid-cols-1
+          min-[1280px]:pr-12
+          min-[1536px]:pr-6
+        "
+      >
         {flows.map((f) => (
           <div
             key={f.name}

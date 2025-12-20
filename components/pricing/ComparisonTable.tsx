@@ -32,6 +32,8 @@ export default function ComparisonTable() {
           Özellikleri <span className="text-teal-400">kıyasla</span>
         </h2>
 
+          {/* TABLE OVERFLOW SAFETY WRAPPER */}
+          <div className="w-full overflow-x-auto"></div>
         {/* TABLE CONTAINER */}
         <div className="w-full bg-[#041F20] border-t border-white/10 p-2">
           {/* HEADER */}
@@ -74,7 +76,9 @@ export default function ComparisonTable() {
               <div className="flex justify-center">
                 {renderCell(row.enterprise)}
               </div>
-              <div className="flex justify-center">{renderCell(row.addOn)}</div>
+              <div className="flex justify-center">
+                {renderCell(row.addOn)}
+              </div>
               <div className="text-gray-400 text-sm leading-relaxed">
                 {row.desc}
               </div>
@@ -96,6 +100,7 @@ export default function ComparisonTable() {
               hover:bg-white/10
               transition-all duration-300
               flex items-center gap-3
+              cursor-pointer
             "
           >
             {open ? "Daha az göster" : "Tüm özellikleri göster"}
@@ -111,3 +116,10 @@ export default function ComparisonTable() {
     </section>
   );
 }
+
+/*
+NOT (ŞU AN DEVRE DIŞI – DOKUNMADIK):
+Eğer ileride çok dar ekranlarda tablo taşarsa,
+bu container dışına overflow-x-auto wrapper eklenebilir.
+ŞU AN GEREK YOK, GÖRÜNTÜ DOĞRU.
+*/

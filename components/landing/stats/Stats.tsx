@@ -8,6 +8,10 @@ export default function Stats() {
           mx-auto grid max-w-[1200px] grid-cols-4 gap-8
           max-[900px]:grid-cols-2
           max-[480px]:grid-cols-1
+
+          /* LAPTOP OPTİK DENGE – MİKRO FIX */
+          min-[1280px]:pr-10
+          min-[1536px]:pr-0
         "
       >
         {/* Card 1 */}

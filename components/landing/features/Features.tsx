@@ -3,24 +3,29 @@
 export default function Features() {
   return (
     <section className="bg-[#031a1c] py-[90px] text-gray-200">
-      <div className="mx-auto max-w-[1400px] px-6">
+      <div
+        className="
+          mx-auto max-w-[1400px] px-6
+
+          /* LAPTOP OPTİK DENGE – MİKRO FIX */
+          min-[1280px]:pr-12
+          min-[1536px]:pr-6
+        "
+      >
         <h2 className="mb-[90px] text-center text-[60px] font-semibold">
           Why{" "}
           <span className="bg-gradient-to-r from-[#19d8d0] to-[#238c7c] bg-clip-text text-transparent">
             Treasurio?
           </span>
-           
         </h2>
 
         {/* GRID */}
         <div className="grid grid-cols-4 gap-12">
           {/* CARD */}
-          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300 ">
-            {/* SHAPE / BACKGROUND */}
+          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10 blur-[0.5px]" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
-            {/* CONTENT */}
             <div className="relative z-10">
               <div className="mb-8 text-[64px]">📊</div>
               <h3 className="mb-4 text-[22px] font-semibold text-white">
@@ -34,7 +39,7 @@ export default function Features() {
           </div>
 
           {/* CARD */}
-          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300 ">
+          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
@@ -51,7 +56,7 @@ export default function Features() {
           </div>
 
           {/* CARD */}
-          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300 ">
+          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
@@ -68,7 +73,7 @@ export default function Features() {
           </div>
 
           {/* CARD */}
-          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300 ">
+          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 

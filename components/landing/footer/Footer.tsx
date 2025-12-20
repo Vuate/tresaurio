@@ -3,12 +3,15 @@
 export default function Footer() {
   return (
     <footer className="bg-[#031a1c] py-[80px] pb-[40px] text-white">
-
       <div className="h-px w-full bg-white/10" />
-      <div className="mx-auto max-w-[1400px] px-8 pt-10">
-        <div className="mb-[60px] grid grid-cols-4 gap-[80px]
-                        max-[1024px]:grid-cols-2 max-[1024px]:gap-12
-                        max-[600px]:grid-cols-1 max-[600px]:gap-8">
+
+      <div className="mx-auto max-w-[1400px] px-8 pt-10
+                      min-[1280px]:pr-12 min-[1536px]:pr-8">
+        <div
+          className="mb-[60px] grid grid-cols-4 gap-[80px]
+                     max-[1024px]:grid-cols-2 max-[1024px]:gap-12
+                     max-[600px]:grid-cols-1 max-[600px]:gap-8"
+        >
           {/* Products */}
           <div>
             <h3 className="mb-5 text-lg font-bold">Products</h3>
@@ -71,3 +74,4 @@ export default function Footer() {
     </footer>
   );
 }
+  
