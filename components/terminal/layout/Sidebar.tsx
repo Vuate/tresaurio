@@ -82,28 +82,18 @@ function isActive(path: string) {
         </Link>
       </div>
 
-      <div className="text-gray-500 text-xs px-2 mt-2">INSIGHTS</div>
+      <div className="text-gray-500 text-xs px-2 mt-2">ANALTK</div>
 
       <div className="flex flex-col gap-1">
-        <Link
-          href="/terminal/news"
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
-            "/terminal/news"
-          )}`}
-        >
-          <Newspaper size={18} />
-          News
-        </Link>
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
+          <BarChart2 size={18} />
+          Sat Ç-zeti
+        </div>
 
-        <Link
-          href="/terminal/staking"
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
-            "/terminal/staking"
-          )}`}
-        >
-          <Layers size={18} />
-          Staking
-        </Link>
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
+          <ShoppingBag size={18} />
+          En yi ÇorÇ¬nler
+        </div>
 
         <Link
           href="/terminal/wallet"
@@ -116,38 +106,31 @@ function isActive(path: string) {
         </Link>
       </div>
 
-      <div className="text-gray-500 text-xs px-2 mt-2">ADVANCED</div>
+      <div className="flex flex-col gap-1 mt-4">
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
+          <ShoppingCart size={18} />
+          ÇorÇ¬nler
+        </div>
 
-      <div className="flex flex-col gap-1">
-        <Link
-          href="/terminal/microstructure"
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
-            "/terminal/microstructure"
-          )}`}
-        >
-          <Activity size={18} />
-          Market Microstructure
-        </Link>
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
+          <LayoutGrid size={18} />
+          Kategoriler
+        </div>
 
-        <Link
-          href="/terminal/balancer"
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
-            "/terminal/balancer"
-          )}`}
-        >
-          <Sliders size={18} />
-          Balancer
-        </Link>
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
+          <Receipt size={18} />
+          SipariYler
+        </div>
 
-        <Link
-          href="/terminal/reporting"
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
-            "/terminal/reporting"
-          )}`}
-        >
-          <FileText size={18} />
-          Reporting
-        </Link>
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
+          <BarChart2 size={18} />
+          Vergiler
+        </div>
+
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-[#14171d] hover:text-white cursor-pointer">
+          <Users size={18} />
+          MYteriler
+        </div>
       </div>
     </div>
   );
