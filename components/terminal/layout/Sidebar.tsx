@@ -31,7 +31,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-2 px-2">
         <img src="/treasurio.png" className="w-8 h-8" />
-        <span className="text-xl font-bold bg-gradient-to-br from-teal-300 to-blue-400 text-transparent bg-clip-text">
+        <span className="text-xl font-bold bg-linear-to-br from-teal-300 to-blue-400 text-transparent bg-clip-text">
           Treasurio
         </span>
       </div>
@@ -117,9 +117,9 @@ export default function Sidebar() {
 
       <div className="flex flex-col gap-1">
         <Link
-          href="/terminal/microstructure"
+          href="/terminal/market-intelligence"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
-            "/terminal/microstructure"
+            "/terminal/market-intelligence"
           )}`}
         >
           <Activity size={18} />
