@@ -97,14 +97,14 @@ export default function AddTokenModal({ open, onClose }: AddTokenModalProps) {
         <div className="mt-6 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg border border-white/10 bg-white/5 py-2 text-sm font-semibold hover:bg-white/10"
+            className="flex-1 rounded-lg border border-white/10 bg-white/5 py-2 text-sm font-semibold hover:bg-white/10 cursor-pointer"
           >
             İptal
           </button>
 
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 py-2 text-sm font-semibold text-white hover:shadow-lg hover:shadow-teal-400/30"
+            className="flex-1 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 py-2 text-sm font-semibold text-white hover:shadow-lg hover:shadow-teal-400/30 cursor-pointer"
           >
             Token Ekle
           </button>

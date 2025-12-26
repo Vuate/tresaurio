@@ -19,7 +19,7 @@ export default function LiveFeed({ onAlertClick }: LiveFeedProps) {
       </div>
 
       {/* TRANSFER LIST */}
-      <div className="space-y-2">
+      <div className="space-y-2 overflow-x-auto local-scrollbar">
         <TransferItem
           time="12:42"
           from="0x742d...8f3a (Whale)"
@@ -70,6 +70,32 @@ export default function LiveFeed({ onAlertClick }: LiveFeedProps) {
           onAlertClick={onAlertClick}
         />
       </div>
+
+      {/* LOCAL SCROLLBAR STYLE */}
+      <style jsx>{`
+        .local-scrollbar::-webkit-scrollbar {
+          height: 8px;
+        }
+
+        .local-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .local-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(45, 212, 191, 0.35);
+          border-radius: 9999px;
+        }
+
+        .local-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(45, 212, 191, 0.6);
+        }
+
+        /* Firefox */
+        .local-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(45, 212, 191, 0.4) transparent;
+        }
+      `}</style>
     </section>
   );
 }
@@ -106,11 +132,11 @@ function TransferItem({
   };
 
   return (
-    <div className="grid grid-cols-[60px_200px_40px_200px_80px_120px_120px_40px] items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[12px] transition hover:translate-x-1 hover:border-teal-400/40 hover:bg-white/10">
+    <div className="grid grid-cols-[60px_200px_40px_200px_80px_120px_120px_40px] min-w-max items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[12px] transition hover:translate-x-1 hover:border-teal-400/40 hover:bg-white/10">
       <div className="font-mono text-[11px] text-gray-400">{time}</div>
-      <div className="truncate font-mono text-gray-300">{from}</div>
+      <div className="font-mono text-gray-300">{from}</div>
       <div className="text-center text-gray-400">→</div>
-      <div className="truncate font-mono text-gray-300">{to}</div>
+      <div className="font-mono text-gray-300">{to}</div>
       <div className="font-bold text-teal-300">{token}</div>
       <div className="font-mono font-bold text-white">{amount}</div>
 

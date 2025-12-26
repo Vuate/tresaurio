@@ -9,10 +9,14 @@ export default function TerminalLayout({
   return (
     <div className="min-h-screen bg-[#0a0b0f] text-white pt-20">
       <Navbar />
-      <div className="flex min-h-[calc(100vh-80px)]">
-        <Sidebar />
-        <div className="flex-1 bg-[#0a0b0f]">{children}</div>
-      </div>
+<div className="flex min-h-[calc(100vh-80px)] overflow-hidden">
+  <Sidebar />
+
+  {/* ⬇️ BÜTÜN SORUNU ÇÖZEN SATIR */}
+  <div className="flex-1 min-w-0 bg-[#0a0b0f] overflow-hidden">
+    {children}
+  </div>
+</div>
     </div>
   );
 }

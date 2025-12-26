@@ -24,7 +24,7 @@ export default function AlertModal({ open, onClose }: AlertModalProps) {
             <label className="mb-1 block text-[12px] font-semibold text-gray-300">
               Alert Türü
             </label>
-            <select className="w-full rounded-lg border border-white/10 bg-[#041f20] px-3 py-2 text-sm text-white appearance-none">
+                        <select className="w-full rounded-lg border border-white/10 bg-[#041f20] px-3 py-2 text-sm text-white">
               <option className="bg-[#041f20] text-white">Tutar Bazlı</option>
               <option className="bg-[#041f20] text-white">Token Bazlı</option>
               <option className="bg-[#041f20] text-white">Exchange Bazlı</option>
@@ -47,7 +47,7 @@ export default function AlertModal({ open, onClose }: AlertModalProps) {
             <label className="mb-1 block text-[12px] font-semibold text-gray-300">
               Bildirim Kanalı
             </label>
-            <select className="w-full rounded-lg border border-white/10 bg-[#041f20] px-3 py-2 text-sm text-white appearance-none">
+            <select className="w-full rounded-lg border border-white/10 bg-[#041f20] px-3 py-2 text-sm text-white">
               <option className="bg-[#041f20] text-white">Email</option>
               <option className="bg-[#041f20] text-white">Telegram</option>
               <option className="bg-[#041f20] text-white">Push Notification</option>
@@ -59,14 +59,14 @@ export default function AlertModal({ open, onClose }: AlertModalProps) {
         <div className="mt-6 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg border border-white/10 bg-white/5 py-2 text-sm font-semibold hover:bg-white/10"
+            className="flex-1 rounded-lg border border-white/10 bg-white/5 py-2 text-sm font-semibold hover:bg-white/10 cursor-pointer"
           >
             İptal
           </button>
 
           <button
             onClick={onClose}
-            className="flex-1 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 py-2 text-sm font-semibold text-white hover:shadow-lg hover:shadow-teal-400/30"
+            className="flex-1 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 py-2 text-sm font-semibold text-white hover:shadow-lg hover:shadow-teal-400/30 cursor-pointer"
           >
             Oluştur
           </button>

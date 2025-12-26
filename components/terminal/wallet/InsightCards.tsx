@@ -2,7 +2,7 @@
 
 export default function InsightCards() {
   return (
-    <section className="mb-6 grid grid-cols-4 gap-4">
+    <section className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <InsightCard
         label="Exchange Net Inflow"
         value="+$124M"
@@ -33,6 +33,7 @@ export default function InsightCards() {
     </section>
   );
 }
+
 
 /* ================= CARD ================= */
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import WalletSidebar from "@/components/terminal/wallet/WalletSidebar";
 import LiveFeed from "@/components/terminal/wallet/LiveFeed";
 import InsightCards from "@/components/terminal/wallet/InsightCards";
 import TokenTable from "@/components/terminal/wallet/TokenTable";
@@ -14,14 +15,28 @@ export default function WalletPage() {
   const [addTokenOpen, setAddTokenOpen] = useState(false);
 
   return (
-    <>
-      <LiveFeed onAlertClick={() => setAlertOpen(true)} />
-      <InsightCards />
-      <TokenTable onAddTokenClick={() => setAddTokenOpen(true)} />
-      <SmartMoneyPanel />
+    <div className="relative h-full min-h-0">
+      {/* 🔒 WALLET SIDEBAR – FLEX'E GİRMEZ */}
+      <div className="absolute left-0 top-0 h-full">
+        <WalletSidebar />
+      </div>
 
+      {/* 📌 CONTENT – SIDEBAR KADAR OFFSET */}
+      <div className="ml-[240px] h-full overflow-y-auto px-4">
+        <LiveFeed onAlertClick={() => setAlertOpen(true)} />
+        <InsightCards />
+
+        <TokenTable
+          onAddTokenClick={() => setAddTokenOpen(true)}
+          onAlertClick={() => setAlertOpen(true)}
+        />
+
+        <SmartMoneyPanel />
+      </div>
+
+      {/* MODALS */}
       <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} />
       <AddTokenModal open={addTokenOpen} onClose={() => setAddTokenOpen(false)} />
-    </>
+    </div>
   );
 }

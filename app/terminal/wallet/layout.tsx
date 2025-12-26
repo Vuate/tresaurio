@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import WalletTopBar from "@/components/terminal/wallet/WalletTopBar";
-import WalletSidebar from "@/components/terminal/wallet/WalletSidebar";
 import InspectorPanel from "@/components/terminal/wallet/InspectorPanel";
 import AlertModal from "@/components/terminal/wallet/AlertModal";
 import AddWalletModal from "@/components/terminal/wallet/AddWalletModal";
@@ -16,20 +15,26 @@ export default function WalletLayout({
   const [addWalletOpen, setAddWalletOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#031a1c] text-white">
+    <div className="flex h-full flex-col bg-[#031a1c] text-white">
+      
+      {/* TOP BAR */}
       <WalletTopBar
         onAlertClick={() => setAlertOpen(true)}
         onAddWalletClick={() => setAddWalletOpen(true)}
       />
 
-      <div className="flex min-h-[calc(100vh-61px)]">
-        <WalletSidebar />
-        <main className="flex-1 overflow-y-auto bg-[#031a1c]">
+      {/* BODY */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        {/* PAGE CONTENT (Wallet page kendi içinde sidebar açacak) */}
+        <main className="flex-1 min-w-0 overflow-hidden">
           {children}
         </main>
-        <InspectorPanel />
+
+        {/* RIGHT – INSPECTOR */}
+        <InspectorPanel onAlertClick={() => setAlertOpen(true)} />
       </div>
 
+      {/* MODALS */}
       <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} />
       <AddWalletModal
         open={addWalletOpen}
