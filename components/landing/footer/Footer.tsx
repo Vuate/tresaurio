@@ -15,7 +15,7 @@ export default function Footer() {
           {/* Products */}
           <div>
             <h3 className="mb-5 text-lg font-bold">Products</h3>
-            {["Terminal", "Analytics", "Portfolio", "API"].map((item) => (
+            {["Terminal", "Analytics", "API"].map((item) => (
               <a
                 key={item}
                 className="mb-3 block cursor-pointer text-[15px] text-slate-300 transition-colors hover:text-[#19d8d0]"

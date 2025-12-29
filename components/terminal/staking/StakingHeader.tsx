@@ -2,7 +2,7 @@
 
 export default function StakingHeader() {
   return (
-    <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/10">
+    <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/10 mt-3">
       <div className="flex items-center gap-4">
         <button
           onClick={() => history.back()}

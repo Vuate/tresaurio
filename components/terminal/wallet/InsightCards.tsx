@@ -2,7 +2,7 @@
 
 export default function InsightCards() {
   return (
-    <section className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <section className="mb-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       <InsightCard
         label="Exchange Net Inflow"
         value="+$124M"
@@ -61,22 +61,22 @@ function InsightCard({
   };
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#041f20]/95 p-5 transition hover:-translate-y-0.5 hover:border-teal-400/40">
+    <div className="rounded-xl border border-white/10 bg-[#041f20]/95 p-5 transition hover:-translate-y-0.5 hover:border-teal-400/40 min-w-0">
       {/* LABEL */}
-      <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-400">
+      <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-400 truncate">
         {label}
       </div>
 
       {/* VALUE */}
       <div
-        className={`mb-1 font-mono text-[24px] font-extrabold ${valueColor[type]}`}
+        className={`mb-1 font-mono text-[24px] font-extrabold ${valueColor[type]} truncate`}
       >
         {value}
       </div>
 
       {/* CHANGE */}
       <div
-        className={`flex items-center gap-1 text-[11px] font-semibold ${changeColor[type]}`}
+        className={`flex items-center gap-1 text-[11px] font-semibold ${changeColor[type]} truncate`}
       >
         {change}
       </div>

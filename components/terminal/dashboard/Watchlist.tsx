@@ -33,7 +33,7 @@ export default function Watchlist() {
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-3">
       {/* Title */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-bold">Watchlist</h2>

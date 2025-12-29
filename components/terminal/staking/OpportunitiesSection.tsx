@@ -3,12 +3,10 @@
 import LimitedOffersSection from "./LimitedOffersSection";
 import OpportunitiesSuccessAlert from "./OpportunitiesSuccessAlert";
 
-
 export default function OpportunitiesSection() {
   return (
     <div className="space-y-8">
-
-        {/* SUCCESS ALERT */}
+      {/* SUCCESS ALERT */}
       <OpportunitiesSuccessAlert />
 
       {/* NEW POOLS */}
@@ -18,7 +16,8 @@ export default function OpportunitiesSection() {
           desc="Son 7 günde eklenen stake fırsatları"
         />
 
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
+        {/* ✅ COMPACT GRID - Her detail ayrı kutucuk */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-3">
           <StakeCard
             icon="₿"
             title="BTC Flexible"
@@ -60,13 +59,13 @@ export default function OpportunitiesSection() {
         </div>
       </section>
 
-      {/* ⬇️ LIMITED ARTIK AYRI FILE */}
+      {/* LIMITED OFFERS */}
       <LimitedOffersSection />
     </div>
   );
 }
 
-/* ===== LOCAL UI BLOCKS (AYNI) ===== */
+/* ===== LOCAL UI BLOCKS ===== */
 
 function SectionHeader({ title, desc }: any) {
   return (
@@ -79,40 +78,39 @@ function SectionHeader({ title, desc }: any) {
 
 function StakeCard({ icon, title, platform, apr, items }: any) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-5 hover:border-teal-300/40 transition">
+    <div className="rounded-xl border border-white/10 bg-white/5 p-4 hover:border-teal-300/40 transition w-full">
+      {/* HEADER */}
       <div className="flex justify-between items-start mb-4">
-        <div className="flex gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-300 to-teal-600 flex items-center justify-center text-lg">
+        <div className="flex gap-3 items-center">
+          <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-teal-300 to-teal-600 flex items-center justify-center text-lg font-bold">
             {icon}
           </div>
           <div>
-            <div className="font-bold">{title}</div>
+            <div className="font-bold text-base">{title}</div>
             <div className="text-xs text-gray-400">{platform}</div>
           </div>
         </div>
 
-        <div className="text-right">
-          <div className="text-xs text-gray-400 uppercase">APR</div>
-          <div className="text-xl font-mono font-bold text-emerald-400">
+        <div className="text-right shrink-0">
+          <div className="text-[10px] text-gray-400 uppercase tracking-wide">APR</div>
+          <div className="text-2xl font-mono font-bold text-emerald-400 leading-tight">
             {apr}
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/10 text-sm">
+      {/* DETAILS - Her biri ayrı kutucuk, yan yana grid */}
+      <div className="grid grid-cols-2 gap-5">
         {items.map((i: any, idx: number) => (
-          <Detail key={idx} label={i[0]} value={i[1]} />
+          <div
+            key={idx}
+            className="rounded-lg border border-white/5 bg-white/[0.02] p-2.5"
+          >
+            <div className="text-[10px] text-gray-400 mb-1">{i[0]}</div>
+            <div className="font-semibold text-sm">{i[1]}</div>
+          </div>
         ))}
       </div>
-    </div>
-  );
-}
-
-function Detail({ label, value }: any) {
-  return (
-    <div>
-      <div className="text-xs text-gray-400">{label}</div>
-      <div className="font-semibold">{value}</div>
     </div>
   );
 }
@@ -126,7 +124,9 @@ function Badge({ children, type }: any) {
   };
 
   return (
-    <span className={`inline-flex rounded-md border px-2 py-0.5 text-xs font-semibold ${map[type]}`}>
+    <span
+      className={`inline-flex rounded-md border px-2 py-0.5 text-[11px] font-semibold ${map[type]}`}
+    >
       {children}
     </span>
   );

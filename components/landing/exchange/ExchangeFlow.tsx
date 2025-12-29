@@ -29,8 +29,6 @@ const ICON_MAP: Record<string, string> = {
   "Gate.io": "/gate.jpg",
 };
 
-
-
 const getIcon = (exchangeName: string) => {
   return ICON_MAP[exchangeName] || "/logo.png";
 };
@@ -51,15 +49,14 @@ export default function ExchangeFlow() {
           // 🔑 MİKRO SAPMA (aynı symbol'lerin birebir aynı görünmemesi için)
           const randomFactor = 1 + (Math.random() - 0.5) * 0.2;
 
-return {
-  name: ex.name,
-  symbol: ex.symbol,
-  amount: Math.round(change * 1200 * randomFactor),
-  token: ex.token,
-  time: "Live",
-  icon: getIcon(ex.name), 
-};
-
+          return {
+            name: ex.name,
+            symbol: ex.symbol,
+            amount: Math.round(change * 1200 * randomFactor),
+            token: ex.token,
+            time: "Live",
+            icon: getIcon(ex.name),
+          };
         })
       );
     };
@@ -112,10 +109,6 @@ return {
               }`}
             >
               {f.amount >= 0 ? "+" : "-"}${Math.abs(f.amount)}K
-            </div>
-
-            <div className="text-sm opacity-85">
-              {Math.abs(f.amount / 10).toFixed(2)} {f.token}
             </div>
           </div>
         ))}

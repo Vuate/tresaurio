@@ -24,7 +24,7 @@ export default function TradFiSection() {
         </div>
 
         {/* GRID (trad-fi-grid) */}
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(360px,1fr))] gap-4">
           <TradFiCard
             icon="🇺🇸"
             title="ABD Hazine Bonosu"

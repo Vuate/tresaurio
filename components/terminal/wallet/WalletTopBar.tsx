@@ -14,7 +14,7 @@ export default function WalletTopBar({
   const [activeRange, setActiveRange] = useState("24s"); // ✅ default
 
   return (
-    <div className="flex items-center justify-between border-b border-white/10 bg-[#041f20] px-6 py-3 backdrop-blur-xl">
+    <div className="flex items-center justify-between border-b border-white/10 bg-[#041f20] px-6 py-3 backdrop-blur-xl mt-3">
       {/* LEFT */}
       <div className="flex flex-col gap-[2px]">
         <div className="flex items-center gap-2 text-[20px] font-extrabold text-white">

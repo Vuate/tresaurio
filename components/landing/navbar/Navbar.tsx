@@ -88,7 +88,7 @@ export default function Navbar() {
             [&>button:hover]:-translate-y-0.5
           "
         >
-          <button onClick={() => router.push("/rewards")}>REWARDS</button>
+         {/*/ <button onClick={() => router.push("/rewards")}>REWARDS</button> */}
           <button onClick={() => router.push("/terminal/home")}>TERMINAL</button>
           <button onClick={() => router.push("/learn")}>LEARN</button>
           <button onClick={() => router.push("/download")}>API</button>

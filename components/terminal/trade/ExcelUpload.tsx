@@ -99,7 +99,7 @@ export default function ExcelUpload() {
             <p className="text-sm text-slate-400 leading-relaxed mb-3">
               API kullanmak istemiyorsanız, portföy verilerinizi Excel dosyası olarak yükleyebilirsiniz.
             </p>
-<div className="p-3 bg-orange-500/12 border-l-4 border-orange-500 rounded-lg">
+<div className="p-3 border-l-4 border-orange-500 rounded-lg">
   <div className="flex items-start gap-2">
     <span className="text-lg flex-shrink-0">ℹ️</span>
     <div className="text-sm text-slate-300 leading-relaxed">

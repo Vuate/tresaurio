@@ -47,7 +47,7 @@ const scrollToSection = (sectionId: string) => {
     <div className="border-b border-slate-800/50 px-6 py-8 sticky top-0 z-40 bg-black/95 backdrop-blur-md">
       <div className="flex justify-between items-center flex-wrap gap-6">
         <div>
-          <h1 className="text-5xl font-bold text-cyan-400 mb-9 flex items-center gap-3">
+          <h1 className="text-5xl font-bold text-cyan-400 mb-9 flex items-center gap-3 mt-5">
             <span>💼</span>
             Trade & Portföy Yönetimi
           </h1>
