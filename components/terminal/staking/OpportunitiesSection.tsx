@@ -68,7 +68,12 @@ export default function OpportunitiesSection() {
 
 /* ===== LOCAL UI BLOCKS (AYNI) ===== */
 
-function SectionHeader({ title, desc }: any) {
+interface SectionHeaderProps {
+  title: string;
+  desc: string;
+}
+
+function SectionHeader({ title, desc }: SectionHeaderProps) {
   return (
     <div>
       <div className="text-lg font-bold">{title}</div>
@@ -77,7 +82,15 @@ function SectionHeader({ title, desc }: any) {
   );
 }
 
-function StakeCard({ icon, title, platform, apr, items }: any) {
+interface StakeCardProps {
+  icon: string | React.ReactNode;
+  title: string;
+  platform: string;
+  apr: string;
+  items: [string, string | number | React.ReactNode][];
+}
+
+function StakeCard({ icon, title, platform, apr, items }: StakeCardProps) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-5 hover:border-teal-300/40 transition">
       <div className="flex justify-between items-start mb-4">
@@ -100,7 +113,7 @@ function StakeCard({ icon, title, platform, apr, items }: any) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/10 text-sm">
-        {items.map((i: any, idx: number) => (
+        {items.map((i, idx) => (
           <Detail key={idx} label={i[0]} value={i[1]} />
         ))}
       </div>
@@ -108,7 +121,12 @@ function StakeCard({ icon, title, platform, apr, items }: any) {
   );
 }
 
-function Detail({ label, value }: any) {
+interface DetailProps {
+  label: string;
+  value: string | number | React.ReactNode;
+}
+
+function Detail({ label, value }: DetailProps) {
   return (
     <div>
       <div className="text-xs text-gray-400">{label}</div>
@@ -117,8 +135,15 @@ function Detail({ label, value }: any) {
   );
 }
 
-function Badge({ children, type }: any) {
-  const map: any = {
+type BadgeType = "success" | "warning" | "danger" | "purple";
+
+interface BadgeProps {
+  children: React.ReactNode;
+  type: BadgeType;
+}
+
+function Badge({ children, type }: BadgeProps) {
+  const map: Record<BadgeType, string> = {
     success: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30",
     warning: "text-yellow-400 bg-yellow-400/10 border-yellow-400/30",
     danger: "text-red-400 bg-red-400/10 border-red-400/30",

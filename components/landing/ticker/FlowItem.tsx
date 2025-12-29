@@ -1,4 +1,10 @@
-export default function FlowItem({ item }: { item: any }) {
+interface FlowItemData {
+  name: string;
+  price: string | number;
+  change: number;
+}
+
+export default function FlowItem({ item }: { item: FlowItemData }) {
   return (
     <div className="ticker-item">
       <span className="ticker-name">{item.name}</span>

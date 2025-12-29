@@ -26,7 +26,16 @@ export default function TradFiTable() {
   );
 }
 
-function Row({ name, apr, risk, liquidity, tax, highlight }: any) {
+interface RowProps {
+  name: string;
+  apr: string;
+  risk: string;
+  liquidity: string;
+  tax: string;
+  highlight?: boolean;
+}
+
+function Row({ name, apr, risk, liquidity, tax, highlight }: RowProps) {
   return (
     <>
       <div className="border-b border-white/5 p-3">{name}</div>

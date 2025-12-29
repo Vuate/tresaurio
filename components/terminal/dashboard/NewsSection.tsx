@@ -2,15 +2,24 @@
 
 import { useEffect, useState } from "react";
 
+interface NewsItem {
+  title: string;
+  source: string;
+  link: string;
+  image?: string;
+  published: string;
+  description?: string;
+}
+
 export default function NewsSection() {
-  const [news, setNews] = useState<any[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadNews() {
       try {
         const res = await fetch("/api/news", { cache: "no-store" });
-        const json = await res.json();
+        const json = await res.json() as { result: NewsItem[] };
         setNews(json.result || []);
       } catch (err) {
         console.error("NEWS FETCH ERROR:", err);

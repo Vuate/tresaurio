@@ -1,4 +1,11 @@
-export default function CryptoCard({ coin }: { coin: any }) {
+interface CryptoCoin {
+  icon: string;
+  symbol: string;
+  price: string | number;
+  change: number;
+}
+
+export default function CryptoCard({ coin }: { coin: CryptoCoin }) {
   const positive = coin.change >= 0;
 
   return (
@@ -25,7 +32,7 @@ export default function CryptoCard({ coin }: { coin: any }) {
         <span
           className={`mt-1 text-xs font-semibold ${
             positive ?  "text-green-400" : "text-red-400"
-          }`} 
+          }`}
         >
           {positive ? "▲" : "▼"} {coin.change}%
         </span>

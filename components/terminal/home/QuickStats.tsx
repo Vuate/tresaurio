@@ -2,14 +2,21 @@
 
 import { useEffect, useState } from "react";
 
+interface CoinGeckoStats {
+  total_market_cap: { usd: number };
+  total_volume: { usd: number };
+  market_cap_percentage: { btc: number };
+  active_cryptocurrencies: number;
+}
+
 export default function QuickStats() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<CoinGeckoStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function fetchStats() {
     try {
       const res = await fetch("https://api.coingecko.com/api/v3/global");
-      const data = await res.json();
+      const data = await res.json() as { data: CoinGeckoStats };
       setStats(data.data);
       setLoading(false);
     } catch (err) {
@@ -53,7 +60,12 @@ export default function QuickStats() {
     </section>
   );
 }
-function StatCard({ label, value }: any) {
+interface StatCardProps {
+  label: string;
+  value: string | number;
+}
+
+function StatCard({ label, value }: StatCardProps) {
   return (
     <div
       className="

@@ -92,19 +92,35 @@ export default function ComparisonTable() {
 
 /* ---- HELPERS ---- */
 
-function Cell({ children, header }: any) {
+interface CellProps {
+  children: React.ReactNode;
+  header?: boolean;
+  className?: string;
+}
+
+function Cell({ children, header, className = "" }: CellProps) {
   return (
-    <div className={`p-4 ${header ? "bg-[#031a1c] font-bold" : "bg-[#041f20]"}`}>
+    <div className={`p-4 ${header ? "bg-[#031a1c] font-bold" : "bg-[#041f20]"} ${className}`}>
       {children}
     </div>
   );
 }
 
-function RowLabel({ children }: any) {
+interface RowLabelProps {
+  children: React.ReactNode;
+}
+
+function RowLabel({ children }: RowLabelProps) {
   return <Cell>{children}</Cell>;
 }
 
-function Value({ children, highlight, className = "" }: any) {
+interface ValueProps {
+  children: React.ReactNode;
+  highlight?: boolean;
+  className?: string;
+}
+
+function Value({ children, highlight, className = "" }: ValueProps) {
   return (
     <Cell className={`${highlight ? "bg-teal-400/10 border border-teal-400/30" : ""} ${className}`}>
       <div className="text-center">{children}</div>
@@ -123,8 +139,15 @@ function Platform({ name }: { name: string }) {
   );
 }
 
-function Badge({ children, color }: any) {
-  const map: any = {
+type BadgeColor = "green" | "orange" | "yellow" | "teal";
+
+interface BadgeProps {
+  children: React.ReactNode;
+  color: BadgeColor;
+}
+
+function Badge({ children, color }: BadgeProps) {
+  const map: Record<BadgeColor, string> = {
     green: "bg-emerald-400/10 text-emerald-400 border-emerald-400/30",
     orange: "bg-orange-400/10 text-orange-400 border-orange-400/30",
     yellow: "bg-yellow-400/10 text-yellow-400 border-yellow-400/30",
@@ -140,8 +163,15 @@ function Badge({ children, color }: any) {
   );
 }
 
-function Dot({ color, label }: any) {
-  const map: any = {
+type DotColor = "green" | "yellow";
+
+interface DotProps {
+  color: DotColor;
+  label: string;
+}
+
+function Dot({ color, label }: DotProps) {
+  const map: Record<DotColor, string> = {
     green: "bg-emerald-400",
     yellow: "bg-yellow-400",
   };

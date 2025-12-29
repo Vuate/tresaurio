@@ -1,6 +1,12 @@
 import FlowItem from "./FlowItem";
 
-export default function FlowTicker({ items }: { items: any[] }) {
+interface FlowItemData {
+  name: string;
+  price: string | number;
+  change: number;
+}
+
+export default function FlowTicker({ items }: { items: FlowItemData[] }) {
   return (
     <div className="ticker-bar">
       <div className="ticker-track">

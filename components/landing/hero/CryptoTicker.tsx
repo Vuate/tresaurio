@@ -40,12 +40,16 @@ export default function CryptoTicker() {
   useEffect(() => {
     const fetchCoins = async () => {
       const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const data = await res.json();
+      const data = await res.json() as Array<{
+        symbol: string;
+        lastPrice: string;
+        priceChangePercent: string;
+      }>;
 
       setCoins(
         data
-          .filter((c: any) => SYMBOLS.includes(c.symbol))
-          .map((c: any) => {
+          .filter((c) => SYMBOLS.includes(c.symbol))
+          .map((c): Coin => {
             const name = c.symbol.replace("USDT", "");
             return {
               id: c.symbol,

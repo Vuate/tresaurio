@@ -1,9 +1,16 @@
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  change: string;
+  positive?: boolean;
+}
+
 export default function StatCard({
   label,
   value,
   change,
   positive,
-}: any) {
+}: StatCardProps) {
   return (
     <div className="rounded-xl border border-white/10 bg-[#041f20]/95 p-5">
       {/* LABEL */}

@@ -31,12 +31,16 @@ export default function TickerBar() {
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const data = await res.json();
+      const data = await res.json() as Array<{
+        symbol: string;
+        quoteVolume: string;
+        priceChangePercent: string;
+      }>;
 
       setItems(
         data
-          .filter((c: any) => SYMBOLS.includes(c.symbol))
-          .map((c: any) => {
+          .filter((c) => SYMBOLS.includes(c.symbol))
+          .map((c): Item => {
             const volume = Number(c.quoteVolume);
             return {
               name: c.symbol.replace("USDT", ""),

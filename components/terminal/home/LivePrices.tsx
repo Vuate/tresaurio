@@ -32,7 +32,7 @@ function TrendLine({ data }: { data: number[] }) {
 
 
 
-const mapSymbols: any = {
+const mapSymbols: Record<string, number> = {
   BTC: 1,
   ETH: 1027,
   BNB: 1839,
@@ -53,10 +53,16 @@ function getIcon(symbol: string) {
 }
 
 
+interface BinanceTicker {
+  symbol: string;
+  lastPrice: string;
+  priceChangePercent: string;
+}
+
 export default function LivePrices() {
-  const [prices, setPrices] = useState<any[]>([]);
+  const [prices, setPrices] = useState<BinanceTicker[]>([]);
   const [loading, setLoading] = useState(true);
-  const [trendData, setTrendData] = useState<any>({});
+  const [trendData, setTrendData] = useState<Record<string, number[]>>({});
 
 
   // ✅ LAST UPDATE TIME
@@ -93,8 +99,8 @@ export default function LivePrices() {
   useEffect(() => {
     async function load() {
       const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const all = await res.json();
-      setPrices(all.filter((i: any) => symbols.includes(i.symbol)));
+      const all = await res.json() as BinanceTicker[];
+      setPrices(all.filter((i) => symbols.includes(i.symbol)));
       setLoading(false);
     }
 
@@ -106,15 +112,15 @@ export default function LivePrices() {
   // TREND FETCH — 🔥 EKLENEN TEK USEEFFECT
 useEffect(() => {
   async function loadTrend() {
-    const trend: any = {};
+    const trend: Record<string, number[]> = {};
 
     for (const s of symbols) {
       try {
         const r = await fetch(
           `https://api.binance.com/api/v3/klines?symbol=${s}&interval=1m&limit=30`
         );
-        const json = await r.json();
-        trend[s] = json.map((c: any) => Number(c[4])); // kapanış fiyatları
+        const json = await r.json() as Array<Array<string | number>>;
+        trend[s] = json.map((c) => Number(c[4])); // kapanış fiyatları
       } catch (err) {
         console.log("Trend fetch error:", err);
       }

@@ -1,7 +1,14 @@
 "use client";
 
-export default function StatusBadge({ children, type }: any) {
-  const map: any = {
+type StatusType = "active" | "locked";
+
+interface StatusBadgeProps {
+  children: React.ReactNode;
+  type: StatusType;
+}
+
+export default function StatusBadge({ children, type }: StatusBadgeProps) {
+  const map: Record<StatusType, string> = {
     active: "bg-emerald-400/10 text-emerald-400 border-emerald-400/30",
     locked: "bg-yellow-400/10 text-yellow-400 border-yellow-400/30",
   };

@@ -2,22 +2,34 @@
 
 import { useEffect, useState } from "react";
 
+interface BinanceTicker {
+  symbol: string;
+  lastPrice: string;
+  priceChangePercent: string;
+}
+
+interface Coin {
+  symbol: string;
+  price: number;
+  change: number;
+}
+
 export default function Watchlist() {
-  const [coins, setCoins] = useState<any[]>([]);
+  const [coins, setCoins] = useState<Coin[]>([]);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     async function load() {
       const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const data = await res.json();
+      const data = await res.json() as BinanceTicker[];
 
       const list = data
-        .filter((c: any) =>
+        .filter((c) =>
           ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT"].includes(
             c.symbol
           )
         )
-        .map((c: any) => ({
+        .map((c): Coin => ({
           symbol: c.symbol.replace("USDT", ""),
           price: Number(c.lastPrice),
           change: Number(c.priceChangePercent),

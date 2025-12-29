@@ -48,7 +48,11 @@ function Badge({ text }: { text: string }) {
   );
 }
 
-function Tag({ children }: any) {
+interface TagProps {
+  children: React.ReactNode;
+}
+
+function Tag({ children }: TagProps) {
   return (
     <span className="px-2 py-1 text-xs rounded border border-teal-400/30 text-teal-300">
       {children}
@@ -56,7 +60,11 @@ function Tag({ children }: any) {
   );
 }
 
-function IconBtn({ children }: any) {
+interface IconBtnProps {
+  children: React.ReactNode;
+}
+
+function IconBtn({ children }: IconBtnProps) {
   return (
     <button className="w-8 h-8 rounded border border-white/10 hover:border-teal-400/50">
       {children}

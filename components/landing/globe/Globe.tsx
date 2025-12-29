@@ -3,8 +3,12 @@
 import * as THREE from "three";
 import { useEffect, useRef } from "react";
 
+interface GlobeInstance {
+  renderer: THREE.WebGLRenderer;
+}
+
 // 🔥 SADECE TEK SEFER INIT İÇİN FLAG
-let globeInstance: any = null;
+let globeInstance: GlobeInstance | null = null;
 
 export default function Globe() {
   const mountRef = useRef<HTMLDivElement>(null);

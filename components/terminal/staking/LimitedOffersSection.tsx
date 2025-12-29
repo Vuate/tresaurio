@@ -48,7 +48,12 @@ export default function LimitedOffersSection() {
 
 /* LOCAL */
 
-function SectionHeader({ title, desc }: any) {
+interface SectionHeaderProps {
+  title: string;
+  desc: string;
+}
+
+function SectionHeader({ title, desc }: SectionHeaderProps) {
   return (
     <div>
       <div className="text-lg font-bold">{title}</div>
@@ -57,7 +62,12 @@ function SectionHeader({ title, desc }: any) {
   );
 }
 
-function Detail({ label, value }: any) {
+interface DetailProps {
+  label: string;
+  value: string | number;
+}
+
+function Detail({ label, value }: DetailProps) {
   return (
     <div>
       <div className="text-xs text-gray-400">{label}</div>

@@ -2,9 +2,18 @@
 
 import { useEffect, useState } from "react";
 
+interface CoinData {
+  id: string;
+  name: string;
+  symbol: string;
+  image: string;
+  current_price: number;
+  price_change_percentage_24h: number;
+}
+
 export default function Movers() {
-  const [gainers, setGainers] = useState<any[]>([]);
-  const [losers, setLosers] = useState<any[]>([]);
+  const [gainers, setGainers] = useState<CoinData[]>([]);
+  const [losers, setLosers] = useState<CoinData[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function fetchMovers() {
@@ -13,7 +22,7 @@ export default function Movers() {
         "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=200"
       );
 
-      const data = await res.json();
+      const data = await res.json() as CoinData[];
 
       const topGainers = [...data]
         .filter((c) => c.price_change_percentage_24h !== null)
@@ -114,7 +123,13 @@ export default function Movers() {
   );
 }
 
-function Section({ title, color, children }: any) {
+interface SectionProps {
+  title: string;
+  color: string;
+  children: React.ReactNode;
+}
+
+function Section({ title, color, children }: SectionProps) {
   return (
     <div className="relative z-10">
       <h4 className={`text-${color}-400 font-bold mb-4 tracking-wide`}>
@@ -125,7 +140,12 @@ function Section({ title, color, children }: any) {
   );
 }
 
-function Row({ coin, loser }: any) {
+interface RowProps {
+  coin: CoinData;
+  loser?: boolean;
+}
+
+function Row({ coin, loser }: RowProps) {
   const percentage = coin.price_change_percentage_24h;
 
   return (

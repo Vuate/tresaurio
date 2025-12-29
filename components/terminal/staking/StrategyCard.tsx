@@ -1,9 +1,16 @@
+interface StrategyCardProps {
+  icon: string | React.ReactNode;
+  title: string;
+  subtitle: string;
+  recommendation: string;
+}
+
 export default function StrategyCard({
   icon,
   title,
   subtitle,
   recommendation,
-}: any) {
+}: StrategyCardProps) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-5 hover:border-teal-300/40 transition">
       <div className="flex gap-3 mb-4">

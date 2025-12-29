@@ -41,11 +41,15 @@ export default function ExchangeFlow() {
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const data = await res.json();
+      const data = await res.json() as Array<{
+        symbol: string;
+        priceChangePercent: string;
+        quoteVolume: string;
+      }>;
 
       setFlows(
-        EXCHANGES.map((ex) => {
-          const coin = data.find((c: any) => c.symbol === ex.symbol);
+        EXCHANGES.map((ex): FlowItem => {
+          const coin = data.find((c) => c.symbol === ex.symbol);
           const change = coin ? Number(coin.priceChangePercent) : 0;
 
           // 🔑 MİKRO SAPMA (aynı symbol'lerin birebir aynı görünmemesi için)

@@ -3,16 +3,32 @@
 import { useEffect, useState } from "react";
 
 // ----------------------------------------------------
+// TYPES
+// ----------------------------------------------------
+interface ExchangeData {
+  price: number;
+  spread: number;
+  stability: string;
+  volume: string;
+  freq: string;
+}
+
+interface MarketComparisonData {
+  binance: ExchangeData;
+  okx: ExchangeData;
+}
+
+// ----------------------------------------------------
 // MAIN COMPONENT
 // ----------------------------------------------------
 export default function MarketComparison() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<MarketComparisonData | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
         const res = await fetch("/api/markets/comparison");
-        const json = await res.json();
+        const json = await res.json() as MarketComparisonData;
         setData(json);
       } catch (err) {
         console.error(err);
@@ -97,6 +113,16 @@ function ExchangeSelect({ label }: { label: string }) {
 // ----------------------------------------------------
 // COMPARISON CARD COMPONENT
 // ----------------------------------------------------
+interface ComparisonCardProps {
+  title: string;
+  price: number;
+  spread: number;
+  spreadStability: string;
+  volume: string;
+  freq: string;
+  theme: "sky" | "violet";
+}
+
 function ComparisonCard({
   title,
   price,
@@ -105,7 +131,7 @@ function ComparisonCard({
   volume,
   freq,
   theme,
-}: any) {
+}: ComparisonCardProps) {
   const themeStyles =
     theme === "sky"
       ? "border-sky-400/30 bg-sky-500/10 shadow-[0_0_30px_rgba(56,189,248,0.4)]"

@@ -1,12 +1,20 @@
 "use client";
 
+interface StakePositionCardProps {
+  icon: string | React.ReactNode;
+  title: string;
+  platform: string;
+  apr: string;
+  items: [string, string | number][];
+}
+
 export default function StakePositionCard({
   icon,
   title,
   platform,
   apr,
   items,
-}: any) {
+}: StakePositionCardProps) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:border-teal-300/40">
       <div className="flex items-start justify-between mb-4">
@@ -29,7 +37,7 @@ export default function StakePositionCard({
       </div>
 
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10 text-sm">
-        {items.map((i: any, idx: number) => (
+        {items.map((i, idx) => (
           <div key={idx}>
             <div className="text-xs text-gray-400">{i[0]}</div>
             <div className="font-semibold">{i[1]}</div>

@@ -1,13 +1,24 @@
+interface TradFiCardProps {
+  icon: string | React.ReactNode;
+  title: string;
+  sub: string;
+  rate: string;
+  vs: string;
+  text: string;
+  positive?: boolean;
+  negative?: boolean;
+}
+
 export default function TradFiCard({
   icon,
   title,
   sub,
   rate,
-  vs,        // 👈 BURASI ÖNEMLİ
+  vs,
   text,
   positive,
   negative,
-}: any) {
+}: TradFiCardProps) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-5 hover:border-teal-300/40 transition">
       <div className="flex gap-3 mb-3">
