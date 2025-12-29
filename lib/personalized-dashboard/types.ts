@@ -37,3 +37,24 @@ export type AlertItem = {
   price: number;
   active: boolean;
 };
+
+export type SpotPosition = {
+  id: string;
+  symbol: string; // BTCUSDT
+  qty: number; // 0.25
+  entryPrice: number; // 42000
+  currentPrice: number;
+};
+
+export type FuturesSide = "long" | "short";
+
+export type FuturesPosition = {
+  id: string;
+  symbol: string; // BTCUSDT
+  side: FuturesSide; // long / short
+  qty: number; // contracts
+  entryPrice: number;
+  markPrice: number;
+  leverage: number;
+  liquidationPrice: number;
+};

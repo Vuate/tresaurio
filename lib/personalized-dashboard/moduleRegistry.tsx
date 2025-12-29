@@ -7,6 +7,9 @@ import OrderBookModule from "@/components/terminal/personalized-dashboard/OrderB
 import ExchangeComparisonModule from "@/components/terminal/personalized-dashboard/ExchangeComparisonModule";
 import CreateAlertModule from "@/components/terminal/personalized-dashboard/CreateAlertModule";
 import ActiveAlertsModule from "@/components/terminal/personalized-dashboard/ActiveAlertsModule";
+import PnLOverviewModule from "@/components/terminal/personalized-dashboard/PnLOverviewModule";
+import FuturesPositionsModule from "@/components/terminal/personalized-dashboard/FuturesPositionsModule";
+import RiskCalculatorModule from "@/components/terminal/personalized-dashboard/RiskCalculatorModule";
 export type ModuleDefinition = {
   type: string;
   title: string;
@@ -81,5 +84,32 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     category: "alert",
     defaultSize: { width: 360, height: 260 },
     render: () => <ActiveAlertsModule />,
+  },
+
+  "pnl-overview": {
+    type: "pnl-overview",
+    title: "PnL Overview",
+    description: "Profit & Loss summary",
+    category: "trader-portfoy",
+    defaultSize: { width: 360, height: 220 },
+    render: () => <PnLOverviewModule />,
+  },
+
+  "futures-positions": {
+    type: "futures-positions",
+    title: "Futures Positions",
+    description: "Active futures contracts",
+    category: "trader-portfoy",
+    defaultSize: { width: 420, height: 340 },
+    render: () => <FuturesPositionsModule />,
+  },
+
+  "risk-calculator": {
+    type: "risk-calculator",
+    title: "Risk Calculator",
+    description: "Calculate position risk & size",
+    category: "risk",
+    defaultSize: { width: 360, height: 320 },
+    render: () => <RiskCalculatorModule />,
   },
 };

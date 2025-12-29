@@ -14,7 +14,9 @@ type DepthState = {
 function buildSide(raw: [string, string][], isAsks: boolean): SideRow[] {
   const rows = raw
     .map(([p, q]) => ({ price: Number(p), qty: Number(q) }))
-    .filter((r) => Number.isFinite(r.price) && Number.isFinite(r.qty))
+    .filter(
+      (r) => Number.isFinite(r.price) && Number.isFinite(r.qty) && r.qty > 0
+    )
     .sort((a, b) => (isAsks ? a.price - b.price : b.price - a.price));
 
   let running = 0;
@@ -25,12 +27,12 @@ function buildSide(raw: [string, string][], isAsks: boolean): SideRow[] {
 }
 
 function mockDepth(symbol: string): DepthState {
-  const mid = 100000 + Math.random() * 5000; // fake mid
+  const mid = 100000 + Math.random() * 5000;
   const mk = (isAsks: boolean) =>
-    Array.from({ length: 12 }).map((_, i) => {
-      const step = (i + 1) * (5 + Math.random() * 10);
+    Array.from({ length: 20 }).map((_, i) => {
+      const step = (i + 1) * (5 + Math.random() * 12);
       const price = isAsks ? mid + step : mid - step;
-      const qty = 0.05 + Math.random() * 0.6;
+      const qty = 0.05 + Math.random() * 0.8;
       return [price.toFixed(2), qty.toFixed(6)] as [string, string];
     });
 
@@ -69,6 +71,7 @@ export default function OrderBookModule() {
 
         const bestBid = bids[0]?.price;
         const bestAsk = asks[0]?.price;
+
         const mid =
           Number.isFinite(bestBid) && Number.isFinite(bestAsk)
             ? (bestBid + bestAsk) / 2
@@ -76,8 +79,7 @@ export default function OrderBookModule() {
 
         if (!alive) return;
         setState({ symbol, bids, asks, mid, source: "api" });
-      } catch (e) {
-        // API patlarsa mock’a düş
+      } catch {
         if (!alive) return;
         setErr("Live feed unavailable (mock mode)");
         setState(mockDepth(symbol));
@@ -93,11 +95,54 @@ export default function OrderBookModule() {
     };
   }, [symbol]);
 
-  const maxTotal = useMemo(() => {
-    const b = state.bids.at(-1)?.total || 0;
-    const a = state.asks.at(-1)?.total || 0;
-    return Math.max(b, a, 1);
-  }, [state]);
+  const bestBid = state.bids[0]?.price ?? null;
+  const bestAsk = state.asks[0]?.price ?? null;
+
+  const spread = useMemo(() => {
+    if (
+      !Number.isFinite(bestBid as number) ||
+      !Number.isFinite(bestAsk as number)
+    )
+      return null;
+    const value = (bestAsk as number) - (bestBid as number);
+    const mid = ((bestAsk as number) + (bestBid as number)) / 2;
+    const pct = mid ? (value / mid) * 100 : 0;
+    return { value, pct };
+  }, [bestAsk, bestBid]);
+
+  const maxAskTotal = useMemo(
+    () => state.asks.at(-1)?.total || 1,
+    [state.asks]
+  );
+  const maxBidTotal = useMemo(
+    () => state.bids.at(-1)?.total || 1,
+    [state.bids]
+  );
+
+  const balance = useMemo(() => {
+    const bidTotal = state.bids.at(-1)?.total || 0;
+    const askTotal = state.asks.at(-1)?.total || 0;
+    const sum = bidTotal + askTotal || 1;
+
+    return {
+      bidPct: (bidTotal / sum) * 100,
+      askPct: (askTotal / sum) * 100,
+    };
+  }, [state.bids, state.asks]);
+
+  const fmt = useMemo(
+    () => ({
+      price: (v: number) =>
+        v.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      qty: (v: number) => v.toFixed(6),
+      total: (v: number) =>
+        v >= 1000 ? `${(v / 1000).toFixed(2)}k` : v.toFixed(6),
+    }),
+    []
+  );
 
   return (
     <div className="space-y-3">
@@ -138,23 +183,26 @@ export default function OrderBookModule() {
       {/* Asks */}
       <div className="space-y-1">
         {state.asks
-          .slice(0, 10)
+          .slice(0, 12)
           .reverse()
           .map((r, idx) => {
-            const pct = Math.min((r.total / maxTotal) * 100, 100);
+            const pct = Math.min((r.total / maxAskTotal) * 100, 100);
             return (
-              <div key={`a-${idx}`} className="relative">
+              <div
+                key={`a-${idx}`}
+                className="relative overflow-hidden rounded-md"
+              >
                 <div
-                  className="absolute inset-0 rounded-md bg-red-500/10"
+                  className="absolute inset-0 bg-red-500/10"
                   style={{ width: `${pct}%` }}
                 />
-                <div className="relative grid grid-cols-3 text-[11px] px-2 py-1 rounded-md">
-                  <div className="text-red-300">{r.price.toFixed(2)}</div>
+                <div className="relative grid grid-cols-3 text-[11px] px-2 py-1">
+                  <div className="text-red-300">{fmt.price(r.price)}</div>
                   <div className="text-right text-white/70">
-                    {r.qty.toFixed(6)}
+                    {fmt.qty(r.qty)}
                   </div>
                   <div className="text-right text-white/60">
-                    {r.total.toFixed(6)}
+                    {fmt.total(r.total)}
                   </div>
                 </div>
               </div>
@@ -162,31 +210,67 @@ export default function OrderBookModule() {
           })}
       </div>
 
-      {/* Mid */}
-      <div className="py-2 border-y border-white/10 flex items-center justify-between">
-        <div className="text-[11px] text-white/40">Mid</div>
-        <div className="text-sm font-semibold text-teal-300">
-          {state.mid ? state.mid.toFixed(2) : "—"}
+      {/* Mid + Spread */}
+      <div className="py-2 border-y border-white/10 space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="text-[11px] text-white/40">Mid</div>
+          <div className="text-sm font-semibold text-teal-300">
+            {state.mid ? fmt.price(state.mid) : "—"}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-[11px]">
+          <div className="text-white/40">Spread</div>
+          <div className="text-white/70">
+            {spread
+              ? `${spread.value.toFixed(2)} (${spread.pct.toFixed(3)}%)`
+              : "—"}
+          </div>
+        </div>
+
+        {/* Buy/Sell balance */}
+        <div className="space-y-1 pt-1">
+          <div className="flex justify-between text-[11px] text-white/40">
+            <span>Buy</span>
+            <span>Sell</span>
+          </div>
+
+          <div className="h-2 w-full rounded bg-white/10 overflow-hidden flex">
+            <div
+              className="bg-emerald-500"
+              style={{ width: `${balance.bidPct}%` }}
+            />
+            <div
+              className="bg-red-500"
+              style={{ width: `${balance.askPct}%` }}
+            />
+          </div>
+
+          <div className="flex justify-between text-[11px] text-white/60">
+            <span>{balance.bidPct.toFixed(1)}%</span>
+            <span>{balance.askPct.toFixed(1)}%</span>
+          </div>
         </div>
       </div>
 
       {/* Bids */}
       <div className="space-y-1">
-        {state.bids.slice(0, 10).map((r, idx) => {
-          const pct = Math.min((r.total / maxTotal) * 100, 100);
+        {state.bids.slice(0, 12).map((r, idx) => {
+          const pct = Math.min((r.total / maxBidTotal) * 100, 100);
           return (
-            <div key={`b-${idx}`} className="relative">
+            <div
+              key={`b-${idx}`}
+              className="relative overflow-hidden rounded-md"
+            >
               <div
-                className="absolute inset-0 rounded-md bg-emerald-500/10"
+                className="absolute inset-0 bg-emerald-500/10"
                 style={{ width: `${pct}%` }}
               />
-              <div className="relative grid grid-cols-3 text-[11px] px-2 py-1 rounded-md">
-                <div className="text-emerald-300">{r.price.toFixed(2)}</div>
-                <div className="text-right text-white/70">
-                  {r.qty.toFixed(6)}
-                </div>
+              <div className="relative grid grid-cols-3 text-[11px] px-2 py-1">
+                <div className="text-emerald-300">{fmt.price(r.price)}</div>
+                <div className="text-right text-white/70">{fmt.qty(r.qty)}</div>
                 <div className="text-right text-white/60">
-                  {r.total.toFixed(6)}
+                  {fmt.total(r.total)}
                 </div>
               </div>
             </div>
