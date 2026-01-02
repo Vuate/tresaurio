@@ -1,0 +1,78 @@
+"use client";
+
+import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
+import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
+import type { ModuleCategory } from "@/lib/personalized-dashboard/types";
+import type { ModuleDefinition } from "@/lib/personalized-dashboard/moduleRegistry";
+
+export default function AddToolPanel() {
+  const { addToolOpen, toggleAddTool, addModuleByType } =
+    usePersonalizedDashboardStore();
+
+  if (!addToolOpen) return null;
+
+  const grouped = Object.values(moduleRegistry).reduce((acc, mod) => {
+    const category = mod.category;
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(mod);
+    return acc;
+  }, {} as Record<ModuleCategory, ModuleDefinition[]>);
+
+  return (
+    <div
+      className="
+        fixed left-4 top-20 z-40
+        w-[260px] max-h-[80vh]
+        bg-[#041F20]/95 backdrop-blur
+        border border-white/10 rounded-xl
+        shadow-[0_12px_40px_rgba(0,0,0,0.45)]
+        overflow-y-auto
+      "
+    >
+      {/* HEADER */}
+      <div className="flex items-center justify-between px-3 py-3 border-b border-white/10">
+        <div className="text-[13px] font-semibold text-white">Add Tool</div>
+        <button
+          onClick={toggleAddTool}
+          className="text-white/50 hover:text-white transition"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* CONTENT */}
+      <div className="p-3 space-y-4">
+        {Object.entries(grouped).map(([category, mods]) => (
+          <div key={category}>
+            <div className="px-1 py-1 text-[10px] uppercase text-white/40 font-bold">
+              {category.replace("-", " ")}
+            </div>
+
+            <div className="space-y-1">
+              {mods.map((m) => (
+                <button
+                  key={m.type}
+                  onClick={() => addModuleByType(m.type)}
+                  className="
+                    w-full text-left rounded-lg
+                    px-3 py-2
+                    bg-white/5 hover:bg-teal-400/10
+                    border border-white/10
+                    transition
+                  "
+                >
+                  <div className="text-[13px] font-semibold text-white">
+                    {m.title}
+                  </div>
+                  <div className="text-[11px] text-white/50 leading-tight">
+                    {m.description}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

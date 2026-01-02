@@ -17,139 +17,135 @@ import {
 export default function Sidebar() {
   const pathname = usePathname();
 
-  const isActive = (path: string) =>
-    pathname === path || pathname.startsWith(path + "/");
+  function isActive(path: string) {
+    const isExact = pathname === path;
+    const isChild = pathname.startsWith(path + "/");
+
+    return isExact || isChild
+      ? "bg-[#1a1d24] text-teal-300"
+      : "text-gray-300 hover:bg-[#14171d] hover:text-white";
+  }
 
   return (
-    <aside
-      className="
-        group
-        sticky top-[64px]
-        h-[calc(100vh-64px)]
-        w-[52px] hover:w-[210px]
-        bg-[#0d0f14]
-        border-r border-white/10
-        transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
-        overflow-hidden
-        shrink-0
-      "
-    >
-      <div className="flex h-full flex-col gap-1.5 p-2 mt-4">
-
-        {/* LOGO */}
-        <div className="flex items-center h-9 px-2 min-w-[36px]">
-          <img
-            src="/treasurio.png"
-            className="w-7 h-7 shrink-0 min-w-[28px] min-h-[28px]"
-            alt="Treasurio"
-          />
-          <span
-            className="
-              ml-2 text-[15px] font-bold
-              bg-gradient-to-br from-teal-300 to-blue-400
-              text-transparent bg-clip-text
-              opacity-0 group-hover:opacity-100
-              transition-opacity duration-300
-              whitespace-nowrap
-            "
-          >
-            Treasurio
-          </span>
-        </div>
-
-        <NavItem
-          href="/terminal/personalized"
-          icon={<LayoutDashboard size={16} />}
-          label="Personalized Dashboard"
-          active={isActive("/terminal/personalized")}
-        />
-
-        <NavItem href="/terminal/home" icon={<Home size={16} />} label="Home" active={isActive("/terminal/home")} />
-        <NavItem href="/terminal/dashboard" icon={<LayoutDashboard size={16} />} label="Dashboard" active={isActive("/terminal/dashboard")} />
-        <NavItem href="/terminal/trade" icon={<LineChart size={16} />} label="Trade & Portfolio" active={isActive("/terminal/trade")} />
-
-        <SectionLabel label="INSIGHTS" />
-
-        <NavItem href="/terminal/news" icon={<Newspaper size={16} />} label="News" active={isActive("/terminal/news")} />
-        <NavItem href="/terminal/staking" icon={<Layers size={16} />} label="Staking" active={isActive("/terminal/staking")} />
-        <NavItem href="/terminal/wallet" icon={<Wallet size={16} />} label="Wallet Tracker" active={isActive("/terminal/wallet")} />
-
-        <SectionLabel label="ADVANCED" />
-
-        <NavItem href="/terminal/market-intelligence" icon={<Activity size={16} />} label="Market Microstructure" active={isActive("/terminal/market-intelligence")} />
-        <NavItem href="/terminal/transfer" icon={<Sliders size={16} />} label="Transfer" active={isActive("/terminal/transfer")} />
-        <NavItem href="/terminal/reporting" icon={<FileText size={16} />} label="Reporting" active={isActive("/terminal/reporting")} />
-      </div>
-    </aside>
-  );
-}
-
-/* ---------------- ITEM ---------------- */
-
-function NavItem({
-  href,
-  icon,
-  label,
-  active,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-  active: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`
-        relative flex items-center
-        h-9
-        min-w-[52px]
-        px-2.5
-        rounded-md
-        transition-all duration-300
-        ${active ? "bg-[#1a1d24] text-teal-300" : "text-gray-400 hover:bg-[#14171d] hover:text-white"}
-      `}
-    >
-      {/* SOL AKTİF ÇİZGİ */}
-      {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-teal-400 rounded-r" />
-      )}
-
-      {/* ICON */}
-      <div className="flex items-center justify-center w-[22px] shrink-0">
-        {icon}
+    <div className="w-[230px] min-h-screen bg-[#0d0f14] border-r border-white/10 p-5 flex flex-col gap-8">
+      {/* Logo */}
+      <div className="flex items-center gap-2 px-2">
+        <img src="/treasurio.png" className="w-8 h-8" />
+        <span className="text-xl font-bold bg-linear-to-br from-teal-300 to-blue-400 text-transparent bg-clip-text">
+          Treasurio
+        </span>
       </div>
 
-      {/* TEXT */}
-      <span
-        className="
-          ml-2.5 text-[13px]
-          opacity-0 group-hover:opacity-100
-          transition-opacity duration-300
-          whitespace-nowrap
-        "
-      >
-        {label}
-      </span>
-    </Link>
-  );
-}
+      {/* MAIN */}
+      <div className="flex flex-col gap-1">
+        <Link
+          href="/personalized-dashboard"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/personalized-dashboard"
+          )}`}
+        >
+          <LayoutDashboard size={18} />
+          Personalized Dashboard
+        </Link>
 
-/* ---------------- SECTION ---------------- */
+        <Link
+          href="/terminal/dashboard"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/dashboard"
+          )}`}
+        >
+          <LayoutDashboard size={18} />
+          Dashboard
+        </Link>
 
-function SectionLabel({ label }: { label: string }) {
-  return (
-    <div
-      className="
-        mt-3 px-2.5
-        text-[9px] tracking-widest font-semibold
-        text-gray-500
-        opacity-0 group-hover:opacity-100
-        transition-opacity duration-300
-        whitespace-nowrap
-      "
-    >
-      {label}
+        <Link
+          href="/terminal/home"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/home"
+          )}`}
+        >
+          <Home size={18} />
+          Home
+        </Link>
+
+        <Link
+          href="/terminal/trade"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/trade"
+          )}`}
+        >
+          <LineChart size={18} />
+          Trade & Portfolio
+        </Link>
+      </div>
+
+      <div className="text-gray-500 text-xs px-2 mt-2">INSIGHTS</div>
+
+      <div className="flex flex-col gap-1">
+        <Link
+          href="/terminal/news"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/news"
+          )}`}
+        >
+          <Newspaper size={18} />
+          News
+        </Link>
+
+        <Link
+          href="/terminal/staking"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/staking"
+          )}`}
+        >
+          <Layers size={18} />
+          Staking
+        </Link>
+
+        <Link
+          href="/terminal/wallet"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/wallet"
+          )}`}
+        >
+          <Wallet size={18} />
+          Wallet Tracker
+        </Link>
+      </div>
+
+      <div className="text-gray-500 text-xs px-2 mt-2">ADVANCED</div>
+
+      <div className="flex flex-col gap-1">
+        <Link
+          href="/terminal/market-intelligence"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/market-intelligence"
+          )}`}
+        >
+          <Activity size={18} />
+          Market Microstructure
+        </Link>
+
+        <Link
+          href="/terminal/balancer"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/balancer"
+          )}`}
+        >
+          <Sliders size={18} />
+          Balancer
+        </Link>
+
+        <Link
+          href="/terminal/reporting"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
+            "/terminal/reporting"
+          )}`}
+        >
+          <FileText size={18} />
+          Reporting
+        </Link>
+      </div>
     </div>
   );
 }
