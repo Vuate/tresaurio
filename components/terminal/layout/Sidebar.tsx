@@ -45,10 +45,8 @@ export default function Sidebar() {
           )}`}
         >
           <LayoutDashboard size={18} />
-          Personalized Dashboardgit add components/terminal/layout/Sidebar.tsx
-          git commit -m "merge: resolve Sidebar conflict (main + ui/ardo)"
+          Personalized Dashboard
         </Link>
-
         <Link
           href="/terminal/dashboard"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
