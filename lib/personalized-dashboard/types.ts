@@ -58,3 +58,31 @@ export type FuturesPosition = {
   leverage: number;
   liquidationPrice: number;
 };
+
+export type WhaleTransfer = {
+  id: string;
+  symbol: string; // BTC
+  amount: number; // 117.32
+  usdValue: number; // 5_044_760
+  direction: "in" | "out"; // exchange -> wallet | wallet -> exchange
+  exchange: string; // Binance
+  timestamp: number;
+};
+
+export type ExchangeFlowEvent = {
+  id: string;
+  symbol: string; // BTCUSDT
+  exchange: string; // Binance
+  direction: "deposit" | "withdraw";
+  amount: number; // BTC
+  usdValue: number;
+  timestamp: number;
+};
+
+export type LiquidityMetrics = {
+  spreadPct: number;
+  bidDepth: number;
+  askDepth: number;
+  pressure: "buy" | "sell" | "neutral";
+  score: number;
+};

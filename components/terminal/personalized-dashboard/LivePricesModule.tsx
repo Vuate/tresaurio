@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAlertStore } from "@/store/alertStore";
+import { usePriceStore } from "@/store/priceStore";
 
 type Ticker = {
   symbol: string;
@@ -20,8 +20,8 @@ export default function LivePricesModule() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 🔥 ALERT CHECK
-  const checkAlerts = useAlertStore((s) => s.checkAlerts);
+  // 🔥 SADECE PRICE ENGINE'E YAZAR
+  const setPricesToStore = usePriceStore((s) => s.setPrices);
 
   useEffect(() => {
     let mounted = true;
@@ -32,9 +32,7 @@ export default function LivePricesModule() {
           cache: "no-store",
         });
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch prices");
-        }
+        if (!res.ok) throw new Error("Failed to fetch prices");
 
         const data: Ticker[] = await res.json();
         if (!mounted) return;
@@ -47,17 +45,18 @@ export default function LivePricesModule() {
           }))
           .filter((p) => Number.isFinite(p.price));
 
-        // 🔥 UI STATE
+        // 🔹 UI için local state
         setPrices(filtered);
-        setError(null);
         setLoading(false);
+        setError(null);
 
-        // 🔥 ALERT TRIGGER
+        // 🔹 GLOBAL PRICE ENGINE
         const priceMap: Record<string, number> = {};
-        for (const p of filtered) {
+        filtered.forEach((p) => {
           priceMap[p.symbol] = p.price;
-        }
-        checkAlerts(priceMap);
+        });
+
+        setPricesToStore(priceMap);
       } catch (err) {
         console.error("LivePrices fetch error", err);
         if (!mounted) return;
@@ -73,7 +72,7 @@ export default function LivePricesModule() {
       mounted = false;
       clearInterval(interval);
     };
-  }, [checkAlerts]);
+  }, [setPricesToStore]);
 
   /* ---------------- UI STATES ---------------- */
 
@@ -96,12 +95,10 @@ export default function LivePricesModule() {
             px-3 py-2 rounded-lg
             bg-white/5 border border-white/10"
         >
-          {/* SYMBOL */}
           <div className="text-sm font-semibold text-white">
             {p.symbol.replace("USDT", "")}
           </div>
 
-          {/* PRICE */}
           <div className="font-mono text-sm text-teal-400">
             ${p.price.toLocaleString()}
           </div>

@@ -10,6 +10,10 @@ import ActiveAlertsModule from "@/components/terminal/personalized-dashboard/Act
 import PnLOverviewModule from "@/components/terminal/personalized-dashboard/PnLOverviewModule";
 import FuturesPositionsModule from "@/components/terminal/personalized-dashboard/FuturesPositionsModule";
 import RiskCalculatorModule from "@/components/terminal/personalized-dashboard/RiskCalculatorModule";
+import WhaleAlertsModule from "@/components/terminal/personalized-dashboard/WhaleAlertsModule";
+import ExchangeFlowModule from "@/components/terminal/personalized-dashboard/ExchangeFlowModule";
+import LiquidityAnalysisModule from "@/components/terminal/personalized-dashboard/LiquidityAnalysisModule";
+
 export type ModuleDefinition = {
   type: string;
   title: string;
@@ -23,6 +27,7 @@ export type ModuleDefinition = {
 };
 
 export const moduleRegistry: Record<string, ModuleDefinition> = {
+  /* ---------------- TEMEL VERİ ---------------- */
   "live-prices": {
     type: "live-prices",
     title: "Live Prices",
@@ -32,6 +37,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     render: () => <LivePrices />,
   },
 
+  /* ---------------- PORTFÖY ---------------- */
   "spot-positions": {
     type: "spot-positions",
     title: "Spot Positions",
@@ -41,15 +47,44 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     render: () => <SpotPositionsModule />,
   },
 
+  "futures-positions": {
+    type: "futures-positions",
+    title: "Futures Positions",
+    description: "Active futures contracts",
+    category: "trader-portfoy",
+    defaultSize: { width: 420, height: 340 },
+    render: () => <FuturesPositionsModule />,
+  },
+
+  "pnl-overview": {
+    type: "pnl-overview",
+    title: "PnL Overview",
+    description: "Profit & Loss summary",
+    category: "trader-portfoy",
+    defaultSize: { width: 360, height: 220 },
+    render: () => <PnLOverviewModule />,
+  },
+
+  /* ---------------- DW / FLOW ---------------- */
   "exchange-flow": {
     type: "exchange-flow",
     title: "Exchange Flow",
     description: "Deposit / Withdraw tracking",
     category: "dw-flow",
-    defaultSize: { width: 460, height: 280 },
-    render: () => <div>Exchange Flow Content</div>,
+    defaultSize: { width: 420, height: 300 },
+    render: () => <ExchangeFlowModule />,
   },
 
+  "whale-alerts": {
+    type: "whale-alerts",
+    title: "Whale Alerts",
+    description: "Large on-chain / exchange transfers",
+    category: "dw-flow",
+    defaultSize: { width: 380, height: 260 },
+    render: () => <WhaleAlertsModule />,
+  },
+
+  /* ---------------- LİKİDİTE ---------------- */
   "order-book": {
     type: "order-book",
     title: "Order Book",
@@ -68,6 +103,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     render: () => <ExchangeComparisonModule />,
   },
 
+  /* ---------------- ALERT ---------------- */
   "create-alert": {
     type: "create-alert",
     title: "Create Alert",
@@ -86,24 +122,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     render: () => <ActiveAlertsModule />,
   },
 
-  "pnl-overview": {
-    type: "pnl-overview",
-    title: "PnL Overview",
-    description: "Profit & Loss summary",
-    category: "trader-portfoy",
-    defaultSize: { width: 360, height: 220 },
-    render: () => <PnLOverviewModule />,
-  },
-
-  "futures-positions": {
-    type: "futures-positions",
-    title: "Futures Positions",
-    description: "Active futures contracts",
-    category: "trader-portfoy",
-    defaultSize: { width: 420, height: 340 },
-    render: () => <FuturesPositionsModule />,
-  },
-
+  /* ---------------- RISK ---------------- */
   "risk-calculator": {
     type: "risk-calculator",
     title: "Risk Calculator",
@@ -111,5 +130,13 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     category: "risk",
     defaultSize: { width: 360, height: 320 },
     render: () => <RiskCalculatorModule />,
+  },
+  "liquidity-analysis": {
+    type: "liquidity-analysis",
+    title: "Liquidity Analysis",
+    description: "Bid / Ask imbalance & market pressure",
+    category: "likidite",
+    defaultSize: { width: 360, height: 260 },
+    render: () => <LiquidityAnalysisModule />,
   },
 };

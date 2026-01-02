@@ -3,10 +3,14 @@ import AddToolPanel from "@/components/terminal/personalized-dashboard/AddToolPa
 import Canvas from "@/components/terminal/personalized-dashboard/Canvas";
 import WorkspaceControls from "@/components/terminal/personalized-dashboard/WorkspaceControls";
 import NotesPanel from "@/components/terminal/personalized-dashboard/NotesPanel";
+import AlertObserver from "@/components/terminal/personalized-dashboard/AlertObserver";
+import PortfolioObserver from "@/components/terminal/personalized-dashboard/PortfolioObserver";
 
 export default function Page() {
   return (
     <>
+      <PortfolioObserver />
+      <AlertObserver />
       <TopBar />
       <AddToolPanel />
       <Canvas />

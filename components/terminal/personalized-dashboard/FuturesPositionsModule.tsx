@@ -3,11 +3,17 @@
 import { usePortfolioStore } from "@/store/portfolioStore";
 
 export default function FuturesPositionsModule() {
-  const positions = usePortfolioStore((s) => s.futuresPositions);
+  const futures = usePortfolioStore((s) => s.futuresPositions);
+
+  if (!futures.length) {
+    return (
+      <div className="text-xs text-white/40">No open futures positions</div>
+    );
+  }
 
   return (
     <div className="space-y-2 text-xs">
-      {positions.map((p) => {
+      {futures.map((p) => {
         const pnl =
           p.side === "long"
             ? (p.markPrice - p.entryPrice) * p.qty * p.leverage
@@ -15,78 +21,70 @@ export default function FuturesPositionsModule() {
 
         const pnlPct =
           ((p.markPrice - p.entryPrice) / p.entryPrice) *
-          100 *
-          (p.side === "long" ? 1 : -1);
+          (p.side === "long" ? 100 : -100);
 
-        const danger =
+        const liqDist =
           p.side === "long"
-            ? p.markPrice <= p.liquidationPrice * 1.05
-            : p.markPrice >= p.liquidationPrice * 0.95;
+            ? ((p.markPrice - p.liquidationPrice) / p.markPrice) * 100
+            : ((p.liquidationPrice - p.markPrice) / p.markPrice) * 100;
+
+        const pnlColor = pnl >= 0 ? "text-emerald-400" : "text-red-400";
+
+        const riskColor =
+          liqDist < 5
+            ? "text-red-400"
+            : liqDist < 10
+            ? "text-yellow-400"
+            : "text-emerald-400";
 
         return (
           <div
             key={p.id}
-            className={`rounded-xl border px-3 py-2
-              ${
-                danger
-                  ? "border-red-500/50 bg-red-500/5"
-                  : "border-white/10 bg-white/5"
-              }`}
+            className="rounded-lg border border-white/10 bg-white/5 p-3 space-y-1"
           >
             {/* HEADER */}
             <div className="flex justify-between items-center">
               <div className="font-semibold text-white">
                 {p.symbol}
                 <span
-                  className={`ml-2 text-[10px] px-2 py-0.5 rounded-full
-                    ${
-                      p.side === "long"
-                        ? "bg-emerald-500/20 text-emerald-400"
-                        : "bg-red-500/20 text-red-400"
-                    }`}
+                  className={`ml-2 text-[10px] px-2 py-0.5 rounded ${
+                    p.side === "long"
+                      ? "bg-emerald-500/20 text-emerald-300"
+                      : "bg-red-500/20 text-red-300"
+                  }`}
                 >
-                  {p.side.toUpperCase()} {p.leverage}x
+                  {p.side.toUpperCase()} x{p.leverage}
                 </span>
               </div>
 
-              <div
-                className={`font-mono font-semibold ${
-                  pnl >= 0 ? "text-emerald-400" : "text-red-400"
-                }`}
-              >
+              <div className={`font-mono ${pnlColor}`}>
                 {pnl >= 0 ? "+" : ""}
                 {pnl.toFixed(2)} $
               </div>
             </div>
 
             {/* DETAILS */}
-            <div className="mt-2 grid grid-cols-3 gap-2 text-[11px] text-white/60">
-              <div>
-                Entry
-                <div className="text-white">{p.entryPrice}</div>
-              </div>
-
-              <div>
-                Mark
-                <div className="text-white">{p.markPrice}</div>
-              </div>
-
-              <div>
-                Liq
-                <div className="text-red-400">{p.liquidationPrice}</div>
-              </div>
+            <div className="flex justify-between text-white/60">
+              <span>Entry</span>
+              <span>{p.entryPrice.toLocaleString()}</span>
             </div>
 
-            {/* PNL BAR */}
-            <div className="mt-2 h-1 rounded bg-white/10 overflow-hidden">
-              <div
-                className={`h-full ${
-                  pnl >= 0 ? "bg-emerald-400" : "bg-red-400"
-                }`}
-                style={{
-                  width: `${Math.min(Math.abs(pnlPct), 100)}%`,
-                }}
-              />
+            <div className="flex justify-between text-white/60">
+              <span>Mark</span>
+              <span>{p.markPrice.toLocaleString()}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-white/40">PnL %</span>
+              <span className={pnlColor}>
+                {pnlPct >= 0 ? "+" : ""}
+                {pnlPct.toFixed(2)}%
+              </span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-white/40">Liq Distance</span>
+              <span className={riskColor}>{liqDist.toFixed(2)}%</span>
             </div>
           </div>
         );
