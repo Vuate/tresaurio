@@ -45,7 +45,8 @@ export default function Sidebar() {
           )}`}
         >
           <LayoutDashboard size={18} />
-          Personalized Dashboard
+          Personalized Dashboardgit add components/terminal/layout/Sidebar.tsx
+          git commit -m "merge: resolve Sidebar conflict (main + ui/ardo)"
         </Link>
 
         <Link
