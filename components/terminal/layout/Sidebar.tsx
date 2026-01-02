@@ -39,9 +39,9 @@ export default function Sidebar() {
       {/* MAIN */}
       <div className="flex flex-col gap-1">
         <Link
-          href="/terminal/personalized"
+          href="/personalized-dashboard"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive(
-            "/terminal/personalized"
+            "/personalized-dashboard"
           )}`}
         >
           <LayoutDashboard size={18} />
