@@ -1,15 +1,10 @@
+// components/terminal/personalized-dashboard/OrderBookModule.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useOrderBookStore } from "@/store/orderBookStore";
 
 type SideRow = { price: number; qty: number; total: number };
-type DepthState = {
-  symbol: string;
-  bids: SideRow[];
-  asks: SideRow[];
-  mid: number | null;
-  source: "api" | "mock";
-};
 
 function buildSide(raw: [string, string][], isAsks: boolean): SideRow[] {
   const rows = raw
@@ -26,7 +21,7 @@ function buildSide(raw: [string, string][], isAsks: boolean): SideRow[] {
   });
 }
 
-function mockDepth(symbol: string): DepthState {
+function mockDepth(symbol: string) {
   const mid = 100000 + Math.random() * 5000;
   const mk = (isAsks: boolean) =>
     Array.from({ length: 20 }).map((_, i) => {
@@ -39,21 +34,19 @@ function mockDepth(symbol: string): DepthState {
   const bids = buildSide(mk(false), false);
   const asks = buildSide(mk(true), true);
 
-  return { symbol, bids, asks, mid, source: "mock" };
+  return { symbol, bids, asks, mid, source: "mock" as const };
 }
 
 export default function OrderBookModule() {
-  const [symbol, setSymbol] = useState("BTCUSDT");
-  const [state, setState] = useState<DepthState>(() => mockDepth("BTCUSDT"));
-  const [err, setErr] = useState<string | null>(null);
+  // 👇 STORE'DAN AL
+  const { symbol, bids, asks, mid, source, setOrderBook, setSymbol } =
+    useOrderBookStore();
 
   useEffect(() => {
     let alive = true;
 
     const tick = async () => {
       try {
-        setErr(null);
-
         const res = await fetch(
           `/api/markets/binance/depth?symbol=${encodeURIComponent(
             symbol
@@ -78,11 +71,13 @@ export default function OrderBookModule() {
             : null;
 
         if (!alive) return;
-        setState({ symbol, bids, asks, mid, source: "api" });
+        // 👇 STORE'A YAZ
+        setOrderBook({ symbol, bids, asks, mid, source: "api" });
       } catch {
         if (!alive) return;
-        setErr("Live feed unavailable (mock mode)");
-        setState(mockDepth(symbol));
+        const mockData = mockDepth(symbol);
+        // 👇 STORE'A YAZ
+        setOrderBook(mockData);
       }
     };
 
@@ -93,10 +88,10 @@ export default function OrderBookModule() {
       alive = false;
       clearInterval(id);
     };
-  }, [symbol]);
+  }, [symbol, setOrderBook]);
 
-  const bestBid = state.bids[0]?.price ?? null;
-  const bestAsk = state.asks[0]?.price ?? null;
+  const bestBid = bids[0]?.price ?? null;
+  const bestAsk = asks[0]?.price ?? null;
 
   const spread = useMemo(() => {
     if (
@@ -110,25 +105,19 @@ export default function OrderBookModule() {
     return { value, pct };
   }, [bestAsk, bestBid]);
 
-  const maxAskTotal = useMemo(
-    () => state.asks.at(-1)?.total || 1,
-    [state.asks]
-  );
-  const maxBidTotal = useMemo(
-    () => state.bids.at(-1)?.total || 1,
-    [state.bids]
-  );
+  const maxAskTotal = useMemo(() => asks.at(-1)?.total || 1, [asks]);
+  const maxBidTotal = useMemo(() => bids.at(-1)?.total || 1, [bids]);
 
   const balance = useMemo(() => {
-    const bidTotal = state.bids.at(-1)?.total || 0;
-    const askTotal = state.asks.at(-1)?.total || 0;
+    const bidTotal = bids.at(-1)?.total || 0;
+    const askTotal = asks.at(-1)?.total || 0;
     const sum = bidTotal + askTotal || 1;
 
     return {
       bidPct: (bidTotal / sum) * 100,
       askPct: (askTotal / sum) * 100,
     };
-  }, [state.bids, state.asks]);
+  }, [bids, asks]);
 
   const fmt = useMemo(
     () => ({
@@ -151,16 +140,16 @@ export default function OrderBookModule() {
         <div className="text-xs text-white/60">
           <span className="font-semibold text-white/90">Order Book</span>{" "}
           <span className="text-white/40">•</span>{" "}
-          <span className="text-white/70">{state.symbol}</span>{" "}
+          <span className="text-white/70">{symbol}</span>{" "}
           <span className="text-white/40">•</span>{" "}
           <span className="text-white/50">
-            {state.source === "api" ? "LIVE" : "MOCK"}
+            {source === "api" ? "LIVE" : "MOCK"}
           </span>
         </div>
 
         <select
           value={symbol}
-          onChange={(e) => setSymbol(e.target.value)}
+          onChange={(e) => setSymbol(e.target.value)} // 👈 STORE'A YAZ
           className="h-8 rounded-lg bg-white/5 border border-white/10
             text-xs text-white/80 px-2 outline-none"
         >
@@ -171,8 +160,6 @@ export default function OrderBookModule() {
         </select>
       </div>
 
-      {err && <div className="text-[11px] text-yellow-300/80">{err}</div>}
-
       {/* Column titles */}
       <div className="grid grid-cols-3 text-[11px] text-white/40 font-semibold">
         <div>Price</div>
@@ -182,7 +169,7 @@ export default function OrderBookModule() {
 
       {/* Asks */}
       <div className="space-y-1">
-        {state.asks
+        {asks
           .slice(0, 12)
           .reverse()
           .map((r, idx) => {
@@ -215,7 +202,7 @@ export default function OrderBookModule() {
         <div className="flex items-center justify-between">
           <div className="text-[11px] text-white/40">Mid</div>
           <div className="text-sm font-semibold text-teal-300">
-            {state.mid ? fmt.price(state.mid) : "—"}
+            {mid ? fmt.price(mid) : "—"}
           </div>
         </div>
 
@@ -255,7 +242,7 @@ export default function OrderBookModule() {
 
       {/* Bids */}
       <div className="space-y-1">
-        {state.bids.slice(0, 12).map((r, idx) => {
+        {bids.slice(0, 12).map((r, idx) => {
           const pct = Math.min((r.total / maxBidTotal) * 100, 100);
           return (
             <div

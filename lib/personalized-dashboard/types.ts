@@ -1,3 +1,5 @@
+// lib/personalized-dashboard/types.ts
+
 export type ModuleId = string;
 
 export type ModuleCategory =
@@ -7,6 +9,22 @@ export type ModuleCategory =
   | "likidite"
   | "alert"
   | "risk";
+
+export type ModuleType = // 👈 BURAYA EKLE
+
+    | "live-prices"
+    | "spot-positions"
+    | "futures-positions"
+    | "pnl-overview"
+    | "order-book"
+    | "liquidity-analysis"
+    | "exchange-comparison"
+    | "exchange-flow"
+    | "whale-alerts"
+    | "create-alert"
+    | "active-alerts"
+    | "risk-calculator"
+    | "spread-monitor"; // 👈 YENİ
 
 export type ModuleInstance = {
   id: ModuleId;
@@ -86,6 +104,7 @@ export type LiquidityMetrics = {
   pressure: "buy" | "sell" | "neutral";
   score: number;
 };
+
 // === Analytics / PnL ===
 
 export type PnLTrade = {
