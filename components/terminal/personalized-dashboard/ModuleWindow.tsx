@@ -5,18 +5,22 @@ import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import type { ModuleInstance } from "@/lib/personalized-dashboard/types";
 
+type ResizeDir = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
 export default function ModuleWindow({ module }: { module: ModuleInstance }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { updateModule, setActiveModule, activeModuleId, removeModule } =
+  const { updateModule, setActiveModule, activeModuleId, removeModule, zoom } =
     usePersonalizedDashboardStore();
 
   const def = moduleRegistry[module.type];
   const isActive = activeModuleId === module.id;
 
-  /* ---------------- DRAG (header only) ---------------- */
+  /* ---------------- DRAG ---------------- */
   const onDragMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
+
     setActiveModule(module.id);
 
     const startX = e.clientX;
@@ -25,9 +29,11 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     const startTop = module.y;
 
     const onMove = (ev: MouseEvent) => {
+      ev.preventDefault();
+
       updateModule(module.id, {
-        x: startLeft + (ev.clientX - startX),
-        y: startTop + (ev.clientY - startY),
+        x: startLeft + (ev.clientX - startX) / zoom,
+        y: startTop + (ev.clientY - startY) / zoom,
       });
     };
 
@@ -41,22 +47,47 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
   };
 
   /* ---------------- RESIZE ---------------- */
-  const onResizeMouseDown = (e: React.MouseEvent) => {
+  const onResizeMouseDown = (e: React.MouseEvent, dir: ResizeDir) => {
     e.stopPropagation();
+    e.preventDefault();
+
     setActiveModule(module.id);
 
     const startX = e.clientX;
     const startY = e.clientY;
     const startWidth = module.width;
     const startHeight = module.height;
+    const startLeft = module.x;
+    const startTop = module.y;
 
     const onMove = (ev: MouseEvent) => {
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
+      ev.preventDefault();
+
+      const dx = (ev.clientX - startX) / zoom;
+      const dy = (ev.clientY - startY) / zoom;
+
+      let newWidth = startWidth;
+      let newHeight = startHeight;
+      let newX = startLeft;
+      let newY = startTop;
+
+      if (dir.includes("right")) newWidth += dx;
+      if (dir.includes("left")) {
+        newWidth -= dx;
+        newX += dx;
+      }
+
+      if (dir.includes("bottom")) newHeight += dy;
+      if (dir.includes("top")) {
+        newHeight -= dy;
+        newY += dy;
+      }
 
       updateModule(module.id, {
-        width: Math.max(300, startWidth + dx),
-        height: Math.max(200, startHeight + dy),
+        x: newX,
+        y: newY,
+        width: Math.max(300, newWidth),
+        height: Math.max(200, newHeight),
       });
     };
 
@@ -73,54 +104,56 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     <div
       ref={ref}
       className={`absolute rounded-2xl border bg-[#041F20]/95 backdrop-blur
-        shadow-[0_12px_40px_rgba(0,0,0,0.45)]
+        select-none overflow-hidden
         ${isActive ? "border-teal-400" : "border-white/10"}`}
       style={{
         left: module.x,
         top: module.y,
         width: module.width,
-        height: module.minimized ? 42 : module.height, // 🔥 MINIMIZE
+        height: module.minimized ? 42 : module.height,
         zIndex: isActive ? 50 : 10,
+        WebkitFontSmoothing: "antialiased",
+        MozOsxFontSmoothing: "grayscale",
+        transform: "translateZ(0)",
       }}
       onMouseDown={() => setActiveModule(module.id)}
+      onWheelCapture={(e) => {
+        if (!isActive) return;
+        if (ref.current?.contains(e.target as Node)) {
+          e.stopPropagation();
+        }
+      }}
     >
       {/* HEADER */}
       <div
         onMouseDown={onDragMouseDown}
         className="flex items-center justify-between px-4 py-2
-          border-b border-white/10 select-none cursor-move"
+          border-b border-white/10 cursor-move"
       >
         <div className="flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.35)]" />
+          <span className="w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.35)]" />
           <div className="text-[12px] font-semibold text-white/90">
             {module.title}
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
-          {/* MINIMIZE */}
+        <div className="flex gap-1">
           <button
             onMouseDown={(e) => e.stopPropagation()}
             onClick={() =>
-              updateModule(module.id, {
-                minimized: !module.minimized,
-              })
+              updateModule(module.id, { minimized: !module.minimized })
             }
             className="h-6 w-6 rounded-md border border-white/10 bg-white/5
-              text-white/70 hover:text-white hover:bg-white/10 transition"
-            title={module.minimized ? "Expand" : "Minimize"}
+              text-white/70 hover:bg-white/10"
           >
             {module.minimized ? "□" : "—"}
           </button>
 
-          {/* CLOSE */}
           <button
             onMouseDown={(e) => e.stopPropagation()}
             onClick={() => removeModule(module.id)}
             className="h-6 w-6 rounded-md border border-white/10 bg-white/5
-              text-white/70 hover:text-white hover:bg-red-500/80 hover:border-red-400/60
-              transition"
-            title="Close"
+              hover:bg-red-500/80"
           >
             ×
           </button>
@@ -129,21 +162,52 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
 
       {/* CONTENT */}
       {!module.minimized && (
-        <div className="h-[calc(100%-40px)] overflow-auto p-4 text-xs text-white">
-          {def?.render?.()}
+        <div className="h-[calc(100%-40px)] overflow-hidden">
+          <div
+            className="
+              h-full overflow-auto p-4
+              text-white/80 leading-relaxed select-text
+
+              [&::-webkit-scrollbar]:w-2
+              [&::-webkit-scrollbar-track]:bg-transparent
+              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/65
+
+              scrollbar-thin
+              scrollbar-thumb-teal-400/40
+              scrollbar-track-transparent
+            "
+            style={{
+              fontSize: `clamp(11px, ${12 / zoom}px, 14px)`,
+            }}
+            onWheel={(e) => e.stopPropagation()}
+          >
+            {def?.render?.()}
+          </div>
         </div>
       )}
 
-      {/* RESIZE HANDLE */}
+      {/* RESIZE HANDLES */}
       {!module.minimized && (
-        <div
-          onMouseDown={onResizeMouseDown}
-          className="absolute bottom-1 right-1 w-4 h-4
-            cursor-nwse-resize opacity-40 hover:opacity-100 transition"
-          title="Resize"
-        >
-          <div className="w-full h-full border-r-2 border-b-2 border-teal-400/70" />
-        </div>
+        <>
+          <div
+            onMouseDown={(e) => onResizeMouseDown(e, "top-left")}
+            className="absolute top-0 left-0 w-6 h-6 cursor-nwse-resize"
+          />
+          <div
+            onMouseDown={(e) => onResizeMouseDown(e, "top-right")}
+            className="absolute top-0 right-0 w-6 h-6 cursor-nesw-resize"
+          />
+          <div
+            onMouseDown={(e) => onResizeMouseDown(e, "bottom-left")}
+            className="absolute bottom-0 left-0 w-6 h-6 cursor-nesw-resize"
+          />
+          <div
+            onMouseDown={(e) => onResizeMouseDown(e, "bottom-right")}
+            className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize"
+          />
+        </>
       )}
     </div>
   );

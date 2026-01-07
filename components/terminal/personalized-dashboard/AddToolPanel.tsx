@@ -19,22 +19,34 @@ export default function AddToolPanel() {
   }, {} as Record<ModuleCategory, ModuleDefinition[]>);
 
   return (
-    <div
-      className="
-        fixed left-4 top-20 z-40
-        w-[260px] max-h-[80vh]
-        bg-[#041F20]/95 backdrop-blur
-        border border-white/10 rounded-xl
-        shadow-[0_12px_40px_rgba(0,0,0,0.45)]
-        overflow-y-auto
-      "
-    >
+<div
+  className="
+    fixed left-4 top-20 z-40
+    w-[260px] max-h-[80vh]
+    bg-[#041F20]/95 backdrop-blur
+    border border-white/10 rounded-xl
+    shadow-[0_12px_40px_rgba(0,0,0,0.45)]
+
+    overflow-y-auto
+
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+    scrollbar-thin
+    scrollbar-thumb-teal-400/40
+    scrollbar-track-transparent
+  "
+>
+
       {/* HEADER */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-white/10">
         <div className="text-[13px] font-semibold text-white">Add Tool</div>
         <button
           onClick={toggleAddTool}
-          className="text-white/50 hover:text-white transition"
+          className="text-white/50 hover:text-white transition cursor-pointer"
         >
           ✕
         </button>
@@ -58,7 +70,7 @@ export default function AddToolPanel() {
                     px-3 py-2
                     bg-white/5 hover:bg-teal-400/10
                     border border-white/10
-                    transition
+                    transition cursor-pointer
                   "
                 >
                   <div className="text-[13px] font-semibold text-white">
