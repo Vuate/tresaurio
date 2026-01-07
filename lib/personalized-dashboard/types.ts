@@ -86,3 +86,24 @@ export type LiquidityMetrics = {
   pressure: "buy" | "sell" | "neutral";
   score: number;
 };
+// === Analytics / PnL ===
+
+export type PnLTrade = {
+  price: number;
+  qty: number;
+  side: "buy" | "sell";
+  fee?: number;
+};
+
+export type PnLRequest = {
+  trades: PnLTrade[];
+  current_price: number;
+};
+
+export type PnLResponse = {
+  position: number;
+  avg_price: number;
+  realized_pnl: number;
+  unrealized_pnl: number;
+  net_pnl: number;
+};

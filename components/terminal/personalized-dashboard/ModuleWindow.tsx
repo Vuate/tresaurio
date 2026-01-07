@@ -129,7 +129,7 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
 
       {/* CONTENT */}
       {!module.minimized && (
-        <div className="h-[calc(100%-40px)] overflow-auto p-4 text-xs text-white/70">
+        <div className="h-[calc(100%-40px)] overflow-auto p-4 text-xs text-white">
           {def?.render?.()}
         </div>
       )}
