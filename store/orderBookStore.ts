@@ -1,3 +1,4 @@
+// store/orderBookStore.ts
 import { create } from "zustand";
 
 export type OrderRow = {
@@ -16,6 +17,7 @@ type OrderBookState = {
 
 type OrderBookActions = {
   setOrderBook: (data: OrderBookState) => void;
+  setSymbol: (symbol: string) => void; // 👈 YENİ
 };
 
 export const useOrderBookStore = create<OrderBookState & OrderBookActions>(
@@ -27,5 +29,7 @@ export const useOrderBookStore = create<OrderBookState & OrderBookActions>(
     source: "mock",
 
     setOrderBook: (data) => set(data),
+
+    setSymbol: (symbol) => set({ symbol }), // 👈 YENİ
   })
 );

@@ -1,3 +1,4 @@
+// lib/personalized-dashboard/moduleRegistry.tsx
 import type { ModuleCategory } from "./types";
 import type { ReactNode } from "react";
 
@@ -13,6 +14,7 @@ import RiskCalculatorModule from "@/components/terminal/personalized-dashboard/R
 import WhaleAlertsModule from "@/components/terminal/personalized-dashboard/WhaleAlertsModule";
 import ExchangeFlowModule from "@/components/terminal/personalized-dashboard/ExchangeFlowModule";
 import LiquidityAnalysisModule from "@/components/terminal/personalized-dashboard/LiquidityAnalysisModule";
+import SpreadMonitorModule from "@/components/terminal/personalized-dashboard/SpreadMonitorModule"; // 👈 YENİ
 
 export type ModuleDefinition = {
   type: string;
@@ -103,6 +105,25 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     render: () => <ExchangeComparisonModule />,
   },
 
+  "liquidity-analysis": {
+    type: "liquidity-analysis",
+    title: "Liquidity Analysis",
+    description: "Bid / Ask imbalance & market pressure",
+    category: "likidite",
+    defaultSize: { width: 360, height: 260 },
+    render: () => <LiquidityAnalysisModule />,
+  },
+
+  "spread-monitor": {
+    // 👈 YENİ MODÜL
+    type: "spread-monitor",
+    title: "Spread Monitor",
+    description: "Real-time bid-ask spread & volume imbalance",
+    category: "likidite",
+    defaultSize: { width: 320, height: 400 },
+    render: () => <SpreadMonitorModule />,
+  },
+
   /* ---------------- ALERT ---------------- */
   "create-alert": {
     type: "create-alert",
@@ -130,13 +151,5 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     category: "risk",
     defaultSize: { width: 360, height: 320 },
     render: () => <RiskCalculatorModule />,
-  },
-  "liquidity-analysis": {
-    type: "liquidity-analysis",
-    title: "Liquidity Analysis",
-    description: "Bid / Ask imbalance & market pressure",
-    category: "likidite",
-    defaultSize: { width: 360, height: 260 },
-    render: () => <LiquidityAnalysisModule />,
   },
 };
