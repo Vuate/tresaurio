@@ -8,8 +8,17 @@ const MAP_SIZE = 180;
 const SCALE = MAP_SIZE / CANVAS_SIZE;
 
 export default function WorkspaceControls() {
-  const { zoom, panX, panY, setZoom, setPan, resetView, modules, notesOpen } =
-    usePersonalizedDashboardStore();
+  const {
+    zoom,
+    panX,
+    panY,
+    setZoom,
+    setPan,
+    resetView,
+    modules,
+    notesOpen,
+    activeModuleId,
+  } = usePersonalizedDashboardStore();
 
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
 
@@ -17,7 +26,7 @@ export default function WorkspaceControls() {
     const updateViewport = () => {
       setViewport({
         w: window.innerWidth,
-        h: window.innerHeight - 60, // Top bar height
+        h: window.innerHeight - 60,
       });
     };
 
@@ -26,17 +35,15 @@ export default function WorkspaceControls() {
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
+  /* ---------------- ZOOM ---------------- */
   const handleZoom = (delta: number) => {
     const newZoom = Math.max(0.1, Math.min(2, zoom + delta));
 
-    // Viewport merkezini hesapla
     const centerX = viewport.w / 2;
     const centerY = viewport.h / 2;
 
-    // Zoom oranını hesapla
     const zoomRatio = newZoom / zoom;
 
-    // Yeni pan değerlerini hesapla (merkezi sabit tut)
     const newPanX = centerX - (centerX - panX) * zoomRatio;
     const newPanY = centerY - (centerY - panY) * zoomRatio;
 
@@ -44,6 +51,43 @@ export default function WorkspaceControls() {
     setPan(newPanX, newPanY);
   };
 
+  /* ---------------- ALIGN ACTIVE WINDOW ---------------- */
+  const alignToActiveWindow = () => {
+    const active = modules.find((m) => m.id === activeModuleId);
+    if (!active) return;
+
+    const centerX = viewport.w / 2;
+    const centerY = viewport.h / 2;
+
+    const targetX = active.x + active.width / 2;
+    const targetY = active.y + active.height / 2;
+
+    const newPanX = centerX - targetX * zoom;
+    const newPanY = centerY - targetY * zoom;
+
+    setPan(newPanX, newPanY);
+  };
+
+  /* ---------------- MAP CLICK → PAN ---------------- */
+  const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    const canvasX = clickX / SCALE;
+    const canvasY = clickY / SCALE;
+
+    const centerX = viewport.w / 2;
+    const centerY = viewport.h / 2;
+
+    const newPanX = centerX - canvasX * zoom;
+    const newPanY = centerY - canvasY * zoom;
+
+    setPan(newPanX, newPanY);
+  };
+
+  /* ---------------- VIEWPORT RECT ---------------- */
   const viewportWidth = (viewport.w / zoom) * SCALE;
   const viewportHeight = (viewport.h / zoom) * SCALE;
   const viewportX = (-panX / zoom) * SCALE;
@@ -74,8 +118,11 @@ export default function WorkspaceControls() {
           </span>
         </div>
 
-        <div className="absolute inset-0 top-8 bg-white/[0.02]">
-          {/* Modules on minimap */}
+        {/* MAP AREA */}
+        <div
+          className="absolute inset-0 top-8 bg-white/[0.02] cursor-pointer"
+          onClick={handleMapClick}
+        >
           {modules.map((m) => (
             <div
               key={m.id}
@@ -90,7 +137,6 @@ export default function WorkspaceControls() {
             />
           ))}
 
-          {/* Viewport indicator */}
           <div
             className="absolute border-2 border-teal-400 bg-teal-400/10 
               pointer-events-none"
@@ -124,7 +170,7 @@ export default function WorkspaceControls() {
           −
         </ZoomBtn>
 
-        <ZoomBtn onClick={resetView} title="Reset View">
+        <ZoomBtn onClick={alignToActiveWindow} title="Align to Active Window">
           ◎
         </ZoomBtn>
       </div>

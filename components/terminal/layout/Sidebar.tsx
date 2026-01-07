@@ -12,6 +12,7 @@ import {
   Activity,
   Sliders,
   FileText,
+  Lock,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -113,7 +114,7 @@ export default function Sidebar() {
         />
         <NavItem
           href="/terminal/transfer"
-          icon={<Sliders size={16} />}
+          icon={<Lock size={16} />}
           label="Transfer"
           active={isActive("/terminal/transfer")}
         />

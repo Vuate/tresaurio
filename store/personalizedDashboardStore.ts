@@ -3,7 +3,7 @@ import type {
   ModuleInstance,
   NoteItem,
   ModuleId,
-  AlertItem, // 🔥
+  AlertItem,
 } from "@/lib/personalized-dashboard/types";
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
@@ -21,6 +21,9 @@ type State = {
 
   // 🔥 ADD TOOL PANEL
   addToolOpen: boolean;
+
+  // 🔥 SIDEBAR
+  sidebarOpen: boolean;
 
   // 🔥 ALERTS
   alerts: AlertItem[];
@@ -43,6 +46,9 @@ type Actions = {
 
   // 🔥 ADD TOOL PANEL
   toggleAddTool: () => void;
+
+  // 🔥 SIDEBAR
+  toggleSidebar: () => void;
 
   // 🔥 ALERT ACTIONS
   addAlert: (a: Omit<AlertItem, "id">) => void;
@@ -72,6 +78,9 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
 
     /* ---------------- ADD TOOL ---------------- */
     addToolOpen: false,
+
+    /* ---------------- SIDEBAR ---------------- */
+    sidebarOpen: false,
 
     /* ---------------- ALERTS ---------------- */
     alerts: [],
@@ -136,7 +145,18 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
         ],
       }),
 
-    toggleAddTool: () => set((s) => ({ addToolOpen: !s.addToolOpen })),
+    /* 🔥🔥 ASIL OLAY BURASI 🔥🔥 */
+    toggleAddTool: () =>
+      set((s) => ({
+        addToolOpen: !s.addToolOpen,
+        sidebarOpen: false, // 👈 Add Tool açılınca Sidebar kapanır
+      })),
+
+    toggleSidebar: () =>
+      set((s) => ({
+        sidebarOpen: !s.sidebarOpen,
+        addToolOpen: false, // 👈 Sidebar açılınca Add Tool kapanır
+      })),
 
     /* ---------------- ALERT ACTIONS ---------------- */
     addAlert: (a) =>

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import ModuleWindow from "./ModuleWindow";
+import SidebarPanel from "./SidebarPanel"; // ✅ EKLENDİ
 
 export default function Canvas() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,7 +22,6 @@ export default function Canvas() {
     if (!container || !canvas) return;
 
     const onMouseDown = (e: MouseEvent) => {
-      // Sadece container veya canvas'a tıklanırsa pan yap
       if (e.target !== container && e.target !== canvas) return;
 
       isPanningRef.current = true;
@@ -31,7 +31,7 @@ export default function Canvas() {
       };
 
       container.style.cursor = "grabbing";
-      e.preventDefault(); // Text seçimini engelle
+      e.preventDefault();
     };
 
     const onMouseMove = (e: MouseEvent) => {
@@ -55,7 +55,7 @@ export default function Canvas() {
     };
   }, [panX, panY, setPan]);
 
-  /* ---------------- ZOOM (MOUSE WHEEL) ---------------- */
+  /* ---------------- ZOOM ---------------- */
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -64,19 +64,13 @@ export default function Canvas() {
       e.preventDefault();
 
       const rect = el.getBoundingClientRect();
-
-      // Mouse pozisyonunu container'a göre hesapla
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
-      // Zoom delta
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       const newZoom = Math.max(0.1, Math.min(2, zoom + delta));
-
-      // Zoom oranı
       const zoomRatio = newZoom / zoom;
 
-      // Mouse pozisyonunu sabit tutacak şekilde pan değerlerini ayarla
       const newPanX = mouseX - (mouseX - panX) * zoomRatio;
       const newPanY = mouseY - (mouseY - panY) * zoomRatio;
 
@@ -94,6 +88,9 @@ export default function Canvas() {
       className="fixed top-14 left-0 right-0 bottom-0 overflow-hidden z-0"
       style={{ cursor: "grab" }}
     >
+      {/* 🔥 SIDEBAR PANEL (ZOOM'DAN ETKİLENMEZ) */}
+      <SidebarPanel />
+
       <div
         ref={canvasRef}
         className="relative"
