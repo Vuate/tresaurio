@@ -60,23 +60,28 @@ export default function Canvas() {
     const el = containerRef.current;
     if (!el) return;
 
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
+ const ZOOM_SENSITIVITY = 0.0090; // 👈 HASSASİYET BURADA
 
-      const rect = el.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+const onWheel = (e: WheelEvent) => {
+  e.preventDefault();
 
-      const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      const newZoom = Math.max(0.1, Math.min(2, zoom + delta));
-      const zoomRatio = newZoom / zoom;
+  const rect = el.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
 
-      const newPanX = mouseX - (mouseX - panX) * zoomRatio;
-      const newPanY = mouseY - (mouseY - panY) * zoomRatio;
+  const delta = -e.deltaY;
+  const zoomFactor = 1 + delta * ZOOM_SENSITIVITY;
 
-      setZoom(newZoom);
-      setPan(newPanX, newPanY);
-    };
+  const newZoom = Math.max(0.1, Math.min(2, zoom * zoomFactor));
+  const zoomRatio = newZoom / zoom;
+
+  const newPanX = mouseX - (mouseX - panX) * zoomRatio;
+  const newPanY = mouseY - (mouseY - panY) * zoomRatio;
+
+  setZoom(newZoom);
+  setPan(newPanX, newPanY);
+};
+
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
