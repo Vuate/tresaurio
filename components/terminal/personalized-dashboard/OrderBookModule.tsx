@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useOrderBookStore } from "@/store/orderBookStore";
+import { wsService } from "@/services/WebSocketService";
 
 type SideRow = { price: number; qty: number; total: number };
 
@@ -43,50 +44,42 @@ export default function OrderBookModule() {
     useOrderBookStore();
 
   useEffect(() => {
-    let alive = true;
+    let mounted = true;
 
-    const tick = async () => {
+    // 🔥 WebSocket stream (depth20@100ms = 100ms updates!)
+    const stream = `${symbol.toLowerCase()}@depth20@100ms`;
+
+    const unsubscribe = wsService.subscribe(stream, (data) => {
+      if (!mounted) return;
+
       try {
-        const res = await fetch(
-          `/api/markets/binance/depth?symbol=${encodeURIComponent(
-            symbol
-          )}&limit=20`,
-          { cache: "no-store" }
-        );
+        if (data.bids && data.asks) {
+          const bids = buildSide(data.bids, false);
+          const asks = buildSide(data.asks, true);
 
-        if (!res.ok) throw new Error("UPSTREAM");
+          const bestBid = bids[0]?.price;
+          const bestAsk = asks[0]?.price;
 
-        const json = await res.json();
-        if (!json?.ok) throw new Error(json?.error || "BAD_RESPONSE");
+          const mid =
+            Number.isFinite(bestBid) && Number.isFinite(bestAsk)
+              ? (bestBid + bestAsk) / 2
+              : null;
 
-        const bids = buildSide(json.bids || [], false);
-        const asks = buildSide(json.asks || [], true);
-
-        const bestBid = bids[0]?.price;
-        const bestAsk = asks[0]?.price;
-
-        const mid =
-          Number.isFinite(bestBid) && Number.isFinite(bestAsk)
-            ? (bestBid + bestAsk) / 2
-            : null;
-
-        if (!alive) return;
-        // 👇 STORE'A YAZ
-        setOrderBook({ symbol, bids, asks, mid, source: "api" });
-      } catch {
-        if (!alive) return;
+          // 👇 STORE'A YAZ
+          setOrderBook({ symbol, bids, asks, mid, source: "api" });
+        }
+      } catch (error) {
+        console.error("[OrderBook] Parse error:", error);
+        // Fallback to mock
         const mockData = mockDepth(symbol);
-        // 👇 STORE'A YAZ
         setOrderBook(mockData);
       }
-    };
+    });
 
-    tick();
-    const id = setInterval(tick, 1500);
-
+    // Cleanup
     return () => {
-      alive = false;
-      clearInterval(id);
+      mounted = false;
+      unsubscribe();
     };
   }, [symbol, setOrderBook]);
 
@@ -142,14 +135,18 @@ export default function OrderBookModule() {
           <span className="text-white/40">•</span>{" "}
           <span className="text-white/70">{symbol}</span>{" "}
           <span className="text-white/40">•</span>{" "}
-          <span className="text-white/50">
+          <span
+            className={`${
+              source === "api" ? "text-emerald-400" : "text-white/50"
+            }`}
+          >
             {source === "api" ? "LIVE" : "MOCK"}
           </span>
         </div>
 
         <select
           value={symbol}
-          onChange={(e) => setSymbol(e.target.value)} // 👈 STORE'A YAZ
+          onChange={(e) => setSymbol(e.target.value)}
           className="h-8 rounded-lg bg-white/5 border border-white/10
             text-xs text-white/80 px-2 outline-none"
         >
