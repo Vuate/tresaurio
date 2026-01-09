@@ -10,22 +10,24 @@ export type ModuleCategory =
   | "alert"
   | "risk";
 
-export type ModuleType = // 👈 BURAYA EKLE
-
-    | "live-prices"
-    | "spot-positions"
-    | "futures-positions"
-    | "pnl-overview"
-    | "order-book"
-    | "liquidity-analysis"
-    | "exchange-comparison"
-    | "exchange-flow"
-    | "whale-alerts"
-    | "create-alert"
-    | "active-alerts"
-    | "risk-calculator"
-    | "spread-monitor"; // 👈 YENİ
-
+export type ModuleType =
+  | "live-prices"
+  | "spot-positions"
+  | "futures-positions"
+  | "pnl-overview"
+  | "order-book"
+  | "liquidity-analysis"
+  | "exchange-comparison"
+  | "exchange-flow"
+  | "whale-alerts"
+  | "create-alert"
+  | "active-alerts"
+  | "risk-calculator"
+  | "spread-monitor"
+  | "funding-rate"
+  | "dca-calculator"
+  | "all-in-cost"
+  | "fee-structure";
 export type ModuleInstance = {
   id: ModuleId;
   type: string; // registry key: "live-prices" gibi

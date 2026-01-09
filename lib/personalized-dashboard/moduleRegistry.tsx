@@ -14,7 +14,11 @@ import RiskCalculatorModule from "@/components/terminal/personalized-dashboard/R
 import WhaleAlertsModule from "@/components/terminal/personalized-dashboard/WhaleAlertsModule";
 import ExchangeFlowModule from "@/components/terminal/personalized-dashboard/ExchangeFlowModule";
 import LiquidityAnalysisModule from "@/components/terminal/personalized-dashboard/LiquidityAnalysisModule";
-import SpreadMonitorModule from "@/components/terminal/personalized-dashboard/SpreadMonitorModule"; // 👈 YENİ
+import SpreadMonitorModule from "@/components/terminal/personalized-dashboard/SpreadMonitorModule";
+import FundingRateModule from "@/components/terminal/personalized-dashboard/FundingRateModule";
+import DCACalculatorModule from "@/components/terminal/personalized-dashboard/DCACalculatorModule";
+import AllInCostCalculatorModule from "@/components/terminal/personalized-dashboard/AllInCostCalculatorModule";
+import FeeStructureAnalyzerModule from "@/components/terminal/personalized-dashboard/FeeStructureAnalyzerModule";
 
 export type ModuleDefinition = {
   type: string;
@@ -151,5 +155,38 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     category: "risk",
     defaultSize: { width: 360, height: 320 },
     render: () => <RiskCalculatorModule />,
+  },
+  "funding-rate": {
+    type: "funding-rate",
+    title: "Funding Rate Tracker",
+    description: "8-hour funding rate takibi ve trend analizi",
+    category: "likidite",
+    defaultSize: { width: 320, height: 400 },
+    render: () => <FundingRateModule />,
+  },
+  "dca-calculator": {
+    type: "dca-calculator",
+    title: "DCA Calculator",
+    description: "Calculate average entry price and simulate next DCA",
+    category: "trader-portfoy",
+    defaultSize: { width: 360, height: 600 },
+    render: () => <DCACalculatorModule />,
+  },
+  "all-in-cost": {
+    type: "all-in-cost",
+    title: "All-in Cost Calculator",
+    description:
+      "Calculate total trading costs including fees, slippage, and funding",
+    category: "likidite",
+    defaultSize: { width: 360, height: 700 },
+    render: () => <AllInCostCalculatorModule />,
+  },
+  "fee-structure": {
+    type: "fee-structure",
+    title: "Fee Structure Analyzer",
+    description: "Analyze fee tiers and optimize trading costs",
+    category: "likidite",
+    defaultSize: { width: 360, height: 650 },
+    render: () => <FeeStructureAnalyzerModule />,
   },
 };
