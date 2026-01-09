@@ -60,7 +60,7 @@ export default function Canvas() {
     const el = containerRef.current;
     if (!el) return;
 
- const ZOOM_SENSITIVITY = 0.0090; // 👈 HASSASİYET BURADA
+ const ZOOM_SENSITIVITY = 0.0030; // 👈 HASSASİYET BURADA
 
 const onWheel = (e: WheelEvent) => {
   e.preventDefault();

@@ -3,5 +3,5 @@ export default function MarketIntelligenceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="h-full w-full overflow-y-auto p-6">{children}</div>;
+  return <>{children}</>;
 }

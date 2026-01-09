@@ -70,12 +70,7 @@ export default function Sidebar() {
           label="Home"
           active={isActive("/terminal/home")}
         />
-        <NavItem
-          href="/terminal/dashboard"
-          icon={<LayoutDashboard size={16} />}
-          label="Dashboard"
-          active={isActive("/terminal/dashboard")}
-        />
+
         <NavItem
           href="/terminal/trade"
           icon={<LineChart size={16} />}
