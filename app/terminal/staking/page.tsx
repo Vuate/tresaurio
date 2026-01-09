@@ -1,15 +1,29 @@
-"use client";
-
-import StakingHeader from "@/components/terminal/staking/StakingHeader";
-import StatsGrid from "@/components/terminal/staking/StatsGrid";
-import StakingTabs from "@/components/terminal/staking/StakingTabs";
+import StakingHero from "@/components/terminal/staking/StakingHero";
+import StakingFeatures from "@/components/terminal/staking/StakingFeatures";
+import StakingExamples from "@/components/terminal/staking/StakingExamples";
+import StakingHowItWorks from "@/components/terminal/staking/StakingHowItWorks";
+import StakingCTA from "@/components/terminal/staking/StakingCTA";
 
 export default function StakingPage() {
   return (
-    <>
-      <StakingHeader />
-      <StatsGrid />
-      <StakingTabs />
-    </>
+    <div className="min-h-screen bg-[#031A1C] text-white">
+      {/* Hero Section */}
+      <StakingHero />
+
+      {/* Main Container */}
+  <div className="max-w-9xl mx-auto px-6 py-16">
+        {/* Ana Özellikler */}
+        <StakingFeatures />
+
+        {/* Örnek Pano Görünümü */}
+        <StakingExamples />
+
+        {/* Nasıl Çalışır */}
+        <StakingHowItWorks />
+
+        {/* CTA */}
+        <StakingCTA />
+      </div>
+    </div>
   );
 }

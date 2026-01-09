@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 
-const CANVAS_SIZE = 10000;
 const MAP_SIZE = 180;
-const SCALE = MAP_SIZE / CANVAS_SIZE;
+const MAP_PADDING = 1200; // 🔥 UÇ GÜVENLİK ALANI
 
 export default function WorkspaceControls() {
   const {
@@ -14,7 +13,6 @@ export default function WorkspaceControls() {
     panY,
     setZoom,
     setPan,
-    resetView,
     modules,
     notesOpen,
     activeModuleId,
@@ -35,169 +33,142 @@ export default function WorkspaceControls() {
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
+  /* ===================== 🔥 MAP BOUNDS (WINDOW + VIEWPORT) ===================== */
+  const mapBounds = useMemo(() => {
+    const windowMinX = Math.min(...modules.map(m => m.x), 0);
+    const windowMinY = Math.min(...modules.map(m => m.y), 0);
+    const windowMaxX = Math.max(...modules.map(m => m.x + m.width), 0);
+    const windowMaxY = Math.max(...modules.map(m => m.y + m.height), 0);
+
+    const viewportMinX = -panX / zoom;
+    const viewportMinY = -panY / zoom;
+    const viewportMaxX = viewportMinX + viewport.w / zoom;
+    const viewportMaxY = viewportMinY + viewport.h / zoom;
+
+    const minX = Math.min(windowMinX, viewportMinX) - MAP_PADDING;
+    const minY = Math.min(windowMinY, viewportMinY) - MAP_PADDING;
+    const maxX = Math.max(windowMaxX, viewportMaxX) + MAP_PADDING;
+    const maxY = Math.max(windowMaxY, viewportMaxY) + MAP_PADDING;
+
+    const width = Math.max(1, maxX - minX);
+    const height = Math.max(1, maxY - minY);
+
+    const scale = Math.min(MAP_SIZE / width, MAP_SIZE / height);
+
+    return { minX, minY, scale };
+  }, [modules, panX, panY, zoom, viewport]);
+
   /* ---------------- ZOOM ---------------- */
   const handleZoom = (delta: number) => {
     const newZoom = Math.max(0.1, Math.min(2, zoom + delta));
+    const cx = viewport.w / 2;
+    const cy = viewport.h / 2;
+    const ratio = newZoom / zoom;
 
-    const centerX = viewport.w / 2;
-    const centerY = viewport.h / 2;
-
-    const zoomRatio = newZoom / zoom;
-
-    const newPanX = centerX - (centerX - panX) * zoomRatio;
-    const newPanY = centerY - (centerY - panY) * zoomRatio;
-
+    setPan(
+      cx - (cx - panX) * ratio,
+      cy - (cy - panY) * ratio
+    );
     setZoom(newZoom);
-    setPan(newPanX, newPanY);
   };
 
-  /* ---------------- ALIGN ACTIVE WINDOW ---------------- */
+  /* ---------------- ALIGN ACTIVE ---------------- */
   const alignToActiveWindow = () => {
-    const active = modules.find((m) => m.id === activeModuleId);
+    const active = modules.find(m => m.id === activeModuleId);
     if (!active) return;
 
-    const centerX = viewport.w / 2;
-    const centerY = viewport.h / 2;
-
-    const targetX = active.x + active.width / 2;
-    const targetY = active.y + active.height / 2;
-
-    const newPanX = centerX - targetX * zoom;
-    const newPanY = centerY - targetY * zoom;
-
-    setPan(newPanX, newPanY);
+    setPan(
+      viewport.w / 2 - (active.x + active.width / 2) * zoom,
+      viewport.h / 2 - (active.y + active.height / 2) * zoom
+    );
   };
 
-  /* ---------------- MAP CLICK → PAN ---------------- */
+  /* ---------------- MAP CLICK ---------------- */
   const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
+    const canvasX = x / mapBounds.scale + mapBounds.minX;
+    const canvasY = y / mapBounds.scale + mapBounds.minY;
 
-    const canvasX = clickX / SCALE;
-    const canvasY = clickY / SCALE;
-
-    const centerX = viewport.w / 2;
-    const centerY = viewport.h / 2;
-
-    const newPanX = centerX - canvasX * zoom;
-    const newPanY = centerY - canvasY * zoom;
-
-    setPan(newPanX, newPanY);
+    setPan(
+      viewport.w / 2 - canvasX * zoom,
+      viewport.h / 2 - canvasY * zoom
+    );
   };
 
   /* ---------------- VIEWPORT RECT ---------------- */
-  const viewportWidth = (viewport.w / zoom) * SCALE;
-  const viewportHeight = (viewport.h / zoom) * SCALE;
-  const viewportX = (-panX / zoom) * SCALE;
-  const viewportY = (-panY / zoom) * SCALE;
+  const viewportW = (viewport.w / zoom) * mapBounds.scale;
+  const viewportH = (viewport.h / zoom) * mapBounds.scale;
 
-  const bottomOffset = notesOpen ? 260 + 24 : 48 + 24;
+  const viewportX =
+    ((-panX / zoom) - mapBounds.minX) * mapBounds.scale;
+  const viewportY =
+    ((-panY / zoom) - mapBounds.minY) * mapBounds.scale;
+
+  const bottomOffset = notesOpen ? 284 : 72;
 
   return (
     <div
-      className="fixed right-6 z-50 transition-all duration-300 ease-in-out flex items-end gap-4"
+      className="fixed right-6 z-50 flex items-end gap-4"
       style={{ bottom: bottomOffset }}
     >
-      {/* MINIMAP */}
-      <div
-        className="relative w-[180px] h-[180px]
-          rounded-xl border border-white/10
-          bg-[#031A1C]/95 backdrop-blur-xl
-          shadow-[0_12px_40px_rgba(0,0,0,0.45)]
-          overflow-hidden"
-      >
-        <div
-          className="absolute top-0 left-0 right-0 h-8 
-          border-b border-white/10 bg-white/[0.02]
-          flex items-center px-3"
-        >
-          <span className="text-[11px] text-white/40 font-bold uppercase tracking-wider">
+      {/* ===================== MAP ===================== */}
+      <div className="relative w-[180px] h-[180px] rounded-xl border border-white/10 bg-[#031A1C]/95 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 flex items-center px-3">
+          <span className="text-[11px] text-white/40 font-bold uppercase">
             Map
           </span>
         </div>
 
-        {/* MAP AREA */}
         <div
-          className="absolute inset-0 top-8 bg-white/[0.02] cursor-pointer"
+          className="absolute inset-0 top-8 cursor-pointer"
           onClick={handleMapClick}
         >
-          {modules.map((m) => (
+          {modules.map(m => (
             <div
               key={m.id}
-              className="absolute bg-teal-400/30 border border-teal-400 rounded-[2px]
-                pointer-events-none"
+              className="absolute bg-teal-400/30 border border-teal-400 rounded-[2px]"
               style={{
-                left: m.x * SCALE,
-                top: m.y * SCALE,
-                width: m.width * SCALE,
-                height: m.height * SCALE,
+                left: (m.x - mapBounds.minX) * mapBounds.scale,
+                top: (m.y - mapBounds.minY) * mapBounds.scale,
+                width: m.width * mapBounds.scale,
+                height: m.height * mapBounds.scale,
               }}
             />
           ))}
 
           <div
-            className="absolute border-2 border-teal-400 bg-teal-400/10 
-              pointer-events-none"
+            className="absolute border-2 border-teal-400 bg-teal-400/10"
             style={{
               left: viewportX,
               top: viewportY,
-              width: viewportWidth,
-              height: viewportHeight,
+              width: viewportW,
+              height: viewportH,
             }}
           />
         </div>
       </div>
 
-      {/* ZOOM CONTROLS */}
+      {/* ===================== CONTROLS ===================== */}
       <div className="flex flex-col gap-2">
-        <ZoomBtn onClick={() => handleZoom(0.1)} title="Zoom In">
-          +
-        </ZoomBtn>
-
-        <div
-          className="w-10 h-10 rounded-lg
-            bg-[#031A1C]/95 backdrop-blur-xl
-            border border-white/10
-            text-[11px] font-bold text-teal-400
-            flex items-center justify-center"
-        >
+        <ZoomBtn onClick={() => handleZoom(0.1)}>+</ZoomBtn>
+        <div className="w-10 h-10 rounded-lg bg-[#031A1C]/95 border border-white/10 text-[11px] font-bold text-teal-400 flex items-center justify-center">
           {Math.round(zoom * 100)}%
         </div>
-
-        <ZoomBtn onClick={() => handleZoom(-0.1)} title="Zoom Out">
-          −
-        </ZoomBtn>
-
-        <ZoomBtn onClick={alignToActiveWindow} title="Align to Active Window">
-          ◎
-        </ZoomBtn>
+        <ZoomBtn onClick={() => handleZoom(-0.1)}>−</ZoomBtn>
+        <ZoomBtn onClick={alignToActiveWindow}>◎</ZoomBtn>
       </div>
     </div>
   );
 }
 
-function ZoomBtn({
-  children,
-  onClick,
-  title,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  title?: string;
-}) {
+function ZoomBtn({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      title={title}
-      className="w-10 h-10 rounded-lg
-        bg-[#031A1C]/95 backdrop-blur-xl
-        border border-white/10
-        text-white text-lg
-        hover:bg-teal-400/20 hover:border-teal-400/50
-        transition-all duration-200
-        flex items-center justify-center"
+      className="w-10 h-10 rounded-lg bg-[#031A1C]/95 border border-white/10 text-white text-lg hover:bg-teal-400/20 transition"
     >
       {children}
     </button>

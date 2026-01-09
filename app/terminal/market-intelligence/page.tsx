@@ -1,46 +1,32 @@
-import Header from "@/components/terminal/market-intelligence/Header";
-import TopMetrics from "@/components/terminal/market-intelligence/TopMetrics";
-import FeeAnalysis from "@/components/terminal/market-intelligence/FeeAnalysis";
-import FundingAnalysis from "@/components/terminal/market-intelligence/FundingAnalysis";
-import SpreadSlippage from "@/components/terminal/market-intelligence/SpreadSlippage";
-import OrderbookDepth from "@/components/terminal/market-intelligence/OrderbookDepth";
-import OpenInterest from "@/components/terminal/market-intelligence/OpenInterest";
-import LongShort from "@/components/terminal/market-intelligence/LongShort";
-import DecimalTick from "@/components/terminal/market-intelligence/DecimalTick";
-import CostComparison from "@/components/terminal/market-intelligence/CostComparison";
-import EfficiencyBreakdown from "@/components/terminal/market-intelligence/EfficiencyBreakdown";
-import ActiveAlerts from "@/components/terminal/market-intelligence/ActiveAlerts";
+import MarketIntelligenceHero from "@/components/terminal/market-intelligence/MarketIntelligenceHero";
+import MarketIntelligenceFeatures from "@/components/terminal/market-intelligence/MarketIntelligenceFeatures";
+import MarketIntelligenceCostBreakdown from "@/components/terminal/market-intelligence/MarketIntelligenceCostBreakdown";
+import MarketIntelligenceComparison from "@/components/terminal/market-intelligence/MarketIntelligenceComparison";
+import MarketIntelligenceHowItWorks from "@/components/terminal/market-intelligence/MarketIntelligenceHowItWorks";
+import MarketIntelligenceCTA from "@/components/terminal/market-intelligence/MarketIntelligenceCTA";
 
 export default function MarketIntelligencePage() {
   return (
-    <div className="space-y-6">
-      <Header />
+    <div className="min-h-screen bg-[#031A1C] text-white">
+      {/* Hero Section */}
+      <MarketIntelligenceHero />
 
-      <TopMetrics />
+      {/* Main Container */}
+   <div className="max-w-9xl mx-auto px-6 py-16">
+        {/* Ana Özellikler */}
+        <MarketIntelligenceFeatures />
 
-      <div className="grid grid-cols-2 gap-6">
-        <FeeAnalysis />
-        <FundingAnalysis />
-      </div>
+        {/* All-in Cost Örneği */}
+        <MarketIntelligenceCostBreakdown />
 
-      <div className="grid grid-cols-2 gap-6">
-        <SpreadSlippage />
-        <OrderbookDepth />
-      </div>
+        {/* Exchange Karşılaştırması */}
+        <MarketIntelligenceComparison />
 
-      <div className="grid grid-cols-2 gap-6">
-        <OpenInterest />
-        <LongShort />
-      </div>
+        {/* Nasıl Çalışır */}
+        <MarketIntelligenceHowItWorks />
 
-      <div className="grid grid-cols-2 gap-6">
-        <DecimalTick />
-        <CostComparison />
-      </div>
-
-      <div className="grid grid-cols-2 gap-6">
-        <EfficiencyBreakdown />
-        <ActiveAlerts />
+        {/* CTA */}
+        <MarketIntelligenceCTA />
       </div>
     </div>
   );

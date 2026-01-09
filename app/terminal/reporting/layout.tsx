@@ -1,4 +1,4 @@
-export default function StakingLayout({
+export default function ReportingLayout({
   children,
 }: {
   children: React.ReactNode;
