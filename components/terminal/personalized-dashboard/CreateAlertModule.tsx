@@ -15,7 +15,11 @@ const SYMBOLS = [
   "ADAUSDT",
 ];
 
-export default function CreateAlertModule() {
+interface Props {
+  instanceId: string;
+}
+
+export default function CreateAlertModule({ instanceId }: Props) {
   const addAlert = useAlertStore((s) => s.addAlert);
   const prices = usePriceStore((s) => s.prices);
 
@@ -32,7 +36,6 @@ export default function CreateAlertModule() {
         <span>Create Price Alert</span>
       </div>
 
-      {/* 🔥 Current Price Display */}
       {currentPrice > 0 && (
         <div className="bg-white/5 border border-white/10 rounded p-2">
           <div className="flex justify-between items-center">
@@ -47,7 +50,6 @@ export default function CreateAlertModule() {
         </div>
       )}
 
-      {/* SYMBOL */}
       <div>
         <label className="block text-white/50 mb-1 text-[10px] font-semibold">
           Symbol
@@ -65,7 +67,6 @@ export default function CreateAlertModule() {
         </select>
       </div>
 
-      {/* CONDITION */}
       <div>
         <label className="block text-white/50 mb-1 text-[10px] font-semibold">
           Condition
@@ -80,7 +81,6 @@ export default function CreateAlertModule() {
         </select>
       </div>
 
-      {/* TARGET */}
       <div>
         <label className="block text-white/50 mb-1 text-[10px] font-semibold">
           Target Price

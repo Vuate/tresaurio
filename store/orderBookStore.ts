@@ -1,35 +1,55 @@
 // store/orderBookStore.ts
 import { create } from "zustand";
 
-export type OrderRow = {
-  price: number;
-  qty: number;
-  total: number;
-};
+type SideRow = { price: number; qty: number; total: number };
 
-type OrderBookState = {
+type OrderBookData = {
   symbol: string;
-  bids: OrderRow[];
-  asks: OrderRow[];
+  bids: SideRow[];
+  asks: SideRow[];
   mid: number | null;
   source: "api" | "mock";
 };
 
-type OrderBookActions = {
-  setOrderBook: (data: OrderBookState) => void;
-  setSymbol: (symbol: string) => void; // 👈 YENİ
+type OrderBookState = {
+  instances: Record<string, OrderBookData>;
+  setOrderBook: (instanceId: string, data: OrderBookData) => void;
+  setSymbol: (instanceId: string, symbol: string) => void;
+  getInstanceData: (instanceId: string) => OrderBookData;
 };
 
-export const useOrderBookStore = create<OrderBookState & OrderBookActions>(
-  (set) => ({
-    symbol: "BTCUSDT",
-    bids: [],
-    asks: [],
-    mid: null,
-    source: "mock",
+const DEFAULT_DATA: OrderBookData = {
+  symbol: "BTCUSDT",
+  bids: [],
+  asks: [],
+  mid: null,
+  source: "mock",
+};
 
-    setOrderBook: (data) => set(data),
+export const useOrderBookStore = create<OrderBookState>((set, get) => ({
+  instances: {},
 
-    setSymbol: (symbol) => set({ symbol }), // 👈 YENİ
-  })
-);
+  setOrderBook: (instanceId, data) =>
+    set((state) => ({
+      instances: {
+        ...state.instances,
+        [instanceId]: data,
+      },
+    })),
+
+  setSymbol: (instanceId, symbol) =>
+    set((state) => ({
+      instances: {
+        ...state.instances,
+        [instanceId]: {
+          ...(state.instances[instanceId] || DEFAULT_DATA),
+          symbol,
+        },
+      },
+    })),
+
+  getInstanceData: (instanceId) => {
+    const state = get();
+    return state.instances[instanceId] || DEFAULT_DATA;
+  },
+}));

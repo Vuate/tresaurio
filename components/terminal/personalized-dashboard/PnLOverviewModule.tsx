@@ -3,6 +3,10 @@
 
 import { usePnL } from "@/lib/personalized-dashboard/usePnL";
 
+interface Props {
+  instanceId: string;
+}
+
 function Row({
   label,
   value,
@@ -61,7 +65,7 @@ function InfoRow({ label, value }: { label: string; value: number }) {
   );
 }
 
-export default function PnLOverviewModule() {
+export default function PnLOverviewModule({ instanceId }: Props) {
   const {
     spotUnrealized,
     futuresUnrealized,

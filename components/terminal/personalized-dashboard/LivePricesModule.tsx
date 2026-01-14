@@ -11,10 +11,16 @@ type PriceRow = {
   price: number;
 };
 
+interface Props {
+  instanceId: string;
+}
+
 // 🔥 DEFAULT SYMBOLS
 const DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
 
-export default function LivePricesModule() {
+export default function LivePricesModule({ instanceId }: Props) {
+  const storageKey = `live-prices-${instanceId}-watchlist`;
+
   const [prices, setPrices] = useState<PriceRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,10 +28,10 @@ export default function LivePricesModule() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSymbol, setNewSymbol] = useState("");
 
-  // 🔥 CUSTOM SYMBOLS (localStorage)
+  // 🔥 INSTANCE-SPECIFIC SYMBOLS (localStorage)
   const [customSymbols, setCustomSymbols] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("treasurio-watchlist");
+      const stored = localStorage.getItem(storageKey);
       return stored ? JSON.parse(stored) : DEFAULT_SYMBOLS;
     }
     return DEFAULT_SYMBOLS;
@@ -34,12 +40,9 @@ export default function LivePricesModule() {
   // Save to localStorage when customSymbols changes
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(
-        "treasurio-watchlist",
-        JSON.stringify(customSymbols)
-      );
+      localStorage.setItem(storageKey, JSON.stringify(customSymbols));
     }
-  }, [customSymbols]);
+  }, [customSymbols, storageKey]);
 
   const updatePrice = usePriceStore((s) => s.updatePrice);
 

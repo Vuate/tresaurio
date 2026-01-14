@@ -6,15 +6,17 @@ import { useAlertStore } from "@/store/alertStore";
 import { usePriceStore } from "@/store/priceStore";
 import { Bell, BellRing } from "lucide-react";
 
-export default function ActiveAlertsModule() {
+interface Props {
+  instanceId: string;
+}
+
+export default function ActiveAlertsModule({ instanceId }: Props) {
   const alerts = useAlertStore((s) => s.alerts);
   const removeAlert = useAlertStore((s) => s.removeAlert);
   const checkAlerts = useAlertStore((s) => s.checkAlerts);
 
-  // 🔥 PRICESTORE'DAN REAL-TIME PRICES
   const prices = usePriceStore((s) => s.prices);
 
-  // 🔥 Check alerts when prices update
   useEffect(() => {
     if (Object.keys(prices).length > 0) {
       checkAlerts(prices);
@@ -50,7 +52,6 @@ export default function ActiveAlertsModule() {
               }
             `}
           >
-            {/* LEFT */}
             <div className="space-y-0.5 flex-1">
               <div className="flex items-center gap-2">
                 {isTriggered ? (
@@ -68,7 +69,6 @@ export default function ActiveAlertsModule() {
                 {a.target.toLocaleString()}
               </div>
 
-              {/* 🔥 Current Price */}
               {currentPrice > 0 && (
                 <div className="text-[10px] text-white/40">
                   Current: ${currentPrice.toLocaleString()}
@@ -76,7 +76,6 @@ export default function ActiveAlertsModule() {
               )}
             </div>
 
-            {/* RIGHT */}
             <div className="flex items-center gap-2">
               <span
                 className={`text-[11px] font-semibold ${

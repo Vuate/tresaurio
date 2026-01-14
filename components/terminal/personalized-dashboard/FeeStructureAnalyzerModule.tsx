@@ -24,13 +24,16 @@ interface FeeAnalysis {
   breakEvenMonths: number | null;
 }
 
-export default function FeeStructureAnalyzerModule() {
+interface Props {
+  instanceId: string;
+}
+
+export default function FeeStructureAnalyzerModule({ instanceId }: Props) {
   const [exchange, setExchange] = useState<Exchange>("binance");
   const [currentVip, setCurrentVip] = useState(0);
   const [monthlyVolume, setMonthlyVolume] = useState(1250000);
-  const [makerRatio, setMakerRatio] = useState(40); // %
+  const [makerRatio, setMakerRatio] = useState(40);
 
-  // Exchange fee structures
   const exchangeFees = {
     binance: {
       vip: {
@@ -68,20 +71,16 @@ export default function FeeStructureAnalyzerModule() {
     const fees = exchangeFees[exchange].vip;
     const currentFees = fees[currentVip as keyof typeof fees];
 
-    // Volume split
     const makerVolume = (monthlyVolume * makerRatio) / 100;
     const takerVolume = monthlyVolume - makerVolume;
 
-    // Fees paid
     const makerFees = (makerVolume * currentFees.maker) / 100;
     const takerFees = (takerVolume * currentFees.taker) / 100;
     const totalFees = makerFees + takerFees;
 
-    // Average fee rate
     const averageFeeRate =
       monthlyVolume > 0 ? (totalFees / monthlyVolume) * 100 : 0;
 
-    // Next VIP level
     let nextVip: number | null = null;
     let nextVipRequirement = 0;
     let potentialSavings = 0;
@@ -92,7 +91,6 @@ export default function FeeStructureAnalyzerModule() {
         nextVip = levelNum;
         nextVipRequirement = config.requirement;
 
-        // Calculate savings if upgraded
         const nextMakerFees = (makerVolume * config.maker) / 100;
         const nextTakerFees = (takerVolume * config.taker) / 100;
         const nextTotalFees = nextMakerFees + nextTakerFees;
@@ -104,7 +102,6 @@ export default function FeeStructureAnalyzerModule() {
     const savingsPercent =
       totalFees > 0 ? (potentialSavings / totalFees) * 100 : 0;
 
-    // Break-even calculation (rough estimate)
     const volumeNeeded = nextVipRequirement - monthlyVolume;
     const breakEvenMonths =
       volumeNeeded > 0 && potentialSavings > 0
@@ -134,14 +131,12 @@ export default function FeeStructureAnalyzerModule() {
 
   return (
     <div className="space-y-3 text-xs">
-      {/* Configuration */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
           <DollarSign className="w-3 h-3" />
           <span>Fee Configuration</span>
         </div>
 
-        {/* Exchange */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Exchange
@@ -163,7 +158,6 @@ export default function FeeStructureAnalyzerModule() {
           </select>
         </div>
 
-        {/* Current VIP */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Current VIP Level
@@ -181,7 +175,6 @@ export default function FeeStructureAnalyzerModule() {
           </select>
         </div>
 
-        {/* Monthly Volume */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             30D Volume ($)
@@ -195,7 +188,6 @@ export default function FeeStructureAnalyzerModule() {
           />
         </div>
 
-        {/* Maker Ratio */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Maker Ratio (%)
@@ -219,7 +211,6 @@ export default function FeeStructureAnalyzerModule() {
         </div>
       </div>
 
-      {/* Current Fee Analysis */}
       <div className="border-t border-white/10 pt-3 space-y-2">
         <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
           <Award className="w-3 h-3" />
@@ -259,7 +250,6 @@ export default function FeeStructureAnalyzerModule() {
         </Row>
       </div>
 
-      {/* Optimization */}
       {analysis.nextVip !== null && (
         <div className="border-t border-white/10 pt-3 space-y-2">
           <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
@@ -303,7 +293,6 @@ export default function FeeStructureAnalyzerModule() {
         </div>
       )}
 
-      {/* Recommendation */}
       {analysis.nextVip === null && (
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded p-2 text-[10px] text-emerald-400">
           ✓ You're at the highest VIP level!

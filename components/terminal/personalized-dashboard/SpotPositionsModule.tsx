@@ -1,11 +1,14 @@
 // components/terminal/personalized-dashboard/SpotPositionsModule.tsx
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { usePriceStore } from "@/store/priceStore";
-import { useState } from "react";
+
+interface Props {
+  instanceId: string;
+}
 
 const EXCHANGE_FORMATS: Record<
   string,
@@ -56,12 +59,9 @@ const EXCHANGES = [
   "ascendex",
 ];
 
-export default function SpotPositionsModule() {
-  // 🔥 portfolioStore (state management)
+export default function SpotPositionsModule({ instanceId }: Props) {
   const { spotPositions, addSpotPosition, removeSpotPosition } =
     usePortfolioStore();
-
-  // 🔥 priceStore (real-time prices)
   const prices = usePriceStore((s) => s.prices);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -75,7 +75,6 @@ export default function SpotPositionsModule() {
     notes: "",
   });
 
-  // 🔥 Portfolio summary with real-time prices
   const portfolio = useMemo(() => {
     const totalInvestment = spotPositions.reduce(
       (sum, p) => sum + p.totalCost,
@@ -88,7 +87,6 @@ export default function SpotPositionsModule() {
     const totalPnL = currentValue - totalInvestment;
     const totalPnLPercent =
       totalInvestment > 0 ? (totalPnL / totalInvestment) * 100 : 0;
-
     return { totalInvestment, currentValue, totalPnL, totalPnLPercent };
   }, [spotPositions, prices]);
 
@@ -121,7 +119,6 @@ export default function SpotPositionsModule() {
     const formattedPair =
       EXCHANGE_FORMATS[exchange]?.(base, quote) || `${base}${quote}`;
 
-    // 🔥 Use portfolioStore action
     addSpotPosition({
       exchange,
       baseAsset: base,
@@ -149,16 +146,12 @@ export default function SpotPositionsModule() {
     });
   };
 
-  // 🔥 Calculate P&L with real-time prices
   const calculatePnL = (position: (typeof spotPositions)[0]) => {
     const currentPrice = prices[position.symbol] || position.currentPrice;
     const currentValue = position.quantity * currentPrice;
     const pnl = currentValue - position.totalCost;
     const pnlPercent = (pnl / position.totalCost) * 100;
-
-    // Price change indicator
     const priceChange = currentPrice - position.currentPrice;
-
     return { currentValue, pnl, pnlPercent, currentPrice, priceChange };
   };
 
@@ -170,7 +163,6 @@ export default function SpotPositionsModule() {
 
   return (
     <div className="relative space-y-3 text-xs h-full flex flex-col">
-      {/* Portfolio Summary */}
       <div className="grid grid-cols-2 gap-2">
         <div className="bg-white/5 border border-white/10 rounded p-2">
           <div className="text-white/40 text-[10px] mb-1">Total Investment</div>
@@ -182,7 +174,6 @@ export default function SpotPositionsModule() {
             })}
           </div>
         </div>
-
         <div className="bg-white/5 border border-white/10 rounded p-2">
           <div className="text-white/40 text-[10px] mb-1">Current Value</div>
           <div className="text-white font-semibold">
@@ -193,7 +184,6 @@ export default function SpotPositionsModule() {
             })}
           </div>
         </div>
-
         <div className="bg-white/5 border border-white/10 rounded p-2">
           <div className="text-white/40 text-[10px] mb-1">Total P&L</div>
           <div
@@ -208,7 +198,6 @@ export default function SpotPositionsModule() {
             })}
           </div>
         </div>
-
         <div className="bg-white/5 border border-white/10 rounded p-2">
           <div className="text-white/40 text-[10px] mb-1">P&L %</div>
           <div
@@ -224,7 +213,6 @@ export default function SpotPositionsModule() {
         </div>
       </div>
 
-      {/* Add Position Button */}
       {!showAddModal && (
         <button
           onClick={() => setShowAddModal(true)}
@@ -235,7 +223,6 @@ export default function SpotPositionsModule() {
         </button>
       )}
 
-      {/* Positions List */}
       {!showAddModal && (
         <div className="flex-1 overflow-y-auto space-y-2">
           {spotPositions.length === 0 ? (
@@ -251,7 +238,6 @@ export default function SpotPositionsModule() {
                 currentPrice,
                 priceChange,
               } = calculatePnL(position);
-
               return (
                 <div
                   key={position.id}
@@ -357,7 +343,6 @@ export default function SpotPositionsModule() {
         </div>
       )}
 
-      {/* Add Position Modal */}
       {showAddModal && (
         <div className="absolute inset-0 bg-[#0a0e1a] z-50 flex flex-col rounded-lg overflow-hidden">
           <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">

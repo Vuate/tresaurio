@@ -1,534 +1,192 @@
 // components/terminal/personalized-dashboard/SpreadMonitorModule.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { TrendingUp, TrendingDown, Plus, X } from "lucide-react";
-import { wsService } from "@/services/WebSocketService";
+import { useState, useEffect } from "react";
+import { Activity, Plus, X } from "lucide-react";
+
+const DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT"];
 
 interface SpreadData {
   symbol: string;
-  bestBid: number;
-  bestAsk: number;
+  bid: number;
+  ask: number;
   spread: number;
   spreadPercent: number;
-  bidVolume: number;
-  askVolume: number;
-  imbalance: number;
-  midPrice: number;
-  // 🔥 YENİ METRIKLER
-  totalBidDepth: number;
-  totalAskDepth: number;
-  weightedSpread: number;
-  efficiency: number;
 }
 
-// 🔥 DEFAULT SYMBOLS
-const DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
+const MOCK_SPREADS: Record<string, SpreadData> = {
+  BTCUSDT: {
+    symbol: "BTCUSDT",
+    bid: 95000.5,
+    ask: 95001.0,
+    spread: 0.5,
+    spreadPercent: 0.0005,
+  },
+  ETHUSDT: {
+    symbol: "ETHUSDT",
+    bid: 2185.25,
+    ask: 2185.5,
+    spread: 0.25,
+    spreadPercent: 0.0011,
+  },
+  BNBUSDT: {
+    symbol: "BNBUSDT",
+    bid: 615.3,
+    ask: 615.4,
+    spread: 0.1,
+    spreadPercent: 0.0016,
+  },
+};
 
-export default function SpreadMonitorModule() {
-  const [selectedSymbol, setSelectedSymbol] = useState("BTCUSDT");
-  const [spreadData, setSpreadData] = useState<Map<string, SpreadData>>(
-    new Map()
-  );
-  const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newSymbol, setNewSymbol] = useState("");
+interface Props {
+  instanceId: string;
+}
 
-  // 🔥 CUSTOM SYMBOLS (localStorage)
-  const [customSymbols, setCustomSymbols] = useState<string[]>(() => {
+export default function SpreadMonitorModule({ instanceId }: Props) {
+  const storageKey = `spread-monitor-${instanceId}-symbols`;
+
+  const [symbols, setSymbols] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("spread-monitor-symbols");
-      return stored ? JSON.parse(stored) : DEFAULT_SYMBOLS;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          return DEFAULT_SYMBOLS;
+        }
+      }
     }
     return DEFAULT_SYMBOLS;
   });
 
-  // Save to localStorage
+  const [newSymbol, setNewSymbol] = useState("");
+  const [showAdd, setShowAdd] = useState(false);
+  const [spreads, setSpreads] = useState<Record<string, SpreadData>>({});
+
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(
-        "spread-monitor-symbols",
-        JSON.stringify(customSymbols)
-      );
+      localStorage.setItem(storageKey, JSON.stringify(symbols));
     }
-  }, [customSymbols]);
+  }, [symbols, storageKey]);
 
   useEffect(() => {
-    let mounted = true;
-    const unsubscribers: (() => void)[] = [];
-
-    // 🔥 Subscribe to all custom symbols
-    customSymbols.forEach((symbol) => {
-      const stream = `${symbol.toLowerCase()}@depth20@100ms`;
-
-      const unsubscribe = wsService.subscribe(stream, (data) => {
-        if (!mounted) return;
-
-        try {
-          if (
-            data.bids &&
-            data.asks &&
-            data.bids.length > 0 &&
-            data.asks.length > 0
-          ) {
-            // Parse best bid/ask
-            const bestBid = parseFloat(data.bids[0][0]);
-            const bestAsk = parseFloat(data.asks[0][0]);
-            const bidVolume = parseFloat(data.bids[0][1]);
-            const askVolume = parseFloat(data.asks[0][1]);
-
-            // Calculate total depth (top 5 levels)
-            const totalBidDepth = data.bids
-              .slice(0, 5)
-              .reduce(
-                (sum: number, [_, qty]: [string, string]) =>
-                  sum + parseFloat(qty),
-                0
-              );
-            const totalAskDepth = data.asks
-              .slice(0, 5)
-              .reduce(
-                (sum: number, [_, qty]: [string, string]) =>
-                  sum + parseFloat(qty),
-                0
-              );
-
-            // Basic metrics
-            const spread = bestAsk - bestBid;
-            const midPrice = (bestBid + bestAsk) / 2;
-            const spreadPercent = (spread / midPrice) * 100;
-
-            // Volume imbalance
-            const totalVolume = bidVolume + askVolume;
-            const imbalance =
-              totalVolume > 0
-                ? ((bidVolume - askVolume) / totalVolume) * 100
-                : 0;
-
-            // 🔥 Weighted spread (considers depth)
-            const totalDepth = totalBidDepth + totalAskDepth;
-            const depthImbalance =
-              totalDepth > 0
-                ? ((totalBidDepth - totalAskDepth) / totalDepth) * 100
-                : 0;
-            const weightedSpread =
-              spreadPercent * (1 + Math.abs(depthImbalance) / 100);
-
-            // 🔥 Market efficiency score (0-100)
-            const efficiency = Math.max(
-              0,
-              Math.min(100, 100 - spreadPercent * 1000)
-            );
-
-            setSpreadData((prev) => {
-              const next = new Map(prev);
-              next.set(symbol, {
-                symbol,
-                bestBid,
-                bestAsk,
-                spread,
-                spreadPercent,
-                bidVolume,
-                askVolume,
-                imbalance,
-                midPrice,
-                totalBidDepth,
-                totalAskDepth,
-                weightedSpread,
-                efficiency,
-              });
-              return next;
-            });
-
-            setLoading(false);
-          }
-        } catch (error) {
-          console.error("[SpreadMonitor] Parse error:", error);
-        }
-      });
-
-      unsubscribers.push(unsubscribe);
+    const data: Record<string, SpreadData> = {};
+    symbols.forEach((sym) => {
+      data[sym] = MOCK_SPREADS[sym] || {
+        symbol: sym,
+        bid: 0,
+        ask: 0,
+        spread: 0,
+        spreadPercent: 0,
+      };
     });
+    setSpreads(data);
+  }, [symbols]);
 
-    return () => {
-      mounted = false;
-      unsubscribers.forEach((unsub) => unsub());
-    };
-  }, [customSymbols]);
-
-  // 🔥 Add symbol
   const addSymbol = () => {
-    const formatted = newSymbol.toUpperCase().trim();
-    if (!formatted) {
-      alert("Please enter a symbol");
+    const sym = newSymbol.toUpperCase().trim();
+    if (!sym) return;
+    if (symbols.includes(sym)) {
+      alert("Symbol already added");
       return;
     }
-
-    const symbol = formatted.includes("USDT") ? formatted : `${formatted}USDT`;
-
-    if (customSymbols.includes(symbol)) {
-      alert("Symbol already in watchlist");
-      return;
-    }
-
-    setCustomSymbols([...customSymbols, symbol]);
-    setSelectedSymbol(symbol);
+    setSymbols([...symbols, sym]);
     setNewSymbol("");
-    setShowAddModal(false);
+    setShowAdd(false);
   };
 
-  // 🔥 Remove symbol
-  const removeSymbol = (symbol: string) => {
-    if (customSymbols.length <= 1) {
-      alert("Must have at least 1 symbol");
-      return;
-    }
-
-    setCustomSymbols(customSymbols.filter((s) => s !== symbol));
-    if (selectedSymbol === symbol) {
-      setSelectedSymbol(customSymbols.filter((s) => s !== symbol)[0]);
-    }
+  const removeSymbol = (sym: string) => {
+    setSymbols(symbols.filter((s) => s !== sym));
   };
-
-  const currentData = spreadData.get(selectedSymbol);
 
   return (
-    <div className="relative space-y-3 text-xs h-full flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="text-white/60 text-xs">
-          <span className="font-semibold text-white/90">Spread Monitor</span>
+    <div className="space-y-2 text-xs">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-white/70 font-semibold">
+          <Activity className="w-3 h-3" />
+          <span>Spread Monitor</span>
         </div>
 
-        <div className="flex gap-2">
-          <select
-            value={selectedSymbol}
-            onChange={(e) => setSelectedSymbol(e.target.value)}
-            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none"
-          >
-            {customSymbols.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white rounded px-2 py-1 flex items-center gap-1 text-xs font-semibold transition-colors"
-          >
-            <Plus className="w-3 h-3" />
-          </button>
-        </div>
+        <button
+          onClick={() => setShowAdd(!showAdd)}
+          className="text-white/60 hover:text-teal-400 transition"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
       </div>
 
-      {loading ? (
-        <div className="text-center py-8 text-white/40 text-[10px]">
-          Connecting to live data...
-        </div>
-      ) : currentData ? (
-        <div className="flex-1 overflow-y-auto space-y-2">
-          {/* Mid Price */}
-          <div className="bg-white/5 border border-white/10 rounded p-3">
-            <div className="text-white/40 text-[10px] mb-1">Mid Price</div>
-            <div className="text-white text-2xl font-bold">
-              $
-              {currentData.midPrice.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </div>
-          </div>
-
-          {/* Spread Stats */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-white/5 border border-white/10 rounded p-2">
-              <div className="text-white/40 text-[10px] mb-1">Spread</div>
-              <div className="text-white font-semibold">
-                ${currentData.spread.toFixed(2)}
-              </div>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded p-2">
-              <div className="text-white/40 text-[10px] mb-1">Spread %</div>
-              <div className="text-white font-semibold">
-                {currentData.spreadPercent.toFixed(4)}%
-              </div>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded p-2">
-              <div className="text-white/40 text-[10px] mb-1">Best Bid</div>
-              <div className="text-emerald-400 font-semibold">
-                $
-                {currentData.bestBid.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </div>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded p-2">
-              <div className="text-white/40 text-[10px] mb-1">Best Ask</div>
-              <div className="text-red-400 font-semibold">
-                $
-                {currentData.bestAsk.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* 🔥 Volume & Depth Analysis */}
-          <div className="bg-white/5 border border-white/10 rounded p-3 space-y-2">
-            <div className="text-white/40 text-[10px] font-semibold">
-              Volume & Depth
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 text-[10px]">
-              <div className="flex justify-between">
-                <span className="text-white/50">Bid Volume</span>
-                <span className="text-emerald-400 font-semibold">
-                  {currentData.bidVolume.toFixed(4)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/50">Ask Volume</span>
-                <span className="text-red-400 font-semibold">
-                  {currentData.askVolume.toFixed(4)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/50">Bid Depth (5)</span>
-                <span className="text-emerald-400 font-semibold">
-                  {currentData.totalBidDepth.toFixed(4)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/50">Ask Depth (5)</span>
-                <span className="text-red-400 font-semibold">
-                  {currentData.totalAskDepth.toFixed(4)}
-                </span>
-              </div>
-            </div>
-
-            {/* Order Imbalance */}
-            <div className="space-y-1 pt-2 border-t border-white/5">
-              <div className="flex justify-between text-[10px]">
-                <span className="text-white/50">Order Imbalance</span>
-                <span
-                  className={`font-semibold flex items-center gap-1 ${
-                    currentData.imbalance >= 0
-                      ? "text-emerald-400"
-                      : "text-red-400"
-                  }`}
-                >
-                  {currentData.imbalance >= 0 ? (
-                    <TrendingUp className="w-3 h-3" />
-                  ) : (
-                    <TrendingDown className="w-3 h-3" />
-                  )}
-                  {Math.abs(currentData.imbalance).toFixed(2)}%
-                  {currentData.imbalance >= 0 ? " Bid" : " Ask"}
-                </span>
-              </div>
-
-              {/* Imbalance Bar */}
-              <div className="h-2 w-full rounded bg-white/10 overflow-hidden flex">
-                <div
-                  className="bg-emerald-500"
-                  style={{
-                    width: `${50 + currentData.imbalance / 2}%`,
-                  }}
-                />
-                <div
-                  className="bg-red-500"
-                  style={{
-                    width: `${50 - currentData.imbalance / 2}%`,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* 🔥 Advanced Metrics */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-white/5 border border-white/10 rounded p-2">
-              <div className="text-white/40 text-[10px] mb-1">
-                Weighted Spread
-              </div>
-              <div className="text-white font-semibold">
-                {currentData.weightedSpread.toFixed(4)}%
-              </div>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded p-2">
-              <div className="text-white/40 text-[10px] mb-1">
-                Efficiency Score
-              </div>
-              <div
-                className={`font-semibold ${
-                  currentData.efficiency >= 90
-                    ? "text-emerald-400"
-                    : currentData.efficiency >= 70
-                    ? "text-yellow-400"
-                    : "text-red-400"
-                }`}
-              >
-                {currentData.efficiency.toFixed(1)}/100
-              </div>
-            </div>
-          </div>
-
-          {/* Market Quality */}
-          <div className="bg-white/5 border border-white/10 rounded p-2">
-            <div className="flex justify-between items-center text-[10px]">
-              <span className="text-white/50">Market Quality</span>
-              <span
-                className={`font-semibold ${
-                  currentData.spreadPercent < 0.01
-                    ? "text-emerald-400"
-                    : currentData.spreadPercent < 0.05
-                    ? "text-yellow-400"
-                    : "text-red-400"
-                }`}
-              >
-                {currentData.spreadPercent < 0.01
-                  ? "Excellent"
-                  : currentData.spreadPercent < 0.05
-                  ? "Good"
-                  : "Fair"}
-              </span>
-            </div>
-          </div>
-
-          {/* Live Indicator */}
-          <div className="flex items-center justify-center gap-2 text-[10px] text-emerald-400">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            LIVE DATA (100ms)
-          </div>
-        </div>
-      ) : (
-        <div className="text-center py-8 text-white/40 text-[10px]">
-          No data available
+      {showAdd && (
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="SYMBOL"
+            value={newSymbol}
+            onChange={(e) => setNewSymbol(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addSymbol()}
+            className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white text-xs outline-none"
+          />
+          <button
+            onClick={addSymbol}
+            className="px-3 py-1.5 bg-teal-400/20 border border-teal-400/40 text-teal-300 rounded text-xs hover:bg-teal-400/30 transition"
+          >
+            Add
+          </button>
         </div>
       )}
 
-      {/* 🔥 ADD SYMBOL MODAL */}
-      {showAddModal && (
-        <div className="absolute inset-0 bg-[#0a0e1a] z-50 flex flex-col rounded-lg overflow-hidden">
-          <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
-            <h3 className="text-white font-semibold text-sm">Add Symbol</h3>
-            <button
-              onClick={() => {
-                setShowAddModal(false);
-                setNewSymbol("");
-              }}
-              className="text-white/50 hover:text-white text-xl leading-none"
+      <div className="space-y-1.5">
+        {symbols.map((sym) => {
+          const data = spreads[sym];
+          if (!data) return null;
+
+          return (
+            <div
+              key={sym}
+              className="px-3 py-2 rounded-lg bg-white/5 border border-white/10"
             >
-              ×
-            </button>
-          </div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-semibold text-white">
+                  {sym.replace("USDT", "")}
+                </span>
 
-          <div className="flex-1 p-3 space-y-3">
-            <div>
-              <label className="block text-white/50 mb-1.5 text-[10px] font-semibold">
-                Symbol Name
-              </label>
-              <input
-                type="text"
-                value={newSymbol}
-                onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") addSymbol();
-                }}
-                placeholder="BTC, ETH, SOL..."
-                className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-sm outline-none focus:border-emerald-500/50 placeholder:text-white/30"
-                autoFocus
-              />
-              <div className="text-[9px] text-white/40 mt-1.5">
-                Automatically adds USDT (e.g., BTC → BTCUSDT)
+                <button
+                  onClick={() => removeSymbol(sym)}
+                  className="text-white/30 hover:text-red-400"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+
+              <div className="space-y-0.5 text-[10px]">
+                <div className="flex justify-between text-white/50">
+                  <span>Bid</span>
+                  <span className="text-emerald-400">
+                    {data.bid.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-white/50">
+                  <span>Ask</span>
+                  <span className="text-red-400">
+                    {data.ask.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between pt-0.5 border-t border-white/10">
+                  <span className="text-white/70">Spread</span>
+                  <span className="text-white font-semibold">
+                    ${data.spread.toFixed(2)} ({data.spreadPercent.toFixed(4)}%)
+                  </span>
+                </div>
               </div>
             </div>
+          );
+        })}
+      </div>
 
-            {/* Popular Symbols */}
-            <div>
-              <div className="text-white/50 mb-2 text-[10px] font-semibold">
-                Popular Symbols
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  "BTC",
-                  "ETH",
-                  "BNB",
-                  "SOL",
-                  "XRP",
-                  "ADA",
-                  "DOGE",
-                  "AVAX",
-                  "DOT",
-                  "MATIC",
-                  "LINK",
-                  "UNI",
-                ].map((sym) => {
-                  const fullSymbol = `${sym}USDT`;
-                  const isAdded = customSymbols.includes(fullSymbol);
-
-                  return (
-                    <button
-                      key={sym}
-                      onClick={() => {
-                        if (!isAdded) {
-                          setCustomSymbols([...customSymbols, fullSymbol]);
-                          setSelectedSymbol(fullSymbol);
-                          setShowAddModal(false);
-                        }
-                      }}
-                      disabled={isAdded}
-                      className={`py-2 rounded text-xs font-semibold transition-colors ${
-                        isAdded
-                          ? "bg-white/5 text-white/30 cursor-not-allowed"
-                          : "bg-white/10 hover:bg-white/15 text-white"
-                      }`}
-                    >
-                      {sym}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Current Watchlist */}
-            <div>
-              <div className="text-white/50 mb-2 text-[10px] font-semibold">
-                Current Watchlist ({customSymbols.length})
-              </div>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
-                {customSymbols.map((sym) => (
-                  <div
-                    key={sym}
-                    className="flex items-center justify-between bg-white/5 rounded px-2 py-1.5 text-xs"
-                  >
-                    <span className="text-white">{sym}</span>
-                    <button
-                      onClick={() => removeSymbol(sym)}
-                      className="text-red-400 hover:text-red-300 transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3 border-t border-white/10">
-            <button
-              onClick={addSymbol}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded font-semibold text-xs transition-colors"
-            >
-              Add to Watchlist
-            </button>
-          </div>
+      {symbols.length === 0 && (
+        <div className="text-center text-white/40 py-4 text-[10px]">
+          No symbols monitored
         </div>
       )}
     </div>

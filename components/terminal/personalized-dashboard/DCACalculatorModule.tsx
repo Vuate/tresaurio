@@ -23,8 +23,11 @@ interface DCAStats {
 
 const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
 
-export default function DCACalculatorModule() {
-  // 🔥 PRICESTORE'DAN REAL-TIME PRICE
+interface Props {
+  instanceId: string;
+}
+
+export default function DCACalculatorModule({ instanceId }: Props) {
   const prices = usePriceStore((s) => s.prices);
   const [selectedSymbol, setSelectedSymbol] = useState("BTCUSDT");
 
@@ -34,7 +37,6 @@ export default function DCACalculatorModule() {
   const [newQty, setNewQty] = useState("");
   const [newPrice, setNewPrice] = useState("");
 
-  // 🔥 Real-time current price
   const currentPrice = prices[selectedSymbol] || 0;
 
   const stats = useMemo((): DCAStats => {
@@ -116,7 +118,6 @@ export default function DCACalculatorModule() {
 
   return (
     <div className="space-y-3 text-xs">
-      {/* 🔥 Symbol Selector */}
       <div>
         <label className="block text-white/50 mb-1 text-[10px] font-semibold">
           Symbol
@@ -134,7 +135,6 @@ export default function DCACalculatorModule() {
         </select>
       </div>
 
-      {/* 🔥 Current Price (Real-time from priceStore) */}
       <div className="bg-white/5 border border-white/10 rounded p-2">
         <div className="flex justify-between items-center">
           <span className="text-white/50 text-[10px]">
@@ -149,7 +149,6 @@ export default function DCACalculatorModule() {
         </div>
       </div>
 
-      {/* Add Trade Form */}
       <div className="bg-white/5 border border-white/10 rounded p-3 space-y-2">
         <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
           <Plus className="w-3 h-3" />
@@ -194,7 +193,6 @@ export default function DCACalculatorModule() {
         </button>
       </div>
 
-      {/* Trades List */}
       {trades.length > 0 && (
         <div className="space-y-1">
           <div className="flex items-center justify-between text-white/40 text-[10px] mb-1">
@@ -233,7 +231,6 @@ export default function DCACalculatorModule() {
         </div>
       )}
 
-      {/* DCA Stats */}
       {trades.length > 0 && (
         <>
           <div className="border-t border-white/10 pt-3 space-y-2">
@@ -275,7 +272,6 @@ export default function DCACalculatorModule() {
             </Row>
           </div>
 
-          {/* Next DCA Simulation */}
           {nextDCAat88k && nextDCAat92k && (
             <div className="bg-white/5 border border-white/10 rounded p-3 space-y-2">
               <div className="text-white/50 text-[10px] mb-2">

@@ -1,3 +1,4 @@
+// components/terminal/personalized-dashboard/WhaleAlertsModule.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -33,11 +34,14 @@ const MOCK_DATA: WhaleTransfer[] = [
   },
 ];
 
-export default function WhaleAlertsModule() {
+interface Props {
+  instanceId: string;
+}
+
+export default function WhaleAlertsModule({ instanceId }: Props) {
   const [data, setData] = useState<WhaleTransfer[]>([]);
 
   useEffect(() => {
-    // ileride burası API / WS olacak
     setData(MOCK_DATA);
   }, []);
 
@@ -53,7 +57,6 @@ export default function WhaleAlertsModule() {
               px-3 py-2 rounded-lg
               bg-white/5 border border-white/10"
           >
-            {/* LEFT */}
             <div className="space-y-0.5">
               <div
                 className={`text-sm font-semibold ${
@@ -66,7 +69,6 @@ export default function WhaleAlertsModule() {
               <div className="text-[11px] text-white/40">{t.exchange}</div>
             </div>
 
-            {/* RIGHT */}
             <div className="text-right">
               <div className="text-sm font-mono text-white">
                 {t.amount.toLocaleString()} {t.symbol}

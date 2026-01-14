@@ -26,7 +26,11 @@ interface CostBreakdown {
   liquidationPrice: number | null;
 }
 
-export default function AllInCostCalculatorModule() {
+interface Props {
+  instanceId: string;
+}
+
+export default function AllInCostCalculatorModule({ instanceId }: Props) {
   const [entryPrice, setEntryPrice] = useState(95000);
   const [quantity, setQuantity] = useState(1);
   const [leverage, setLeverage] = useState(1);
@@ -39,7 +43,6 @@ export default function AllInCostCalculatorModule() {
   const [fundingRate, setFundingRate] = useState(0.0125);
   const [holdingHours, setHoldingHours] = useState(24);
 
-  // Exchange fee structures
   const exchangeFees = {
     binance: {
       vip: {
@@ -79,45 +82,36 @@ export default function AllInCostCalculatorModule() {
   const costs = useMemo((): CostBreakdown => {
     const notionalValue = entryPrice * quantity;
 
-    // Get exchange-specific fees
     const exchangeConfig = exchangeFees[exchange];
     const vipConfig =
       exchangeConfig.vip[vipLevel as keyof typeof exchangeConfig.vip] ||
       exchangeConfig.vip[0];
     const tradingFeePercent = vipConfig[feeType];
 
-    // Trading fee
     let tradingFee = (notionalValue * tradingFeePercent) / 100;
 
-    // BNB discount
     const bnbDiscount = useBnb ? exchangeConfig.bnbDiscount : 0;
     const bnbSavings = tradingFee * bnbDiscount;
     const tradingFeeWithDiscount = tradingFee - bnbSavings;
 
-    // Slippage
     const slippage = (notionalValue * slippagePercent) / 100;
 
-    // Funding (per 8h, pro-rated)
     const fundingPeriods = holdingHours / 8;
     const fundingPercent = fundingRate * fundingPeriods;
     const funding = (notionalValue * Math.abs(fundingPercent)) / 100;
 
-    // Total cost
     const totalCost = tradingFeeWithDiscount + slippage + funding;
 
-    // Effective price
     const effectivePrice =
       side === "long"
         ? entryPrice + totalCost / quantity
         : entryPrice - totalCost / quantity;
 
-    // Cost impact
     const costImpact = ((effectivePrice - entryPrice) / entryPrice) * 100;
 
-    // Liquidation price (for futures with leverage > 1)
     let liquidationPrice: number | null = null;
     if (leverage > 1) {
-      const maintenanceMargin = 0.5; // 0.5% for most exchanges
+      const maintenanceMargin = 0.5;
       const liquidationDistance = 100 / leverage - maintenanceMargin;
       liquidationPrice =
         side === "long"
@@ -158,14 +152,12 @@ export default function AllInCostCalculatorModule() {
 
   return (
     <div className="space-y-3 text-xs">
-      {/* Position Setup */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
           <Calculator className="w-3 h-3" />
           <span>Position Setup</span>
         </div>
 
-        {/* Exchange Selection */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Exchange
@@ -187,7 +179,6 @@ export default function AllInCostCalculatorModule() {
           </select>
         </div>
 
-        {/* VIP Level */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             VIP Level
@@ -213,7 +204,6 @@ export default function AllInCostCalculatorModule() {
           </select>
         </div>
 
-        {/* Side Selector */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">Side</label>
           <div className="grid grid-cols-2 gap-2">
@@ -240,7 +230,6 @@ export default function AllInCostCalculatorModule() {
           </div>
         </div>
 
-        {/* Entry Price */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Entry Price
@@ -254,7 +243,6 @@ export default function AllInCostCalculatorModule() {
           />
         </div>
 
-        {/* Quantity */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Quantity (BTC)
@@ -268,7 +256,6 @@ export default function AllInCostCalculatorModule() {
           />
         </div>
 
-        {/* Leverage */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Leverage
@@ -286,7 +273,6 @@ export default function AllInCostCalculatorModule() {
           </select>
         </div>
 
-        {/* Fee Type */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Order Type
@@ -327,7 +313,6 @@ export default function AllInCostCalculatorModule() {
           </div>
         </div>
 
-        {/* BNB Discount (only for Binance) */}
         {exchange === "binance" && (
           <div className="flex items-center gap-2 text-[10px]">
             <input
@@ -342,7 +327,6 @@ export default function AllInCostCalculatorModule() {
           </div>
         )}
 
-        {/* Slippage */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Expected Slippage (%)
@@ -358,7 +342,6 @@ export default function AllInCostCalculatorModule() {
           />
         </div>
 
-        {/* Funding Rate */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Funding Rate (% per 8h)
@@ -372,7 +355,6 @@ export default function AllInCostCalculatorModule() {
           />
         </div>
 
-        {/* Holding Period */}
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Holding Period (hours)
@@ -387,7 +369,6 @@ export default function AllInCostCalculatorModule() {
         </div>
       </div>
 
-      {/* Cost Breakdown */}
       <div className="border-t border-white/10 pt-3 space-y-2">
         <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
           <TrendingUp className="w-3 h-3" />
@@ -449,7 +430,6 @@ export default function AllInCostCalculatorModule() {
           </span>
         </Row>
 
-        {/* Liquidation Price */}
         {costs.liquidationPrice && (
           <>
             <div className="border-t border-white/10 my-2" />
@@ -463,7 +443,6 @@ export default function AllInCostCalculatorModule() {
         )}
       </div>
 
-      {/* Warnings */}
       {costs.costImpact > 0.1 && (
         <div className="bg-yellow-500/10 border border-yellow-500/20 rounded p-2 text-[10px] text-yellow-400">
           ⚠️ High cost impact ({costs.costImpact.toFixed(2)}%)!
@@ -476,7 +455,6 @@ export default function AllInCostCalculatorModule() {
         </div>
       )}
 
-      {/* Break-even Info */}
       <div className="bg-white/5 border border-white/10 rounded p-2 text-[10px] text-white/40">
         {side === "long"
           ? `📈 Price must reach $${costs.effectivePrice.toLocaleString()} to break even`

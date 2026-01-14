@@ -1,3 +1,4 @@
+// components/terminal/personalized-dashboard/ExchangeComparisonModule.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -14,7 +15,11 @@ const MOCK_DATA: PriceState = {
   diff: ((43235 - 43210) / 43210) * 100,
 };
 
-export default function ExchangeComparisonModule() {
+interface Props {
+  instanceId: string;
+}
+
+export default function ExchangeComparisonModule({ instanceId }: Props) {
   const [data, setData] = useState<PriceState | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -61,7 +66,7 @@ export default function ExchangeComparisonModule() {
       } catch (e) {
         console.warn("Exchange comparison fallback:", e);
         if (alive) {
-          setData(MOCK_DATA); // 🔥 fallback
+          setData(MOCK_DATA);
           setErr("Live data unavailable");
         }
       }

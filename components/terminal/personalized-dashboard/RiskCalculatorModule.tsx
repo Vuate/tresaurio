@@ -1,175 +1,195 @@
 // components/terminal/personalized-dashboard/RiskCalculatorModule.tsx
 "use client";
 
-import { useMemo, useState } from "react";
-import { useAlertStore } from "@/store/alertStore";
-import { usePriceStore } from "@/store/priceStore";
+import { useState, useMemo } from "react";
+import { Shield, AlertTriangle } from "lucide-react";
 
-const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
+interface RiskMetrics {
+  positionSize: number;
+  riskAmount: number;
+  riskPercent: number;
+  stopLossDistance: number;
+  stopLossPrice: number;
+  takeProfitPrice: number;
+  rewardRiskRatio: number;
+  potentialProfit: number;
+  potentialLoss: number;
+}
 
-export default function RiskCalculatorModule() {
-  // 🔥 PRICESTORE'DAN REAL-TIME PRICE
-  const prices = usePriceStore((s) => s.prices);
-  const [selectedSymbol, setSelectedSymbol] = useState("BTCUSDT");
+interface Props {
+  instanceId: string;
+}
 
-  const [account, setAccount] = useState(10000);
-  const [riskPct, setRiskPct] = useState(1);
-  const [stopPercent, setStopPercent] = useState(2); // Stop loss % from current price
+export default function RiskCalculatorModule({ instanceId }: Props) {
+  const [accountSize, setAccountSize] = useState(10000);
+  const [riskPercent, setRiskPercent] = useState(1);
+  const [entryPrice, setEntryPrice] = useState(95000);
+  const [stopLoss, setStopLoss] = useState(94000);
+  const [takeProfit, setTakeProfit] = useState(98000);
 
-  const addAlert = useAlertStore((s) => s.addAlert);
+  const metrics = useMemo((): RiskMetrics => {
+    const riskAmount = (accountSize * riskPercent) / 100;
+    const stopLossDistance = Math.abs(entryPrice - stopLoss);
+    const positionSize =
+      stopLossDistance > 0 ? riskAmount / stopLossDistance : 0;
 
-  // 🔥 Real-time current price
-  const currentPrice = prices[selectedSymbol] || 0;
-  const stopLoss = currentPrice * (1 - stopPercent / 100);
+    const tpDistance = Math.abs(takeProfit - entryPrice);
+    const rewardRiskRatio =
+      stopLossDistance > 0 ? tpDistance / stopLossDistance : 0;
 
-  const calc = useMemo(() => {
-    const riskAmount = (account * riskPct) / 100;
-    const stopDistance = currentPrice - stopLoss;
-
-    if (stopDistance <= 0 || currentPrice === 0) return null;
-
-    const positionSize = riskAmount / stopDistance;
-    const positionValue = positionSize * currentPrice;
+    const potentialProfit = positionSize * tpDistance;
+    const potentialLoss = positionSize * stopLossDistance;
 
     return {
-      riskAmount,
-      stopDistance,
       positionSize,
-      positionValue,
-      stopLoss,
+      riskAmount,
+      riskPercent,
+      stopLossDistance,
+      stopLossPrice: stopLoss,
+      takeProfitPrice: takeProfit,
+      rewardRiskRatio,
+      potentialProfit,
+      potentialLoss,
     };
-  }, [account, riskPct, currentPrice, stopLoss]);
+  }, [accountSize, riskPercent, entryPrice, stopLoss, takeProfit]);
 
   return (
     <div className="space-y-3 text-xs">
-      {/* 🔥 Symbol Selector */}
-      <div>
-        <label className="block text-white/50 mb-1 text-[10px] font-semibold">
-          Symbol
-        </label>
-        <select
-          value={selectedSymbol}
-          onChange={(e) => setSelectedSymbol(e.target.value)}
-          className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-xs outline-none"
-        >
-          {SYMBOLS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+      <div className="flex items-center gap-2 text-white/70 font-semibold">
+        <Shield className="w-3 h-3" />
+        <span>Risk Calculator</span>
       </div>
 
-      {/* 🔥 Current Price (Real-time) */}
-      <div className="bg-white/5 border border-white/10 rounded p-2">
-        <div className="flex justify-between items-center">
-          <span className="text-white/50 text-[10px]">
-            Current Price (Live)
+      <div className="space-y-2">
+        <div>
+          <label className="block text-white/50 mb-1 text-[10px]">
+            Account Size ($)
+          </label>
+          <input
+            type="number"
+            value={accountSize}
+            onChange={(e) => setAccountSize(parseFloat(e.target.value) || 0)}
+            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            step="1000"
+          />
+        </div>
+
+        <div>
+          <label className="block text-white/50 mb-1 text-[10px]">
+            Risk Per Trade (%)
+          </label>
+          <input
+            type="number"
+            value={riskPercent}
+            onChange={(e) => setRiskPercent(parseFloat(e.target.value) || 0)}
+            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            step="0.5"
+            min="0"
+            max="100"
+          />
+        </div>
+
+        <div>
+          <label className="block text-white/50 mb-1 text-[10px]">
+            Entry Price
+          </label>
+          <input
+            type="number"
+            value={entryPrice}
+            onChange={(e) => setEntryPrice(parseFloat(e.target.value) || 0)}
+            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            step="100"
+          />
+        </div>
+
+        <div>
+          <label className="block text-white/50 mb-1 text-[10px]">
+            Stop Loss
+          </label>
+          <input
+            type="number"
+            value={stopLoss}
+            onChange={(e) => setStopLoss(parseFloat(e.target.value) || 0)}
+            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            step="100"
+          />
+        </div>
+
+        <div>
+          <label className="block text-white/50 mb-1 text-[10px]">
+            Take Profit
+          </label>
+          <input
+            type="number"
+            value={takeProfit}
+            onChange={(e) => setTakeProfit(parseFloat(e.target.value) || 0)}
+            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            step="100"
+          />
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 pt-3 space-y-2">
+        <Row label="Position Size">{metrics.positionSize.toFixed(4)} BTC</Row>
+
+        <Row label="Risk Amount">
+          <span className="text-red-400 font-semibold">
+            ${metrics.riskAmount.toFixed(2)}
           </span>
-          <div className="flex items-center gap-2">
-            <span className="text-white font-semibold">
-              ${currentPrice.toLocaleString()}
-            </span>
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          </div>
-        </div>
+        </Row>
+
+        <Row label="Stop Loss Distance">
+          ${metrics.stopLossDistance.toLocaleString()}
+        </Row>
+
+        <div className="border-t border-white/10 my-2" />
+
+        <Row label="Potential Profit">
+          <span className="text-emerald-400 font-semibold">
+            +${metrics.potentialProfit.toFixed(2)}
+          </span>
+        </Row>
+
+        <Row label="Potential Loss">
+          <span className="text-red-400 font-semibold">
+            -${metrics.potentialLoss.toFixed(2)}
+          </span>
+        </Row>
+
+        <Row label="Risk:Reward">
+          <span
+            className={`font-semibold ${
+              metrics.rewardRiskRatio >= 2
+                ? "text-emerald-400"
+                : metrics.rewardRiskRatio >= 1
+                ? "text-yellow-400"
+                : "text-red-400"
+            }`}
+          >
+            1:{metrics.rewardRiskRatio.toFixed(2)}
+          </span>
+        </Row>
       </div>
 
-      {/* INPUTS */}
-      <Field label="Account Size ($)" value={account} onChange={setAccount} />
-      <Field label="Risk (%)" value={riskPct} onChange={setRiskPct} />
-      <Field
-        label="Stop Loss (%)"
-        value={stopPercent}
-        onChange={setStopPercent}
-      />
-
-      {/* RESULT */}
-      {calc && (
-        <div className="mt-3 space-y-3 rounded-xl border border-white/10 bg-white/5 p-3">
-          <Row label="Entry Price">
-            <span className="text-white/80">
-              ${currentPrice.toLocaleString()}
-            </span>
-          </Row>
-
-          <Row label="Stop Loss Price">
-            <span className="text-red-400 font-semibold">
-              ${calc.stopLoss.toFixed(2)}
-            </span>
-          </Row>
-
-          <Row label="Risk Amount">
-            <span className="text-red-400 font-semibold">
-              -${calc.riskAmount.toFixed(2)}
-            </span>
-          </Row>
-
-          <Row label="Stop Distance">
-            <span className="text-white/80">
-              ${calc.stopDistance.toFixed(2)}
-            </span>
-          </Row>
-
-          <Row label="Position Size">
-            <span className="text-emerald-400 font-semibold">
-              {calc.positionSize.toFixed(4)}{" "}
-              {selectedSymbol.replace("USDT", "")}
-            </span>
-          </Row>
-
-          <Row label="Position Value">
-            <span className="text-white/80">
-              ${calc.positionValue.toFixed(2)}
-            </span>
-          </Row>
-
-          {/* 🔥 CREATE ALERT */}
-          <button
-            onClick={() =>
-              addAlert({
-                symbol: selectedSymbol,
-                condition: "below",
-                target: calc.stopLoss,
-              })
-            }
-            className="w-full h-9 rounded-lg
-              bg-red-500/10 border border-red-400/40
-              text-red-300 font-semibold
-              hover:bg-red-500/20 transition"
-          >
-            🚨 Create Stop-Loss Alert
-          </button>
+      {riskPercent > 2 && (
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded p-2 text-[10px] text-yellow-400 flex items-start gap-2">
+          <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+          <span>High risk! Consider reducing to 1-2% per trade</span>
         </div>
       )}
 
-      {currentPrice === 0 && (
-        <div className="text-center text-white/40 py-4 text-[10px]">
-          Waiting for price data...
+      {metrics.rewardRiskRatio < 1.5 && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded p-2 text-[10px] text-red-400 flex items-start gap-2">
+          <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+          <span>Low R:R ratio! Aim for at least 1:2</span>
         </div>
       )}
-    </div>
-  );
-}
 
-function Field({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: number;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <div className="space-y-1">
-      <label className="text-white/50 text-[10px]">{label}</label>
-      <input
-        type="number"
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-9 rounded-lg bg-white/5 border border-white/10 px-3 text-white text-xs outline-none"
-      />
+      {metrics.rewardRiskRatio >= 3 && (
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded p-2 text-[10px] text-emerald-400">
+          ✓ Excellent risk:reward ratio!
+        </div>
+      )}
     </div>
   );
 }
@@ -184,7 +204,7 @@ function Row({
   return (
     <div className="flex justify-between">
       <span className="text-white/50">{label}</span>
-      {children}
+      <span>{children}</span>
     </div>
   );
 }

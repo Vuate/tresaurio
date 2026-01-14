@@ -1,9 +1,12 @@
 // components/terminal/personalized-dashboard/OrderBookModule.tsx
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { useOrderBookStore } from "@/store/orderBookStore";
+import { useEffect, useMemo, useState } from "react";
 import { wsService } from "@/services/WebSocketService";
+
+interface Props {
+  instanceId: string;
+}
 
 type SideRow = { price: number; qty: number; total: number };
 
@@ -38,10 +41,36 @@ function mockDepth(symbol: string) {
   return { symbol, bids, asks, mid, source: "mock" as const };
 }
 
-export default function OrderBookModule() {
-  // 👇 STORE'DAN AL
-  const { symbol, bids, asks, mid, source, setOrderBook, setSymbol } =
-    useOrderBookStore();
+export default function OrderBookModule({ instanceId }: Props) {
+  const storageKey = `orderbook-${instanceId}-symbol`;
+
+  // 🔥 Instance-specific symbol state
+  const [symbol, setSymbol] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(storageKey) || "BTCUSDT";
+    }
+    return "BTCUSDT";
+  });
+
+  // 🔥 Instance-specific orderbook data
+  const [orderBookData, setOrderBookData] = useState<{
+    bids: SideRow[];
+    asks: SideRow[];
+    mid: number | null;
+    source: "api" | "mock";
+  }>({
+    bids: [],
+    asks: [],
+    mid: null,
+    source: "mock",
+  });
+
+  // Save symbol to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, symbol);
+    }
+  }, [symbol, storageKey]);
 
   useEffect(() => {
     let mounted = true;
@@ -65,14 +94,14 @@ export default function OrderBookModule() {
               ? (bestBid + bestAsk) / 2
               : null;
 
-          // 👇 STORE'A YAZ
-          setOrderBook({ symbol, bids, asks, mid, source: "api" });
+          // 👇 Update local state
+          setOrderBookData({ bids, asks, mid, source: "api" });
         }
       } catch (error) {
         console.error("[OrderBook] Parse error:", error);
         // Fallback to mock
         const mockData = mockDepth(symbol);
-        setOrderBook(mockData);
+        setOrderBookData(mockData);
       }
     });
 
@@ -81,7 +110,9 @@ export default function OrderBookModule() {
       mounted = false;
       unsubscribe();
     };
-  }, [symbol, setOrderBook]);
+  }, [symbol]);
+
+  const { bids, asks, mid, source } = orderBookData;
 
   const bestBid = bids[0]?.price ?? null;
   const bestAsk = asks[0]?.price ?? null;

@@ -13,9 +13,13 @@ interface FundingData {
   source: "api" | "mock";
 }
 
+interface Props {
+  instanceId: string;
+}
+
 const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
 
-export default function FundingRateModule() {
+export default function FundingRateModule({ instanceId }: Props) {
   const [selectedSymbol, setSelectedSymbol] = useState("BTCUSDT");
   const [data, setData] = useState<FundingData | null>(null);
   const [loading, setLoading] = useState(true);

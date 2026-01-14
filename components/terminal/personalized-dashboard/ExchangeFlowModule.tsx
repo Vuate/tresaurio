@@ -1,10 +1,15 @@
+// components/terminal/personalized-dashboard/ExchangeFlowModule.tsx
 "use client";
 
 import { useEffect } from "react";
 import { useExchangeFlowStore } from "@/store/exchangeFlowStore";
 import { generateMockFlow } from "@/lib/personalized-dashboard/mockExchangeFlow";
 
-export default function ExchangeFlowModule() {
+interface Props {
+  instanceId: string;
+}
+
+export default function ExchangeFlowModule({ instanceId }: Props) {
   const { events, addEvent } = useExchangeFlowStore();
 
   useEffect(() => {

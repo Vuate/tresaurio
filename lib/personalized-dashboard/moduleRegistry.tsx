@@ -1,4 +1,5 @@
 // lib/personalized-dashboard/moduleRegistry.tsx
+
 import type { ModuleCategory } from "./types";
 import type { ReactNode } from "react";
 
@@ -29,7 +30,7 @@ export type ModuleDefinition = {
     width: number;
     height: number;
   };
-  render: () => ReactNode;
+  render: (instanceId: string) => ReactNode;
 };
 
 export const moduleRegistry: Record<string, ModuleDefinition> = {
@@ -40,7 +41,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Real-time cryptocurrency prices",
     category: "temel-veri",
     defaultSize: { width: 380, height: 240 },
-    render: () => <LivePrices />,
+    render: (instanceId: string) => <LivePrices instanceId={instanceId} />,
   },
 
   /* ---------------- PORTFÖY ---------------- */
@@ -50,7 +51,9 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Your active spot positions",
     category: "trader-portfoy",
     defaultSize: { width: 420, height: 300 },
-    render: () => <SpotPositionsModule />,
+    render: (instanceId: string) => (
+      <SpotPositionsModule instanceId={instanceId} />
+    ),
   },
 
   "futures-positions": {
@@ -59,7 +62,9 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Active futures contracts",
     category: "trader-portfoy",
     defaultSize: { width: 420, height: 340 },
-    render: () => <FuturesPositionsModule />,
+    render: (instanceId: string) => (
+      <FuturesPositionsModule instanceId={instanceId} />
+    ),
   },
 
   "pnl-overview": {
@@ -68,7 +73,9 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Profit & Loss summary",
     category: "trader-portfoy",
     defaultSize: { width: 360, height: 220 },
-    render: () => <PnLOverviewModule />,
+    render: (instanceId: string) => (
+      <PnLOverviewModule instanceId={instanceId} />
+    ),
   },
 
   /* ---------------- DW / FLOW ---------------- */
@@ -78,7 +85,9 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Deposit / Withdraw tracking",
     category: "dw-flow",
     defaultSize: { width: 420, height: 300 },
-    render: () => <ExchangeFlowModule />,
+    render: (instanceId: string) => (
+      <ExchangeFlowModule instanceId={instanceId} />
+    ),
   },
 
   "whale-alerts": {
@@ -87,7 +96,9 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Large on-chain / exchange transfers",
     category: "dw-flow",
     defaultSize: { width: 380, height: 260 },
-    render: () => <WhaleAlertsModule />,
+    render: (instanceId: string) => (
+      <WhaleAlertsModule instanceId={instanceId} />
+    ),
   },
 
   /* ---------------- LİKİDİTE ---------------- */
@@ -97,7 +108,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Live order book depth (lite)",
     category: "likidite",
     defaultSize: { width: 420, height: 380 },
-    render: () => <OrderBookModule />,
+    render: (instanceId: string) => <OrderBookModule instanceId={instanceId} />,
   },
 
   "exchange-comparison": {
@@ -106,7 +117,9 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Binance vs KuCoin price difference",
     category: "likidite",
     defaultSize: { width: 320, height: 200 },
-    render: () => <ExchangeComparisonModule />,
+    render: (instanceId: string) => (
+      <ExchangeComparisonModule instanceId={instanceId} />
+    ),
   },
 
   "liquidity-analysis": {
@@ -115,17 +128,31 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Bid / Ask imbalance & market pressure",
     category: "likidite",
     defaultSize: { width: 360, height: 260 },
-    render: () => <LiquidityAnalysisModule />,
+    render: (instanceId: string) => (
+      <LiquidityAnalysisModule instanceId={instanceId} />
+    ),
   },
 
   "spread-monitor": {
-    // 👈 YENİ MODÜL
     type: "spread-monitor",
     title: "Spread Monitor",
     description: "Real-time bid-ask spread & volume imbalance",
     category: "likidite",
     defaultSize: { width: 320, height: 400 },
-    render: () => <SpreadMonitorModule />,
+    render: (instanceId: string) => (
+      <SpreadMonitorModule instanceId={instanceId} />
+    ),
+  },
+
+  "funding-rate": {
+    type: "funding-rate",
+    title: "Funding Rate Tracker",
+    description: "8-hour funding rate takibi ve trend analizi",
+    category: "likidite",
+    defaultSize: { width: 320, height: 400 },
+    render: (instanceId: string) => (
+      <FundingRateModule instanceId={instanceId} />
+    ),
   },
 
   /* ---------------- ALERT ---------------- */
@@ -135,7 +162,9 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Set up new price alert",
     category: "alert",
     defaultSize: { width: 360, height: 260 },
-    render: () => <CreateAlertModule />,
+    render: (instanceId: string) => (
+      <CreateAlertModule instanceId={instanceId} />
+    ),
   },
 
   "active-alerts": {
@@ -144,7 +173,9 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Your configured price alerts",
     category: "alert",
     defaultSize: { width: 360, height: 260 },
-    render: () => <ActiveAlertsModule />,
+    render: (instanceId: string) => (
+      <ActiveAlertsModule instanceId={instanceId} />
+    ),
   },
 
   /* ---------------- RISK ---------------- */
@@ -154,24 +185,22 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description: "Calculate position risk & size",
     category: "risk",
     defaultSize: { width: 360, height: 320 },
-    render: () => <RiskCalculatorModule />,
+    render: (instanceId: string) => (
+      <RiskCalculatorModule instanceId={instanceId} />
+    ),
   },
-  "funding-rate": {
-    type: "funding-rate",
-    title: "Funding Rate Tracker",
-    description: "8-hour funding rate takibi ve trend analizi",
-    category: "likidite",
-    defaultSize: { width: 320, height: 400 },
-    render: () => <FundingRateModule />,
-  },
+
   "dca-calculator": {
     type: "dca-calculator",
     title: "DCA Calculator",
     description: "Calculate average entry price and simulate next DCA",
     category: "trader-portfoy",
     defaultSize: { width: 360, height: 600 },
-    render: () => <DCACalculatorModule />,
+    render: (instanceId: string) => (
+      <DCACalculatorModule instanceId={instanceId} />
+    ),
   },
+
   "all-in-cost": {
     type: "all-in-cost",
     title: "All-in Cost Calculator",
@@ -179,14 +208,19 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
       "Calculate total trading costs including fees, slippage, and funding",
     category: "likidite",
     defaultSize: { width: 360, height: 700 },
-    render: () => <AllInCostCalculatorModule />,
+    render: (instanceId: string) => (
+      <AllInCostCalculatorModule instanceId={instanceId} />
+    ),
   },
+
   "fee-structure": {
     type: "fee-structure",
     title: "Fee Structure Analyzer",
     description: "Analyze fee tiers and optimize trading costs",
     category: "likidite",
     defaultSize: { width: 360, height: 650 },
-    render: () => <FeeStructureAnalyzerModule />,
+    render: (instanceId: string) => (
+      <FeeStructureAnalyzerModule instanceId={instanceId} />
+    ),
   },
 };

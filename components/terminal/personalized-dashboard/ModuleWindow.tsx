@@ -183,7 +183,7 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
             }}
             onWheel={(e) => e.stopPropagation()}
           >
-            {def?.render?.()}
+            {def?.render?.(module.id)}
           </div>
         </div>
       )}
