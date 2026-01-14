@@ -4,14 +4,23 @@ import { useRef } from "react";
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import type { ModuleInstance } from "@/lib/personalized-dashboard/types";
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
 
 type ResizeDir = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
 export default function ModuleWindow({ module }: { module: ModuleInstance }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  const { updateModule, setActiveModule, activeModuleId, removeModule, zoom } =
-    usePersonalizedDashboardStore();
+  const { 
+    updateModule, 
+    setActiveModule, 
+    activeModuleId, 
+    removeModule, 
+    zoom,
+    setPan,
+    panX,
+    panY
+  } = usePersonalizedDashboardStore();
 
   const def = moduleRegistry[module.type];
   const isActive = activeModuleId === module.id;
@@ -25,25 +34,96 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
 
     const startX = e.clientX;
     const startY = e.clientY;
-    const startLeft = module.x;
-    const startTop = module.y;
+    const startModuleX = module.x;
+    const startModuleY = module.y;
+    const startPanX = panX;
+    const startPanY = panY;
+
+    // Yukarı ve aşağı için ÇOOK daha agresif
+    const edgeThresholdHorizontal = 150; 
+    const edgeThresholdTop = 120; // Üst için BÜYÜK
+    const edgeThresholdBottom = 100; // Alt için BÜYÜK
+    const scrollSpeedHorizontal = 3;
+    const scrollSpeedVertical = 5; // Dikey için DAHA HIZLI
+
+    let currentMouseX = e.clientX;
+    let currentMouseY = e.clientY;
+    let animationFrameId: number | null = null;
+    let isDragging = true;
+
+    const animate = () => {
+      if (!isDragging) return;
+
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let scrollDeltaX = 0;
+      let scrollDeltaY = 0;
+
+      // Yatay scroll
+      if (currentMouseX < edgeThresholdHorizontal) {
+        const intensity = (edgeThresholdHorizontal - currentMouseX) / edgeThresholdHorizontal;
+        scrollDeltaX = scrollSpeedHorizontal * intensity;
+      } else if (currentMouseX > viewportWidth - edgeThresholdHorizontal) {
+        const intensity = (currentMouseX - (viewportWidth - edgeThresholdHorizontal)) / edgeThresholdHorizontal;
+        scrollDeltaX = -scrollSpeedHorizontal * intensity;
+      }
+
+      // Dikey scroll - ÇOK DAHA AGRESIF
+      // ÜST: Ekranın üst 120px'ine gelince başla
+      if (currentMouseY < edgeThresholdTop) {
+        const intensity = (edgeThresholdTop - currentMouseY) / edgeThresholdTop;
+        scrollDeltaY = scrollSpeedVertical * intensity * 1.5; // Ekstra hız
+      } 
+      // ALT: Ekranın alt 100px'ine gelince başla
+      else if (currentMouseY > viewportHeight - edgeThresholdBottom) {
+        const intensity = (currentMouseY - (viewportHeight - edgeThresholdBottom)) / edgeThresholdBottom;
+        scrollDeltaY = -scrollSpeedVertical * intensity * 1.5; // Ekstra hız
+      }
+
+      const store = usePersonalizedDashboardStore.getState();
+
+      // Canvas'ı kaydır
+      if (scrollDeltaX !== 0 || scrollDeltaY !== 0) {
+        store.setPan(store.panX + scrollDeltaX, store.panY + scrollDeltaY);
+      }
+
+      // HER FRAME'DE modül pozisyonunu güncelle
+      const mouseDeltaX = currentMouseX - startX;
+      const mouseDeltaY = currentMouseY - startY;
+      const panDeltaX = store.panX - startPanX;
+      const panDeltaY = store.panY - startPanY;
+
+      const newX = startModuleX + (mouseDeltaX / zoom) - panDeltaX;
+      const newY = startModuleY + (mouseDeltaY / zoom) - panDeltaY;
+
+      store.updateModule(module.id, {
+        x: newX,
+        y: newY,
+      });
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
 
     const onMove = (ev: MouseEvent) => {
       ev.preventDefault();
-
-      updateModule(module.id, {
-        x: startLeft + (ev.clientX - startX) / zoom,
-        y: startTop + (ev.clientY - startY) / zoom,
-      });
+      currentMouseX = ev.clientX;
+      currentMouseY = ev.clientY;
     };
 
     const onUp = () => {
+      isDragging = false;
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
     };
 
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
+    
+    animationFrameId = requestAnimationFrame(animate);
   };
 
   /* ---------------- RESIZE ---------------- */
@@ -59,12 +139,55 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     const startHeight = module.height;
     const startLeft = module.x;
     const startTop = module.y;
+    const startPanX = panX;
+    const startPanY = panY;
 
-    const onMove = (ev: MouseEvent) => {
-      ev.preventDefault();
+    const edgeThresholdHorizontal = 150;
+    const edgeThresholdTop = 120;
+    const edgeThresholdBottom = 100;
+    const scrollSpeedHorizontal = 3;
+    const scrollSpeedVertical = 5;
 
-      const dx = (ev.clientX - startX) / zoom;
-      const dy = (ev.clientY - startY) / zoom;
+    let currentMouseX = e.clientX;
+    let currentMouseY = e.clientY;
+    let animationFrameId: number | null = null;
+    let isResizing = true;
+
+    const animate = () => {
+      if (!isResizing) return;
+
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let scrollDeltaX = 0;
+      let scrollDeltaY = 0;
+
+      if (currentMouseX < edgeThresholdHorizontal) {
+        const intensity = (edgeThresholdHorizontal - currentMouseX) / edgeThresholdHorizontal;
+        scrollDeltaX = scrollSpeedHorizontal * intensity;
+      } else if (currentMouseX > viewportWidth - edgeThresholdHorizontal) {
+        const intensity = (currentMouseX - (viewportWidth - edgeThresholdHorizontal)) / edgeThresholdHorizontal;
+        scrollDeltaX = -scrollSpeedHorizontal * intensity;
+      }
+
+      if (currentMouseY < edgeThresholdTop) {
+        const intensity = (edgeThresholdTop - currentMouseY) / edgeThresholdTop;
+        scrollDeltaY = scrollSpeedVertical * intensity * 1.5;
+      } else if (currentMouseY > viewportHeight - edgeThresholdBottom) {
+        const intensity = (currentMouseY - (viewportHeight - edgeThresholdBottom)) / edgeThresholdBottom;
+        scrollDeltaY = -scrollSpeedVertical * intensity * 1.5;
+      }
+
+      const store = usePersonalizedDashboardStore.getState();
+
+      if (scrollDeltaX !== 0 || scrollDeltaY !== 0) {
+        store.setPan(store.panX + scrollDeltaX, store.panY + scrollDeltaY);
+      }
+
+      const dx = (currentMouseX - startX) / zoom;
+      const dy = (currentMouseY - startY) / zoom;
+      const panDeltaX = store.panX - startPanX;
+      const panDeltaY = store.panY - startPanY;
 
       let newWidth = startWidth;
       let newHeight = startHeight;
@@ -83,21 +206,38 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         newY += dy;
       }
 
-      updateModule(module.id, {
+      newX -= panDeltaX;
+      newY -= panDeltaY;
+
+      store.updateModule(module.id, {
         x: newX,
         y: newY,
         width: Math.max(300, newWidth),
         height: Math.max(200, newHeight),
       });
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    const onMove = (ev: MouseEvent) => {
+      ev.preventDefault();
+      currentMouseX = ev.clientX;
+      currentMouseY = ev.clientY;
     };
 
     const onUp = () => {
+      isResizing = false;
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
     };
 
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
+    
+    animationFrameId = requestAnimationFrame(animate);
   };
 
   return (
@@ -149,14 +289,23 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
             {module.minimized ? "□" : "—"}
           </button>
 
-          <button
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={() => removeModule(module.id)}
-            className="h-6 w-6 rounded-md border border-white/10 bg-white/5
-              hover:bg-red-500/80"
-          >
-            ×
-          </button>
+<button
+  onMouseDown={(e) => e.stopPropagation()}
+  onClick={() => {
+    removeModule(module.id);
+
+    useDashboardNotificationStore.getState().push({
+      type: "success",
+      title: "Module Removed",
+      description: `${module.title} removed from dashboard`,
+    });
+  }}
+  className="h-6 w-6 rounded-md border border-white/10 bg-white/5
+    hover:bg-red-500/80"
+>
+  ×
+</button>
+
         </div>
       </div>
 
@@ -164,20 +313,26 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
       {!module.minimized && (
         <div className="h-[calc(100%-40px)] overflow-hidden">
           <div
-            className="
-              h-full overflow-auto p-4
-              text-white/80 leading-relaxed select-text
+className="
+  h-full overflow-auto p-4
+  text-white/80 leading-relaxed
 
-              [&::-webkit-scrollbar]:w-2
-              [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-              [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/65
+  [&_*]:select-none
+  [&_input]:select-text
+  [&_textarea]:select-text
+  [&_select]:select-text
 
-              scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
-            "
+  [&::-webkit-scrollbar]:w-2
+  [&::-webkit-scrollbar-track]:bg-transparent
+  [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+  [&::-webkit-scrollbar-thumb]:rounded-full
+  [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/65
+
+  scrollbar-thin
+  scrollbar-thumb-teal-400/40
+  scrollbar-track-transparent
+"
+
             style={{
               fontSize: `clamp(11px, ${12 / zoom}px, 14px)`,
             }}

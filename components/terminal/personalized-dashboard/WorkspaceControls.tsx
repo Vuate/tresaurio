@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 
 const MAP_SIZE = 180;
-const MAP_PADDING = 1200; // 🔥 UÇ GÜVENLİK ALANI
+const MAP_PADDING = 2000; // DAHA BÜYÜK PADDING
 
 export default function WorkspaceControls() {
   const {
@@ -15,11 +15,14 @@ export default function WorkspaceControls() {
     setPan,
     modules,
     notesOpen,
+    notesHeight,
     activeModuleId,
   } = usePersonalizedDashboardStore();
 
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
+  const [mapOpen, setMapOpen] = useState(false);
 
+  /* ---------------- VIEWPORT ---------------- */
   useEffect(() => {
     const updateViewport = () => {
       setViewport({
@@ -33,29 +36,32 @@ export default function WorkspaceControls() {
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
-  /* ===================== 🔥 MAP BOUNDS (WINDOW + VIEWPORT) ===================== */
+  /* ================= MAP BOUNDS ================= */
   const mapBounds = useMemo(() => {
-    const windowMinX = Math.min(...modules.map(m => m.x), 0);
-    const windowMinY = Math.min(...modules.map(m => m.y), 0);
-    const windowMaxX = Math.max(...modules.map(m => m.x + m.width), 0);
-    const windowMaxY = Math.max(...modules.map(m => m.y + m.height), 0);
+    // Window pozisyonları
+    const windowMinX = modules.length > 0 ? Math.min(...modules.map(m => m.x)) : 0;
+    const windowMinY = modules.length > 0 ? Math.min(...modules.map(m => m.y)) : 0;
+    const windowMaxX = modules.length > 0 ? Math.max(...modules.map(m => m.x + m.width)) : 0;
+    const windowMaxY = modules.length > 0 ? Math.max(...modules.map(m => m.y + m.height)) : 0;
 
+    // Viewport pozisyonları (canvas koordinatlarında)
     const viewportMinX = -panX / zoom;
     const viewportMinY = -panY / zoom;
     const viewportMaxX = viewportMinX + viewport.w / zoom;
     const viewportMaxY = viewportMinY + viewport.h / zoom;
 
-    const minX = Math.min(windowMinX, viewportMinX) - MAP_PADDING;
-    const minY = Math.min(windowMinY, viewportMinY) - MAP_PADDING;
-    const maxX = Math.max(windowMaxX, viewportMaxX) + MAP_PADDING;
-    const maxY = Math.max(windowMaxY, viewportMaxY) + MAP_PADDING;
+    // Her iki alanı da kapsayan bounds
+    const minX = Math.min(windowMinX, viewportMinX, 0) - MAP_PADDING;
+    const minY = Math.min(windowMinY, viewportMinY, 0) - MAP_PADDING;
+    const maxX = Math.max(windowMaxX, viewportMaxX, 0) + MAP_PADDING;
+    const maxY = Math.max(windowMaxY, viewportMaxY, 0) + MAP_PADDING;
 
     const width = Math.max(1, maxX - minX);
     const height = Math.max(1, maxY - minY);
 
     const scale = Math.min(MAP_SIZE / width, MAP_SIZE / height);
 
-    return { minX, minY, scale };
+    return { minX, minY, scale, width, height };
   }, [modules, panX, panY, zoom, viewport]);
 
   /* ---------------- ZOOM ---------------- */
@@ -102,73 +108,106 @@ export default function WorkspaceControls() {
   const viewportW = (viewport.w / zoom) * mapBounds.scale;
   const viewportH = (viewport.h / zoom) * mapBounds.scale;
 
-  const viewportX =
-    ((-panX / zoom) - mapBounds.minX) * mapBounds.scale;
-  const viewportY =
-    ((-panY / zoom) - mapBounds.minY) * mapBounds.scale;
+  const viewportX = ((-panX / zoom) - mapBounds.minX) * mapBounds.scale;
+  const viewportY = ((-panY / zoom) - mapBounds.minY) * mapBounds.scale;
 
-  const bottomOffset = notesOpen ? 284 : 72;
+  /* 🔥 ASIL OLAY */
+  const bottomOffset = (notesOpen ? notesHeight : 48) + 16;
 
   return (
     <div
-      className="fixed right-6 z-50 flex items-end gap-4"
+      className="fixed right-6 z-50"
       style={{ bottom: bottomOffset }}
+      onMouseEnter={() => setMapOpen(true)}
+      onMouseLeave={() => setMapOpen(false)}
     >
-      {/* ===================== MAP ===================== */}
-      <div className="relative w-[180px] h-[180px] rounded-xl border border-white/10 bg-[#031A1C]/95 overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 flex items-center px-3">
-          <span className="text-[11px] text-white/40 font-bold uppercase">
-            Map
-          </span>
-        </div>
-
+      <div className="flex items-end gap-4">
+        {/* MAP */}
         <div
-          className="absolute inset-0 top-8 cursor-pointer"
-          onClick={handleMapClick}
+          className={`
+            relative rounded-xl border border-white/10 bg-[#031A1C]/95
+            overflow-hidden transition-all duration-300 ease-out
+            ${mapOpen ? "w-[180px] h-[180px]" : "w-8 h-8"}
+          `}
         >
-          {modules.map(m => (
-            <div
-              key={m.id}
-              className="absolute bg-teal-400/30 border border-teal-400 rounded-[2px]"
-              style={{
-                left: (m.x - mapBounds.minX) * mapBounds.scale,
-                top: (m.y - mapBounds.minY) * mapBounds.scale,
-                width: m.width * mapBounds.scale,
-                height: m.height * mapBounds.scale,
-              }}
-            />
-          ))}
+          {!mapOpen && (
+            <div className="absolute inset-0 flex items-center justify-center text-teal-400 text-sm leading-none">
+              ⛶
+            </div>
+          )}
 
           <div
-            className="absolute border-2 border-teal-400 bg-teal-400/10"
-            style={{
-              left: viewportX,
-              top: viewportY,
-              width: viewportW,
-              height: viewportH,
-            }}
-          />
-        </div>
-      </div>
+            className={`
+              absolute inset-0 transition-opacity duration-200
+              ${mapOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
+            `}
+          >
+            <div className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 flex items-center px-3">
+              <span className="text-[11px] text-white/40 font-bold uppercase">
+                Map
+              </span>
+            </div>
 
-      {/* ===================== CONTROLS ===================== */}
-      <div className="flex flex-col gap-2">
-        <ZoomBtn onClick={() => handleZoom(0.1)}>+</ZoomBtn>
-        <div className="w-10 h-10 rounded-lg bg-[#031A1C]/95 border border-white/10 text-[11px] font-bold text-teal-400 flex items-center justify-center">
-          {Math.round(zoom * 100)}%
+            <div
+              className="absolute inset-0 top-8 cursor-pointer"
+              onClick={handleMapClick}
+            >
+              {/* MODULES */}
+              {modules.map(m => (
+                <div
+                  key={m.id}
+                  className={`absolute bg-teal-400/30 border border-teal-400 rounded-[2px]
+                    ${m.id === activeModuleId ? 'border-2 bg-teal-400/50' : ''}`}
+                  style={{
+                    left: Math.max(0, (m.x - mapBounds.minX) * mapBounds.scale),
+                    top: Math.max(0, (m.y - mapBounds.minY) * mapBounds.scale),
+                    width: m.width * mapBounds.scale,
+                    height: m.height * mapBounds.scale,
+                  }}
+                />
+              ))}
+
+              {/* VIEWPORT */}
+              <div
+                className="absolute border-2 border-white bg-white/5 rounded-[2px]"
+                style={{
+                  left: Math.max(0, Math.min(MAP_SIZE, viewportX)),
+                  top: Math.max(0, Math.min(MAP_SIZE, viewportY)),
+                  width: Math.min(MAP_SIZE, viewportW),
+                  height: Math.min(MAP_SIZE, viewportH),
+                }}
+              />
+            </div>
+          </div>
         </div>
-        <ZoomBtn onClick={() => handleZoom(-0.1)}>−</ZoomBtn>
-        <ZoomBtn onClick={alignToActiveWindow}>◎</ZoomBtn>
+
+        {/* CONTROLS */}
+        <div className="flex flex-col gap-2">
+          <ZoomBtn onClick={() => handleZoom(0.1)}>+</ZoomBtn>
+
+          <div className="w-8 h-8 rounded-lg bg-[#031A1C]/95 border border-white/10 text-[10px] font-bold text-teal-400 flex items-center justify-center">
+            {Math.round(zoom * 100)}%
+          </div>
+
+          <ZoomBtn onClick={() => handleZoom(-0.1)}>−</ZoomBtn>
+          <ZoomBtn onClick={alignToActiveWindow}>◎</ZoomBtn>
+        </div>
       </div>
     </div>
   );
 }
 
-function ZoomBtn({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+function ZoomBtn({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}
-      className="w-10 h-10 rounded-lg bg-[#031A1C]/95 border border-white/10 text-white text-lg hover:bg-teal-400/20 transition"
+      className="w-8 h-8 rounded-lg bg-[#031A1C]/95 border border-white/10 text-white text-sm hover:bg-teal-400/20 transition"
     >
       {children}
     </button>

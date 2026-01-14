@@ -169,7 +169,7 @@ export default function SpotPositionsModule() {
   }, [formData.entryPrice, formData.quantity]);
 
   return (
-    <div className="relative space-y-3 text-xs h-full flex flex-col">
+    <div className="relative space-y-3 text-xs h-full flex flex-col select-none">
       {/* Portfolio Summary */}
       <div className="grid grid-cols-2 gap-2">
         <div className="bg-white/5 border border-white/10 rounded p-2">
@@ -228,7 +228,7 @@ export default function SpotPositionsModule() {
       {!showAddModal && (
         <button
           onClick={() => setShowAddModal(true)}
-          className="w-full bg-white/10 hover:bg-white/15 text-white py-2 rounded transition-colors flex items-center justify-center gap-2 font-semibold border border-white/20"
+          className="w-full bg-white/10 hover:bg-white/15 text-white py-2 rounded transition-colors flex items-center justify-center gap-2 font-semibold border border-white/20 select-none"
         >
           <Plus className="w-4 h-4" />
           Add Position
@@ -534,7 +534,7 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between select-none">
       <span className="text-white/50">{label}</span>
       <span>{children}</span>
     </div>
