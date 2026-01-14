@@ -10,6 +10,20 @@ interface Props {
 
 type SideRow = { price: number; qty: number; total: number };
 
+const EXCHANGES = [
+  { id: "binance", name: "Binance", active: true },
+  { id: "okx", name: "OKX", active: true }, // ✅ AÇILDI
+  { id: "bybit", name: "Bybit", active: true }, // ✅ AÇILDI
+  { id: "coinbase", name: "Coinbase", active: true }, // ✅ AÇILDI
+];
+
+const SYMBOLS_BY_EXCHANGE = {
+  binance: ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT", "XRPUSDT"],
+  okx: ["BTC-USDT", "ETH-USDT", "SOL-USDT", "BNB-USDT", "ADA-USDT", "XRP-USDT"],
+  bybit: ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT", "XRPUSDT"],
+  coinbase: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "ADA-USD", "XRP-USD"],
+};
+
 function buildSide(raw: [string, string][], isAsks: boolean): SideRow[] {
   const rows = raw
     .map(([p, q]) => ({ price: Number(p), qty: Number(q) }))
@@ -42,17 +56,27 @@ function mockDepth(symbol: string) {
 }
 
 export default function OrderBookModule({ instanceId }: Props) {
-  const storageKey = `orderbook-${instanceId}-symbol`;
+  const exchangeStorageKey = `orderbook-${instanceId}-exchange`;
+  const symbolStorageKey = `orderbook-${instanceId}-symbol`;
 
-  // 🔥 Instance-specific symbol state
-  const [symbol, setSymbol] = useState(() => {
+  // 🔥 Exchange state
+  const [exchange, setExchange] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem(storageKey) || "BTCUSDT";
+      return localStorage.getItem(exchangeStorageKey) || "binance";
     }
-    return "BTCUSDT";
+    return "binance";
   });
 
-  // 🔥 Instance-specific orderbook data
+  // 🔥 Symbol state
+  const [symbol, setSymbol] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(symbolStorageKey);
+      if (saved) return saved;
+    }
+    return SYMBOLS_BY_EXCHANGE[exchange as keyof typeof SYMBOLS_BY_EXCHANGE][0];
+  });
+
+  // 🔥 OrderBook data
   const [orderBookData, setOrderBookData] = useState<{
     bids: SideRow[];
     asks: SideRow[];
@@ -65,17 +89,40 @@ export default function OrderBookModule({ instanceId }: Props) {
     source: "mock",
   });
 
+  // Save exchange to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(exchangeStorageKey, exchange);
+    }
+  }, [exchange, exchangeStorageKey]);
+
   // Save symbol to localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, symbol);
+      localStorage.setItem(symbolStorageKey, symbol);
     }
-  }, [symbol, storageKey]);
+  }, [symbol, symbolStorageKey]);
+
+  // When exchange changes, update symbol to first available
+  useEffect(() => {
+    const availableSymbols =
+      SYMBOLS_BY_EXCHANGE[exchange as keyof typeof SYMBOLS_BY_EXCHANGE];
+    if (!availableSymbols.includes(symbol)) {
+      setSymbol(availableSymbols[0]);
+    }
+  }, [exchange, symbol]);
 
   useEffect(() => {
     let mounted = true;
 
-    // 🔥 WebSocket stream (depth20@100ms = 100ms updates!)
+    // Only Binance works for now - others show mock data
+    if (exchange !== "binance") {
+      const mockData = mockDepth(symbol);
+      setOrderBookData(mockData);
+      return;
+    }
+
+    // 🔥 WebSocket stream (Binance only - LIVE DATA)
     const stream = `${symbol.toLowerCase()}@depth20@100ms`;
 
     const unsubscribe = wsService.subscribe(stream, (data) => {
@@ -94,23 +141,20 @@ export default function OrderBookModule({ instanceId }: Props) {
               ? (bestBid + bestAsk) / 2
               : null;
 
-          // 👇 Update local state
           setOrderBookData({ bids, asks, mid, source: "api" });
         }
       } catch (error) {
         console.error("[OrderBook] Parse error:", error);
-        // Fallback to mock
         const mockData = mockDepth(symbol);
         setOrderBookData(mockData);
       }
     });
 
-    // Cleanup
     return () => {
       mounted = false;
       unsubscribe();
     };
-  }, [symbol]);
+  }, [symbol, exchange]);
 
   const { bids, asks, mid, source } = orderBookData;
 
@@ -124,8 +168,8 @@ export default function OrderBookModule({ instanceId }: Props) {
     )
       return null;
     const value = (bestAsk as number) - (bestBid as number);
-    const mid = ((bestAsk as number) + (bestBid as number)) / 2;
-    const pct = mid ? (value / mid) * 100 : 0;
+    const midCalc = ((bestAsk as number) + (bestBid as number)) / 2;
+    const pct = midCalc ? (value / midCalc) * 100 : 0;
     return { value, pct };
   }, [bestAsk, bestBid]);
 
@@ -157,6 +201,8 @@ export default function OrderBookModule({ instanceId }: Props) {
     []
   );
 
+  const selectedExchange = EXCHANGES.find((e) => e.id === exchange);
+
   return (
     <div className="space-y-3">
       {/* Header Row */}
@@ -168,25 +214,54 @@ export default function OrderBookModule({ instanceId }: Props) {
           <span className="text-white/40">•</span>{" "}
           <span
             className={`${
-              source === "api" ? "text-emerald-400" : "text-white/50"
+              source === "api" ? "text-emerald-400" : "text-yellow-400"
             }`}
           >
             {source === "api" ? "LIVE" : "MOCK"}
           </span>
         </div>
 
-        <select
-          value={symbol}
-          onChange={(e) => setSymbol(e.target.value)}
-          className="h-8 rounded-lg bg-white/5 border border-white/10
-            text-xs text-white/80 px-2 outline-none"
-        >
-          <option value="BTCUSDT">BTCUSDT</option>
-          <option value="ETHUSDT">ETHUSDT</option>
-          <option value="SOLUSDT">SOLUSDT</option>
-          <option value="BNBUSDT">BNBUSDT</option>
-        </select>
+        <div className="flex gap-2">
+          {/* Exchange Selector */}
+          <select
+            value={exchange}
+            onChange={(e) => setExchange(e.target.value)}
+            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10 transition-colors"
+          >
+            {EXCHANGES.map((ex) => (
+              <option key={ex.id} value={ex.id}>
+                {ex.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Symbol Selector */}
+          <select
+            value={symbol}
+            onChange={(e) => setSymbol(e.target.value)}
+            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10 transition-colors"
+          >
+            {SYMBOLS_BY_EXCHANGE[
+              exchange as keyof typeof SYMBOLS_BY_EXCHANGE
+            ].map((sym) => (
+              <option key={sym} value={sym}>
+                {sym}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
+
+      {/* Exchange Badge - Only show for non-Binance */}
+      {exchange !== "binance" && (
+        <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs flex items-center gap-2">
+          <span>⚠️</span>
+          <span>
+            {selectedExchange?.name} WebSocket coming soon. Showing mock data
+            for testing.
+          </span>
+        </div>
+      )}
 
       {/* Column titles */}
       <div className="grid grid-cols-3 text-[11px] text-white/40 font-semibold">

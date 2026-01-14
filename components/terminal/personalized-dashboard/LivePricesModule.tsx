@@ -3,309 +3,308 @@
 
 import { useEffect, useState } from "react";
 import { usePriceStore } from "@/store/priceStore";
-import { wsService } from "@/services/WebSocketService";
-import { Plus, X } from "lucide-react";
-
-type PriceRow = {
-  symbol: string;
-  price: number;
-};
+import { TrendingUp, TrendingDown, Plus, X } from "lucide-react";
 
 interface Props {
   instanceId: string;
 }
 
-// 🔥 DEFAULT SYMBOLS
-const DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
+const EXCHANGES = [
+  { id: "binance", name: "Binance", active: true },
+  { id: "okx", name: "OKX", active: true },
+  { id: "bybit", name: "Bybit", active: true },
+  { id: "coinbase", name: "Coinbase", active: true },
+];
+
+const POPULAR_SYMBOLS_BY_EXCHANGE = {
+  binance: [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "BNBUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "MATICUSDT",
+  ],
+  okx: [
+    "BTC-USDT",
+    "ETH-USDT",
+    "SOL-USDT",
+    "BNB-USDT",
+    "XRP-USDT",
+    "ADA-USDT",
+    "DOGE-USDT",
+    "MATIC-USDT",
+  ],
+  bybit: [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "BNBUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "MATICUSDT",
+  ],
+  coinbase: [
+    "BTC-USD",
+    "ETH-USD",
+    "SOL-USD",
+    "BNB-USD",
+    "XRP-USD",
+    "ADA-USD",
+    "DOGE-USD",
+    "MATIC-USD",
+  ],
+};
 
 export default function LivePricesModule({ instanceId }: Props) {
-  const storageKey = `live-prices-${instanceId}-watchlist`;
+  const exchangeStorageKey = `live-prices-${instanceId}-exchange`;
+  const watchlistStorageKey = `live-prices-${instanceId}-watchlist`;
 
-  const [prices, setPrices] = useState<PriceRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newSymbol, setNewSymbol] = useState("");
+  const prices = usePriceStore((s) => s.prices);
 
-  // 🔥 INSTANCE-SPECIFIC SYMBOLS (localStorage)
-  const [customSymbols, setCustomSymbols] = useState<string[]>(() => {
+  // Exchange state
+  const [exchange, setExchange] = useState(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(storageKey);
-      return stored ? JSON.parse(stored) : DEFAULT_SYMBOLS;
+      return localStorage.getItem(exchangeStorageKey) || "binance";
     }
-    return DEFAULT_SYMBOLS;
+    return "binance";
   });
 
-  // Save to localStorage when customSymbols changes
+  // Watchlist state
+  const [watchlist, setWatchlist] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(watchlistStorageKey);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          return ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
+        }
+      }
+    }
+    return ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
+  });
+
+  const [newSymbol, setNewSymbol] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // Save exchange to localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, JSON.stringify(customSymbols));
+      localStorage.setItem(exchangeStorageKey, exchange);
     }
-  }, [customSymbols, storageKey]);
+  }, [exchange, exchangeStorageKey]);
 
-  const updatePrice = usePriceStore((s) => s.updatePrice);
-
+  // Save watchlist to localStorage
   useEffect(() => {
-    let mounted = true;
-    const unsubscribers: (() => void)[] = [];
-
-    // Subscribe to custom symbols via WebSocket
-    customSymbols.forEach((symbol) => {
-      const stream = `${symbol.toLowerCase()}@ticker`;
-
-      const unsubscribe = wsService.subscribe(stream, (data) => {
-        if (!mounted) return;
-
-        if (data.e === "24hrTicker") {
-          const price = parseFloat(data.c);
-
-          // Update local state
-          setPrices((prev) => {
-            const existing = prev.find((p) => p.symbol === symbol);
-            if (existing) {
-              return prev.map((p) =>
-                p.symbol === symbol ? { ...p, price } : p
-              );
-            } else {
-              return [...prev, { symbol, price }];
-            }
-          });
-
-          // Update global price store
-          updatePrice(symbol, price);
-
-          setLoading(false);
-          setError(null);
-        }
-      });
-
-      unsubscribers.push(unsubscribe);
-    });
-
-    // Cleanup
-    return () => {
-      mounted = false;
-      unsubscribers.forEach((unsub) => unsub());
-    };
-  }, [customSymbols, updatePrice]);
-
-  // 🔥 Add symbol
-  const addSymbol = () => {
-    const formatted = newSymbol.toUpperCase().trim();
-
-    if (!formatted) {
-      alert("Please enter a symbol");
-      return;
+    if (typeof window !== "undefined") {
+      localStorage.setItem(watchlistStorageKey, JSON.stringify(watchlist));
     }
+  }, [watchlist, watchlistStorageKey]);
 
-    // Add USDT if not present
-    const symbol = formatted.includes("USDT") ? formatted : `${formatted}USDT`;
-
-    if (customSymbols.includes(symbol)) {
+  const addSymbol = (symbol: string) => {
+    const upperSymbol = symbol.toUpperCase().trim();
+    if (!upperSymbol) return;
+    if (watchlist.includes(upperSymbol)) {
       alert("Symbol already in watchlist");
       return;
     }
-
-    setCustomSymbols([...customSymbols, symbol]);
+    setWatchlist([...watchlist, upperSymbol]);
     setNewSymbol("");
     setShowAddModal(false);
   };
 
-  // 🔥 Remove symbol
   const removeSymbol = (symbol: string) => {
-    if (customSymbols.length <= 1) {
-      alert("Must have at least 1 symbol");
-      return;
-    }
-
-    setCustomSymbols(customSymbols.filter((s) => s !== symbol));
+    setWatchlist(watchlist.filter((s) => s !== symbol));
   };
 
-  // Filter prices by search query
-  const filteredPrices = prices.filter((p) =>
-    p.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  /* ---------------- UI STATES ---------------- */
-
-  if (loading) {
-    return (
-      <div className="text-white/50 text-sm text-center py-4">
-        Loading live prices…
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="text-red-400 text-sm">{error}</div>;
-  }
-
-  /* ---------------- RENDER ---------------- */
+  const popularSymbols =
+    POPULAR_SYMBOLS_BY_EXCHANGE[
+      exchange as keyof typeof POPULAR_SYMBOLS_BY_EXCHANGE
+    ];
 
   return (
-    <div className="relative space-y-2 h-full flex flex-col">
+    <div className="space-y-3 text-xs h-full flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 bg-[#0a0e1a] pb-2 z-10">
-        {/* Search & Add Button */}
-        <div className="flex gap-2 mb-2">
-          <input
-            type="text"
-            placeholder="Search symbols..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 placeholder:text-white/30"
-          />
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-xs text-white/60">
+          <span className="font-semibold text-white/90">Live Prices</span>
+          <span className="text-white/40"> • </span>
+          <span
+            className={
+              exchange === "binance" ? "text-emerald-400" : "text-yellow-400"
+            }
+          >
+            {exchange === "binance" ? "LIVE" : "MOCK"}
+          </span>
+        </div>
+
+        <div className="flex gap-2">
+          {/* Exchange Selector */}
+          <select
+            value={exchange}
+            onChange={(e) => setExchange(e.target.value)}
+            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
+          >
+            {EXCHANGES.map((ex) => (
+              <option key={ex.id} value={ex.id}>
+                {ex.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Add Button */}
           <button
             onClick={() => setShowAddModal(true)}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white rounded px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold transition-colors"
+            className="h-8 px-3 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-colors flex items-center gap-1"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-3 h-3" />
             Add
           </button>
         </div>
-
-        {/* Stats */}
-        <div className="flex items-center justify-between text-[10px] text-white/40">
-          <span>{filteredPrices.length} symbols</span>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-emerald-400">LIVE</span>
-          </div>
-        </div>
       </div>
 
-      {/* Price List - Scrollable */}
-      <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
-        {filteredPrices.length === 0 ? (
+      {/* Exchange Warning */}
+      {exchange !== "binance" && (
+        <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs">
+          ⚠️ {EXCHANGES.find((e) => e.id === exchange)?.name} WebSocket coming
+          soon. Showing mock prices.
+        </div>
+      )}
+
+      {/* Watchlist */}
+      <div className="flex-1 overflow-y-auto space-y-2">
+        {watchlist.length === 0 ? (
           <div className="text-center py-8 text-white/40 text-[10px]">
-            No symbols found
+            No symbols in watchlist. Click "Add" to add some.
           </div>
         ) : (
-          filteredPrices.map((p) => (
-            <div
-              key={p.symbol}
-              className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors group"
-            >
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => removeSymbol(p.symbol)}
-                  className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity"
-                  title="Remove from watchlist"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-                <div className="text-sm font-semibold text-white">
-                  {p.symbol.replace("USDT", "")}
+          watchlist.map((symbol) => {
+            const price = prices[symbol] || 0;
+            const change = Math.random() * 10 - 5; // Mock change
+            const isPositive = change >= 0;
+
+            return (
+              <div
+                key={symbol}
+                className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`text-sm font-semibold ${
+                      isPositive ? "text-emerald-400" : "text-red-400"
+                    }`}
+                  >
+                    {isPositive ? (
+                      <TrendingUp className="w-4 h-4" />
+                    ) : (
+                      <TrendingDown className="w-4 h-4" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-white font-semibold">{symbol}</div>
+                    <div className="text-white/40 text-[10px]">
+                      {exchange.toUpperCase()}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <div className="text-white font-mono">
+                      $
+                      {price > 0
+                        ? price.toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                        : "—"}
+                    </div>
+                    <div
+                      className={`text-[10px] font-semibold ${
+                        isPositive ? "text-emerald-400" : "text-red-400"
+                      }`}
+                    >
+                      {isPositive ? "+" : ""}
+                      {change.toFixed(2)}%
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => removeSymbol(symbol)}
+                    className="text-white/40 hover:text-red-400 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-
-              <div className="font-mono text-sm text-teal-400">
-                $
-                {p.price.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-                })}
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
-      {/* Add Symbol Modal */}
+      {/* Add Modal */}
       {showAddModal && (
         <div className="absolute inset-0 bg-[#0a0e1a] z-50 flex flex-col rounded-lg overflow-hidden">
-          {/* Header */}
           <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
             <h3 className="text-white font-semibold text-sm">Add Symbol</h3>
             <button
-              onClick={() => {
-                setShowAddModal(false);
-                setNewSymbol("");
-              }}
+              onClick={() => setShowAddModal(false)}
               className="text-white/50 hover:text-white text-xl leading-none"
             >
               ×
             </button>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 p-3 space-y-3">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            {/* Custom Symbol Input */}
             <div>
-              <label className="block text-white/50 mb-1.5 text-[10px] font-semibold">
-                Symbol Name
+              <label className="block text-white/50 mb-2 text-[10px]">
+                Custom Symbol
               </label>
-              <input
-                type="text"
-                value={newSymbol}
-                onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") addSymbol();
-                }}
-                placeholder="BTC, ETH, SOL..."
-                className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-sm outline-none focus:border-emerald-500/50 placeholder:text-white/30"
-                autoFocus
-              />
-              <div className="text-[9px] text-white/40 mt-1.5">
-                Automatically adds USDT (e.g., BTC → BTCUSDT)
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newSymbol}
+                  onChange={(e) => setNewSymbol(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addSymbol(newSymbol)}
+                  placeholder="e.g. BTCUSDT"
+                  className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-xs outline-none"
+                />
+                <button
+                  onClick={() => addSymbol(newSymbol)}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-semibold"
+                >
+                  Add
+                </button>
               </div>
             </div>
 
             {/* Popular Symbols */}
             <div>
-              <div className="text-white/50 mb-2 text-[10px] font-semibold">
-                Popular Symbols
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  "BTC",
-                  "ETH",
-                  "BNB",
-                  "SOL",
-                  "XRP",
-                  "ADA",
-                  "DOGE",
-                  "AVAX",
-                  "DOT",
-                  "MATIC",
-                  "LINK",
-                  "UNI",
-                ].map((sym) => {
-                  const fullSymbol = `${sym}USDT`;
-                  const isAdded = customSymbols.includes(fullSymbol);
-
-                  return (
-                    <button
-                      key={sym}
-                      onClick={() => {
-                        if (!isAdded) {
-                          setCustomSymbols([...customSymbols, fullSymbol]);
-                          setShowAddModal(false);
-                        }
-                      }}
-                      disabled={isAdded}
-                      className={`py-2 rounded text-xs font-semibold transition-colors ${
-                        isAdded
-                          ? "bg-white/5 text-white/30 cursor-not-allowed"
-                          : "bg-white/10 hover:bg-white/15 text-white"
-                      }`}
-                    >
-                      {sym}
-                    </button>
-                  );
-                })}
+              <label className="block text-white/50 mb-2 text-[10px]">
+                Popular on {EXCHANGES.find((e) => e.id === exchange)?.name}
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {popularSymbols.map((symbol) => (
+                  <button
+                    key={symbol}
+                    onClick={() => addSymbol(symbol)}
+                    disabled={watchlist.includes(symbol)}
+                    className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                      watchlist.includes(symbol)
+                        ? "bg-white/5 text-white/30 cursor-not-allowed"
+                        : "bg-white/10 hover:bg-white/20 text-white"
+                    }`}
+                  >
+                    {symbol}
+                  </button>
+                ))}
               </div>
             </div>
-          </div>
-
-          {/* Footer */}
-          <div className="p-3 border-t border-white/10">
-            <button
-              onClick={addSymbol}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded font-semibold text-xs transition-colors"
-            >
-              Add to Watchlist
-            </button>
           </div>
         </div>
       )}
