@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import type { PriceAlert } from "@/lib/personalized-dashboard/alertTypes";
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
+
 
 type AlertState = {
   alerts: PriceAlert[];
@@ -31,9 +33,12 @@ export const useAlertStore = create<AlertState & AlertActions>((set, get) => ({
     set((s) => ({
       alerts: s.alerts.filter((a) => a.id !== id),
     })),
+checkAlerts: (prices) =>
+  set((s) => {
+    const push =
+      useDashboardNotificationStore.getState().push;
 
-  checkAlerts: (prices) =>
-    set((s) => ({
+    return {
       alerts: s.alerts.map((a) => {
         if (a.triggered) return a;
 
@@ -41,9 +46,23 @@ export const useAlertStore = create<AlertState & AlertActions>((set, get) => ({
         if (!price) return a;
 
         const hit =
-          a.condition === "above" ? price >= a.target : price <= a.target;
+          a.condition === "above"
+            ? price >= a.target
+            : price <= a.target;
 
-        return hit ? { ...a, triggered: true } : a;
+        if (hit) {
+          push({
+            type: "success",
+            title: "Alert Triggered",
+            description: `${a.symbol} ${a.condition} ${a.target}`,
+          });
+
+          return { ...a, triggered: true };
+        }
+
+        return a;
       }),
-    })),
+    };
+  }),
+
 }));

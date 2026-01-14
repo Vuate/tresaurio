@@ -8,87 +8,113 @@ import type {
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
 
+/* ================= TYPES ================= */
+
 type State = {
   zoom: number;
   panX: number;
   panY: number;
 
+  /* NOTES */
+  notesOpen: boolean;
+  notes: NoteItem[];
+  notesHeight: number;
+
+  /* MODULES */
   activeModuleId: ModuleId | null;
   modules: ModuleInstance[];
 
-  notesOpen: boolean;
-  notes: NoteItem[];
-
-  // 🔥 ADD TOOL PANEL
+  /* ADD TOOL */
   addToolOpen: boolean;
 
-  // 🔥 SIDEBAR
+  /* SIDEBAR */
   sidebarOpen: boolean;
 
-  // 🔥 ALERTS
+  /* ALERTS */
   alerts: AlertItem[];
 };
 
 type Actions = {
+  /* VIEW */
   setZoom: (zoom: number) => void;
   setPan: (x: number, y: number) => void;
+  resetView: () => void;
 
+  /* NOTES */
+  toggleNotes: () => void;
+  addNote: (text: string) => void;
+  setNotesHeight: (h: number) => void;
+
+  /* MODULES */
   setActiveModule: (id: ModuleId | null) => void;
-
   addModule: (m: ModuleInstance) => void;
+  addModuleByType: (type: string, x?: number, y?: number) => void;
   updateModule: (id: ModuleId, patch: Partial<ModuleInstance>) => void;
   removeModule: (id: ModuleId) => void;
 
-  addModuleByType: (type: string) => void;
-
-  toggleNotes: () => void;
-  addNote: (text: string) => void;
-
-  // 🔥 ADD TOOL PANEL
+  /* ADD TOOL */
   toggleAddTool: () => void;
 
-  // 🔥 SIDEBAR
+  /* SIDEBAR */
   toggleSidebar: () => void;
 
-  // 🔥 ALERT ACTIONS
+  /* ALERTS */
   addAlert: (a: Omit<AlertItem, "id">) => void;
   toggleAlert: (id: string) => void;
   removeAlert: (id: string) => void;
-
-  resetView: () => void;
 };
+
+/* ================= HELPERS ================= */
 
 const clamp = (v: number, min: number, max: number) =>
   Math.max(min, Math.min(max, v));
 
+/* ================= STORE ================= */
+
 export const usePersonalizedDashboardStore = create<State & Actions>(
   (set, get) => ({
-    /* ---------------- VIEW ---------------- */
+    /* ---------- VIEW ---------- */
     zoom: 1,
     panX: -4500,
     panY: -4500,
 
-    /* ---------------- MODULES ---------------- */
+    /* ---------- NOTES ---------- */
+    notesOpen: true,
+    notes: [],
+    notesHeight: 260,
+
+    /* ---------- MODULES ---------- */
     activeModuleId: null,
     modules: defaultModules,
 
-    /* ---------------- NOTES ---------------- */
-    notesOpen: true,
-    notes: [],
-
-    /* ---------------- ADD TOOL ---------------- */
+    /* ---------- ADD TOOL ---------- */
     addToolOpen: false,
 
-    /* ---------------- SIDEBAR ---------------- */
+    /* ---------- SIDEBAR ---------- */
     sidebarOpen: false,
 
-    /* ---------------- ALERTS ---------------- */
+    /* ---------- ALERTS ---------- */
     alerts: [],
 
-    /* ---------------- ACTIONS ---------------- */
+    /* ================= ACTIONS ================= */
+
+    /* VIEW */
     setZoom: (zoom) => set({ zoom: clamp(zoom, 0.1, 2) }),
     setPan: (panX, panY) => set({ panX, panY }),
+    resetView: () => set({ zoom: 1, panX: -4500, panY: -4500 }),
 
+    /* NOTES */
+    toggleNotes: () => set({ notesOpen: !get().notesOpen }),
+    setNotesHeight: (h) => set({ notesHeight: h }),
+    addNote: (text) =>
+      set({
+        notes: [
+          { id: crypto.randomUUID(), text, createdAt: Date.now() },
+          ...get().notes,
+        ],
+      }),
+
+    /* MODULES */
     setActiveModule: (activeModuleId) => set({ activeModuleId }),
 
     addModule: (m) =>
@@ -97,7 +123,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
         activeModuleId: m.id,
       }),
 
-    addModuleByType: (type) => {
+    addModuleByType: (type, x, y) => {
       const def = moduleRegistry[type];
       if (!def) return;
 
@@ -110,8 +136,8 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
             type: def.type,
             title: def.title,
             category: def.category,
-            x: 4800 + Math.random() * 400,
-            y: 4800 + Math.random() * 400,
+            x: x ?? 4800 + Math.random() * 400,
+            y: y ?? 4800 + Math.random() * 400,
             width: def.defaultSize.width,
             height: def.defaultSize.height,
           },
@@ -135,30 +161,21 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
           get().activeModuleId === id ? null : get().activeModuleId,
       }),
 
-    toggleNotes: () => set({ notesOpen: !get().notesOpen }),
-
-    addNote: (text) =>
-      set({
-        notes: [
-          { id: crypto.randomUUID(), text, createdAt: Date.now() },
-          ...get().notes,
-        ],
-      }),
-
-    /* 🔥🔥 ASIL OLAY BURASI 🔥🔥 */
+    /* ADD TOOL */
     toggleAddTool: () =>
       set((s) => ({
         addToolOpen: !s.addToolOpen,
-        sidebarOpen: false, // 👈 Add Tool açılınca Sidebar kapanır
+        sidebarOpen: false,
       })),
 
+    /* SIDEBAR */
     toggleSidebar: () =>
       set((s) => ({
         sidebarOpen: !s.sidebarOpen,
-        addToolOpen: false, // 👈 Sidebar açılınca Add Tool kapanır
+        addToolOpen: false,
       })),
 
-    /* ---------------- ALERT ACTIONS ---------------- */
+    /* ALERTS */
     addAlert: (a) =>
       set({
         alerts: [
@@ -181,7 +198,5 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
       set({
         alerts: get().alerts.filter((a) => a.id !== id),
       }),
-
-    resetView: () => set({ zoom: 1, panX: -4500, panY: -4500 }),
   })
 );

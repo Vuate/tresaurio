@@ -1,24 +1,80 @@
 "use client";
 
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
+
 
 export default function NotesPanel() {
-  const { notesOpen, toggleNotes, notes, addNote } =
-    usePersonalizedDashboardStore();
+  const {
+    notesOpen,
+    toggleNotes,
+    notes,
+    addNote,
+    notesHeight,
+    setNotesHeight,
+  } = usePersonalizedDashboardStore();
 
   const [text, setText] = useState("");
 
+  /* ================= RESIZE REFS ================= */
+  const isResizingRef = useRef(false);
+  const startYRef = useRef(0);
+  const startHeightRef = useRef(0);
+
+  /* ================= RESIZE LOGIC ================= */
+  useEffect(() => {
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isResizingRef.current) return;
+
+      const delta = startYRef.current - e.clientY;
+      const newHeight = Math.min(
+        Math.max(startHeightRef.current + delta, 140), // min
+        600 // max
+      );
+
+      setNotesHeight(newHeight);
+    };
+
+    const onMouseUp = () => {
+      isResizingRef.current = false;
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [setNotesHeight]);
+
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-40
+      className="fixed bottom-0 left-0 right-0 z-40
         bg-[#031A1C]/95 backdrop-blur
-        border-t border-white/10
-        transition-all duration-300 ease-in-out
-        ${notesOpen ? "h-[260px]" : "h-[48px]"}`}
+        border-t border-white/10"
+      style={{
+        height: notesOpen ? notesHeight : 48,
+      }}
     >
-      {/* HEADER */}
+      {/* ================= RESIZE HANDLE ================= */}
+      {notesOpen && (
+        <div
+          className="absolute -top-1 left-0 right-0 h-2 cursor-ns-resize z-50"
+          onMouseDown={(e) => {
+            e.stopPropagation(); // 🔥 CLICK ÇAKIŞMASI ENGELLENDİ
+            isResizingRef.current = true;
+            startYRef.current = e.clientY;
+            startHeightRef.current = notesHeight;
+            e.preventDefault();
+          }}
+        />
+      )}
+
+      {/* ================= HEADER ================= */}
       <div
+        onMouseDown={(e) => e.stopPropagation()} // 🔥 resize ile çakışmaz
         onClick={toggleNotes}
         className="h-[48px] px-6 flex items-center justify-between
           cursor-pointer select-none"
@@ -35,9 +91,9 @@ export default function NotesPanel() {
         </div>
       </div>
 
-      {/* CONTENT */}
+      {/* ================= CONTENT ================= */}
       {notesOpen && (
-        <div className="h-[calc(100%-48px)] flex gap-4 px-6 pb-4">
+        <div className="h-[calc(100%-48px)] flex gap-4 px-6 pb-4 overflow-hidden">
           {/* INPUT */}
           <div className="flex flex-col w-1/2 gap-2">
             <textarea
@@ -51,11 +107,27 @@ export default function NotesPanel() {
             />
 
             <button
-              onClick={() => {
-                if (!text.trim()) return;
-                addNote(text);
-                setText("");
-              }}
+onClick={() => {
+  if (!text.trim()) {
+    useDashboardNotificationStore.getState().push({
+      type: "error",
+      title: "Empty Note",
+      description: "Please write something before saving",
+    });
+    return;
+  }
+
+  addNote(text);
+
+  useDashboardNotificationStore.getState().push({
+    type: "success",
+    title: "Note Saved",
+    description: "Your note has been added",
+  });
+
+  setText("");
+}}
+
               className="self-end px-4 py-1.5 rounded-md
                 bg-teal-400/20 text-teal-300
                 text-xs font-semibold

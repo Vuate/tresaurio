@@ -3,7 +3,9 @@
 import { useEffect, useRef } from "react";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import ModuleWindow from "./ModuleWindow";
-import SidebarPanel from "./SidebarPanel"; // ✅ EKLENDİ
+import SidebarPanel from "./SidebarPanel";
+import DashboardNotifications from "./DashboardNotifications";
+
 
 export default function Canvas() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -12,8 +14,16 @@ export default function Canvas() {
   const isPanningRef = useRef(false);
   const startRef = useRef({ x: 0, y: 0 });
 
-  const { zoom, panX, panY, setZoom, setPan, modules } =
-    usePersonalizedDashboardStore();
+  const {
+    zoom,
+    panX,
+    panY,
+    setZoom,
+    setPan,
+    modules,
+    notesOpen,
+    notesHeight,
+  } = usePersonalizedDashboardStore();
 
   /* ---------------- PAN ---------------- */
   useEffect(() => {
@@ -60,42 +70,62 @@ export default function Canvas() {
     const el = containerRef.current;
     if (!el) return;
 
- const ZOOM_SENSITIVITY = 0.0030; // 👈 HASSASİYET BURADA
+    const ZOOM_SENSITIVITY = 0.003;
 
-const onWheel = (e: WheelEvent) => {
-  e.preventDefault();
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
 
-  const rect = el.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
+      const rect = el.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
 
-  const delta = -e.deltaY;
-  const zoomFactor = 1 + delta * ZOOM_SENSITIVITY;
+      const delta = -e.deltaY;
+      const zoomFactor = 1 + delta * ZOOM_SENSITIVITY;
 
-  const newZoom = Math.max(0.1, Math.min(2, zoom * zoomFactor));
-  const zoomRatio = newZoom / zoom;
+      const newZoom = Math.max(0.1, Math.min(2, zoom * zoomFactor));
+      const zoomRatio = newZoom / zoom;
 
-  const newPanX = mouseX - (mouseX - panX) * zoomRatio;
-  const newPanY = mouseY - (mouseY - panY) * zoomRatio;
+      const newPanX = mouseX - (mouseX - panX) * zoomRatio;
+      const newPanY = mouseY - (mouseY - panY) * zoomRatio;
 
-  setZoom(newZoom);
-  setPan(newPanX, newPanY);
-};
-
+      setZoom(newZoom);
+      setPan(newPanX, newPanY);
+    };
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, [zoom, panX, panY, setZoom, setPan]);
 
+  /* ---------------- ESC = FOCUS RESET ---------------- */
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        (document.activeElement as HTMLElement)?.blur();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   return (
     <div
       ref={containerRef}
-      className="fixed top-14 left-0 right-0 bottom-0 overflow-hidden z-0"
-      style={{ cursor: "grab" }}
+      tabIndex={-1}
+      className="
+        fixed top-14 left-0 right-0 overflow-hidden z-0
+        select-none
+        focus:outline-none focus-visible:outline-none
+      "
+      style={{
+        bottom: notesOpen ? notesHeight : 48,
+        cursor: "grab",
+      }}
     >
-      {/* 🔥 SIDEBAR PANEL (ZOOM'DAN ETKİLENMEZ) */}
+      {/* SIDEBAR */}
       <SidebarPanel />
 
+    <DashboardNotifications />
       <div
         ref={canvasRef}
         className="relative"
@@ -107,7 +137,7 @@ const onWheel = (e: WheelEvent) => {
           transition: "transform 0.1s ease-out",
         }}
       >
-        {/* Grid background */}
+        {/* GRID */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
