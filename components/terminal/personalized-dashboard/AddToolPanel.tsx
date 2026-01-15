@@ -54,6 +54,8 @@ export default function AddToolPanel() {
 
     overflow-y-auto
 
+    select-none
+
     [&::-webkit-scrollbar]:w-2
     [&::-webkit-scrollbar-track]:bg-transparent
     [&::-webkit-scrollbar-thumb]:bg-teal-400/40
