@@ -162,9 +162,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   }, [formData.entryPrice, formData.quantity]);
 
   return (
-    <div className="relative space-y-3 text-xs h-full flex flex-col">
-      <div className="grid grid-cols-2 gap-2">
-        <div className="bg-white/5 border border-white/10 rounded p-2">
+ <div className="relative h-full flex flex-col text-xs">
+      {/* Portfolio Summary */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-white/5 border border-white/10 rounded p-3">
           <div className="text-white/40 text-[10px] mb-1">Total Investment</div>
           <div className="text-white font-semibold">
             $
@@ -174,7 +175,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             })}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded p-2">
+        <div className="bg-white/5 border border-white/10 rounded p-3">
           <div className="text-white/40 text-[10px] mb-1">Current Value</div>
           <div className="text-white font-semibold">
             $
@@ -184,7 +185,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             })}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded p-2">
+        <div className="bg-white/5 border border-white/10 rounded p-3">
           <div className="text-white/40 text-[10px] mb-1">Total P&L</div>
           <div
             className={`font-semibold ${
@@ -198,7 +199,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             })}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded p-2">
+        <div className="bg-white/5 border border-white/10 rounded p-3">
           <div className="text-white/40 text-[10px] mb-1">P&L %</div>
           <div
             className={`font-semibold ${
@@ -216,7 +217,12 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       {!showAddModal && (
         <button
           onClick={() => setShowAddModal(true)}
-          className="w-full bg-white/10 hover:bg-white/15 text-white py-2 rounded transition-colors flex items-center justify-center gap-2 font-semibold border border-white/20"
+          className="  w-full
+  bg-white/5
+  border border-white/10
+  py-2.5
+  rounded-lg
+  mt-3 mb-4 hover:bg-white/15 text-white py-2 rounded transition-colors flex items-center justify-center gap-2 font-semibold border border-white/20 select-none"
         >
           <Plus className="w-4 h-4" />
           Add Position
@@ -224,7 +230,21 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       )}
 
       {!showAddModal && (
-        <div className="flex-1 overflow-y-auto space-y-2">
+<div
+  className="
+    flex-1 overflow-y-auto space-y-4
+
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+    scrollbar-thin
+    scrollbar-thumb-teal-400/40
+    scrollbar-track-transparent
+  "
+>
           {spotPositions.length === 0 ? (
             <div className="text-center py-8 text-white/40 text-[10px]">
               No positions yet. Click "Add Position" to start tracking.
@@ -241,7 +261,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               return (
                 <div
                   key={position.id}
-                  className="bg-white/5 border border-white/10 rounded p-3 space-y-2 hover:bg-white/8 transition-colors"
+                  className="bg-white/5 border border-white/10 rounded p-4 space-y-3 hover:bg-white/8 transition-colors"
                 >
                   <div className="flex justify-between items-start">
                     <div>
@@ -270,7 +290,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-[10px]">
+                  <div className="grid grid-cols-2 gap-3 text-[10px]">
                     <Row label="Entry Price">
                       ${position.entryPrice.toLocaleString()}
                     </Row>
@@ -327,12 +347,12 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                     </Row>
                   </div>
 
-                  <div className="text-white/30 text-[9px] pt-1 border-t border-white/5">
+                  <div className="text-white/30 text-[9px] pt-2 border-t border-white/5">
                     Entry: {new Date(position.entryDate).toLocaleDateString()}
                   </div>
 
                   {position.notes && (
-                    <div className="text-white/40 text-[9px] pt-1 border-t border-white/5">
+                    <div className="text-white/40 text-[9px] pt-2 border-t border-white/5">
                       📝 {position.notes}
                     </div>
                   )}
@@ -344,7 +364,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       )}
 
       {showAddModal && (
-        <div className="absolute inset-0 bg-[#0a0e1a] z-50 flex flex-col rounded-lg overflow-hidden">
+<div className="absolute inset-[-16px] bg-[#0a0e1a] z-50 flex flex-col">
           <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
             <h3 className="text-white font-semibold text-sm">
               Add Spot Position
@@ -357,28 +377,21 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
             <div>
               <label className="block text-white/50 mb-1 text-[10px]">
                 Exchange
               </label>
-              <select
-                value={formData.exchange}
-                onChange={(e) =>
-                  setFormData({ ...formData, exchange: e.target.value })
-                }
-                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
-              >
-                <option value="">Select Exchange</option>
-                {EXCHANGES.map((ex) => (
-                  <option key={ex} value={ex}>
-                    {ex.toUpperCase()}
-                  </option>
-                ))}
-              </select>
+<ExchangeSelect
+  value={formData.exchange}
+  onChange={(v) =>
+    setFormData({ ...formData, exchange: v })
+  }
+/>
+
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-white/50 mb-1 text-[10px]">
                   Base Asset
@@ -425,7 +438,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-white/50 mb-1 text-[10px]">
                   Entry Price
@@ -519,9 +532,67 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between select-none">
       <span className="text-white/50">{label}</span>
       <span>{children}</span>
+    </div>
+  );
+}
+
+
+function ExchangeSelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs text-left"
+      >
+        {value ? value.toUpperCase() : "Select Exchange"}
+      </button>
+
+      {open && (
+        <div
+  className="
+    absolute z-50 mt-1 w-full
+    max-h-40 overflow-y-auto
+    rounded border border-white/10
+    bg-[#0a0e1a]
+
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+    scrollbar-thin
+    scrollbar-thumb-teal-400/40
+    scrollbar-track-transparent
+  "
+        >
+          {EXCHANGES.map((ex) => (
+            <button
+              key={ex}
+              type="button"
+              onClick={() => {
+                onChange(ex);
+                setOpen(false);
+              }}
+              className="w-full px-2 py-1.5 text-left text-xs hover:bg-white/10 text-white"
+            >
+              {ex.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useAlertStore } from "@/store/alertStore";
 import { usePriceStore } from "@/store/priceStore";
 import { Bell } from "lucide-react";
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
+
 
 const SYMBOLS = [
   "BTCUSDT",
@@ -95,18 +97,31 @@ export default function CreateAlertModule({ instanceId }: Props) {
       </div>
 
       <button
-        onClick={() => {
-          if (!target) {
-            alert("Please enter a target price");
-            return;
-          }
-          addAlert({
-            symbol,
-            condition,
-            target: Number(target),
-          });
-          setTarget("");
-        }}
+onClick={() => {
+  if (!target) {
+    useDashboardNotificationStore.getState().push({
+      type: "error",
+      title: "Invalid Input",
+      description: "Please enter a target price",
+    });
+    return;
+  }
+
+  addAlert({
+    symbol,
+    condition,
+    target: Number(target),
+  });
+
+  useDashboardNotificationStore.getState().push({
+    type: "success",
+    title: "Alert Created",
+    description: `${symbol} ${condition} ${target}`,
+  });
+
+  setTarget("");
+}}
+
         className="w-full h-9 rounded-lg bg-teal-400/20 border border-teal-400/40 text-teal-300 hover:bg-teal-400/30 transition font-semibold"
       >
         Create Alert

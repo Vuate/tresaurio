@@ -226,7 +226,17 @@ export default function OrderBookModule({ instanceId }: Props) {
           <select
             value={exchange}
             onChange={(e) => setExchange(e.target.value)}
-            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10 transition-colors"
+className="
+  h-8 rounded-lg
+  bg-[#0b1f1f]
+  border border-white/10
+  text-xs text-white
+  px-2
+  outline-none
+  cursor-pointer
+  hover:bg-[#0f2a2a]
+  transition-colors
+"
           >
             {EXCHANGES.map((ex) => (
               <option key={ex.id} value={ex.id}>
@@ -239,7 +249,17 @@ export default function OrderBookModule({ instanceId }: Props) {
           <select
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
-            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10 transition-colors"
+className="
+  h-8 rounded-lg
+  bg-[#0b1f1f]
+  border border-white/10
+  text-xs text-white
+  px-2
+  outline-none
+  cursor-pointer
+  hover:bg-[#0f2a2a]
+  transition-colors
+"
           >
             {SYMBOLS_BY_EXCHANGE[
               exchange as keyof typeof SYMBOLS_BY_EXCHANGE
@@ -263,12 +283,46 @@ export default function OrderBookModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Column titles */}
-      <div className="grid grid-cols-3 text-[11px] text-white/40 font-semibold">
-        <div>Price</div>
-        <div className="text-right">Qty</div>
-        <div className="text-right">Total</div>
-      </div>
+{/* Side Headers */}
+<div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+
+  {/* SELL HEADER */}
+  <div>
+    <div className="text-red-400 mb-1">SELL (Asks)</div>
+<div className="
+  grid
+  grid-cols-[1.2fr_1fr]
+  sm:grid-cols-[1.2fr_1fr_1fr]
+  text-white/40
+">      <div>Price</div>
+      <div className="text-right">Qty</div>
+      <div className="text-right hidden sm:block">Total</div>
+    </div>
+  </div>
+
+{/* BUY HEADER */}
+<div>
+  <div className="text-emerald-400 mb-1 text-right">BUY (Bids)</div>
+  <div
+    className="
+      grid
+      grid-cols-[1.2fr_1fr]
+      sm:grid-cols-[1.2fr_1fr_1fr]
+      text-white/40
+    "
+  >
+    <div>Price</div>
+    <div className="text-right">Qty</div>
+    <div className="text-right hidden sm:block">Total</div>
+  </div>
+</div>
+
+
+</div>
+
+{/* Order Book Sides */}
+<div className="grid grid-cols-2 gap-2">
+
 
       {/* Asks */}
       <div className="space-y-1">
@@ -286,21 +340,69 @@ export default function OrderBookModule({ instanceId }: Props) {
                   className="absolute inset-0 bg-red-500/10"
                   style={{ width: `${pct}%` }}
                 />
-                <div className="relative grid grid-cols-3 text-[11px] px-2 py-1">
-                  <div className="text-red-300">{fmt.price(r.price)}</div>
-                  <div className="text-right text-white/70">
-                    {fmt.qty(r.qty)}
-                  </div>
-                  <div className="text-right text-white/60">
-                    {fmt.total(r.total)}
-                  </div>
+<div className="
+  relative grid
+  grid-cols-[1.2fr_1fr]
+  sm:grid-cols-[1.2fr_1fr_1fr]
+  text-[11px] px-2 py-1
+">
+  <div className="text-red-300 whitespace-nowrap overflow-hidden text-ellipsis">
+  {fmt.price(r.price)}
+</div>
+
+<div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+  {fmt.qty(r.qty)}
+</div>
+                  
+<div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+  {fmt.total(r.total)}
+</div>
                 </div>
               </div>
             );
           })}
       </div>
 
-      {/* Mid + Spread */}
+
+      {/* Bids */}
+      <div className="space-y-1">
+        {bids.slice(0, 12).map((r, idx) => {
+          const pct = Math.min((r.total / maxBidTotal) * 100, 100);
+          return (
+            <div
+              key={`b-${idx}`}
+              className="relative overflow-hidden rounded-md"
+            >
+              <div
+                className="absolute inset-0 bg-emerald-500/10"
+                style={{ width: `${pct}%` }}
+              />
+<div className="
+  relative grid
+  grid-cols-[1.2fr_1fr]
+  sm:grid-cols-[1.2fr_1fr_1fr]
+  text-[11px] px-2 py-1
+"> 
+<div className="text-emerald-300 whitespace-nowrap overflow-hidden text-ellipsis">
+  {fmt.price(r.price)}
+</div>
+
+<div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+  {fmt.qty(r.qty)}
+</div>
+
+<div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+  {fmt.total(r.total)}
+</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      </div>
+
+            {/* Mid + Spread */}
       <div className="py-2 border-y border-white/10 space-y-2">
         <div className="flex items-center justify-between">
           <div className="text-[11px] text-white/40">Mid</div>
@@ -343,30 +445,6 @@ export default function OrderBookModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Bids */}
-      <div className="space-y-1">
-        {bids.slice(0, 12).map((r, idx) => {
-          const pct = Math.min((r.total / maxBidTotal) * 100, 100);
-          return (
-            <div
-              key={`b-${idx}`}
-              className="relative overflow-hidden rounded-md"
-            >
-              <div
-                className="absolute inset-0 bg-emerald-500/10"
-                style={{ width: `${pct}%` }}
-              />
-              <div className="relative grid grid-cols-3 text-[11px] px-2 py-1">
-                <div className="text-emerald-300">{fmt.price(r.price)}</div>
-                <div className="text-right text-white/70">{fmt.qty(r.qty)}</div>
-                <div className="text-right text-white/60">
-                  {fmt.total(r.total)}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }

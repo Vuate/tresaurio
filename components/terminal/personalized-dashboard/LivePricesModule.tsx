@@ -129,7 +129,7 @@ export default function LivePricesModule({ instanceId }: Props) {
   return (
     <div className="space-y-3 text-xs h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between gap-2">
+<div className="flex items-center justify-between gap-2 flex-shrink-0">
         <div className="text-xs text-white/60">
           <span className="font-semibold text-white/90">Live Prices</span>
           <span className="text-white/40"> • </span>
@@ -150,7 +150,7 @@ export default function LivePricesModule({ instanceId }: Props) {
             className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
           >
             {EXCHANGES.map((ex) => (
-              <option key={ex.id} value={ex.id}>
+              <option key={ex.id} value={ex.id} >
                 {ex.name}
               </option>
             ))}
@@ -167,16 +167,30 @@ export default function LivePricesModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Exchange Warning */}
-      {exchange !== "binance" && (
-        <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs">
-          ⚠️ {EXCHANGES.find((e) => e.id === exchange)?.name} WebSocket coming
-          soon. Showing mock prices.
-        </div>
-      )}
+
 
       {/* Watchlist */}
-      <div className="flex-1 overflow-y-auto space-y-2">
+<div
+  className="
+    flex-1 overflow-y-auto space-y-2
+
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+    scrollbar-thin
+    scrollbar-thumb-teal-400/40
+    scrollbar-track-transparent
+  "
+>
+        {/* Exchange Warning */}
+      {exchange !== "binance" && (
+        <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs">
+          ⚠️ {EXCHANGES.find((e) => e.id === exchange)?.name} WebSocket coming soon. Showing mock prices.
+        </div>
+      )}
         {watchlist.length === 0 ? (
           <div className="text-center py-8 text-white/40 text-[10px]">
             No symbols in watchlist. Click "Add" to add some.
@@ -248,7 +262,7 @@ export default function LivePricesModule({ instanceId }: Props) {
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="absolute inset-0 bg-[#0a0e1a] z-50 flex flex-col rounded-lg overflow-hidden">
+<div className="absolute inset-0 bg-[#0a0e1a] z-50 flex flex-col rounded-lg overflow-hidden min-h-0">
           <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
             <h3 className="text-white font-semibold text-sm">Add Symbol</h3>
             <button
@@ -259,7 +273,21 @@ export default function LivePricesModule({ instanceId }: Props) {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+<div
+  className="
+    flex-1 min-h-0 overflow-y-auto p-3 space-y-3
+
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+    scrollbar-thin
+    scrollbar-thumb-teal-400/40
+    scrollbar-track-transparent
+  "
+>
             {/* Custom Symbol Input */}
             <div>
               <label className="block text-white/50 mb-2 text-[10px]">

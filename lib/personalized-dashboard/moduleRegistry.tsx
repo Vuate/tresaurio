@@ -20,6 +20,7 @@ import FundingRateModule from "@/components/terminal/personalized-dashboard/Fund
 import DCACalculatorModule from "@/components/terminal/personalized-dashboard/DCACalculatorModule";
 import AllInCostCalculatorModule from "@/components/terminal/personalized-dashboard/AllInCostCalculatorModule";
 import FeeStructureAnalyzerModule from "@/components/terminal/personalized-dashboard/FeeStructureAnalyzerModule";
+import NotesModule from "@/components/terminal/personalized-dashboard/NotesModule";
 
 export type ModuleDefinition = {
   type: string;
@@ -43,6 +44,15 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     defaultSize: { width: 380, height: 240 },
     render: (instanceId: string) => <LivePrices instanceId={instanceId} />,
   },
+
+  "notes": {
+  type: "notes",
+  title: "Notes",
+  description: "Quick notes & reminders",
+  category: "temel-veri",
+  defaultSize: { width: 320, height: 260 },
+  render: () => <NotesModule />,
+},
 
   /* ---------------- PORTFÖY ---------------- */
   "spot-positions": {

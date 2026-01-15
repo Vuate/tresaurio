@@ -4,10 +4,17 @@ import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import type { ModuleCategory } from "@/lib/personalized-dashboard/types";
 import type { ModuleDefinition } from "@/lib/personalized-dashboard/moduleRegistry";
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
 
 export default function AddToolPanel() {
-  const { addToolOpen, toggleAddTool, addModuleByType } =
-    usePersonalizedDashboardStore();
+  const {
+    addToolOpen,
+    toggleAddTool,
+    addModuleByType,
+    panX,
+    panY,
+    zoom,
+  } = usePersonalizedDashboardStore();
 
   if (!addToolOpen) return null;
 
@@ -17,6 +24,24 @@ export default function AddToolPanel() {
     acc[category].push(mod);
     return acc;
   }, {} as Record<ModuleCategory, ModuleDefinition[]>);
+
+  // ✅ ASIL ÇALIŞAN SPAWN MANTIĞI
+  const addAtCurrentView = (type: string) => {
+    const viewportCenterX = window.innerWidth / 2;
+    const viewportCenterY = window.innerHeight / 2;
+
+    const canvasX = (viewportCenterX - panX) / zoom;
+    const canvasY = (viewportCenterY - panY) / zoom;
+
+    addModuleByType(type, canvasX, canvasY);
+    useDashboardNotificationStore.getState().push({
+  type: "success",
+  title: "Tool Added",
+  description: `${type} added to dashboard`,
+});
+
+    toggleAddTool();
+  };
 
   return (
 <div
@@ -28,6 +53,8 @@ export default function AddToolPanel() {
     shadow-[0_12px_40px_rgba(0,0,0,0.45)]
 
     overflow-y-auto
+
+    select-none
 
     [&::-webkit-scrollbar]:w-2
     [&::-webkit-scrollbar-track]:bg-transparent
@@ -42,7 +69,7 @@ export default function AddToolPanel() {
 >
 
       {/* HEADER */}
-      <div className="flex items-center justify-between px-3 py-3 border-b border-white/10">
+      <div className="flex items-center justify-between px-3 py-3 border-b border-white/10 select-none">
         <div className="text-[13px] font-semibold text-white">Add Tool</div>
         <button
           onClick={toggleAddTool}
@@ -64,7 +91,7 @@ export default function AddToolPanel() {
               {mods.map((m) => (
                 <button
                   key={m.type}
-                  onClick={() => addModuleByType(m.type)}
+                  onClick={() => addAtCurrentView(m.type)}
                   className="
                     w-full text-left rounded-lg
                     px-3 py-2
