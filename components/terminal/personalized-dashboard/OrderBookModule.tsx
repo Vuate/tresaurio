@@ -3,26 +3,39 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { wsService } from "@/services/WebSocketService";
+import { Plus } from "lucide-react";
 
 interface Props {
   instanceId: string;
+  marketType?: "spot" | "futures";
 }
 
 type SideRow = { price: number; qty: number; total: number };
 
 const EXCHANGES = [
   { id: "binance", name: "Binance", active: true },
-  { id: "okx", name: "OKX", active: true }, // ✅ AÇILDI
-  { id: "bybit", name: "Bybit", active: true }, // ✅ AÇILDI
-  { id: "coinbase", name: "Coinbase", active: true }, // ✅ AÇILDI
+  { id: "okx", name: "OKX", active: true },
+  { id: "bybit", name: "Bybit", active: true },
+  { id: "coinbase", name: "Coinbase", active: true },
 ];
 
-const SYMBOLS_BY_EXCHANGE = {
-  binance: ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT", "XRPUSDT"],
-  okx: ["BTC-USDT", "ETH-USDT", "SOL-USDT", "BNB-USDT", "ADA-USDT", "XRP-USDT"],
-  bybit: ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT", "XRPUSDT"],
-  coinbase: ["BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "ADA-USD", "XRP-USD"],
-};
+const POPULAR_BASE_ASSETS = [
+  "BTC",
+  "ETH",
+  "SOL",
+  "BNB",
+  "XRP",
+  "ADA",
+  "DOGE",
+  "MATIC",
+  "AVAX",
+  "DOT",
+  "LINK",
+  "UNI",
+];
+
+const POPULAR_QUOTE_ASSETS_SPOT = ["USDT", "USDC", "BTC", "ETH", "BNB", "BUSD"];
+const POPULAR_QUOTE_ASSETS_FUTURES = ["USDT", "USD"];
 
 function buildSide(raw: [string, string][], isAsks: boolean): SideRow[] {
   const rows = raw
@@ -55,11 +68,13 @@ function mockDepth(symbol: string) {
   return { symbol, bids, asks, mid, source: "mock" as const };
 }
 
-export default function OrderBookModule({ instanceId }: Props) {
-  const exchangeStorageKey = `orderbook-${instanceId}-exchange`;
-  const symbolStorageKey = `orderbook-${instanceId}-symbol`;
+export default function OrderBookModule({
+  instanceId,
+  marketType = "spot",
+}: Props) {
+  const exchangeStorageKey = `orderbook-${marketType}-${instanceId}-exchange`;
+  const symbolStorageKey = `orderbook-${marketType}-${instanceId}-symbol`;
 
-  // 🔥 Exchange state
   const [exchange, setExchange] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem(exchangeStorageKey) || "binance";
@@ -67,16 +82,14 @@ export default function OrderBookModule({ instanceId }: Props) {
     return "binance";
   });
 
-  // 🔥 Symbol state
   const [symbol, setSymbol] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(symbolStorageKey);
       if (saved) return saved;
     }
-    return SYMBOLS_BY_EXCHANGE[exchange as keyof typeof SYMBOLS_BY_EXCHANGE][0];
+    return "BTCUSDT";
   });
 
-  // 🔥 OrderBook data
   const [orderBookData, setOrderBookData] = useState<{
     bids: SideRow[];
     asks: SideRow[];
@@ -89,72 +102,90 @@ export default function OrderBookModule({ instanceId }: Props) {
     source: "mock",
   });
 
-  // Save exchange to localStorage
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [baseAsset, setBaseAsset] = useState("");
+  const [quoteAsset, setQuoteAsset] = useState("");
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem(exchangeStorageKey, exchange);
     }
   }, [exchange, exchangeStorageKey]);
 
-  // Save symbol to localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem(symbolStorageKey, symbol);
     }
   }, [symbol, symbolStorageKey]);
 
-  // When exchange changes, update symbol to first available
-  useEffect(() => {
-    const availableSymbols =
-      SYMBOLS_BY_EXCHANGE[exchange as keyof typeof SYMBOLS_BY_EXCHANGE];
-    if (!availableSymbols.includes(symbol)) {
-      setSymbol(availableSymbols[0]);
-    }
-  }, [exchange, symbol]);
-
   useEffect(() => {
     let mounted = true;
 
-    // Only Binance works for now - others show mock data
     if (exchange !== "binance") {
       const mockData = mockDepth(symbol);
       setOrderBookData(mockData);
       return;
     }
 
-    // 🔥 WebSocket stream (Binance only - LIVE DATA)
     const stream = `${symbol.toLowerCase()}@depth20@100ms`;
 
-    const unsubscribe = wsService.subscribe(stream, (data) => {
-      if (!mounted) return;
+    // 🔥 marketType parametresi eklendi - Spot ve Futures farklı endpoint'ler kullanıyor
+    const unsubscribe = wsService.subscribe(
+      stream,
+      (data) => {
+        if (!mounted) return;
 
-      try {
-        if (data.bids && data.asks) {
-          const bids = buildSide(data.bids, false);
-          const asks = buildSide(data.asks, true);
+        try {
+          if (data.bids && data.asks) {
+            const bids = buildSide(data.bids, false);
+            const asks = buildSide(data.asks, true);
 
-          const bestBid = bids[0]?.price;
-          const bestAsk = asks[0]?.price;
+            const bestBid = bids[0]?.price;
+            const bestAsk = asks[0]?.price;
 
-          const mid =
-            Number.isFinite(bestBid) && Number.isFinite(bestAsk)
-              ? (bestBid + bestAsk) / 2
-              : null;
+            const mid =
+              Number.isFinite(bestBid) && Number.isFinite(bestAsk)
+                ? (bestBid + bestAsk) / 2
+                : null;
 
-          setOrderBookData({ bids, asks, mid, source: "api" });
+            setOrderBookData({ bids, asks, mid, source: "api" });
+          }
+        } catch (error) {
+          console.error("[OrderBook] Parse error:", error);
+          const mockData = mockDepth(symbol);
+          setOrderBookData(mockData);
         }
-      } catch (error) {
-        console.error("[OrderBook] Parse error:", error);
-        const mockData = mockDepth(symbol);
-        setOrderBookData(mockData);
-      }
-    });
+      },
+      marketType // 🔥 ÖNEMLİ: marketType parametresi
+    );
 
     return () => {
       mounted = false;
       unsubscribe();
     };
-  }, [symbol, exchange]);
+  }, [symbol, exchange, marketType]);
+
+  const addSymbol = (base: string, quote: string) => {
+    const baseUpper = base.toUpperCase().trim();
+    const quoteUpper = quote.toUpperCase().trim();
+
+    if (!baseUpper || !quoteUpper) {
+      alert("Please enter both Base Asset and Quote Asset");
+      return;
+    }
+
+    let newSymbol = "";
+    if (exchange === "okx" || exchange === "coinbase") {
+      newSymbol = `${baseUpper}-${quoteUpper}`;
+    } else {
+      newSymbol = `${baseUpper}${quoteUpper}`;
+    }
+
+    setSymbol(newSymbol);
+    setBaseAsset("");
+    setQuoteAsset("");
+    setShowAddModal(false);
+  };
 
   const { bids, asks, mid, source } = orderBookData;
 
@@ -202,41 +233,35 @@ export default function OrderBookModule({ instanceId }: Props) {
   );
 
   const selectedExchange = EXCHANGES.find((e) => e.id === exchange);
+  const popularQuoteAssets =
+    marketType === "spot"
+      ? POPULAR_QUOTE_ASSETS_SPOT
+      : POPULAR_QUOTE_ASSETS_FUTURES;
 
   return (
     <div className="space-y-3">
-      {/* Header Row */}
       <div className="flex items-center justify-between gap-2">
         <div className="text-xs text-white/60">
-          <span className="font-semibold text-white/90">Order Book</span>{" "}
+          <span className="font-semibold text-white/90">
+            Order Book ({marketType === "spot" ? "Spot" : "Futures"})
+          </span>{" "}
           <span className="text-white/40">•</span>{" "}
           <span className="text-white/70">{symbol}</span>{" "}
           <span className="text-white/40">•</span>{" "}
           <span
-            className={`${
+            className={
               source === "api" ? "text-emerald-400" : "text-yellow-400"
-            }`}
+            }
           >
             {source === "api" ? "LIVE" : "MOCK"}
           </span>
         </div>
 
         <div className="flex gap-2">
-          {/* Exchange Selector */}
           <select
             value={exchange}
             onChange={(e) => setExchange(e.target.value)}
-className="
-  h-8 rounded-lg
-  bg-[#0b1f1f]
-  border border-white/10
-  text-xs text-white
-  px-2
-  outline-none
-  cursor-pointer
-  hover:bg-[#0f2a2a]
-  transition-colors
-"
+            className="h-8 rounded-lg bg-[#0b1f1f] border border-white/10 text-xs text-white px-2 outline-none cursor-pointer hover:bg-[#0f2a2a] transition-colors"
           >
             {EXCHANGES.map((ex) => (
               <option key={ex.id} value={ex.id}>
@@ -245,164 +270,105 @@ className="
             ))}
           </select>
 
-          {/* Symbol Selector */}
-          <select
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
-className="
-  h-8 rounded-lg
-  bg-[#0b1f1f]
-  border border-white/10
-  text-xs text-white
-  px-2
-  outline-none
-  cursor-pointer
-  hover:bg-[#0f2a2a]
-  transition-colors
-"
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="h-8 px-3 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-colors flex items-center gap-1"
           >
-            {SYMBOLS_BY_EXCHANGE[
-              exchange as keyof typeof SYMBOLS_BY_EXCHANGE
-            ].map((sym) => (
-              <option key={sym} value={sym}>
-                {sym}
-              </option>
-            ))}
-          </select>
+            <Plus className="w-3 h-3" />
+          </button>
         </div>
       </div>
 
-      {/* Exchange Badge - Only show for non-Binance */}
       {exchange !== "binance" && (
         <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs flex items-center gap-2">
           <span>⚠️</span>
           <span>
-            {selectedExchange?.name} WebSocket coming soon. Showing mock data
-            for testing.
+            {selectedExchange?.name} WebSocket coming soon. Showing mock data.
           </span>
         </div>
       )}
 
-{/* Side Headers */}
-<div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+      <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
+        <div>
+          <div className="text-red-400 mb-1">SELL (Asks)</div>
+          <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-white/40">
+            <div>Price</div>
+            <div className="text-right">Qty</div>
+            <div className="text-right hidden sm:block">Total</div>
+          </div>
+        </div>
 
-  {/* SELL HEADER */}
-  <div>
-    <div className="text-red-400 mb-1">SELL (Asks)</div>
-<div className="
-  grid
-  grid-cols-[1.2fr_1fr]
-  sm:grid-cols-[1.2fr_1fr_1fr]
-  text-white/40
-">      <div>Price</div>
-      <div className="text-right">Qty</div>
-      <div className="text-right hidden sm:block">Total</div>
-    </div>
-  </div>
+        <div>
+          <div className="text-emerald-400 mb-1 text-right">BUY (Bids)</div>
+          <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-white/40">
+            <div>Price</div>
+            <div className="text-right">Qty</div>
+            <div className="text-right hidden sm:block">Total</div>
+          </div>
+        </div>
+      </div>
 
-{/* BUY HEADER */}
-<div>
-  <div className="text-emerald-400 mb-1 text-right">BUY (Bids)</div>
-  <div
-    className="
-      grid
-      grid-cols-[1.2fr_1fr]
-      sm:grid-cols-[1.2fr_1fr_1fr]
-      text-white/40
-    "
-  >
-    <div>Price</div>
-    <div className="text-right">Qty</div>
-    <div className="text-right hidden sm:block">Total</div>
-  </div>
-</div>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1">
+          {asks
+            .slice(0, 12)
+            .reverse()
+            .map((r, idx) => {
+              const pct = Math.min((r.total / maxAskTotal) * 100, 100);
+              return (
+                <div
+                  key={`a-${idx}`}
+                  className="relative overflow-hidden rounded-md"
+                >
+                  <div
+                    className="absolute inset-0 bg-red-500/10"
+                    style={{ width: `${pct}%` }}
+                  />
+                  <div className="relative grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-[11px] px-2 py-1">
+                    <div className="text-red-300 whitespace-nowrap overflow-hidden text-ellipsis">
+                      {fmt.price(r.price)}
+                    </div>
+                    <div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+                      {fmt.qty(r.qty)}
+                    </div>
+                    <div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+                      {fmt.total(r.total)}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
 
-
-</div>
-
-{/* Order Book Sides */}
-<div className="grid grid-cols-2 gap-2">
-
-
-      {/* Asks */}
-      <div className="space-y-1">
-        {asks
-          .slice(0, 12)
-          .reverse()
-          .map((r, idx) => {
-            const pct = Math.min((r.total / maxAskTotal) * 100, 100);
+        <div className="space-y-1">
+          {bids.slice(0, 12).map((r, idx) => {
+            const pct = Math.min((r.total / maxBidTotal) * 100, 100);
             return (
               <div
-                key={`a-${idx}`}
+                key={`b-${idx}`}
                 className="relative overflow-hidden rounded-md"
               >
                 <div
-                  className="absolute inset-0 bg-red-500/10"
+                  className="absolute inset-0 bg-emerald-500/10"
                   style={{ width: `${pct}%` }}
                 />
-<div className="
-  relative grid
-  grid-cols-[1.2fr_1fr]
-  sm:grid-cols-[1.2fr_1fr_1fr]
-  text-[11px] px-2 py-1
-">
-  <div className="text-red-300 whitespace-nowrap overflow-hidden text-ellipsis">
-  {fmt.price(r.price)}
-</div>
-
-<div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
-  {fmt.qty(r.qty)}
-</div>
-                  
-<div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
-  {fmt.total(r.total)}
-</div>
+                <div className="relative grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-[11px] px-2 py-1">
+                  <div className="text-emerald-300 whitespace-nowrap overflow-hidden text-ellipsis">
+                    {fmt.price(r.price)}
+                  </div>
+                  <div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+                    {fmt.qty(r.qty)}
+                  </div>
+                  <div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+                    {fmt.total(r.total)}
+                  </div>
                 </div>
               </div>
             );
           })}
+        </div>
       </div>
 
-
-      {/* Bids */}
-      <div className="space-y-1">
-        {bids.slice(0, 12).map((r, idx) => {
-          const pct = Math.min((r.total / maxBidTotal) * 100, 100);
-          return (
-            <div
-              key={`b-${idx}`}
-              className="relative overflow-hidden rounded-md"
-            >
-              <div
-                className="absolute inset-0 bg-emerald-500/10"
-                style={{ width: `${pct}%` }}
-              />
-<div className="
-  relative grid
-  grid-cols-[1.2fr_1fr]
-  sm:grid-cols-[1.2fr_1fr_1fr]
-  text-[11px] px-2 py-1
-"> 
-<div className="text-emerald-300 whitespace-nowrap overflow-hidden text-ellipsis">
-  {fmt.price(r.price)}
-</div>
-
-<div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
-  {fmt.qty(r.qty)}
-</div>
-
-<div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
-  {fmt.total(r.total)}
-</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      </div>
-
-            {/* Mid + Spread */}
       <div className="py-2 border-y border-white/10 space-y-2">
         <div className="flex items-center justify-between">
           <div className="text-[11px] text-white/40">Mid</div>
@@ -420,7 +386,6 @@ className="
           </div>
         </div>
 
-        {/* Buy/Sell balance */}
         <div className="space-y-1 pt-1">
           <div className="flex justify-between text-[11px] text-white/40">
             <span>Buy</span>
@@ -445,6 +410,110 @@ className="
         </div>
       </div>
 
+      {showAddModal && (
+        <div className="absolute inset-0 bg-[#0a0e1a] z-50 flex flex-col rounded-lg overflow-hidden">
+          <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
+            <h3 className="text-white font-semibold text-sm">
+              Add Pair ({marketType === "spot" ? "Spot" : "Futures"})
+            </h3>
+            <button
+              onClick={() => setShowAddModal(false)}
+              className="text-white/50 hover:text-white text-xl leading-none"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+            <div className="space-y-3">
+              <label className="block text-white/50 mb-2 text-[10px]">
+                Add Custom Pair
+              </label>
+              <div className="flex gap-2 items-center">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={baseAsset}
+                    onChange={(e) => setBaseAsset(e.target.value.toUpperCase())}
+                    placeholder="Base (e.g. BTC)"
+                    className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50"
+                  />
+                </div>
+                <div className="text-white/40 font-bold">/</div>
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={quoteAsset}
+                    onChange={(e) =>
+                      setQuoteAsset(e.target.value.toUpperCase())
+                    }
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && addSymbol(baseAsset, quoteAsset)
+                    }
+                    placeholder="Quote (e.g. USDT)"
+                    className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50"
+                  />
+                </div>
+                <button
+                  onClick={() => addSymbol(baseAsset, quoteAsset)}
+                  disabled={!baseAsset || !quoteAsset}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded text-xs font-semibold transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="text-white/40 text-[10px]">
+                💡 Example: BTC / USDT ={" "}
+                {exchange === "okx" || exchange === "coinbase"
+                  ? "BTC-USDT"
+                  : "BTCUSDT"}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-white/50 mb-2 text-[10px]">
+                Popular Base Assets
+              </label>
+              <div className="grid grid-cols-4 gap-2">
+                {POPULAR_BASE_ASSETS.map((asset) => (
+                  <button
+                    key={asset}
+                    onClick={() => setBaseAsset(asset)}
+                    className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                      baseAsset === asset
+                        ? "bg-blue-500/30 text-blue-300 border border-blue-500/50"
+                        : "bg-white/10 hover:bg-white/20 text-white"
+                    }`}
+                  >
+                    {asset}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-white/50 mb-2 text-[10px]">
+                Popular Quote Assets
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {popularQuoteAssets.map((asset) => (
+                  <button
+                    key={asset}
+                    onClick={() => setQuoteAsset(asset)}
+                    className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                      quoteAsset === asset
+                        ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/50"
+                        : "bg-white/10 hover:bg-white/20 text-white"
+                    }`}
+                  >
+                    {asset}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

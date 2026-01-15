@@ -8,102 +8,118 @@ interface StreamSubscription {
   ws: WebSocket | null;
   reconnectAttempts: number;
   reconnectTimeout: NodeJS.Timeout | null;
-  fallbackInterval: NodeJS.Timeout | null; // 🔥 REST fallback
+  fallbackInterval: NodeJS.Timeout | null;
+  marketType: "spot" | "futures"; // 🔥 YENİ
 }
 
 class WebSocketService {
   private subscriptions: Map<string, StreamSubscription> = new Map();
-  private baseUrl = "wss://stream.binance.com:9443/ws";
-  private maxReconnectAttempts = 3; // Daha az deneme
-  private reconnectDelay = 2000;
-  private useFallback = false; // 🔥 Global fallback flag
 
-  /**
-   * Check if we're in browser environment
-   */
+  // 🔥 İki farklı endpoint
+  private spotBaseUrl = "wss://stream.binance.com:9443/ws";
+  private futuresBaseUrl = "wss://fstream.binance.com/ws";
+
+  private maxReconnectAttempts = 3;
+  private reconnectDelay = 2000;
+  private useFallback = false;
+
   private isBrowser(): boolean {
     return typeof window !== "undefined" && typeof WebSocket !== "undefined";
   }
 
   /**
-   * Subscribe to a Binance WebSocket stream
+   * 🔥 Subscribe to a stream with market type
    */
-  subscribe(stream: string, callback: StreamCallback): () => void {
+  subscribe(
+    stream: string,
+    callback: StreamCallback,
+    marketType: "spot" | "futures" = "spot" // 🔥 YENİ PARAMETRE
+  ): () => void {
     if (!this.isBrowser()) {
       console.warn("[WebSocket] Skipping subscription (SSR environment)");
       return () => {};
     }
 
     const normalizedStream = stream.toLowerCase();
+    const subscriptionKey = `${marketType}-${normalizedStream}`; // 🔥 Unique key
 
-    // Get or create subscription
-    if (!this.subscriptions.has(normalizedStream)) {
-      this.subscriptions.set(normalizedStream, {
+    if (!this.subscriptions.has(subscriptionKey)) {
+      this.subscriptions.set(subscriptionKey, {
         stream: normalizedStream,
         callbacks: new Set(),
         ws: null,
         reconnectAttempts: 0,
         reconnectTimeout: null,
         fallbackInterval: null,
+        marketType, // 🔥 Store market type
       });
     }
 
-    const sub = this.subscriptions.get(normalizedStream)!;
+    const sub = this.subscriptions.get(subscriptionKey)!;
     sub.callbacks.add(callback);
 
-    // 🔥 Use fallback if WebSocket failed before
     if (this.useFallback) {
-      this.startFallback(normalizedStream);
+      this.startFallback(subscriptionKey);
     } else {
-      // Try WebSocket first
       if (!sub.ws || sub.ws.readyState !== WebSocket.OPEN) {
-        this.connect(normalizedStream);
+        this.connect(subscriptionKey);
       }
     }
 
-    // Return unsubscribe function
-    return () => this.unsubscribe(normalizedStream, callback);
+    return () => this.unsubscribe(subscriptionKey, callback);
   }
 
-  /**
-   * Unsubscribe from a stream
-   */
-  private unsubscribe(stream: string, callback: StreamCallback) {
-    const sub = this.subscriptions.get(stream);
+  private unsubscribe(subscriptionKey: string, callback: StreamCallback) {
+    const sub = this.subscriptions.get(subscriptionKey);
     if (!sub) return;
 
     sub.callbacks.delete(callback);
 
-    // Close connection if no more subscribers
     if (sub.callbacks.size === 0) {
-      this.disconnect(stream);
+      this.disconnect(subscriptionKey);
     }
   }
 
   /**
-   * Connect to a WebSocket stream
+   * 🔥 Connect with correct endpoint based on market type
    */
-  private connect(stream: string) {
+  private connect(subscriptionKey: string) {
     if (!this.isBrowser()) return;
 
-    const sub = this.subscriptions.get(stream);
+    const sub = this.subscriptions.get(subscriptionKey);
     if (!sub) return;
 
     try {
-      const ws = new WebSocket(`${this.baseUrl}/${stream}`);
+      // 🔥 Choose endpoint based on market type
+      const baseUrl =
+        sub.marketType === "futures" ? this.futuresBaseUrl : this.spotBaseUrl;
+      const wsUrl = `${baseUrl}/${sub.stream}`;
 
-      // 🔥 Connection timeout (5 seconds)
+      console.log(
+        `🔌 [WebSocket] Connecting to ${sub.marketType.toUpperCase()}: ${
+          sub.stream
+        }`
+      );
+
+      const ws = new WebSocket(wsUrl);
+
       const timeout = setTimeout(() => {
         if (ws.readyState !== WebSocket.OPEN) {
-          console.warn(`⏱️ [WebSocket] Connection timeout: ${stream}`);
+          console.warn(
+            `⏱️ [WebSocket] Connection timeout: ${sub.stream} (${sub.marketType})`
+          );
           ws.close();
-          this.handleConnectionFailure(stream);
+          this.handleConnectionFailure(subscriptionKey);
         }
       }, 5000);
 
       ws.onopen = () => {
         clearTimeout(timeout);
-        console.log(`✅ [WebSocket] Connected: ${stream}`);
+        console.log(
+          `✅ [WebSocket] Connected (${sub.marketType.toUpperCase()}): ${
+            sub.stream
+          }`
+        );
         sub.reconnectAttempts = 0;
       };
 
@@ -124,52 +140,49 @@ class WebSocketService {
 
       ws.onerror = () => {
         clearTimeout(timeout);
-        console.warn(`⚠️ [WebSocket] Connection error: ${stream}`);
+        console.warn(
+          `⚠️ [WebSocket] Connection error: ${sub.stream} (${sub.marketType})`
+        );
       };
 
       ws.onclose = (event) => {
         clearTimeout(timeout);
-        console.log(`🔌 [WebSocket] Closed: ${stream} (code: ${event.code})`);
+        console.log(
+          `🔌 [WebSocket] Closed: ${sub.stream} (${sub.marketType}, code: ${event.code})`
+        );
         sub.ws = null;
 
-        // Handle connection failure
         if (sub.callbacks.size > 0) {
-          this.handleConnectionFailure(stream);
+          this.handleConnectionFailure(subscriptionKey);
         }
       };
 
       sub.ws = ws;
     } catch (err) {
       console.error(`[WebSocket] Connection error:`, err);
-      this.handleConnectionFailure(stream);
+      this.handleConnectionFailure(subscriptionKey);
     }
   }
 
-  /**
-   * Handle connection failure
-   */
-  private handleConnectionFailure(stream: string) {
-    const sub = this.subscriptions.get(stream);
+  private handleConnectionFailure(subscriptionKey: string) {
+    const sub = this.subscriptions.get(subscriptionKey);
     if (!sub) return;
 
     sub.reconnectAttempts++;
 
-    // 🔥 After 3 failed attempts, switch to REST fallback
     if (sub.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.warn(`🔄 [WebSocket] Switching to REST fallback for ${stream}`);
-      this.useFallback = true; // Global flag
-      this.startFallback(stream);
+      console.warn(
+        `🔄 [WebSocket] Switching to REST fallback for ${sub.stream} (${sub.marketType})`
+      );
+      this.useFallback = true;
+      this.startFallback(subscriptionKey);
     } else {
-      // Try reconnecting
-      this.reconnect(stream);
+      this.reconnect(subscriptionKey);
     }
   }
 
-  /**
-   * Reconnect with exponential backoff
-   */
-  private reconnect(stream: string) {
-    const sub = this.subscriptions.get(stream);
+  private reconnect(subscriptionKey: string) {
+    const sub = this.subscriptions.get(subscriptionKey);
     if (!sub) return;
 
     if (sub.reconnectTimeout) {
@@ -179,47 +192,51 @@ class WebSocketService {
     const delay = this.reconnectDelay * Math.pow(2, sub.reconnectAttempts - 1);
 
     console.log(
-      `🔄 [WebSocket] Reconnecting ${stream} in ${delay}ms (attempt ${sub.reconnectAttempts}/${this.maxReconnectAttempts})`
+      `🔄 [WebSocket] Reconnecting ${sub.stream} (${sub.marketType}) in ${delay}ms (attempt ${sub.reconnectAttempts}/${this.maxReconnectAttempts})`
     );
 
     sub.reconnectTimeout = setTimeout(() => {
-      this.connect(stream);
+      this.connect(subscriptionKey);
     }, delay);
   }
 
   /**
-   * 🔥 REST API Fallback (polling)
+   * 🔥 REST Fallback with market type support
    */
-  private startFallback(stream: string) {
-    const sub = this.subscriptions.get(stream);
+  private startFallback(subscriptionKey: string) {
+    const sub = this.subscriptions.get(subscriptionKey);
     if (!sub) return;
 
-    // Clear any existing fallback
     if (sub.fallbackInterval) {
       clearInterval(sub.fallbackInterval);
     }
 
-    console.log(`📡 [REST Fallback] Starting for ${stream}`);
+    console.log(
+      `📡 [REST Fallback] Starting for ${sub.stream} (${sub.marketType})`
+    );
 
-    // Parse stream type
-    const isTicker = stream.includes("@ticker");
-    const isDepth = stream.includes("@depth");
-    const symbol = stream.split("@")[0].toUpperCase();
+    const isTicker = sub.stream.includes("@ticker");
+    const isDepth = sub.stream.includes("@depth");
+    const symbol = sub.stream.split("@")[0].toUpperCase();
 
-    // REST polling function
+    // 🔥 Different API endpoints for spot vs futures
+    const getApiUrl = (endpoint: string) => {
+      if (sub.marketType === "futures") {
+        return `https://fapi.binance.com/fapi/v1/${endpoint}`;
+      }
+      return `https://api.binance.com/api/v3/${endpoint}`;
+    };
+
     const poll = async () => {
       try {
         let data;
 
         if (isTicker) {
-          // Ticker endpoint
-          const res = await fetch(
-            `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`
-          );
+          const url = getApiUrl(`ticker/24hr?symbol=${symbol}`);
+          const res = await fetch(url);
           if (!res.ok) throw new Error("REST failed");
           const json = await res.json();
 
-          // Format to match WebSocket response
           data = {
             e: "24hrTicker",
             s: json.symbol,
@@ -231,10 +248,8 @@ class WebSocketService {
             v: json.volume,
           };
         } else if (isDepth) {
-          // Order book endpoint
-          const res = await fetch(
-            `https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=20`
-          );
+          const url = getApiUrl(`depth?symbol=${symbol}&limit=20`);
+          const res = await fetch(url);
           if (!res.ok) throw new Error("REST failed");
           const json = await res.json();
 
@@ -244,7 +259,6 @@ class WebSocketService {
           };
         }
 
-        // Call callbacks
         if (data) {
           sub.callbacks.forEach((callback) => {
             try {
@@ -255,71 +269,61 @@ class WebSocketService {
           });
         }
       } catch (err) {
-        console.error(`[REST Fallback] Fetch error for ${stream}:`, err);
+        console.error(
+          `[REST Fallback] Fetch error for ${sub.stream} (${sub.marketType}):`,
+          err
+        );
       }
     };
 
-    // Initial call
     poll();
 
-    // Set interval (ticker: 3s, depth: 2s)
     const interval = isTicker ? 3000 : 2000;
     sub.fallbackInterval = setInterval(poll, interval);
   }
 
-  /**
-   * Disconnect from a stream
-   */
-  private disconnect(stream: string) {
-    const sub = this.subscriptions.get(stream);
+  private disconnect(subscriptionKey: string) {
+    const sub = this.subscriptions.get(subscriptionKey);
     if (!sub) return;
 
-    // Clear reconnect timeout
     if (sub.reconnectTimeout) {
       clearTimeout(sub.reconnectTimeout);
       sub.reconnectTimeout = null;
     }
 
-    // Clear fallback interval
     if (sub.fallbackInterval) {
       clearInterval(sub.fallbackInterval);
       sub.fallbackInterval = null;
     }
 
-    // Close WebSocket
     if (sub.ws) {
       sub.ws.close();
       sub.ws = null;
     }
 
-    // Remove subscription
-    this.subscriptions.delete(stream);
-    console.log(`👋 [WebSocket] Disconnected: ${stream}`);
+    this.subscriptions.delete(subscriptionKey);
+    console.log(
+      `👋 [WebSocket] Disconnected: ${sub.stream} (${sub.marketType})`
+    );
   }
 
-  /**
-   * Disconnect all streams
-   */
   disconnectAll() {
-    this.subscriptions.forEach((_, stream) => {
-      this.disconnect(stream);
+    this.subscriptions.forEach((_, key) => {
+      this.disconnect(key);
     });
   }
 
-  /**
-   * Get connection status
-   */
   getStatus(
-    stream: string
+    stream: string,
+    marketType: "spot" | "futures" = "spot"
   ): "connected" | "connecting" | "disconnected" | "fallback" {
     if (!this.isBrowser()) return "disconnected";
 
-    const sub = this.subscriptions.get(stream.toLowerCase());
+    const subscriptionKey = `${marketType}-${stream.toLowerCase()}`;
+    const sub = this.subscriptions.get(subscriptionKey);
     if (!sub) return "disconnected";
 
-    // Check if using fallback
     if (sub.fallbackInterval) return "fallback";
-
     if (!sub.ws) return "disconnected";
 
     switch (sub.ws.readyState) {
@@ -333,10 +337,8 @@ class WebSocketService {
   }
 }
 
-// Singleton instance
 export const wsService = new WebSocketService();
 
-// Cleanup on page unload (browser only)
 if (typeof window !== "undefined") {
   window.addEventListener("beforeunload", () => {
     wsService.disconnectAll();

@@ -3,9 +3,11 @@
 
 import { useEffect, useState } from "react";
 import { Plus, X, TrendingUp, TrendingDown } from "lucide-react";
+import { wsService } from "@/services/WebSocketService"; // 🔥 EKLENDI
 
 interface Props {
   instanceId: string;
+  marketType?: "spot" | "futures";
 }
 
 const EXCHANGES = [
@@ -15,67 +17,33 @@ const EXCHANGES = [
   { id: "coinbase", name: "Coinbase", active: true },
 ];
 
-const POPULAR_SYMBOLS_BY_EXCHANGE = {
-  binance: [
-    "BTCUSDT",
-    "ETHUSDT",
-    "SOLUSDT",
-    "BNBUSDT",
-    "XRPUSDT",
-    "ADAUSDT",
-    "DOGEUSDT",
-    "MATICUSDT",
-  ],
-  okx: [
-    "BTC-USDT",
-    "ETH-USDT",
-    "SOL-USDT",
-    "BNB-USDT",
-    "XRP-USDT",
-    "ADA-USDT",
-    "DOGE-USDT",
-    "MATIC-USDT",
-  ],
-  bybit: [
-    "BTCUSDT",
-    "ETHUSDT",
-    "SOLUSDT",
-    "BNBUSDT",
-    "XRPUSDT",
-    "ADAUSDT",
-    "DOGEUSDT",
-    "MATICUSDT",
-  ],
-  coinbase: [
-    "BTC-USD",
-    "ETH-USD",
-    "SOL-USD",
-    "BNB-USD",
-    "XRP-USD",
-    "ADA-USD",
-    "DOGE-USD",
-    "MATIC-USD",
-  ],
-};
+const POPULAR_BASE_ASSETS = [
+  "BTC",
+  "ETH",
+  "SOL",
+  "BNB",
+  "XRP",
+  "ADA",
+  "DOGE",
+  "MATIC",
+  "AVAX",
+  "DOT",
+  "LINK",
+  "UNI",
+];
 
-// Mock base prices for non-Binance exchanges
+const POPULAR_QUOTE_ASSETS_SPOT = ["USDT", "USDC", "BTC", "ETH", "BNB", "BUSD"];
+const POPULAR_QUOTE_ASSETS_FUTURES = ["USDT", "USD"];
+
 const MOCK_PRICES: Record<string, number> = {
-  "BTC-USDT": 99234.56,
-  "ETH-USDT": 3456.78,
-  "SOL-USDT": 142.89,
-  "BNB-USDT": 612.34,
-  "XRP-USDT": 2.45,
-  "ADA-USDT": 1.08,
-  "DOGE-USDT": 0.38,
-  "MATIC-USDT": 0.89,
-  "BTC-USD": 99234.56,
-  "ETH-USD": 3456.78,
-  "SOL-USD": 142.89,
-  "BNB-USD": 612.34,
-  "XRP-USD": 2.45,
-  "ADA-USD": 1.08,
-  "DOGE-USD": 0.38,
-  "MATIC-USD": 0.89,
+  BTCUSDT: 99234.56,
+  ETHUSDT: 3456.78,
+  SOLUSDT: 142.89,
+  BNBUSDT: 612.34,
+  XRPUSDT: 2.45,
+  ADAUSDT: 1.08,
+  DOGEUSDT: 0.38,
+  MATICUSDT: 0.89,
 };
 
 type PriceData = {
@@ -84,9 +52,12 @@ type PriceData = {
   lastUpdate: number;
 };
 
-export default function LivePricesModule({ instanceId }: Props) {
-  const exchangeStorageKey = `live-prices-${instanceId}-exchange`;
-  const watchlistStorageKey = `live-prices-${instanceId}-watchlist`;
+export default function LivePricesModule({
+  instanceId,
+  marketType = "spot",
+}: Props) {
+  const exchangeStorageKey = `live-prices-${marketType}-${instanceId}-exchange`;
+  const watchlistStorageKey = `live-prices-${marketType}-${instanceId}-watchlist`;
 
   const [exchange, setExchange] = useState(() => {
     if (typeof window !== "undefined") {
@@ -102,38 +73,40 @@ export default function LivePricesModule({ instanceId }: Props) {
         try {
           return JSON.parse(saved);
         } catch {
-          return ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
+          return marketType === "spot"
+            ? ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+            : ["BTCUSDT"];
         }
       }
     }
-    return ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
+    return marketType === "spot"
+      ? ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+      : ["BTCUSDT"];
   });
 
   const [prices, setPrices] = useState<Record<string, PriceData>>({});
-  const [newSymbol, setNewSymbol] = useState("");
+  const [baseAsset, setBaseAsset] = useState("");
+  const [quoteAsset, setQuoteAsset] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Save exchange to localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem(exchangeStorageKey, exchange);
     }
   }, [exchange, exchangeStorageKey]);
 
-  // Save watchlist to localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem(watchlistStorageKey, JSON.stringify(watchlist));
     }
   }, [watchlist, watchlistStorageKey]);
 
-  // 🔥 Binance WebSocket for LIVE data + Mock for others
+  // 🔥 wsService kullanarak WebSocket bağlantısı
   useEffect(() => {
     setIsMounted(true);
 
     if (exchange !== "binance" || watchlist.length === 0) {
-      // Mock data for non-Binance exchanges
       if (exchange !== "binance") {
         const mockPrices: Record<string, PriceData> = {};
         watchlist.forEach((symbol) => {
@@ -146,14 +119,13 @@ export default function LivePricesModule({ instanceId }: Props) {
         });
         setPrices(mockPrices);
 
-        // Update mock prices periodically
         const interval = setInterval(() => {
           setPrices((prev) => {
             const updated: Record<string, PriceData> = {};
             watchlist.forEach((symbol) => {
               const current = prev[symbol];
               if (current) {
-                const changePercent = (Math.random() - 0.5) * 0.02; // ±1%
+                const changePercent = (Math.random() - 0.5) * 0.02;
                 updated[symbol] = {
                   price: current.price * (1 + changePercent),
                   change24h: current.change24h + (Math.random() - 0.5) * 0.5,
@@ -170,40 +142,23 @@ export default function LivePricesModule({ instanceId }: Props) {
       return;
     }
 
-    // 🔥 BINANCE LIVE WebSocket
-    let ws: WebSocket | null = null;
-    let reconnectTimeout: NodeJS.Timeout | null = null;
-    let isClosed = false;
+    // 🔥 wsService ile her symbol için ayrı subscription
+    const unsubscribes = watchlist.map((symbol) => {
+      const stream = `${symbol.toLowerCase()}@ticker`;
 
-    const connect = () => {
-      if (isClosed) return;
-
-      const streams = watchlist
-        .map((symbol) => `${symbol.toLowerCase()}@ticker`)
-        .join("/");
-
-      const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
-
-      try {
-        ws = new WebSocket(wsUrl);
-
-        ws.onopen = () => {
-          console.log(`[LivePrices] ✅ Connected: ${watchlist.join(", ")}`);
-        };
-
-        ws.onmessage = (event) => {
+      return wsService.subscribe(
+        stream,
+        (data) => {
           try {
-            const message = JSON.parse(event.data);
+            // Binance ticker response format
+            const symbolData = data.s || data.data?.s;
+            const price = parseFloat(data.c || data.data?.c || 0);
+            const change24h = parseFloat(data.P || data.data?.P || 0);
 
-            if (message.data) {
-              const data = message.data;
-              const symbol = data.s; // e.g., "BTCUSDT"
-              const price = parseFloat(data.c); // Current price
-              const change24h = parseFloat(data.P); // 24h price change percent
-
+            if (symbolData && price > 0) {
               setPrices((prev) => ({
                 ...prev,
-                [symbol]: {
+                [symbolData]: {
                   price,
                   change24h,
                   lastUpdate: Date.now(),
@@ -211,54 +166,48 @@ export default function LivePricesModule({ instanceId }: Props) {
               }));
             }
           } catch (error) {
-            console.error("[LivePrices] Parse error:", error);
+            console.error(`[LivePrices] Parse error for ${symbol}:`, error);
           }
-        };
+        },
+        marketType // 🔥 Spot veya Futures endpoint
+      );
+    });
 
-        ws.onerror = () => {
-          // Silently handle errors (HMR causes these)
-        };
-
-        ws.onclose = (event) => {
-          if (isClosed) return;
-
-          // Only log unexpected closures
-          if (event.code !== 1000 && event.code !== 1001) {
-            console.log(
-              `[LivePrices] ⚠️ Disconnected (${event.code}), reconnecting...`
-            );
-
-            // Reconnect after 2 seconds
-            reconnectTimeout = setTimeout(() => {
-              connect();
-            }, 2000);
-          }
-        };
-      } catch (error) {
-        console.error("[LivePrices] Connection failed:", error);
-      }
-    };
-
-    connect();
-
+    // Cleanup: tüm subscriptions'ları kaldır
     return () => {
-      isClosed = true;
-      if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      if (ws) {
-        ws.close(1000, "Component unmounted");
-      }
+      unsubscribes.forEach((unsub) => unsub());
     };
-  }, [watchlist, exchange]);
+  }, [watchlist, exchange, marketType]);
 
-  const addSymbol = (symbol: string) => {
-    const upperSymbol = symbol.toUpperCase().trim();
-    if (!upperSymbol) return;
-    if (watchlist.includes(upperSymbol)) {
+  const addSymbol = (base: string, quote: string) => {
+    const baseUpper = base.toUpperCase().trim();
+    const quoteUpper = quote.toUpperCase().trim();
+
+    if (!baseUpper || !quoteUpper) {
+      alert("Please enter both Base Asset and Quote Asset");
+      return;
+    }
+
+    let symbol = "";
+    if (exchange === "okx" || exchange === "coinbase") {
+      symbol = `${baseUpper}-${quoteUpper}`;
+    } else {
+      symbol = `${baseUpper}${quoteUpper}`;
+    }
+
+    if (watchlist.includes(symbol)) {
       alert("Symbol already in watchlist");
       return;
     }
-    setWatchlist([...watchlist, upperSymbol]);
-    setNewSymbol("");
+
+    setWatchlist([...watchlist, symbol]);
+    setPrices((prev) => ({
+      ...prev,
+      [symbol]: { price: 0, change24h: 0, lastUpdate: Date.now() },
+    }));
+
+    setBaseAsset("");
+    setQuoteAsset("");
     setShowAddModal(false);
   };
 
@@ -266,10 +215,10 @@ export default function LivePricesModule({ instanceId }: Props) {
     setWatchlist(watchlist.filter((s) => s !== symbol));
   };
 
-  const popularSymbols =
-    POPULAR_SYMBOLS_BY_EXCHANGE[
-      exchange as keyof typeof POPULAR_SYMBOLS_BY_EXCHANGE
-    ];
+  const popularQuoteAssets =
+    marketType === "spot"
+      ? POPULAR_QUOTE_ASSETS_SPOT
+      : POPULAR_QUOTE_ASSETS_FUTURES;
 
   if (!isMounted) {
     return (
@@ -281,10 +230,11 @@ export default function LivePricesModule({ instanceId }: Props) {
 
   return (
     <div className="space-y-3 text-xs h-full flex flex-col">
-      {/* Header */}
       <div className="flex items-center justify-between gap-2">
         <div className="text-xs text-white/60">
-          <span className="font-semibold text-white/90">Live Prices</span>
+          <span className="font-semibold text-white/90">
+            Live Prices ({marketType === "spot" ? "Spot" : "Futures"})
+          </span>
           <span className="text-white/40"> • </span>
           <span
             className={
@@ -296,7 +246,6 @@ export default function LivePricesModule({ instanceId }: Props) {
         </div>
 
         <div className="flex gap-2">
-          {/* Exchange Selector */}
           <select
             value={exchange}
             onChange={(e) => setExchange(e.target.value)}
@@ -309,7 +258,6 @@ export default function LivePricesModule({ instanceId }: Props) {
             ))}
           </select>
 
-          {/* Add Button */}
           <button
             onClick={() => setShowAddModal(true)}
             className="h-8 px-3 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-colors flex items-center gap-1"
@@ -320,7 +268,6 @@ export default function LivePricesModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Exchange Warning */}
       {exchange !== "binance" && (
         <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs">
           ⚠️ {EXCHANGES.find((e) => e.id === exchange)?.name} WebSocket coming
@@ -328,7 +275,6 @@ export default function LivePricesModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Watchlist */}
       <div className="flex-1 overflow-y-auto space-y-2">
         {watchlist.length === 0 ? (
           <div className="text-center py-8 text-white/40 text-[10px]">
@@ -361,7 +307,8 @@ export default function LivePricesModule({ instanceId }: Props) {
                   <div>
                     <div className="text-white font-semibold">{symbol}</div>
                     <div className="text-white/40 text-[10px]">
-                      {exchange.toUpperCase()}
+                      {exchange.toUpperCase()} •{" "}
+                      {marketType === "spot" ? "SPOT" : "FUTURES"}
                     </div>
                   </div>
                 </div>
@@ -403,11 +350,12 @@ export default function LivePricesModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Add Modal */}
       {showAddModal && (
         <div className="absolute inset-0 bg-[#0a0e1a] z-50 flex flex-col rounded-lg overflow-hidden">
           <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
-            <h3 className="text-white font-semibold text-sm">Add Symbol</h3>
+            <h3 className="text-white font-semibold text-sm">
+              Add Symbol ({marketType === "spot" ? "Spot" : "Futures"})
+            </h3>
             <button
               onClick={() => setShowAddModal(false)}
               className="text-white/50 hover:text-white text-xl leading-none"
@@ -416,48 +364,89 @@ export default function LivePricesModule({ instanceId }: Props) {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
-            {/* Custom Symbol Input */}
-            <div>
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+            <div className="space-y-3">
               <label className="block text-white/50 mb-2 text-[10px]">
-                Custom Symbol
+                Add Custom Pair
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newSymbol}
-                  onChange={(e) => setNewSymbol(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && addSymbol(newSymbol)}
-                  placeholder="e.g. BTCUSDT"
-                  className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-xs outline-none"
-                />
+              <div className="flex gap-2 items-center">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={baseAsset}
+                    onChange={(e) => setBaseAsset(e.target.value.toUpperCase())}
+                    placeholder="Base (e.g. BTC)"
+                    className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50"
+                  />
+                </div>
+                <div className="text-white/40 font-bold">/</div>
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={quoteAsset}
+                    onChange={(e) =>
+                      setQuoteAsset(e.target.value.toUpperCase())
+                    }
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && addSymbol(baseAsset, quoteAsset)
+                    }
+                    placeholder="Quote (e.g. USDT)"
+                    className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50"
+                  />
+                </div>
                 <button
-                  onClick={() => addSymbol(newSymbol)}
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-semibold"
+                  onClick={() => addSymbol(baseAsset, quoteAsset)}
+                  disabled={!baseAsset || !quoteAsset}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded text-xs font-semibold transition-colors"
                 >
-                  Add
+                  <Plus className="w-4 h-4" />
                 </button>
+              </div>
+              <div className="text-white/40 text-[10px]">
+                💡 Example: BTC / USDT ={" "}
+                {exchange === "okx" || exchange === "coinbase"
+                  ? "BTC-USDT"
+                  : "BTCUSDT"}
               </div>
             </div>
 
-            {/* Popular Symbols */}
             <div>
               <label className="block text-white/50 mb-2 text-[10px]">
-                Popular on {EXCHANGES.find((e) => e.id === exchange)?.name}
+                Popular Base Assets
               </label>
-              <div className="grid grid-cols-2 gap-2">
-                {popularSymbols.map((symbol) => (
+              <div className="grid grid-cols-4 gap-2">
+                {POPULAR_BASE_ASSETS.map((asset) => (
                   <button
-                    key={symbol}
-                    onClick={() => addSymbol(symbol)}
-                    disabled={watchlist.includes(symbol)}
+                    key={asset}
+                    onClick={() => setBaseAsset(asset)}
                     className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
-                      watchlist.includes(symbol)
-                        ? "bg-white/5 text-white/30 cursor-not-allowed"
+                      baseAsset === asset
+                        ? "bg-blue-500/30 text-blue-300 border border-blue-500/50"
                         : "bg-white/10 hover:bg-white/20 text-white"
                     }`}
                   >
-                    {symbol}
+                    {asset}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-white/50 mb-2 text-[10px]">
+                Popular Quote Assets
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {popularQuoteAssets.map((asset) => (
+                  <button
+                    key={asset}
+                    onClick={() => setQuoteAsset(asset)}
+                    className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                      quoteAsset === asset
+                        ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/50"
+                        : "bg-white/10 hover:bg-white/20 text-white"
+                    }`}
+                  >
+                    {asset}
                   </button>
                 ))}
               </div>

@@ -1,14 +1,21 @@
 // lib/personalized-dashboard/types.ts
 
+// lib/personalized-dashboard/types.ts
+
+// lib/personalized-dashboard/types.ts
+
 export type ModuleId = string;
 
 export type ModuleCategory =
-  | "temel-veri"
-  | "trader-portfoy"
-  | "dw-flow"
-  | "likidite"
-  | "alert"
-  | "risk";
+  | "market-data" // Market Data
+  | "market-microstructure" // Market Microstructure (Likidite)
+  | "flow" // Flow (Akış & Transfer)
+  | "portfolio" // Trade & Portfolio
+  | "alert"; // Alerts
+
+// Risk Calculator artık "portfolio" kategorisinde (tablosunda "Risk Management Panel" olarak geçiyor)
+
+// ... rest stays the same
 
 export type ModuleType =
   | "live-prices"
