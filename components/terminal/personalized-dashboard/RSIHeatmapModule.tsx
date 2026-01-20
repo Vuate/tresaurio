@@ -1,6 +1,8 @@
 // components/terminal/personalized-dashboard/RSIHeatmapModule.tsx
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useKlines, useTicker } from "@/hooks";
+import { calculateRSI } from "@/lib/utils/technicalIndicators";
 
 interface Props {
   instanceId: string;
@@ -8,28 +10,110 @@ interface Props {
 
 interface RSIData {
   symbol: string;
-  rsi: number;
+  rsi: number | null;
   price: number;
   change24h: number;
+  loading: boolean;
 }
 
-// 🔥 MOCK DATA
-const MOCK_RSI: RSIData[] = [
-  { symbol: "BTCUSDT", rsi: 68, price: 45230, change24h: 2.5 },
-  { symbol: "ETHUSDT", rsi: 72, price: 2456, change24h: 3.2 },
-  { symbol: "BNBUSDT", rsi: 45, price: 312, change24h: -1.8 },
-  { symbol: "SOLUSDT", rsi: 82, price: 108, change24h: 8.5 },
-  { symbol: "XRPUSDT", rsi: 38, price: 0.58, change24h: -4.2 },
-  { symbol: "ADAUSDT", rsi: 55, price: 0.52, change24h: 1.1 },
-  { symbol: "DOGEUSDT", rsi: 41, price: 0.088, change24h: -2.3 },
-  { symbol: "MATICUSDT", rsi: 64, price: 0.95, change24h: 2.8 },
-  { symbol: "LINKUSDT", rsi: 58, price: 14.2, change24h: 0.9 },
+const TRACKED_SYMBOLS = [
+  "BTCUSDT",
+  "ETHUSDT",
+  "BNBUSDT",
+  "SOLUSDT",
+  "XRPUSDT",
+  "ADAUSDT",
+  "DOGEUSDT",
+  "MATICUSDT",
+  "LINKUSDT",
 ];
 
+// Component to track RSI for a single symbol
+function SymbolRSITracker({
+  symbol,
+  interval,
+}: {
+  symbol: string;
+  interval: "1h" | "4h" | "1d";
+}) {
+  // Get klines data
+  const { data: klines, loading: klinesLoading } = useKlines({
+    symbol,
+    interval,
+    limit: 50, // Need at least 14 + 1 for RSI calculation
+    refreshInterval: 60000, // Refresh every minute
+  });
+
+  // Get ticker data for price and 24h change
+  const { data: ticker, loading: tickerLoading } = useTicker({
+    symbol,
+    marketType: "spot",
+  });
+
+  const loading = klinesLoading || tickerLoading;
+
+  // Calculate RSI
+  const rsi = useMemo(() => {
+    if (!klines || klines.length < 15) {
+      return null;
+    }
+
+    const closes = klines.map((k) => k.close);
+    return calculateRSI(closes, 14);
+  }, [klines]);
+
+  return {
+    symbol,
+    rsi,
+    price: ticker?.lastPrice || 0,
+    change24h: ticker?.priceChangePercent || 0,
+    loading,
+  };
+}
+
 export default function RSIHeatmapModule({ instanceId }: Props) {
+  const storageKey = `rsi-heatmap-${instanceId}`;
   const [timeframe, setTimeframe] = useState<"1h" | "4h" | "1d">("4h");
 
-  const getRSIColor = (rsi: number) => {
+  // Load settings
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const settings = JSON.parse(saved);
+          if (settings.timeframe) setTimeframe(settings.timeframe);
+        } catch (err) {
+          console.error("[RSIHeatmap] Failed to load settings:", err);
+        }
+      }
+    }
+  }, [instanceId, storageKey]);
+
+  // Save settings
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, JSON.stringify({ timeframe }));
+    }
+  }, [timeframe, storageKey]);
+
+  // Track all symbols
+  const btcData = SymbolRSITracker({ symbol: "BTCUSDT", interval: timeframe });
+  const ethData = SymbolRSITracker({ symbol: "ETHUSDT", interval: timeframe });
+  const bnbData = SymbolRSITracker({ symbol: "BNBUSDT", interval: timeframe });
+  const solData = SymbolRSITracker({ symbol: "SOLUSDT", interval: timeframe });
+  const xrpData = SymbolRSITracker({ symbol: "XRPUSDT", interval: timeframe });
+  const adaData = SymbolRSITracker({ symbol: "ADAUSDT", interval: timeframe });
+  const dogeData = SymbolRSITracker({ symbol: "DOGEUSDT", interval: timeframe });
+  const maticData = SymbolRSITracker({ symbol: "MATICUSDT", interval: timeframe });
+  const linkData = SymbolRSITracker({ symbol: "LINKUSDT", interval: timeframe });
+
+  const allData = useMemo(() => {
+    return [btcData, ethData, bnbData, solData, xrpData, adaData, dogeData, maticData, linkData];
+  }, [btcData, ethData, bnbData, solData, xrpData, adaData, dogeData, maticData, linkData]);
+
+  const getRSIColor = (rsi: number | null) => {
+    if (rsi === null) return "bg-white/10";
     if (rsi >= 70) return "bg-red-500";
     if (rsi >= 60) return "bg-orange-500";
     if (rsi >= 40) return "bg-yellow-500";
@@ -37,7 +121,8 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
     return "bg-green-500";
   };
 
-  const getRSILabel = (rsi: number) => {
+  const getRSILabel = (rsi: number | null) => {
+    if (rsi === null) return "Loading...";
     if (rsi >= 70) return "Overbought";
     if (rsi >= 30) return "Neutral";
     return "Oversold";
@@ -73,7 +158,7 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
       {/* Content */}
       <div className="flex-1 overflow-auto p-3">
         <div className="space-y-2">
-          {MOCK_RSI.map((data) => (
+          {allData.map((data) => (
             <div
               key={data.symbol}
               className="bg-white/5 rounded-lg p-3 hover:bg-white/10 transition-colors"
@@ -97,21 +182,28 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
               <div className="flex items-center gap-2 mb-2">
                 <div className="flex-1">
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${getRSIColor(data.rsi)} transition-all`}
-                      style={{ width: `${data.rsi}%` }}
-                    />
+                    {data.loading ? (
+                      <div className="h-full bg-white/20 animate-pulse" />
+                    ) : (
+                      <div
+                        className={`h-full ${getRSIColor(data.rsi)} transition-all`}
+                        style={{ width: `${data.rsi || 0}%` }}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="text-sm font-bold text-white w-12 text-right">
-                  {data.rsi}
+                  {data.loading ? "..." : data.rsi?.toFixed(0) || "N/A"}
                 </div>
               </div>
 
               <div className="flex justify-between items-center text-xs">
                 <span className="text-white/60">{getRSILabel(data.rsi)}</span>
                 <span className="text-white/60">
-                  ${data.price.toLocaleString()}
+                  ${data.price.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6,
+                  })}
                 </span>
               </div>
             </div>
