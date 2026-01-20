@@ -33,7 +33,7 @@ class WebSocketService {
   subscribe(
     stream: string,
     callback: StreamCallback,
-    marketType: "spot" | "futures" = "spot" // 🔥 YENİ PARAMETRE
+    marketType: "spot" | "futures" = "spot", // 🔥 YENİ PARAMETRE
   ): () => void {
     if (!this.isBrowser()) {
       console.warn("[WebSocket] Skipping subscription (SSR environment)");
@@ -98,7 +98,7 @@ class WebSocketService {
       console.log(
         `🔌 [WebSocket] Connecting to ${sub.marketType.toUpperCase()}: ${
           sub.stream
-        }`
+        }`,
       );
 
       const ws = new WebSocket(wsUrl);
@@ -106,7 +106,7 @@ class WebSocketService {
       const timeout = setTimeout(() => {
         if (ws.readyState !== WebSocket.OPEN) {
           console.warn(
-            `⏱️ [WebSocket] Connection timeout: ${sub.stream} (${sub.marketType})`
+            `⏱️ [WebSocket] Connection timeout: ${sub.stream} (${sub.marketType})`,
           );
           ws.close();
           this.handleConnectionFailure(subscriptionKey);
@@ -118,7 +118,7 @@ class WebSocketService {
         console.log(
           `✅ [WebSocket] Connected (${sub.marketType.toUpperCase()}): ${
             sub.stream
-          }`
+          }`,
         );
         sub.reconnectAttempts = 0;
       };
@@ -141,14 +141,14 @@ class WebSocketService {
       ws.onerror = () => {
         clearTimeout(timeout);
         console.warn(
-          `⚠️ [WebSocket] Connection error: ${sub.stream} (${sub.marketType})`
+          `⚠️ [WebSocket] Connection error: ${sub.stream} (${sub.marketType})`,
         );
       };
 
       ws.onclose = (event) => {
         clearTimeout(timeout);
         console.log(
-          `🔌 [WebSocket] Closed: ${sub.stream} (${sub.marketType}, code: ${event.code})`
+          `🔌 [WebSocket] Closed: ${sub.stream} (${sub.marketType}, code: ${event.code})`,
         );
         sub.ws = null;
 
@@ -172,7 +172,7 @@ class WebSocketService {
 
     if (sub.reconnectAttempts >= this.maxReconnectAttempts) {
       console.warn(
-        `🔄 [WebSocket] Switching to REST fallback for ${sub.stream} (${sub.marketType})`
+        `🔄 [WebSocket] Switching to REST fallback for ${sub.stream} (${sub.marketType})`,
       );
       this.useFallback = true;
       this.startFallback(subscriptionKey);
@@ -192,7 +192,7 @@ class WebSocketService {
     const delay = this.reconnectDelay * Math.pow(2, sub.reconnectAttempts - 1);
 
     console.log(
-      `🔄 [WebSocket] Reconnecting ${sub.stream} (${sub.marketType}) in ${delay}ms (attempt ${sub.reconnectAttempts}/${this.maxReconnectAttempts})`
+      `🔄 [WebSocket] Reconnecting ${sub.stream} (${sub.marketType}) in ${delay}ms (attempt ${sub.reconnectAttempts}/${this.maxReconnectAttempts})`,
     );
 
     sub.reconnectTimeout = setTimeout(() => {
@@ -212,7 +212,7 @@ class WebSocketService {
     }
 
     console.log(
-      `📡 [REST Fallback] Starting for ${sub.stream} (${sub.marketType})`
+      `📡 [REST Fallback] Starting for ${sub.stream} (${sub.marketType})`,
     );
 
     const isTicker = sub.stream.includes("@ticker");
@@ -271,7 +271,7 @@ class WebSocketService {
       } catch (err) {
         console.error(
           `[REST Fallback] Fetch error for ${sub.stream} (${sub.marketType}):`,
-          err
+          err,
         );
       }
     };
@@ -303,7 +303,7 @@ class WebSocketService {
 
     this.subscriptions.delete(subscriptionKey);
     console.log(
-      `👋 [WebSocket] Disconnected: ${sub.stream} (${sub.marketType})`
+      `👋 [WebSocket] Disconnected: ${sub.stream} (${sub.marketType})`,
     );
   }
 
@@ -315,7 +315,7 @@ class WebSocketService {
 
   getStatus(
     stream: string,
-    marketType: "spot" | "futures" = "spot"
+    marketType: "spot" | "futures" = "spot",
   ): "connected" | "connecting" | "disconnected" | "fallback" {
     if (!this.isBrowser()) return "disconnected";
 

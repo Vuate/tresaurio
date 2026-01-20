@@ -31,7 +31,7 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
         setErr(null);
 
         const [binanceRes, kucoinRes] = await Promise.all([
-          fetch("/api/markets/binance/price?symbol=BTCUSDT", {
+          fetch("//api/v2/binance/price?symbol=BTCUSDT", {
             cache: "no-store",
           }),
           fetch("/api/markets/kucoin/price?symbol=BTC-USDT", {
