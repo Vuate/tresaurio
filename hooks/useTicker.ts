@@ -1,7 +1,7 @@
 // hooks/useTicker.ts
 
 import { useState, useEffect } from "react";
-import { wsService } from "@/services/WebSocketService";
+import { wsService, type Exchange } from "@/services/WebSocketService";
 
 export interface TickerData {
   symbol: string;
@@ -19,6 +19,7 @@ export interface TickerData {
 export interface UseTickerOptions {
   symbol: string;
   marketType?: "spot" | "futures";
+  exchange?: Exchange;
   enabled?: boolean;
 }
 
@@ -49,6 +50,7 @@ export interface UseTickerReturn {
 export function useTicker({
   symbol,
   marketType = "spot",
+  exchange = "binance",
   enabled = true,
 }: UseTickerOptions): UseTickerReturn {
   const [data, setData] = useState<TickerData | null>(null);
@@ -93,12 +95,13 @@ export function useTicker({
           setError("Failed to parse ticker data");
         }
       },
-      marketType
+      marketType,
+      exchange
     );
 
     // Update status periodically
     const statusInterval = setInterval(() => {
-      const currentStatus = wsService.getStatus(stream, marketType);
+      const currentStatus = wsService.getStatus(stream, marketType, exchange);
       setStatus(currentStatus);
     }, 1000);
 
@@ -106,7 +109,7 @@ export function useTicker({
       unsubscribe();
       clearInterval(statusInterval);
     };
-  }, [symbol, marketType, enabled]);
+  }, [symbol, marketType, exchange, enabled]);
 
   return {
     data,

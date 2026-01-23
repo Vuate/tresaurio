@@ -1,7 +1,7 @@
 // hooks/useOrderBook.ts
 
 import { useState, useEffect, useCallback } from "react";
-import { wsService } from "@/services/WebSocketService";
+import { wsService, type Exchange } from "@/services/WebSocketService";
 
 export interface OrderBookLevel {
   price: number;
@@ -19,6 +19,7 @@ export interface OrderBookData {
 export interface UseOrderBookOptions {
   symbol: string;
   marketType?: "spot" | "futures";
+  exchange?: Exchange;
   limit?: number;
   enabled?: boolean;
 }
@@ -52,6 +53,7 @@ export interface UseOrderBookReturn {
 export function useOrderBook({
   symbol,
   marketType = "spot",
+  exchange = "binance",
   limit = 20,
   enabled = true,
 }: UseOrderBookOptions): UseOrderBookReturn {
@@ -113,12 +115,13 @@ export function useOrderBook({
           setError("Failed to parse order book data");
         }
       },
-      marketType
+      marketType,
+      exchange
     );
 
     // Update status periodically
     const statusInterval = setInterval(() => {
-      const currentStatus = wsService.getStatus(stream, marketType);
+      const currentStatus = wsService.getStatus(stream, marketType, exchange);
       setStatus(currentStatus);
     }, 1000);
 
@@ -126,7 +129,7 @@ export function useOrderBook({
       unsubscribe();
       clearInterval(statusInterval);
     };
-  }, [symbol, marketType, limit, enabled]);
+  }, [symbol, marketType, exchange, limit, enabled]);
 
   return {
     bids,

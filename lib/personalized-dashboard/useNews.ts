@@ -18,65 +18,49 @@ interface NewsSettings {
   limit: number;
 }
 
-// 🔥 MOCK DATA - API hazır olana kadar
-const MOCK_NEWS: NewsItem[] = [
-  {
-    id: "1",
-    title: "Bitcoin Surges Past $45,000 as Institutional Demand Grows",
-    description:
-      "Major institutions continue accumulating BTC amid regulatory clarity hopes",
-    url: "#",
-    source: "CoinDesk",
-    publishedAt: new Date(Date.now() - 3600000).toISOString(),
-    sentiment: "positive",
-    category: "bitcoin",
-  },
-  {
-    id: "2",
-    title: "Ethereum Foundation Announces Major Protocol Upgrade",
-    description:
-      "EIP-7702 aims to improve account abstraction and user experience",
-    url: "#",
-    source: "The Block",
-    publishedAt: new Date(Date.now() - 7200000).toISOString(),
-    sentiment: "positive",
-    category: "ethereum",
-  },
-  {
-    id: "3",
-    title:
-      "SEC Files Charges Against DeFi Protocol Over Unregistered Securities",
-    description:
-      "Regulatory crackdown continues as agency targets yield-generating protocols",
-    url: "#",
-    source: "Bloomberg Crypto",
-    publishedAt: new Date(Date.now() - 10800000).toISOString(),
-    sentiment: "negative",
-    category: "regulation",
-  },
-  {
-    id: "4",
-    title: "Binance Reports Record Trading Volume in Q1 2025",
-    description:
-      "Exchange sees 40% increase in daily active users compared to previous quarter",
-    url: "#",
-    source: "CoinTelegraph",
-    publishedAt: new Date(Date.now() - 14400000).toISOString(),
-    sentiment: "positive",
-    category: "altcoins",
-  },
-  {
-    id: "5",
-    title: "Top DeFi Protocols Experience Flash Loan Attack",
-    description:
-      "Hackers exploit oracle vulnerability, approximately $12M drained",
-    url: "#",
-    source: "Decrypt",
-    publishedAt: new Date(Date.now() - 18000000).toISOString(),
-    sentiment: "negative",
-    category: "defi",
-  },
-];
+// CryptoPanic API response types
+interface CryptoPanicNewsItem {
+  id: number;
+  title: string;
+  url: string;
+  source: {
+    title: string;
+  };
+  published_at: string;
+  kind: string; // "news", "media", "blog"
+  currencies?: Array<{
+    code: string;
+    title: string;
+  }>;
+  votes?: {
+    positive: number;
+    negative: number;
+    important: number;
+    liked: number;
+    disliked: number;
+    lol: number;
+    toxic: number;
+    saved: number;
+  };
+}
+
+interface CryptoPanicResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: CryptoPanicNewsItem[];
+}
+
+// Category mapping to CryptoPanic filters
+const CATEGORY_FILTERS: Record<string, string> = {
+  all: "",
+  bitcoin: "currencies=BTC",
+  ethereum: "currencies=ETH",
+  altcoins: "",
+  defi: "filter=rising", // Use rising filter for DeFi-related news
+  nft: "",
+  regulation: "filter=important", // Important news often covers regulation
+};
 
 export function useNews(instanceId: string) {
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -110,30 +94,62 @@ export function useNews(instanceId: string) {
     }
   }, [settings, storageKey]);
 
+  const determineSentiment = (votes?: CryptoPanicNewsItem["votes"]): NewsItem["sentiment"] => {
+    if (!votes) return "neutral";
+
+    const positiveScore = votes.positive + votes.liked;
+    const negativeScore = votes.negative + votes.disliked + votes.toxic;
+
+    if (positiveScore > negativeScore * 1.5) return "positive";
+    if (negativeScore > positiveScore * 1.5) return "negative";
+    return "neutral";
+  };
+
   const fetchNews = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // 🔥 MOCK DATA KULLAN
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
+      // ✅ USE CRYPTOPANIC FREE API (no auth required)
+      const categoryFilter = CATEGORY_FILTERS[settings.category] || "";
+      const baseUrl = "https://cryptopanic.com/api/v1/posts/";
+      const params = new URLSearchParams({
+        public: "true", // Free tier
+        kind: "news", // Only news articles
+        ...(categoryFilter && { filter: categoryFilter }),
+      });
 
-      let filteredNews = MOCK_NEWS;
+      const url = `${baseUrl}?${params.toString()}`;
 
-      // Category filter
-      if (settings.category !== "all") {
-        filteredNews = MOCK_NEWS.filter(
-          (n) => n.category === settings.category,
-        );
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`CryptoPanic API error: ${response.status}`);
       }
 
-      // Limit
-      filteredNews = filteredNews.slice(0, settings.limit);
+      const data: CryptoPanicResponse = await response.json();
 
-      setNews(filteredNews);
+      // Transform CryptoPanic data to our NewsItem format
+      const transformedNews: NewsItem[] = data.results
+        .slice(0, settings.limit)
+        .map((item) => ({
+          id: item.id.toString(),
+          title: item.title,
+          description: item.currencies?.map((c) => c.title).join(", ") || "",
+          url: item.url,
+          source: item.source.title,
+          publishedAt: item.published_at,
+          sentiment: determineSentiment(item.votes),
+          category: item.currencies?.[0]?.code.toLowerCase() || "crypto",
+        }));
+
+      setNews(transformedNews);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      setError(err instanceof Error ? err.message : "Failed to fetch news");
       console.error("News fetch error:", err);
+
+      // Fallback to empty array on error
+      setNews([]);
     } finally {
       setLoading(false);
     }
