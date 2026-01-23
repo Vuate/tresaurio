@@ -2,10 +2,18 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useOrderBook, useTicker } from "@/hooks";
+import type { Exchange } from "@/services/WebSocketService";
 
 interface Props {
   instanceId: string;
 }
+
+const EXCHANGES = [
+  { id: "binance", name: "Binance" },
+  { id: "okx", name: "OKX" },
+  { id: "bybit", name: "Bybit" },
+  { id: "coinbase", name: "Coinbase" },
+];
 
 interface EfficiencyData {
   symbol: string;
@@ -31,21 +39,25 @@ const TRACKED_SYMBOLS = [
 function SymbolEfficiencyTracker({
   symbol,
   marketType,
+  exchange,
 }: {
   symbol: string;
   marketType: "spot" | "futures";
+  exchange: Exchange;
 }) {
-  // Get order book data
+  // Get order book data with multi-exchange support
   const { bids, asks, spread, spreadPercent, midPrice, loading: obLoading } = useOrderBook({
     symbol,
     marketType,
+    exchange, // 🔥 Multi-exchange support
     limit: 50,
   });
 
-  // Get ticker data
+  // Get ticker data with multi-exchange support
   const { data: ticker, loading: tickerLoading } = useTicker({
     symbol,
     marketType,
+    exchange, // 🔥 Multi-exchange support
   });
 
   const loading = obLoading || tickerLoading;
@@ -101,6 +113,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
 
   const [sortBy, setSortBy] = useState<"score" | "spread" | "volume">("score");
   const [marketType, setMarketType] = useState<"spot" | "futures">("spot");
+  const [exchange, setExchange] = useState<Exchange>("binance");
 
   // Load settings
   useEffect(() => {
@@ -111,6 +124,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
           const settings = JSON.parse(saved);
           if (settings.marketType) setMarketType(settings.marketType);
           if (settings.sortBy) setSortBy(settings.sortBy);
+          if (settings.exchange) setExchange(settings.exchange);
         } catch (err) {
           console.error("[MarketEfficiency] Failed to load settings:", err);
         }
@@ -121,17 +135,17 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
   // Save settings
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, JSON.stringify({ marketType, sortBy }));
+      localStorage.setItem(storageKey, JSON.stringify({ marketType, sortBy, exchange }));
     }
-  }, [marketType, sortBy, storageKey]);
+  }, [marketType, sortBy, exchange, storageKey]);
 
-  // Track all symbols
-  const btcData = SymbolEfficiencyTracker({ symbol: "BTCUSDT", marketType });
-  const ethData = SymbolEfficiencyTracker({ symbol: "ETHUSDT", marketType });
-  const solData = SymbolEfficiencyTracker({ symbol: "SOLUSDT", marketType });
-  const bnbData = SymbolEfficiencyTracker({ symbol: "BNBUSDT", marketType });
-  const xrpData = SymbolEfficiencyTracker({ symbol: "XRPUSDT", marketType });
-  const adaData = SymbolEfficiencyTracker({ symbol: "ADAUSDT", marketType });
+  // Track all symbols with multi-exchange support
+  const btcData = SymbolEfficiencyTracker({ symbol: "BTCUSDT", marketType, exchange });
+  const ethData = SymbolEfficiencyTracker({ symbol: "ETHUSDT", marketType, exchange });
+  const solData = SymbolEfficiencyTracker({ symbol: "SOLUSDT", marketType, exchange });
+  const bnbData = SymbolEfficiencyTracker({ symbol: "BNBUSDT", marketType, exchange });
+  const xrpData = SymbolEfficiencyTracker({ symbol: "XRPUSDT", marketType, exchange });
+  const adaData = SymbolEfficiencyTracker({ symbol: "ADAUSDT", marketType, exchange });
 
   const allData = useMemo(() => {
     return [btcData, ethData, solData, bnbData, xrpData, adaData].filter(
@@ -177,28 +191,43 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
           <h3 className="font-semibold">Market Efficiency</h3>
         </div>
 
-        {/* Market Type Toggle */}
-        <div className="flex gap-1">
-          <button
-            onClick={() => setMarketType("spot")}
-            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-              marketType === "spot"
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
+        <div className="flex gap-2">
+          {/* Exchange Selector */}
+          <select
+            value={exchange}
+            onChange={(e) => setExchange(e.target.value as Exchange)}
+            className="px-2 py-1 rounded text-xs font-medium bg-white/5 text-white/80 border border-white/10 outline-none cursor-pointer hover:bg-white/10"
           >
-            Spot
-          </button>
-          <button
-            onClick={() => setMarketType("futures")}
-            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-              marketType === "futures"
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
-          >
-            Futures
-          </button>
+            {EXCHANGES.map((ex) => (
+              <option key={ex.id} value={ex.id}>
+                {ex.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Market Type Toggle */}
+          <div className="flex gap-1">
+            <button
+              onClick={() => setMarketType("spot")}
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                marketType === "spot"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white/5 text-white/60 hover:bg-white/10"
+              }`}
+            >
+              Spot
+            </button>
+            <button
+              onClick={() => setMarketType("futures")}
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                marketType === "futures"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white/5 text-white/60 hover:bg-white/10"
+              }`}
+            >
+              Futures
+            </button>
+          </div>
         </div>
       </div>
 

@@ -3,10 +3,18 @@
 import { useState, useEffect, useMemo } from "react";
 import { useKlines, useTicker } from "@/hooks";
 import { calculateRSI } from "@/lib/utils/technicalIndicators";
+import type { Exchange } from "@/services/WebSocketService";
 
 interface Props {
   instanceId: string;
 }
+
+const EXCHANGES = [
+  { id: "binance", name: "Binance" },
+  { id: "okx", name: "OKX" },
+  { id: "bybit", name: "Bybit" },
+  { id: "coinbase", name: "Coinbase" },
+];
 
 interface RSIData {
   symbol: string;
@@ -32,22 +40,26 @@ const TRACKED_SYMBOLS = [
 function SymbolRSITracker({
   symbol,
   interval,
+  exchange,
 }: {
   symbol: string;
   interval: "1h" | "4h" | "1d";
+  exchange: Exchange;
 }) {
-  // Get klines data
+  // Get klines data with multi-exchange support
   const { data: klines, loading: klinesLoading } = useKlines({
     symbol,
     interval,
+    exchange, // 🔥 Multi-exchange support
     limit: 50, // Need at least 14 + 1 for RSI calculation
     refreshInterval: 60000, // Refresh every minute
   });
 
-  // Get ticker data for price and 24h change
+  // Get ticker data for price and 24h change with multi-exchange support
   const { data: ticker, loading: tickerLoading } = useTicker({
     symbol,
     marketType: "spot",
+    exchange, // 🔥 Multi-exchange support
   });
 
   const loading = klinesLoading || tickerLoading;
@@ -74,6 +86,7 @@ function SymbolRSITracker({
 export default function RSIHeatmapModule({ instanceId }: Props) {
   const storageKey = `rsi-heatmap-${instanceId}`;
   const [timeframe, setTimeframe] = useState<"1h" | "4h" | "1d">("4h");
+  const [exchange, setExchange] = useState<Exchange>("binance");
 
   // Load settings
   useEffect(() => {
@@ -83,6 +96,7 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
         try {
           const settings = JSON.parse(saved);
           if (settings.timeframe) setTimeframe(settings.timeframe);
+          if (settings.exchange) setExchange(settings.exchange);
         } catch (err) {
           console.error("[RSIHeatmap] Failed to load settings:", err);
         }
@@ -93,20 +107,20 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
   // Save settings
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, JSON.stringify({ timeframe }));
+      localStorage.setItem(storageKey, JSON.stringify({ timeframe, exchange }));
     }
-  }, [timeframe, storageKey]);
+  }, [timeframe, exchange, storageKey]);
 
-  // Track all symbols
-  const btcData = SymbolRSITracker({ symbol: "BTCUSDT", interval: timeframe });
-  const ethData = SymbolRSITracker({ symbol: "ETHUSDT", interval: timeframe });
-  const bnbData = SymbolRSITracker({ symbol: "BNBUSDT", interval: timeframe });
-  const solData = SymbolRSITracker({ symbol: "SOLUSDT", interval: timeframe });
-  const xrpData = SymbolRSITracker({ symbol: "XRPUSDT", interval: timeframe });
-  const adaData = SymbolRSITracker({ symbol: "ADAUSDT", interval: timeframe });
-  const dogeData = SymbolRSITracker({ symbol: "DOGEUSDT", interval: timeframe });
-  const maticData = SymbolRSITracker({ symbol: "MATICUSDT", interval: timeframe });
-  const linkData = SymbolRSITracker({ symbol: "LINKUSDT", interval: timeframe });
+  // Track all symbols with multi-exchange support
+  const btcData = SymbolRSITracker({ symbol: "BTCUSDT", interval: timeframe, exchange });
+  const ethData = SymbolRSITracker({ symbol: "ETHUSDT", interval: timeframe, exchange });
+  const bnbData = SymbolRSITracker({ symbol: "BNBUSDT", interval: timeframe, exchange });
+  const solData = SymbolRSITracker({ symbol: "SOLUSDT", interval: timeframe, exchange });
+  const xrpData = SymbolRSITracker({ symbol: "XRPUSDT", interval: timeframe, exchange });
+  const adaData = SymbolRSITracker({ symbol: "ADAUSDT", interval: timeframe, exchange });
+  const dogeData = SymbolRSITracker({ symbol: "DOGEUSDT", interval: timeframe, exchange });
+  const maticData = SymbolRSITracker({ symbol: "MATICUSDT", interval: timeframe, exchange });
+  const linkData = SymbolRSITracker({ symbol: "LINKUSDT", interval: timeframe, exchange });
 
   const allData = useMemo(() => {
     return [btcData, ethData, bnbData, solData, xrpData, adaData, dogeData, maticData, linkData];
@@ -136,6 +150,19 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
           <div className="text-xl">🌡️</div>
           <h3 className="font-semibold">RSI Heatmap</h3>
         </div>
+
+        {/* Exchange Selector */}
+        <select
+          value={exchange}
+          onChange={(e) => setExchange(e.target.value as Exchange)}
+          className="px-2 py-1 rounded text-xs font-medium bg-white/5 text-white/80 border border-white/10 outline-none cursor-pointer hover:bg-white/10"
+        >
+          {EXCHANGES.map((ex) => (
+            <option key={ex.id} value={ex.id}>
+              {ex.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Timeframe Selector */}

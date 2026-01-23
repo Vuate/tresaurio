@@ -4,10 +4,18 @@
 import { useEffect, useState, useMemo } from "react";
 import { BarChart3, TrendingUp, AlertTriangle } from "lucide-react";
 import { useOrderBook } from "@/hooks";
+import type { Exchange } from "@/services/WebSocketService";
 
 interface Props {
   instanceId: string;
 }
+
+const EXCHANGES = [
+  { id: "binance", name: "Binance" },
+  { id: "okx", name: "OKX" },
+  { id: "bybit", name: "Bybit" },
+  { id: "coinbase", name: "Coinbase" },
+];
 
 const MARKET_TYPES = [
   { id: "spot", name: "Spot" },
@@ -30,6 +38,7 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
 
   // State
   const [marketType, setMarketType] = useState<"spot" | "futures">("spot");
+  const [exchange, setExchange] = useState<Exchange>("binance");
   const [symbol, setSymbol] = useState("BTCUSDT");
 
   // Load settings from localStorage
@@ -41,6 +50,7 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
           const settings = JSON.parse(saved);
           if (settings.symbol) setSymbol(settings.symbol);
           if (settings.marketType) setMarketType(settings.marketType);
+          if (settings.exchange) setExchange(settings.exchange);
         } catch (err) {
           console.error("[LiquidityAnalysis] Failed to load settings:", err);
         }
@@ -51,14 +61,15 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
   // Save settings to localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, JSON.stringify({ symbol, marketType }));
+      localStorage.setItem(storageKey, JSON.stringify({ symbol, marketType, exchange }));
     }
-  }, [symbol, marketType, storageKey]);
+  }, [symbol, marketType, exchange, storageKey]);
 
-  // ✅ USE REAL WEBSOCKET DATA
+  // ✅ USE REAL WEBSOCKET DATA with multi-exchange support
   const { bids, asks, midPrice, loading, error, status } = useOrderBook({
     symbol,
     marketType,
+    exchange, // 🔥 Multi-exchange support
     limit: 100, // Get deep order book for liquidity analysis
   });
 
@@ -145,6 +156,19 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
         </div>
 
         <div className="flex gap-2">
+          {/* Exchange Selector */}
+          <select
+            value={exchange}
+            onChange={(e) => setExchange(e.target.value as Exchange)}
+            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
+          >
+            {EXCHANGES.map((ex) => (
+              <option key={ex.id} value={ex.id}>
+                {ex.name}
+              </option>
+            ))}
+          </select>
+
           {/* Market Type Selector */}
           <select
             value={marketType}

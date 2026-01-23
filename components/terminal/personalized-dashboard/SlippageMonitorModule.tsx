@@ -2,21 +2,31 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useOrderBook } from "@/hooks";
+import type { Exchange } from "@/services/WebSocketService";
 
 interface Props {
   instanceId: string;
 }
 
+const EXCHANGES = [
+  { id: "binance", name: "Binance" },
+  { id: "okx", name: "OKX" },
+  { id: "bybit", name: "Bybit" },
+  { id: "coinbase", name: "Coinbase" },
+];
+
 export default function SlippageMonitorModule({ instanceId }: Props) {
   const [marketType, setMarketType] = useState<"spot" | "futures">("spot");
+  const [exchange, setExchange] = useState<Exchange>("binance");
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [orderSize, setOrderSize] = useState("10000");
   const [orderType, setOrderType] = useState<"buy" | "sell">("buy");
 
-  // ✅ USE REAL WEBSOCKET DATA
+  // ✅ USE REAL WEBSOCKET DATA with multi-exchange support
   const { bids, asks, midPrice, loading, error, status } = useOrderBook({
     symbol,
     marketType,
+    exchange, // 🔥 Multi-exchange support
     limit: 100, // Get deep order book for accurate slippage calculation
   });
 
@@ -25,9 +35,9 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
     const storageKey = `slippage-monitor-${instanceId}`;
     localStorage.setItem(
       storageKey,
-      JSON.stringify({ symbol, marketType, orderSize, orderType })
+      JSON.stringify({ symbol, marketType, exchange, orderSize, orderType })
     );
-  }, [instanceId, symbol, marketType, orderSize, orderType]);
+  }, [instanceId, symbol, marketType, exchange, orderSize, orderType]);
 
   // Load settings from localStorage
   useEffect(() => {
@@ -38,6 +48,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
         const settings = JSON.parse(saved);
         if (settings.symbol) setSymbol(settings.symbol);
         if (settings.marketType) setMarketType(settings.marketType);
+        if (settings.exchange) setExchange(settings.exchange);
         if (settings.orderSize) setOrderSize(settings.orderSize);
         if (settings.orderType) setOrderType(settings.orderType);
       } catch (err) {
@@ -124,8 +135,19 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Market Type Toggle */}
+      {/* Exchange & Market Type */}
       <div className="flex gap-2 p-3 border-b border-white/10">
+        <select
+          value={exchange}
+          onChange={(e) => setExchange(e.target.value as Exchange)}
+          className="flex-1 py-2 px-3 rounded text-sm font-medium bg-white/5 text-white border border-white/10 outline-none"
+        >
+          {EXCHANGES.map((ex) => (
+            <option key={ex.id} value={ex.id}>
+              {ex.name}
+            </option>
+          ))}
+        </select>
         <button
           onClick={() => setMarketType("spot")}
           className={`flex-1 py-2 rounded text-sm font-medium transition-colors ${
