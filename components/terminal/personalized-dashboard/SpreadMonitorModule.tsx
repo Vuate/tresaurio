@@ -80,35 +80,11 @@ export default function SpreadMonitorModule({
     }
   }, [monitoredSymbols, symbolsStorageKey]);
 
-  // 🔥 WebSocket price feed
+  // 🔥 WebSocket price feed - Multi-exchange support
   useEffect(() => {
-    if (exchange !== "binance" || monitoredSymbols.length === 0) {
-      if (exchange !== "binance") {
-        const mockPrices: Record<string, number> = {};
-        monitoredSymbols.forEach((symbol) => {
-          mockPrices[symbol] = 100000 + Math.random() * 5000;
-        });
-        setPrices(mockPrices);
+    if (monitoredSymbols.length === 0) return;
 
-        // Update mock prices periodically
-        const interval = setInterval(() => {
-          setPrices((prev) => {
-            const updated: Record<string, number> = {};
-            monitoredSymbols.forEach((symbol) => {
-              const current = prev[symbol] || 100000;
-              const changePercent = (Math.random() - 0.5) * 0.02;
-              updated[symbol] = current * (1 + changePercent);
-            });
-            return { ...prev, ...updated };
-          });
-        }, 2000);
-
-        return () => clearInterval(interval);
-      }
-      return;
-    }
-
-    // LIVE WebSocket
+    // LIVE WebSocket for ALL exchanges
     const unsubscribes = monitoredSymbols.map((symbol) => {
       const stream = `${symbol.toLowerCase()}@ticker`;
 
@@ -126,7 +102,8 @@ export default function SpreadMonitorModule({
             console.error(`[SpreadMonitor] Parse error for ${symbol}:`, error);
           }
         },
-        marketType
+        marketType,
+        exchange as any // 🔥 Multi-exchange support
       );
     });
 
@@ -184,13 +161,7 @@ export default function SpreadMonitorModule({
             Spread Monitor ({marketType === "spot" ? "Spot" : "Futures"})
           </span>
           <span className="text-white/40"> • </span>
-          <span
-            className={
-              exchange === "binance" ? "text-emerald-400" : "text-yellow-400"
-            }
-          >
-            {exchange === "binance" ? "LIVE" : "MOCK"}
-          </span>
+          <span className="text-emerald-400">LIVE</span>
         </div>
 
         <div className="flex gap-2">
@@ -215,13 +186,6 @@ export default function SpreadMonitorModule({
           </button>
         </div>
       </div>
-
-      {exchange !== "binance" && (
-        <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs">
-          ⚠️ {EXCHANGES.find((e) => e.id === exchange)?.name} WebSocket coming
-          soon. Showing mock spreads.
-        </div>
-      )}
 
       <div className="flex-1 overflow-y-auto space-y-2">
         {monitoredSymbols.length === 0 ? (

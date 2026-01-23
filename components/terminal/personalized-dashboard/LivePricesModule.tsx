@@ -35,16 +35,6 @@ const POPULAR_BASE_ASSETS = [
 const POPULAR_QUOTE_ASSETS_SPOT = ["USDT", "USDC", "BTC", "ETH", "BNB", "BUSD"];
 const POPULAR_QUOTE_ASSETS_FUTURES = ["USDT", "USD"];
 
-const MOCK_PRICES: Record<string, number> = {
-  BTCUSDT: 99234.56,
-  ETHUSDT: 3456.78,
-  SOLUSDT: 142.89,
-  BNBUSDT: 612.34,
-  XRPUSDT: 2.45,
-  ADAUSDT: 1.08,
-  DOGEUSDT: 0.38,
-  MATICUSDT: 0.89,
-};
 
 type PriceData = {
   price: number;
@@ -102,47 +92,15 @@ export default function LivePricesModule({
     }
   }, [watchlist, watchlistStorageKey]);
 
-  // 🔥 wsService kullanarak WebSocket bağlantısı
+  // 🔥 wsService kullanarak WebSocket bağlantısı - Multi-exchange support
   useEffect(() => {
     setIsMounted(true);
 
-    if (exchange !== "binance" || watchlist.length === 0) {
-      if (exchange !== "binance") {
-        const mockPrices: Record<string, PriceData> = {};
-        watchlist.forEach((symbol) => {
-          const basePrice = MOCK_PRICES[symbol] || 100;
-          mockPrices[symbol] = {
-            price: basePrice,
-            change24h: (Math.random() - 0.5) * 10,
-            lastUpdate: Date.now(),
-          };
-        });
-        setPrices(mockPrices);
-
-        const interval = setInterval(() => {
-          setPrices((prev) => {
-            const updated: Record<string, PriceData> = {};
-            watchlist.forEach((symbol) => {
-              const current = prev[symbol];
-              if (current) {
-                const changePercent = (Math.random() - 0.5) * 0.02;
-                updated[symbol] = {
-                  price: current.price * (1 + changePercent),
-                  change24h: current.change24h + (Math.random() - 0.5) * 0.5,
-                  lastUpdate: Date.now(),
-                };
-              }
-            });
-            return { ...prev, ...updated };
-          });
-        }, 2000);
-
-        return () => clearInterval(interval);
-      }
+    if (watchlist.length === 0) {
       return;
     }
 
-    // 🔥 wsService ile her symbol için ayrı subscription
+    // 🔥 wsService ile her symbol için ayrı subscription (ALL exchanges supported)
     const unsubscribes = watchlist.map((symbol) => {
       const stream = `${symbol.toLowerCase()}@ticker`;
 
@@ -150,7 +108,7 @@ export default function LivePricesModule({
         stream,
         (data) => {
           try {
-            // Binance ticker response format
+            // Normalized ticker response format (handled by WebSocketService)
             const symbolData = data.s || data.data?.s;
             const price = parseFloat(data.c || data.data?.c || 0);
             const change24h = parseFloat(data.P || data.data?.P || 0);
@@ -169,7 +127,8 @@ export default function LivePricesModule({
             console.error(`[LivePrices] Parse error for ${symbol}:`, error);
           }
         },
-        marketType // 🔥 Spot veya Futures endpoint
+        marketType,
+        exchange as any // 🔥 Pass exchange parameter for multi-exchange support
       );
     });
 
@@ -236,13 +195,7 @@ export default function LivePricesModule({
             Live Prices ({marketType === "spot" ? "Spot" : "Futures"})
           </span>
           <span className="text-white/40"> • </span>
-          <span
-            className={
-              exchange === "binance" ? "text-emerald-400" : "text-yellow-400"
-            }
-          >
-            {exchange === "binance" ? "LIVE" : "MOCK"}
-          </span>
+          <span className="text-emerald-400">LIVE</span>
         </div>
 
         <div className="flex gap-2">
@@ -267,13 +220,6 @@ export default function LivePricesModule({
           </button>
         </div>
       </div>
-
-      {exchange !== "binance" && (
-        <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs">
-          ⚠️ {EXCHANGES.find((e) => e.id === exchange)?.name} WebSocket coming
-          soon. Showing mock prices.
-        </div>
-      )}
 
       <div className="flex-1 overflow-y-auto space-y-2">
         {watchlist.length === 0 ? (

@@ -21,6 +21,22 @@ import DCACalculatorModule from "@/components/terminal/personalized-dashboard/DC
 import AllInCostCalculatorModule from "@/components/terminal/personalized-dashboard/AllInCostCalculatorModule";
 import FeeStructureAnalyzerModule from "@/components/terminal/personalized-dashboard/FeeStructureAnalyzerModule";
 import NotesModule from "@/components/terminal/personalized-dashboard/NotesModule";
+import PnLAnalysisModule from "@/components/terminal/personalized-dashboard/PnLAnalysisModule";
+import NewsModule from "@/components/terminal/personalized-dashboard/NewsModule";
+import LastOrdersModule from "@/components/terminal/personalized-dashboard/LastOrdersModule";
+import SpotActionsModule from "@/components/terminal/personalized-dashboard/SpotActionsModule";
+import FuturesActionsModule from "@/components/terminal/personalized-dashboard/FuturesActionsModule";
+import RewardCalendarModule from "@/components/terminal/personalized-dashboard/RewardCalendarModule";
+import ICOCalendarModule from "@/components/terminal/personalized-dashboard/ICOCalendarModule";
+import TokenUnlockModule from "@/components/terminal/personalized-dashboard/TokenUnlockModule";
+import SlippageMonitorModule from "@/components/terminal/personalized-dashboard/SlippageMonitorModule";
+import RSIHeatmapModule from "@/components/terminal/personalized-dashboard/RSIHeatmapModule";
+import MarketEfficiencyModule from "@/components/terminal/personalized-dashboard/MarketEfficiencyModule";
+import ExchangeNetflowModule from "@/components/terminal/personalized-dashboard/ExchangeNetflowModule";
+import ETFFlowsModule from "@/components/terminal/personalized-dashboard/ETFFlowsModule";
+import StackPositionModule from "@/components/terminal/personalized-dashboard/StackPositionModule";
+import WalletInspectorModule from "@/components/terminal/personalized-dashboard/WalletInspectorModule";
+import TokenFlowModule from "@/components/terminal/personalized-dashboard/TokenFlowModule";
 
 export type ModuleDefinition = {
   type: string;
@@ -268,5 +284,167 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     render: (instanceId: string) => (
       <ActiveAlertsModule instanceId={instanceId} />
     ),
+  },
+  "pnl-analysis": {
+    type: "pnl-analysis",
+    title: "PnL Analysis",
+    description: "Detailed profit & loss breakdown with real-time tracking",
+    category: "portfolio",
+    defaultSize: { width: 380, height: 580 }, // Biraz daha uzun yaptım
+    render: (instanceId: string) => (
+      <PnLAnalysisModule instanceId={instanceId} />
+    ),
+  },
+  news: {
+    type: "news",
+    title: "Crypto News",
+    description: "Latest cryptocurrency news and updates",
+    category: "market-data",
+    defaultSize: { width: 400, height: 600 },
+    render: (instanceId: string) => <NewsModule instanceId={instanceId} />,
+  },
+  "last-orders": {
+    type: "last-orders",
+    title: "Last Orders",
+    description: "Recent trade history and order status",
+    category: "portfolio",
+    defaultSize: { width: 420, height: 600 },
+    render: (instanceId: string) => (
+      <LastOrdersModule instanceId={instanceId} />
+    ),
+  },
+  "spot-actions": {
+    type: "spot-actions",
+    title: "Spot Actions",
+    description: "Quick buy/sell spot positions",
+    category: "portfolio",
+    defaultSize: { width: 360, height: 620 },
+    render: (instanceId: string) => (
+      <SpotActionsModule instanceId={instanceId} />
+    ),
+  },
+  "futures-actions": {
+    type: "futures-actions",
+    title: "Futures Actions",
+    description: "Quick long/short futures positions with leverage",
+    category: "portfolio",
+    defaultSize: { width: 360, height: 700 },
+    render: (instanceId: string) => (
+      <FuturesActionsModule instanceId={instanceId} />
+    ),
+  },
+  "reward-calendar": {
+    type: "reward-calendar",
+    title: "Reward Calendar",
+    description: "Upcoming staking rewards and airdrops",
+    category: "portfolio",
+    defaultSize: { width: 360, height: 600 },
+    render: (instanceId: string) => (
+      <RewardCalendarModule instanceId={instanceId} />
+    ),
+  },
+
+  "ico-calendar": {
+    type: "ico-calendar",
+    title: "ICO Calendar",
+    description: "Upcoming token sales and ICOs",
+    category: "market-data",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => (
+      <ICOCalendarModule instanceId={instanceId} />
+    ),
+  },
+
+  "token-unlock": {
+    type: "token-unlock",
+    title: "Token Unlocks",
+    description: "Token vesting schedule and unlock events",
+    category: "market-data",
+    defaultSize: { width: 360, height: 600 },
+    render: (instanceId: string) => (
+      <TokenUnlockModule instanceId={instanceId} />
+    ),
+  },
+  "slippage-monitor": {
+    type: "slippage-monitor",
+    title: "Slippage Monitor",
+    description: "Calculate order slippage and market impact",
+    category: "market-microstructure",
+    defaultSize: { width: 360, height: 600 },
+    render: (instanceId: string) => (
+      <SlippageMonitorModule instanceId={instanceId} />
+    ),
+  },
+
+  "rsi-heatmap": {
+    type: "rsi-heatmap",
+    title: "RSI Heatmap",
+    description: "Multi-asset RSI overview with heatmap",
+    category: "market-data",
+    defaultSize: { width: 380, height: 650 },
+    render: (instanceId: string) => (
+      <RSIHeatmapModule instanceId={instanceId} />
+    ),
+  },
+
+  "market-efficiency": {
+    type: "market-efficiency",
+    title: "Market Efficiency",
+    description: "Market quality score based on spread, depth & volume",
+    category: "market-microstructure",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => (
+      <MarketEfficiencyModule instanceId={instanceId} />
+    ),
+  },
+
+  "exchange-netflow": {
+    type: "exchange-netflow",
+    title: "Exchange Netflow",
+    description: "Track inflow/outflow across exchanges",
+    category: "flow",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => (
+      <ExchangeNetflowModule instanceId={instanceId} />
+    ),
+  },
+  "etf-flows": {
+    type: "etf-flows",
+    title: "ETF Flows",
+    description: "Bitcoin ETF inflow/outflow tracking",
+    category: "flow",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => <ETFFlowsModule instanceId={instanceId} />,
+  },
+
+  "stack-position": {
+    type: "stack-position",
+    title: "Stack Tracker",
+    description: "Group and track token positions by category",
+    category: "portfolio",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => (
+      <StackPositionModule instanceId={instanceId} />
+    ),
+  },
+
+  "wallet-inspector": {
+    type: "wallet-inspector",
+    title: "Wallet Inspector",
+    description: "Analyze any wallet's holdings and transactions",
+    category: "flow",
+    defaultSize: { width: 360, height: 650 },
+    render: (instanceId: string) => (
+      <WalletInspectorModule instanceId={instanceId} />
+    ),
+  },
+
+  "token-flow": {
+    type: "token-flow",
+    title: "Token Flow Analysis",
+    description: "Cross-chain token movement tracking",
+    category: "flow",
+    defaultSize: { width: 380, height: 650 },
+    render: (instanceId: string) => <TokenFlowModule instanceId={instanceId} />,
   },
 };

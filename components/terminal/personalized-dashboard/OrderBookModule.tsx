@@ -52,21 +52,6 @@ function buildSide(raw: [string, string][], isAsks: boolean): SideRow[] {
   });
 }
 
-function mockDepth(symbol: string) {
-  const mid = 100000 + Math.random() * 5000;
-  const mk = (isAsks: boolean) =>
-    Array.from({ length: 20 }).map((_, i) => {
-      const step = (i + 1) * (5 + Math.random() * 12);
-      const price = isAsks ? mid + step : mid - step;
-      const qty = 0.05 + Math.random() * 0.8;
-      return [price.toFixed(2), qty.toFixed(6)] as [string, string];
-    });
-
-  const bids = buildSide(mk(false), false);
-  const asks = buildSide(mk(true), true);
-
-  return { symbol, bids, asks, mid, source: "mock" as const };
-}
 
 export default function OrderBookModule({
   instanceId,
@@ -121,15 +106,10 @@ export default function OrderBookModule({
   useEffect(() => {
     let mounted = true;
 
-    if (exchange !== "binance") {
-      const mockData = mockDepth(symbol);
-      setOrderBookData(mockData);
-      return;
-    }
+    // 🔥 Binance uses @depth20 for partial book depth (20 levels)
+    const stream = `${symbol.toLowerCase()}@depth20`;
 
-    const stream = `${symbol.toLowerCase()}@depth20@100ms`;
-
-    // 🔥 marketType parametresi eklendi - Spot ve Futures farklı endpoint'ler kullanıyor
+    // 🔥 Multi-exchange support - All exchanges now supported via WebSocketService
     const unsubscribe = wsService.subscribe(
       stream,
       (data) => {
@@ -152,11 +132,10 @@ export default function OrderBookModule({
           }
         } catch (error) {
           console.error("[OrderBook] Parse error:", error);
-          const mockData = mockDepth(symbol);
-          setOrderBookData(mockData);
         }
       },
-      marketType // 🔥 ÖNEMLİ: marketType parametresi
+      marketType,
+      exchange as any // 🔥 Pass exchange parameter for multi-exchange support
     );
 
     return () => {
@@ -232,7 +211,6 @@ export default function OrderBookModule({
     []
   );
 
-  const selectedExchange = EXCHANGES.find((e) => e.id === exchange);
   const popularQuoteAssets =
     marketType === "spot"
       ? POPULAR_QUOTE_ASSETS_SPOT
@@ -278,15 +256,6 @@ export default function OrderBookModule({
           </button>
         </div>
       </div>
-
-      {exchange !== "binance" && (
-        <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs flex items-center gap-2">
-          <span>⚠️</span>
-          <span>
-            {selectedExchange?.name} WebSocket coming soon. Showing mock data.
-          </span>
-        </div>
-      )}
 
       <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
         <div>
