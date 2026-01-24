@@ -135,7 +135,7 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 60000); // Refresh every minute
+    const interval = setInterval(fetchData, 300000); // Refresh every 5 minutes
     return () => clearInterval(interval);
   }, [fetchData]);
 

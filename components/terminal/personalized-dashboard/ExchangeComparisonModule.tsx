@@ -124,7 +124,7 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
     };
 
     fetchPrices();
-    const interval = setInterval(fetchPrices, 5000); // Update every 5s
+    const interval = setInterval(fetchPrices, 300000); // Update every 5 minutes
 
     return () => {
       alive = false;

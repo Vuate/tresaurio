@@ -1,6 +1,7 @@
 // components/terminal/personalized-dashboard/ExchangeNetflowModule.tsx
+"use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 interface Props {
   instanceId: string;
@@ -12,82 +13,39 @@ interface NetflowData {
   outflow: number;
   net: number;
   change24h: number;
+  connected: boolean;
 }
 
 const SYMBOLS = ["BTC", "ETH"];
 
-// 🔥 Fetch netflow data from multiple exchange APIs
-const fetchNetflowData = async (symbol: string): Promise<NetflowData[]> => {
-  const exchanges = ["Binance", "OKX", "Bybit", "Coinbase"];
-  const results: NetflowData[] = [];
+// 🔥 WebSocket URLs for trade streams
+const getTradeStreamUrl = (exchange: string, symbol: string): string => {
+  const lowerSymbol = symbol.toLowerCase();
+  const pair = `${lowerSymbol}usdt`;
 
-  // Fetch 24h volume from each exchange to estimate flow
-  for (const exchange of exchanges) {
-    try {
-      let volume24h = 0;
-      let price = 0;
-
-      const pair = `${symbol}USDT`;
-
-      if (exchange === "Binance") {
-        const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${pair}`);
-        const data = await res.json();
-        volume24h = parseFloat(data.quoteVolume || 0);
-        price = parseFloat(data.lastPrice || 0);
-      } else if (exchange === "OKX") {
-        const okxPair = `${symbol}-USDT`;
-        const res = await fetch(`https://www.okx.com/api/v5/market/ticker?instId=${okxPair}`);
-        const data = await res.json();
-        const ticker = data.data?.[0];
-        volume24h = parseFloat(ticker?.volCcy24h || 0) * parseFloat(ticker?.last || 0);
-        price = parseFloat(ticker?.last || 0);
-      } else if (exchange === "Bybit") {
-        const res = await fetch(`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${pair}`);
-        const data = await res.json();
-        const ticker = data.result?.list?.[0];
-        volume24h = parseFloat(ticker?.turnover24h || 0);
-        price = parseFloat(ticker?.lastPrice || 0);
-      } else if (exchange === "Coinbase") {
-        const cbPair = `${symbol}-USD`;
-        const res = await fetch(`https://api.exchange.coinbase.com/products/${cbPair}/stats`);
-        const data = await res.json();
-        volume24h = parseFloat(data.volume || 0) * parseFloat(data.last || 0);
-        price = parseFloat(data.last || 0);
-      }
-
-      // Simulate inflow/outflow based on volume (in reality this requires on-chain data)
-      // Using a random distribution for demonstration - in production use CryptoQuant/Glassnode API
-      const inflowRatio = 0.4 + Math.random() * 0.2; // 40-60% inflow
-      const inflow = volume24h * inflowRatio;
-      const outflow = volume24h * (1 - inflowRatio);
-      const net = inflow - outflow;
-
-      // Change is random for demo - in production calculate from historical data
-      const change24h = (Math.random() - 0.5) * 30; // -15% to +15%
-
-      results.push({
-        exchange,
-        inflow,
-        outflow,
-        net,
-        change24h,
-      });
-    } catch (err) {
-      console.error(`[ExchangeNetflow] Error fetching ${exchange}:`, err);
-    }
+  switch (exchange) {
+    case "Binance":
+      return `wss://stream.binance.com:9443/ws/${pair}@aggTrade`;
+    case "OKX":
+      return `wss://ws.okx.com:8443/ws/v5/public`;
+    case "Bybit":
+      return `wss://stream.bybit.com/v5/public/spot`;
+    default:
+      return "";
   }
-
-  // Sort by absolute net flow
-  return results.sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
 };
 
 export default function ExchangeNetflowModule({ instanceId }: Props) {
   const storageKey = `exchange-netflow-${instanceId}`;
   const [timeframe, setTimeframe] = useState<"24h" | "7d" | "30d">("24h");
   const [symbol, setSymbol] = useState<string>("BTC");
-  const [data, setData] = useState<NetflowData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<NetflowData[]>([
+    { exchange: "Binance", inflow: 0, outflow: 0, net: 0, change24h: 0, connected: false },
+    { exchange: "OKX", inflow: 0, outflow: 0, net: 0, change24h: 0, connected: false },
+    { exchange: "Bybit", inflow: 0, outflow: 0, net: 0, change24h: 0, connected: false },
+  ]);
+  const wsRefs = useRef<Map<string, WebSocket>>(new Map());
+  const flowAccumulators = useRef<Map<string, { inflow: number; outflow: number }>>(new Map());
 
   // Load settings
   useEffect(() => {
@@ -112,28 +70,163 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
     }
   }, [symbol, timeframe, storageKey]);
 
-  // Fetch data
-  const fetchData = useCallback(async () => {
+  // 🔥 Connect to all exchange WebSockets
+  const connectToExchange = useCallback((exchange: string) => {
+    const url = getTradeStreamUrl(exchange, symbol);
+    if (!url) return;
+
+    // Initialize accumulator
+    if (!flowAccumulators.current.has(exchange)) {
+      flowAccumulators.current.set(exchange, { inflow: 0, outflow: 0 });
+    }
+
     try {
-      setLoading(true);
-      const result = await fetchNetflowData(symbol);
-      setData(result);
-      setError(null);
+      const ws = new WebSocket(url);
+      wsRefs.current.set(exchange, ws);
+
+      ws.onopen = () => {
+        console.log(`[ExchangeNetflow] Connected to ${exchange}`);
+
+        setData(prev => prev.map(d =>
+          d.exchange === exchange ? { ...d, connected: true } : d
+        ));
+
+        // Subscribe for OKX and Bybit
+        if (exchange === "OKX") {
+          const okxPair = `${symbol}-USDT`;
+          ws.send(JSON.stringify({
+            op: "subscribe",
+            args: [{ channel: "trades", instId: okxPair }],
+          }));
+        } else if (exchange === "Bybit") {
+          ws.send(JSON.stringify({
+            op: "subscribe",
+            args: [`publicTrade.${symbol}USDT`],
+          }));
+        }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const rawData = JSON.parse(event.data);
+          let tradeValue = 0;
+          let isBuy = false;
+
+          // Parse trade data based on exchange
+          if (exchange === "Binance") {
+            // Binance aggTrade: { p: price, q: qty, m: isBuyerMaker }
+            if (rawData.e === "aggTrade") {
+              const price = parseFloat(rawData.p);
+              const qty = parseFloat(rawData.q);
+              tradeValue = price * qty;
+              isBuy = !rawData.m; // m=true means buyer is maker (sell), m=false means buyer is taker (buy)
+            }
+          } else if (exchange === "OKX") {
+            // OKX trades: { data: [{ px, sz, side }] }
+            if (rawData.data?.[0]) {
+              const trade = rawData.data[0];
+              const price = parseFloat(trade.px || 0);
+              const qty = parseFloat(trade.sz || 0);
+              tradeValue = price * qty;
+              isBuy = trade.side === "buy";
+            }
+          } else if (exchange === "Bybit") {
+            // Bybit publicTrade: { data: [{ p, v, S }] }
+            if (rawData.data?.[0]) {
+              const trade = rawData.data[0];
+              const price = parseFloat(trade.p || 0);
+              const qty = parseFloat(trade.v || 0);
+              tradeValue = price * qty;
+              isBuy = trade.S === "Buy";
+            }
+          }
+
+          // Update accumulator
+          if (tradeValue > 0) {
+            const acc = flowAccumulators.current.get(exchange);
+            if (acc) {
+              if (isBuy) {
+                acc.inflow += tradeValue;
+              } else {
+                acc.outflow += tradeValue;
+              }
+            }
+          }
+        } catch (err) {
+          // Ignore parse errors for non-trade messages
+        }
+      };
+
+      ws.onerror = () => {
+        setData(prev => prev.map(d =>
+          d.exchange === exchange ? { ...d, connected: false } : d
+        ));
+      };
+
+      ws.onclose = () => {
+        setData(prev => prev.map(d =>
+          d.exchange === exchange ? { ...d, connected: false } : d
+        ));
+
+        // Reconnect after 5 seconds
+        setTimeout(() => {
+          if (wsRefs.current.get(exchange) === ws) {
+            connectToExchange(exchange);
+          }
+        }, 5000);
+      };
     } catch (err) {
-      console.error("[ExchangeNetflow] Fetch error:", err);
-      setError(err instanceof Error ? err.message : "Failed to fetch");
-    } finally {
-      setLoading(false);
+      console.error(`[ExchangeNetflow] Failed to connect to ${exchange}:`, err);
     }
   }, [symbol]);
 
+  // Connect to all exchanges
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 60000); // Refresh every minute
-    return () => clearInterval(interval);
-  }, [fetchData]);
+    // Reset accumulators
+    flowAccumulators.current.clear();
+
+    // Close existing connections
+    wsRefs.current.forEach(ws => ws.close());
+    wsRefs.current.clear();
+
+    // Connect to each exchange
+    ["Binance", "OKX", "Bybit"].forEach(exchange => {
+      connectToExchange(exchange);
+    });
+
+    return () => {
+      wsRefs.current.forEach(ws => ws.close());
+      wsRefs.current.clear();
+    };
+  }, [symbol, connectToExchange]);
+
+  // Update UI periodically from accumulators
+  useEffect(() => {
+    const updateInterval = setInterval(() => {
+      setData(prev => prev.map(d => {
+        const acc = flowAccumulators.current.get(d.exchange);
+        if (acc) {
+          const net = acc.inflow - acc.outflow;
+          const total = acc.inflow + acc.outflow;
+          const change24h = total > 0 ? ((net / total) * 100) : 0;
+
+          return {
+            ...d,
+            inflow: acc.inflow,
+            outflow: acc.outflow,
+            net,
+            change24h,
+          };
+        }
+        return d;
+      }));
+    }, 1000); // Update UI every second
+
+    return () => clearInterval(updateInterval);
+  }, []);
 
   const totalNet = data.reduce((sum, d) => sum + d.net, 0);
+  const connectedCount = data.filter(d => d.connected).length;
 
   return (
     <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
@@ -142,9 +235,12 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
         <div className="flex items-center gap-2">
           <div className="text-xl">💸</div>
           <h3 className="font-semibold">Exchange Netflow</h3>
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-            LIVE
-          </span>
+          {connectedCount > 0 && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              LIVE ({connectedCount}/3)
+            </span>
+          )}
         </div>
 
         {/* Symbol Selector */}
@@ -180,61 +276,68 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        {loading && data.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-white/40 text-xs">
-            Loading netflow data...
-          </div>
-        ) : error ? (
-          <div className="p-3 text-red-400 text-xs">{error}</div>
-        ) : (
-          <div className="divide-y divide-white/10">
-            {data.map((d) => (
-              <div
-                key={d.exchange}
-                className="p-3 hover:bg-white/5 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-medium text-white">{d.exchange}</div>
-                  <div
-                    className={`text-xs px-2 py-1 rounded ${
-                      d.change24h >= 0
-                        ? "text-emerald-400 bg-emerald-500/10"
-                        : "text-red-400 bg-red-500/10"
+        <div className="divide-y divide-white/10">
+          {data.map((d) => (
+            <div
+              key={d.exchange}
+              className="p-3 hover:bg-white/5 transition-colors"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-white">{d.exchange}</span>
+                  {d.connected ? (
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  ) : (
+                    <span className="w-2 h-2 rounded-full bg-red-400" />
+                  )}
+                </div>
+                <div
+                  className={`text-xs px-2 py-1 rounded ${
+                    d.change24h >= 0
+                      ? "text-emerald-400 bg-emerald-500/10"
+                      : "text-red-400 bg-red-500/10"
+                  }`}
+                >
+                  {d.change24h >= 0 ? "+" : ""}
+                  {d.change24h.toFixed(1)}%
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span className="text-emerald-400">↓ Inflow</span>
+                  <span className="text-white font-medium">
+                    ${d.inflow > 1000000
+                      ? (d.inflow / 1000000).toFixed(2) + "M"
+                      : (d.inflow / 1000).toFixed(1) + "K"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-red-400">↑ Outflow</span>
+                  <span className="text-white font-medium">
+                    ${d.outflow > 1000000
+                      ? (d.outflow / 1000000).toFixed(2) + "M"
+                      : (d.outflow / 1000).toFixed(1) + "K"}
+                  </span>
+                </div>
+                <div className="h-px bg-white/10 my-1" />
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/80 font-medium">Net Flow</span>
+                  <span
+                    className={`font-bold ${
+                      d.net >= 0 ? "text-emerald-400" : "text-red-400"
                     }`}
                   >
-                    {d.change24h >= 0 ? "+" : ""}
-                    {d.change24h.toFixed(1)}%
-                  </div>
+                    {d.net >= 0 ? "+" : "-"}$
+                    {Math.abs(d.net) > 1000000
+                      ? (Math.abs(d.net) / 1000000).toFixed(2) + "M"
+                      : (Math.abs(d.net) / 1000).toFixed(1) + "K"}
+                  </span>
                 </div>
+              </div>
 
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-emerald-400">↓ Inflow</span>
-                    <span className="text-white font-medium">
-                      ${(d.inflow / 1000000).toFixed(1)}M
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-red-400">↑ Outflow</span>
-                    <span className="text-white font-medium">
-                      ${(d.outflow / 1000000).toFixed(1)}M
-                    </span>
-                  </div>
-                  <div className="h-px bg-white/10 my-1" />
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/80 font-medium">Net Flow</span>
-                    <span
-                      className={`font-bold ${
-                        d.net >= 0 ? "text-emerald-400" : "text-red-400"
-                      }`}
-                    >
-                      {d.net >= 0 ? "+" : "-"}$
-                      {(Math.abs(d.net) / 1000000).toFixed(1)}M
-                    </span>
-                  </div>
-                </div>
-
-                {/* Flow Bar */}
+              {/* Flow Bar */}
+              {(d.inflow + d.outflow) > 0 && (
                 <div className="mt-3 flex gap-1 h-2">
                   <div
                     className="bg-emerald-500 rounded"
@@ -249,18 +352,20 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
                     }}
                   />
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Total Summary */}
       <div className="p-3 border-t border-white/10 bg-white/5">
-        <div className="text-xs text-white/60 mb-1">Total Net Flow ({timeframe})</div>
+        <div className="text-xs text-white/60 mb-1">Total Net Flow (Real-time)</div>
         <div className={`text-lg font-bold ${totalNet >= 0 ? "text-emerald-400" : "text-red-400"}`}>
           {totalNet >= 0 ? "+" : "-"}$
-          {(Math.abs(totalNet) / 1000000).toFixed(1)}M
+          {Math.abs(totalNet) > 1000000
+            ? (Math.abs(totalNet) / 1000000).toFixed(2) + "M"
+            : (Math.abs(totalNet) / 1000).toFixed(1) + "K"}
         </div>
       </div>
     </div>

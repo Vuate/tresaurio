@@ -1,7 +1,7 @@
 // components/terminal/personalized-dashboard/SpreadMonitorModule.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { wsService } from "@/services/WebSocketService";
 import { Plus, X } from "lucide-react";
 
@@ -63,9 +63,19 @@ export default function SpreadMonitorModule({
     return ["BTCUSDT", "ETHUSDT"];
   });
 
-  const [prices, setPrices] = useState<Record<string, number>>({});
+  // 🔥 Store price + bid/ask for real spread calculation
+  const [priceData, setPriceData] = useState<
+    Record<string, { price: number; bid: number; ask: number }>
+  >({});
   const [baseAsset, setBaseAsset] = useState("");
   const [quoteAsset, setQuoteAsset] = useState("");
+
+  // 🔥 Throttle updates - buffer incoming data
+  const pendingUpdates = useRef<
+    Record<string, { price: number; bid: number; ask: number }>
+  >({});
+  const lastUpdateTime = useRef<number>(0);
+  const UPDATE_INTERVAL = 500; // Update UI every 500ms max
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
@@ -80,9 +90,25 @@ export default function SpreadMonitorModule({
     }
   }, [monitoredSymbols, symbolsStorageKey]);
 
-  // 🔥 WebSocket price feed - Multi-exchange support
+  // 🔥 Throttled state update function
+  const flushUpdates = useCallback(() => {
+    const now = Date.now();
+    if (now - lastUpdateTime.current >= UPDATE_INTERVAL) {
+      const updates = { ...pendingUpdates.current };
+      if (Object.keys(updates).length > 0) {
+        setPriceData((prev) => ({ ...prev, ...updates }));
+        pendingUpdates.current = {};
+        lastUpdateTime.current = now;
+      }
+    }
+  }, []);
+
+  // 🔥 WebSocket price feed - Multi-exchange support with THROTTLING
   useEffect(() => {
     if (monitoredSymbols.length === 0) return;
+
+    // Periodic flush for throttled updates
+    const flushInterval = setInterval(flushUpdates, UPDATE_INTERVAL);
 
     // LIVE WebSocket for ALL exchanges
     const unsubscribes = monitoredSymbols.map((symbol) => {
@@ -92,11 +118,19 @@ export default function SpreadMonitorModule({
         stream,
         (data) => {
           try {
+            // Parse price and bid/ask based on exchange format
             const price = parseFloat(data.c || data.data?.c || 0);
+            const bid = parseFloat(data.b || data.data?.b || 0);
+            const ask = parseFloat(data.a || data.data?.a || 0);
             const symbolName = data.s || data.data?.s;
 
             if (symbolName && price > 0) {
-              setPrices((prev) => ({ ...prev, [symbolName]: price }));
+              // Buffer update instead of immediate state change
+              pendingUpdates.current[symbolName] = {
+                price,
+                bid: bid || price * 0.9999, // Fallback if no bid
+                ask: ask || price * 1.0001, // Fallback if no ask
+              };
             }
           } catch (error) {
             console.error(`[SpreadMonitor] Parse error for ${symbol}:`, error);
@@ -107,8 +141,11 @@ export default function SpreadMonitorModule({
       );
     });
 
-    return () => unsubscribes.forEach((unsub) => unsub());
-  }, [monitoredSymbols, exchange, marketType]);
+    return () => {
+      clearInterval(flushInterval);
+      unsubscribes.forEach((unsub) => unsub());
+    };
+  }, [monitoredSymbols, exchange, marketType, flushUpdates]);
 
   const addSymbol = (base: string, quote: string) => {
     const baseUpper = base.toUpperCase().trim();
@@ -141,10 +178,16 @@ export default function SpreadMonitorModule({
     setMonitoredSymbols(monitoredSymbols.filter((s) => s !== symbol));
   };
 
+  // 🔥 Calculate REAL spread from bid/ask (no more random!)
   const calculateSpread = (symbol: string) => {
-    const price = prices[symbol] || 0;
-    const spread = price * (0.0001 + Math.random() * 0.0005);
-    const spreadPercent = (spread / price) * 100;
+    const data = priceData[symbol];
+    if (!data || data.price <= 0) {
+      return { spread: 0, spreadPercent: 0 };
+    }
+
+    // Real spread = ask - bid
+    const spread = data.ask - data.bid;
+    const spreadPercent = (spread / data.price) * 100;
     return { spread, spreadPercent };
   };
 
@@ -194,7 +237,8 @@ export default function SpreadMonitorModule({
           </div>
         ) : (
           monitoredSymbols.map((symbol) => {
-            const price = prices[symbol] || 0;
+            const data = priceData[symbol];
+            const price = data?.price || 0;
             const { spread, spreadPercent } = calculateSpread(symbol);
             const isNarrow = spreadPercent < 0.03;
 

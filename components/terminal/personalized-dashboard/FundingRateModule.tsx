@@ -1,7 +1,7 @@
 // components/terminal/personalized-dashboard/FundingRateModule.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { TrendingUp, TrendingDown, Clock, AlertCircle } from "lucide-react";
 import type { Exchange } from "@/services/WebSocketService";
 
@@ -11,7 +11,7 @@ interface FundingData {
   fundingTime: number;
   markPrice: number;
   indexPrice: number;
-  source: "api" | "mock";
+  source: "websocket" | "api";
   exchange: string;
 }
 
@@ -27,80 +27,88 @@ const EXCHANGES = [
   { id: "bybit", name: "Bybit" },
 ];
 
-// 🔥 Multi-exchange funding rate fetcher
-const fetchFundingRate = async (symbol: string, exchange: Exchange): Promise<FundingData> => {
+// 🔥 WebSocket URLs for each exchange
+const getWebSocketUrl = (exchange: Exchange, symbol: string): string => {
   const upperSymbol = symbol.toUpperCase();
+  const lowerSymbol = symbol.toLowerCase();
 
   switch (exchange) {
-    case "binance": {
-      const response = await fetch(
-        `https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${upperSymbol}`
-      );
-      const data = await response.json();
-      return {
-        symbol: data.symbol,
-        fundingRate: parseFloat(data.lastFundingRate),
-        fundingTime: data.nextFundingTime,
-        markPrice: parseFloat(data.markPrice),
-        indexPrice: parseFloat(data.indexPrice),
-        source: "api",
-        exchange: "Binance",
-      };
-    }
-
-    case "okx": {
-      // OKX uses BTC-USDT-SWAP format
-      const okxSymbol = upperSymbol.replace(/USDT$/, "-USDT-SWAP");
-      const [fundingRes, tickerRes] = await Promise.all([
-        fetch(`https://www.okx.com/api/v5/public/funding-rate?instId=${okxSymbol}`),
-        fetch(`https://www.okx.com/api/v5/market/ticker?instId=${okxSymbol}`)
-      ]);
-      const fundingData = await fundingRes.json();
-      const tickerData = await tickerRes.json();
-
-      const funding = fundingData.data?.[0];
-      const ticker = tickerData.data?.[0];
-
-      return {
-        symbol: upperSymbol,
-        fundingRate: parseFloat(funding?.fundingRate || "0"),
-        fundingTime: parseInt(funding?.nextFundingTime || Date.now() + 8 * 60 * 60 * 1000),
-        markPrice: parseFloat(ticker?.last || "0"),
-        indexPrice: parseFloat(ticker?.last || "0"),
-        source: "api",
-        exchange: "OKX",
-      };
-    }
-
-    case "bybit": {
-      const [fundingRes, tickerRes] = await Promise.all([
-        fetch(`https://api.bybit.com/v5/market/tickers?category=linear&symbol=${upperSymbol}`),
-        fetch(`https://api.bybit.com/v5/market/funding/history?category=linear&symbol=${upperSymbol}&limit=1`)
-      ]);
-      const tickerData = await fundingRes.json();
-      const fundingData = await tickerRes.json();
-
-      const ticker = tickerData.result?.list?.[0];
-      const funding = fundingData.result?.list?.[0];
-
-      // Calculate next funding time (Bybit has 8h intervals)
-      const now = Date.now();
-      const nextFunding = Math.ceil(now / (8 * 60 * 60 * 1000)) * (8 * 60 * 60 * 1000);
-
-      return {
-        symbol: upperSymbol,
-        fundingRate: parseFloat(ticker?.fundingRate || funding?.fundingRate || "0"),
-        fundingTime: nextFunding,
-        markPrice: parseFloat(ticker?.markPrice || "0"),
-        indexPrice: parseFloat(ticker?.indexPrice || "0"),
-        source: "api",
-        exchange: "Bybit",
-      };
-    }
-
+    case "binance":
+      return `wss://fstream.binance.com/ws/${lowerSymbol}@markPrice`;
+    case "okx":
+      return `wss://ws.okx.com:8443/ws/v5/public`;
+    case "bybit":
+      return `wss://stream.bybit.com/v5/public/linear`;
     default:
-      throw new Error(`Unsupported exchange: ${exchange}`);
+      return "";
   }
+};
+
+// 🔥 Parse WebSocket messages for each exchange
+const parseMessage = (exchange: Exchange, data: any, symbol: string): Partial<FundingData> | null => {
+  try {
+    switch (exchange) {
+      case "binance": {
+        // Binance markPrice stream: { e: "markPriceUpdate", s: "BTCUSDT", p: "...", r: "...", T: ... }
+        if (data.e === "markPriceUpdate") {
+          return {
+            symbol: data.s,
+            fundingRate: parseFloat(data.r || "0"),
+            fundingTime: data.T || Date.now() + 8 * 60 * 60 * 1000,
+            markPrice: parseFloat(data.p || "0"),
+            indexPrice: parseFloat(data.i || data.p || "0"),
+            source: "websocket",
+            exchange: "Binance",
+          };
+        }
+        break;
+      }
+
+      case "okx": {
+        // OKX funding-rate channel
+        if (data.arg?.channel === "funding-rate" && data.data?.[0]) {
+          const d = data.data[0];
+          return {
+            fundingRate: parseFloat(d.fundingRate || "0"),
+            fundingTime: parseInt(d.nextFundingTime || Date.now() + 8 * 60 * 60 * 1000),
+            source: "websocket",
+            exchange: "OKX",
+          };
+        }
+        // OKX mark-price channel
+        if (data.arg?.channel === "mark-price" && data.data?.[0]) {
+          const d = data.data[0];
+          return {
+            markPrice: parseFloat(d.markPx || "0"),
+            indexPrice: parseFloat(d.markPx || "0"),
+            source: "websocket",
+            exchange: "OKX",
+          };
+        }
+        break;
+      }
+
+      case "bybit": {
+        // Bybit tickers stream
+        if (data.topic?.includes("tickers") && data.data) {
+          const d = data.data;
+          return {
+            symbol: d.symbol,
+            fundingRate: parseFloat(d.fundingRate || "0"),
+            fundingTime: Date.now() + 8 * 60 * 60 * 1000, // Bybit has 8h intervals
+            markPrice: parseFloat(d.markPrice || "0"),
+            indexPrice: parseFloat(d.indexPrice || "0"),
+            source: "websocket",
+            exchange: "Bybit",
+          };
+        }
+        break;
+      }
+    }
+  } catch (err) {
+    console.error("[FundingRate] Parse error:", err);
+  }
+  return null;
 };
 
 export default function FundingRateModule({ instanceId }: Props) {
@@ -110,6 +118,8 @@ export default function FundingRateModule({ instanceId }: Props) {
   const [data, setData] = useState<FundingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
 
   // Load settings from localStorage
   useEffect(() => {
@@ -134,37 +144,101 @@ export default function FundingRateModule({ instanceId }: Props) {
     }
   }, [selectedSymbol, exchange, storageKey]);
 
-  useEffect(() => {
-    let mounted = true;
+  // 🔥 WebSocket connection
+  const connectWebSocket = useCallback(() => {
+    // Cleanup existing connection
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
 
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const result = await fetchFundingRate(selectedSymbol, exchange);
+    const url = getWebSocketUrl(exchange, selectedSymbol);
+    if (!url) return;
 
-        if (!mounted) return;
+    try {
+      const ws = new WebSocket(url);
+      wsRef.current = ws;
 
-        setData(result);
+      ws.onopen = () => {
+        console.log(`[FundingRate] Connected to ${exchange}`);
+        setConnected(true);
+        setLoading(false);
         setError(null);
-      } catch (err) {
-        console.error(`[FundingRate] Error (${exchange}):`, err);
-        if (!mounted) return;
-        setError(err instanceof Error ? err.message : "Unable to fetch");
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
 
-    fetchData();
-    const interval = setInterval(fetchData, 10000); // Refresh every 10s
+        // Subscribe for OKX and Bybit
+        if (exchange === "okx") {
+          const okxSymbol = selectedSymbol.replace(/USDT$/, "-USDT-SWAP");
+          ws.send(JSON.stringify({
+            op: "subscribe",
+            args: [
+              { channel: "funding-rate", instId: okxSymbol },
+              { channel: "mark-price", instId: okxSymbol },
+            ],
+          }));
+        } else if (exchange === "bybit") {
+          ws.send(JSON.stringify({
+            op: "subscribe",
+            args: [`tickers.${selectedSymbol}`],
+          }));
+        }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const rawData = JSON.parse(event.data);
+          const parsed = parseMessage(exchange, rawData, selectedSymbol);
+
+          if (parsed) {
+            setData((prev) => ({
+              symbol: selectedSymbol,
+              fundingRate: parsed.fundingRate ?? prev?.fundingRate ?? 0,
+              fundingTime: parsed.fundingTime ?? prev?.fundingTime ?? Date.now() + 8 * 60 * 60 * 1000,
+              markPrice: parsed.markPrice ?? prev?.markPrice ?? 0,
+              indexPrice: parsed.indexPrice ?? prev?.indexPrice ?? 0,
+              source: "websocket",
+              exchange: parsed.exchange ?? prev?.exchange ?? exchange,
+            }));
+          }
+        } catch (err) {
+          console.error("[FundingRate] Message parse error:", err);
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.error("[FundingRate] WebSocket error:", err);
+        setError("Connection error");
+        setConnected(false);
+      };
+
+      ws.onclose = () => {
+        console.log("[FundingRate] WebSocket closed");
+        setConnected(false);
+        // Reconnect after 5 seconds
+        setTimeout(() => {
+          if (wsRef.current === ws) {
+            connectWebSocket();
+          }
+        }, 5000);
+      };
+    } catch (err) {
+      console.error("[FundingRate] Failed to connect:", err);
+      setError("Failed to connect");
+      setLoading(false);
+    }
+  }, [exchange, selectedSymbol]);
+
+  useEffect(() => {
+    setLoading(true);
+    setData(null);
+    connectWebSocket();
 
     return () => {
-      mounted = false;
-      clearInterval(interval);
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
     };
-  }, [selectedSymbol, exchange]);
+  }, [connectWebSocket]);
 
   const timeUntilFunding = data
     ? Math.max(0, data.fundingTime - Date.now())
@@ -183,8 +257,9 @@ export default function FundingRateModule({ instanceId }: Props) {
       <div className="flex items-center justify-between">
         <div className="text-white/60 text-xs flex items-center gap-2">
           <span className="font-semibold text-white/90">Funding Rate</span>
-          {data && (
-            <span className="text-[9px] text-emerald-400">
+          {connected && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               LIVE
             </span>
           )}
@@ -221,7 +296,7 @@ export default function FundingRateModule({ instanceId }: Props) {
 
       {loading && !data ? (
         <div className="text-center py-8 text-white/40 text-[10px]">
-          Loading funding rate...
+          Connecting to {exchange}...
         </div>
       ) : error ? (
         <div className="bg-red-500/10 border border-red-400/40 rounded p-3">

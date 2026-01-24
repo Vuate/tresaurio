@@ -148,7 +148,7 @@ export default function RewardCalendarModule({ instanceId }: Props) {
   useEffect(() => {
     if (rewards.length > 0) {
       fetchPrices();
-      const interval = setInterval(fetchPrices, 60000); // Refresh every minute
+      const interval = setInterval(fetchPrices, 3600000); // Refresh every 1 hour
       return () => clearInterval(interval);
     }
   }, [fetchPrices, rewards.length]);
