@@ -1,14 +1,14 @@
 // components/terminal/personalized-dashboard/PnLAnalysisModule.tsx
 
 import { useState } from "react";
-import { usePnL } from "@/lib/personalized-dashboard/usePnL"; // ✅ DOĞRU IMPORT
+import { usePnL } from "@/lib/personalized-dashboard/usePnL";
 
 interface Props {
   instanceId: string;
 }
 
 export default function PnLAnalysisModule({ instanceId }: Props) {
-  const pnl = usePnL(); // ✅ Direkt kullan
+  const pnl = usePnL();
   const [timeframe, setTimeframe] = useState<
     "today" | "week" | "month" | "all"
   >("today");
