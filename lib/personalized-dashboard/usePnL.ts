@@ -2,14 +2,27 @@
 
 import { useMemo } from "react";
 import { usePortfolioStore } from "@/store/portfolioStore";
+import { useFuturesPositionStore } from "@/store/futuresPositionStore";
+import { usePriceStore } from "@/store/priceStore";
 
 export function usePnL() {
-  const { spotPositions, futuresPositions } = usePortfolioStore();
+  const { spotPositions } = usePortfolioStore();
+  const futuresPositionsFromStore = useFuturesPositionStore((s) => s.positions);
+  const prices = usePriceStore((s) => s.prices);
+
+  // Convert futuresPositionStore format to match portfolioStore format
+  const futuresPositions = futuresPositionsFromStore.map((p) => ({
+    ...p,
+    quantity: p.size,
+    markPrice: prices[p.symbol] || p.entryPrice,
+    totalCost: p.entryPrice * p.size / p.leverage, // Margin
+  }));
 
   return useMemo(() => {
     /* -------- SPOT -------- */
     const spotUnrealized = spotPositions.reduce((sum, p) => {
-      const pnl = (p.currentPrice - p.entryPrice) * p.quantity;
+      const currentPrice = prices[p.symbol] || p.currentPrice;
+      const pnl = (currentPrice - p.entryPrice) * p.quantity;
       return sum + pnl;
     }, 0);
 
@@ -40,7 +53,10 @@ export function usePnL() {
 
     // Current values
     const spotValue = spotPositions.reduce(
-      (sum, p) => sum + p.currentPrice * p.quantity,
+      (sum, p) => {
+        const currentPrice = prices[p.symbol] || p.currentPrice;
+        return sum + currentPrice * p.quantity;
+      },
       0
     );
     const futuresValue = spotValue + futuresUnrealized; // Futures value = spot value + unrealized
@@ -70,5 +86,5 @@ export function usePnL() {
       realized: 0,
       todayPnL: totalUnrealized,
     };
-  }, [spotPositions, futuresPositions]);
+  }, [spotPositions, futuresPositions, prices]);
 }

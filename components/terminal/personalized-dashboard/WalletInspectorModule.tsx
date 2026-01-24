@@ -1,51 +1,173 @@
 // components/terminal/personalized-dashboard/WalletInspectorModule.tsx
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Props {
   instanceId: string;
 }
 
+interface TokenBalance {
+  symbol: string;
+  amount: number;
+  value: number;
+  contractAddress?: string;
+}
+
 interface WalletData {
   address: string;
   balance: number;
-  tokens: { symbol: string; amount: number; value: number }[];
+  tokens: TokenBalance[];
   nfts: number;
   transactions24h: number;
   label?: string;
 }
 
-// 🔥 MOCK DATA
-const MOCK_WALLET: WalletData = {
-  address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-  balance: 12.5,
-  tokens: [
-    { symbol: "USDC", amount: 25000, value: 25000 },
-    { symbol: "UNI", amount: 1500, value: 8250 },
-    { symbol: "AAVE", amount: 150, value: 12750 },
-  ],
-  nfts: 8,
-  transactions24h: 5,
+// 🔥 Fetch wallet data from multiple APIs
+const fetchWalletData = async (address: string): Promise<WalletData> => {
+  // Validate Ethereum address
+  if (!address.match(/^0x[a-fA-F0-9]{40}$/)) {
+    throw new Error("Invalid Ethereum address");
+  }
+
+  try {
+    // Fetch ETH balance and transactions from Etherscan (free API)
+    const [balanceRes, txRes] = await Promise.all([
+      fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest`),
+      fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc`),
+    ]);
+
+    const balanceData = await balanceRes.json();
+    const txData = await txRes.json();
+
+    // Calculate ETH balance (wei to ETH)
+    const ethBalance = balanceData.status === "1"
+      ? parseFloat(balanceData.result) / 1e18
+      : 0;
+
+    // Count transactions in last 24h
+    const now = Date.now() / 1000;
+    const oneDayAgo = now - 86400;
+    const recentTxs = txData.status === "1"
+      ? txData.result.filter((tx: any) => parseInt(tx.timeStamp) > oneDayAgo).length
+      : 0;
+
+    // Fetch token balances from Etherscan
+    const tokenRes = await fetch(
+      `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=1&offset=100&sort=desc`
+    );
+    const tokenData = await tokenRes.json();
+
+    // Aggregate token balances
+    const tokenMap = new Map<string, TokenBalance>();
+    if (tokenData.status === "1" && Array.isArray(tokenData.result)) {
+      for (const tx of tokenData.result) {
+        const symbol = tx.tokenSymbol;
+        const decimals = parseInt(tx.tokenDecimal) || 18;
+        const amount = parseFloat(tx.value) / Math.pow(10, decimals);
+
+        if (!tokenMap.has(symbol)) {
+          tokenMap.set(symbol, {
+            symbol,
+            amount: 0,
+            value: 0,
+            contractAddress: tx.contractAddress,
+          });
+        }
+
+        const token = tokenMap.get(symbol)!;
+        // Approximate: if received add, if sent subtract
+        if (tx.to.toLowerCase() === address.toLowerCase()) {
+          token.amount += amount;
+        } else {
+          token.amount -= amount;
+        }
+      }
+    }
+
+    // Filter positive balances and limit to top 10
+    const tokens = Array.from(tokenMap.values())
+      .filter(t => t.amount > 0)
+      .slice(0, 10);
+
+    // Fetch current ETH price for value calculation
+    const priceRes = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
+    const priceData = await priceRes.json();
+    const ethPrice = parseFloat(priceData.price) || 0;
+
+    return {
+      address,
+      balance: ethBalance,
+      tokens,
+      nfts: 0, // NFT count requires separate API
+      transactions24h: recentTxs,
+    };
+  } catch (err) {
+    console.error("[WalletInspector] Fetch error:", err);
+    throw err;
+  }
 };
 
 export default function WalletInspectorModule({ instanceId }: Props) {
+  const storageKey = `wallet-inspector-${instanceId}`;
   const [address, setAddress] = useState("");
   const [inspecting, setInspecting] = useState(false);
   const [walletData, setWalletData] = useState<WalletData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [ethPrice, setEthPrice] = useState(0);
 
-  const handleInspect = () => {
+  // Load last inspected address
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const settings = JSON.parse(saved);
+          if (settings.lastAddress) setAddress(settings.lastAddress);
+        } catch (err) {
+          console.error("[WalletInspector] Failed to load settings:", err);
+        }
+      }
+    }
+  }, [storageKey]);
+
+  // Fetch ETH price on mount
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
+        const data = await res.json();
+        setEthPrice(parseFloat(data.price) || 0);
+      } catch (err) {
+        console.error("[WalletInspector] Price fetch error:", err);
+      }
+    };
+    fetchPrice();
+  }, []);
+
+  const handleInspect = async () => {
     if (!address) return;
     setInspecting(true);
+    setError(null);
 
-    // 🔥 MOCK - Simulate API call
-    setTimeout(() => {
-      setWalletData(MOCK_WALLET);
+    try {
+      const data = await fetchWalletData(address);
+      setWalletData(data);
+
+      // Save last inspected address
+      if (typeof window !== "undefined") {
+        localStorage.setItem(storageKey, JSON.stringify({ lastAddress: address }));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch wallet data");
+      setWalletData(null);
+    } finally {
       setInspecting(false);
-    }, 800);
+    }
   };
 
   const totalValue = walletData
-    ? walletData.balance * 2500 +
+    ? walletData.balance * ethPrice +
       walletData.tokens.reduce((sum, t) => sum + t.value, 0)
     : 0;
 
@@ -56,6 +178,9 @@ export default function WalletInspectorModule({ instanceId }: Props) {
         <div className="flex items-center gap-2">
           <div className="text-xl">🔍</div>
           <h3 className="font-semibold">Wallet Inspector</h3>
+          <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
+            LIVE
+          </span>
         </div>
       </div>
 
@@ -79,7 +204,12 @@ export default function WalletInspectorModule({ instanceId }: Props) {
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-4">
-        {!walletData ? (
+        {error ? (
+          <div className="text-center py-12">
+            <div className="text-4xl mb-2">⚠️</div>
+            <div className="text-sm text-red-400">{error}</div>
+          </div>
+        ) : !walletData ? (
           <div className="text-center py-12 text-white/40">
             <div className="text-4xl mb-2">👛</div>
             <div className="text-sm">Enter a wallet address to inspect</div>
