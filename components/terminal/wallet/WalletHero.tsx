@@ -1,10 +1,11 @@
 // components/terminal/wallet/WalletHero.tsx
+import { Icon } from "@iconify/react";
 
 export default function WalletHero() {
   return (
     <div className="px-6 py-20 pb-16 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
       <div className="text-6xl mb-6 inline-block animate-float">
-        🐋
+<Icon icon="lucide:wallet" className="text-white-400" />
       </div>
 
       <h1 className="text-5xl font-black mb-4 text-teal-400">

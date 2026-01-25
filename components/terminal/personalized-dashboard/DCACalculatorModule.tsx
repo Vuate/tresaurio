@@ -1,9 +1,10 @@
 // components/terminal/personalized-dashboard/DCACalculatorModule.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Plus, X, Calculator } from "lucide-react";
 import { usePriceStore } from "@/store/priceStore";
+
 
 interface Trade {
   id: string;
@@ -30,12 +31,34 @@ interface Props {
 export default function DCACalculatorModule({ instanceId }: Props) {
   const prices = usePriceStore((s) => s.prices);
   const [selectedSymbol, setSelectedSymbol] = useState("BTCUSDT");
+  const [symbolOpen, setSymbolOpen] = useState(false);
 
   const [trades, setTrades] = useState<Trade[]>([
     { id: "1", quantity: 0.5, price: 90000 },
   ]);
   const [newQty, setNewQty] = useState("");
   const [newPrice, setNewPrice] = useState("");
+  const symbolRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+  function handleClickOutside(e: MouseEvent) {
+    if (
+      symbolRef.current &&
+      !symbolRef.current.contains(e.target as Node)
+    ) {
+      setSymbolOpen(false);
+    }
+  }
+
+  if (symbolOpen) {
+document.addEventListener("pointerdown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [symbolOpen]);
+
 
   const currentPrice = prices[selectedSymbol] || 0;
 
@@ -49,6 +72,8 @@ export default function DCACalculatorModule({ instanceId }: Props) {
       totalCost > 0 ? (unrealizedPnL / totalCost) * 100 : 0;
     const breakEvenPrice = averagePrice;
 
+
+    
     return {
       totalQuantity,
       totalCost,
@@ -122,17 +147,79 @@ export default function DCACalculatorModule({ instanceId }: Props) {
         <label className="block text-white/50 mb-1 text-[10px] font-semibold">
           Symbol
         </label>
-        <select
-          value={selectedSymbol}
-          onChange={(e) => setSelectedSymbol(e.target.value)}
-          className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-white text-xs outline-none"
-        >
-          {SYMBOLS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+<div ref={symbolRef} className="relative">
+  <button
+    onClick={() => setSymbolOpen((v) => !v)}
+    className="
+      w-full
+      flex items-center justify-between
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded-none
+      px-3 py-2
+      text-white text-xs
+       cursor-pointer
+    "
+  >
+    <span className="truncate">{selectedSymbol}</span>
+    <span
+  className={`
+    text-white/40
+    transition-transform
+    duration-200
+    ${symbolOpen ? "rotate-180" : ""}
+  `}
+>
+  ▾
+</span>
+
+  </button>
+
+{symbolOpen && (
+  <div
+    className="
+      absolute z-50 mt-1
+      w-full
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded-none
+
+      max-h-[min(72px,30vh)]
+      overflow-y-auto
+
+      [&::-webkit-scrollbar]:w-1.5
+      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-transparent
+    "
+  >
+    {SYMBOLS.map((s) => (
+      <button
+        key={s}
+        onClick={() => {
+          setSelectedSymbol(s);
+          setSymbolOpen(false);
+        }}
+className="
+  w-full
+  text-left
+  px-3 py-2
+  text-xs
+  text-white
+  transition-colors
+  hover:text-emerald-400
+  cursor-pointer
+"
+      >
+        {s}
+      </button>
+    ))}
+  </div>
+)}
+
+</div>
+
+
       </div>
 
       <div className="bg-white/5 border border-white/10 rounded p-2">
@@ -155,7 +242,13 @@ export default function DCACalculatorModule({ instanceId }: Props) {
           <span>Add Trade</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+<div
+  className="
+    grid
+    gap-2
+    [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]
+  "
+>
           <div>
             <label className="block text-white/40 text-[10px] mb-1">
               Quantity
@@ -187,8 +280,17 @@ export default function DCACalculatorModule({ instanceId }: Props) {
 
         <button
           onClick={addTrade}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-1.5 rounded transition-colors text-xs font-semibold"
-        >
+className="
+  w-full
+  bg-emerald-500/80
+  hover:bg-emerald-500
+  text-black
+  py-1.5
+  rounded-md
+  transition
+  text-xs
+  font-semibold cursor-pointer
+"        >
           Add Trade
         </button>
       </div>
@@ -197,12 +299,18 @@ export default function DCACalculatorModule({ instanceId }: Props) {
         <div className="space-y-1">
           <div className="flex items-center justify-between text-white/40 text-[10px] mb-1">
             <span>Trades ({trades.length})</span>
-            <button
-              onClick={clearAll}
-              className="text-red-400 hover:text-red-300"
-            >
-              Clear All
-            </button>
+<button
+  onClick={clearAll}
+  className="
+    text-red-400
+    hover:text-red-400
+    transition-colors
+    cursor-pointer
+    
+  "
+>
+  Clear All
+</button>
           </div>
 
           {trades.map((trade, idx) => (
@@ -220,12 +328,21 @@ export default function DCACalculatorModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              <button
-                onClick={() => removeTrade(trade.id)}
-                className="text-red-400 hover:text-red-300 p-1"
-              >
-                <X className="w-3 h-3" />
-              </button>
+<button
+  onClick={() => removeTrade(trade.id)}
+  className="
+    text-white/40
+    cursor-pointer
+    transition-all
+    p-1
+    hover:text-red-400
+    hover:scale-110
+    hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.6)]
+  "
+>
+  <X className="w-3 h-3" />
+</button>
+
             </div>
           ))}
         </div>

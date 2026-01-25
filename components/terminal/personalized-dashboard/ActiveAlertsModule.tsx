@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { useAlertStore } from "@/store/alertStore";
 import { usePriceStore } from "@/store/priceStore";
 import { Bell, BellRing } from "lucide-react";
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
+
 
 interface Props {
   instanceId: string;
@@ -85,13 +87,31 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
                 {isTriggered ? "🔔 Triggered" : "⏱ Waiting"}
               </span>
 
-              <button
-                onClick={() => removeAlert(a.id)}
-                className="h-6 w-6 rounded-md border border-white/10 bg-white/5 text-white/60 hover:bg-red-500/80 hover:text-white transition"
-                title="Remove alert"
-              >
-                ×
-              </button>
+<button
+  onClick={() => {
+    removeAlert(a.id);
+    
+    useDashboardNotificationStore.getState().push({
+      type: "success",
+      title: "Alert Removed",
+      description: `${a.symbol} ${a.condition} $${a.target.toLocaleString()} alert removed`,
+    });
+  }}
+  className="
+    h-6 w-6 rounded-md
+    border border-white/10
+    bg-white/5
+    text-white/60
+    cursor-pointer
+    hover:bg-red-500/80
+    hover:text-white
+    transition
+  "
+  title="Remove alert"
+>
+  ×
+</button>
+
             </div>
           </div>
         );

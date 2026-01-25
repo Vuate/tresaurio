@@ -105,7 +105,7 @@ export default function ExchangeFlow() {
 
             <div
               className={`my-4 text-[28px] font-bold tabular-nums ${
-                f.amount >= 0 ? "text-green-400" : "text-red-600"
+                f.amount >= 0 ? "text-emerald-400" : "text-rose-500"
               }`}
             >
               {f.amount >= 0 ? "+" : "-"}${Math.abs(f.amount)}K

@@ -1,12 +1,14 @@
 // components/terminal/staking/StakingHero.tsx
 
+
+import { Icon } from "@iconify/react";
+
 import Head from "next/head";
 
 export default function StakingHero() {
   return (
     <>
       <Head>
-        <title>Staking & Getiri Takibi | Treasurio</title>
         <meta
           name="description"
           content="Stake verilerinizi merkezi bir pano'da takip edin, gerçek zamanlı ROI hesaplamaları yapın ve farklı platformlardaki kazançlarınızı karşılaştırın."
@@ -15,9 +17,15 @@ export default function StakingHero() {
 
       <div className="px-6 py-20 pb-16 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
         {/* Hero Icon with Float Animation */}
-        <div className="text-6xl mb-6 inline-block animate-float">
-          🪙
-        </div>
+<div className="mb-6 inline-block animate-float">
+  <Icon
+    icon="material-symbols:savings-rounded"
+    className="text-teal-400"
+    width={64}
+    height={64}
+  />
+</div>
+
 
         {/* Main Title */}
         <h1 className="text-5xl font-black mb-4 text-teal-400">

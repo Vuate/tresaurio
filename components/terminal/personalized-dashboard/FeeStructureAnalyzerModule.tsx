@@ -1,7 +1,7 @@
 // components/terminal/personalized-dashboard/FeeStructureAnalyzerModule.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { TrendingDown, DollarSign, Award } from "lucide-react";
 
 type Exchange = "binance" | "okx" | "bybit";
@@ -67,6 +67,28 @@ export default function FeeStructureAnalyzerModule({ instanceId }: Props) {
     },
   };
 
+  const [vipOpen, setVipOpen] = useState(false);
+const vipRef = useRef<HTMLDivElement>(null);
+// AllInCostCalculatorModule
+const [exchangeOpen, setExchangeOpen] = useState(false);
+const exchangeRef = useRef<HTMLDivElement>(null);
+
+
+useEffect(() => {
+  function handleClickOutside(e: MouseEvent) {
+    if (exchangeRef.current && !exchangeRef.current.contains(e.target as Node)) {
+      setExchangeOpen(false);
+    }
+    if (vipRef.current && !vipRef.current.contains(e.target as Node)) {
+      setVipOpen(false);
+    }
+  }
+
+  document.addEventListener("pointerdown", handleClickOutside);
+  return () => document.removeEventListener("pointerdown", handleClickOutside);
+}, []);
+
+
   const analysis = useMemo((): FeeAnalysis => {
     const fees = exchangeFees[exchange].vip;
     const currentFees = fees[currentVip as keyof typeof fees];
@@ -77,6 +99,7 @@ export default function FeeStructureAnalyzerModule({ instanceId }: Props) {
     const makerFees = (makerVolume * currentFees.maker) / 100;
     const takerFees = (takerVolume * currentFees.taker) / 100;
     const totalFees = makerFees + takerFees;
+
 
     const averageFeeRate =
       monthlyVolume > 0 ? (totalFees / monthlyVolume) * 100 : 0;
@@ -141,38 +164,119 @@ export default function FeeStructureAnalyzerModule({ instanceId }: Props) {
           <label className="block text-white/50 mb-1 text-[10px]">
             Exchange
           </label>
-          <select
-            value={exchange}
-            onChange={(e) => setExchange(e.target.value as Exchange)}
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white text-xs outline-none"
-          >
-            <option value="binance" className="bg-[#112240]">
-              Binance
-            </option>
-            <option value="okx" className="bg-[#112240]">
-              OKX
-            </option>
-            <option value="bybit" className="bg-[#112240]">
-              Bybit
-            </option>
-          </select>
+
+          <div ref={exchangeRef} className="relative">
+  <button
+    onClick={() => setExchangeOpen(v => !v)}
+    className="
+      w-full flex justify-between items-center
+      bg-white/5 border border-white/10
+      rounded px-3 py-1.5
+      text-white text-xs cursor-pointer
+    "
+  >
+    {exchange.toUpperCase()}
+    <span className={`transition ${exchangeOpen ? "rotate-180" : ""}`}>▾</span>
+  </button>
+
+  {exchangeOpen && (
+    <div
+      className="
+        absolute z-50 mt-1 w-full
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-none
+        max-h-[72px]
+        overflow-y-auto
+
+        [&::-webkit-scrollbar]:w-1.5
+        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-transparent
+      "
+    >
+      {(["binance", "okx", "bybit"] as Exchange[]).map((e) => (
+        <button
+          key={e}
+          onClick={() => {
+            setExchange(e);
+            setExchangeOpen(false);
+          }}
+          className="
+            w-full text-left px-3 py-2
+            text-xs cursor-pointer
+            hover:text-emerald-400
+          "
+        >
+          {e.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+
+
         </div>
 
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Current VIP Level
           </label>
-          <select
-            value={currentVip}
-            onChange={(e) => setCurrentVip(parseInt(e.target.value))}
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white text-xs outline-none"
+
+
+<div ref={vipRef} className="relative">
+  <button
+    onClick={() => setVipOpen(v => !v)}
+    className="
+      w-full flex justify-between items-center
+      bg-white/5 border border-white/10
+      rounded px-3 py-1.5
+      text-white text-xs cursor-pointer
+    "
+  >
+    VIP {currentVip}
+    <span className={`transition ${vipOpen ? "rotate-180" : ""}`}>▾</span>
+  </button>
+
+  {vipOpen && (
+    <div
+      className="
+        absolute z-50 mt-1 w-full
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-none
+        max-h-[72px]
+        overflow-y-auto
+
+        [&::-webkit-scrollbar]:w-1.5
+        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-transparent
+      "
+    >
+      {Object.entries(exchangeFees[exchange].vip).map(
+        ([level, fees]) => (
+          <button
+            key={level}
+            onClick={() => {
+              setCurrentVip(Number(level));
+              setVipOpen(false);
+            }}
+            className="
+              w-full text-left px-3 py-2
+              text-xs cursor-pointer
+              hover:text-emerald-400
+            "
           >
-            {Object.entries(exchangeConfig.vip).map(([level, fees]) => (
-              <option key={level} value={level} className="bg-[#112240]">
-                VIP {level} (M: {fees.maker}% / T: {fees.taker}%)
-              </option>
-            ))}
-          </select>
+            VIP {level} (M {fees.maker}% / T {fees.taker}%)
+          </button>
+        )
+      )}
+    </div>
+  )}
+</div>
+
+
         </div>
 
         <div>
