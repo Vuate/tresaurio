@@ -1,10 +1,10 @@
 import Head from "next/head";
+import { Icon } from "@iconify/react";
 
 export default function MarketIntelligenceHero() {
   return (
     <>
       <Head>
-        <title>Market Microstructure & Cost Intelligence | Treasurio</title>
         <meta
           name="description"
           content="Gerçek trading maliyetini hesaplayın. Fee, spread, slippage ve funding'i tek bir all-in cost'ta toplayın. Exchange'leri karşılaştırıp en ucuz seçeneği bulun."
@@ -13,9 +13,14 @@ export default function MarketIntelligenceHero() {
 
       <div className="px-6 py-20 pb-16 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
         {/* Hero Icon with Float Animation */}
-        <div className="text-6xl mb-6 inline-block animate-float">
-          💰
-        </div>
+<div className="mb-6 inline-block animate-float">
+  <Icon
+    icon="mdi:chart-box-outline"
+    width={56}
+    height={56}
+    className="text-teal-400"
+  />
+</div>
 
         {/* Main Title */}
         <h1 className="text-5xl font-black mb-4 text-teal-400">

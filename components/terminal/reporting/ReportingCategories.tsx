@@ -1,6 +1,8 @@
+import { Icon } from "@iconify/react";
+
 const categories = [
   {
-    icon: "📈",
+    icon: "mdi:chart-line",
     title: "Market & Price",
     count: "5 Modules",
     modules: [
@@ -12,7 +14,7 @@ const categories = [
     ],
   },
   {
-    icon: "💧",
+    icon: "mdi:waterfall",
     title: "Liquidity & Orderbook",
     count: "5 Modules",
     modules: [
@@ -24,7 +26,7 @@ const categories = [
     ],
   },
   {
-    icon: "🌊",
+    icon: "mdi:swap-horizontal",
     title: "Flow & Transfer",
     count: "4 Modules",
     modules: [
@@ -35,7 +37,7 @@ const categories = [
     ],
   },
   {
-    icon: "🧠",
+icon:"mdi:brain",
     title: "Smart Money",
     count: "4 Modules",
     modules: [
@@ -46,7 +48,7 @@ const categories = [
     ],
   },
   {
-    icon: "💼",
+    icon: "mdi:briefcase-variant-outline",
     title: "Portfolio & Trade",
     count: "6 Modules",
     modules: [
@@ -59,7 +61,7 @@ const categories = [
     ],
   },
   {
-    icon: "⚠️",
+    icon: "mdi:alert-octagon-outline",
     title: "Risk & Alert",
     count: "5 Modules",
     modules: [
@@ -71,7 +73,7 @@ const categories = [
     ],
   },
   {
-    icon: "💰",
+    icon: "mdi:cash-multiple",
     title: "Fee & Tax",
     count: "5 Modules",
     modules: [
@@ -83,7 +85,7 @@ const categories = [
     ],
   },
   {
-    icon: "📊",
+    icon: "mdi:chart-box-outline",
     title: "Advanced Metrics",
     count: "5 Modules",
     modules: [
@@ -116,8 +118,9 @@ export default function ReportingCategories() {
           >
             {/* Category Header */}
             <div className="flex items-center gap-4 mb-5">
-              <div className="text-4xl">{category.icon}</div>
-              <div className="flex-1">
+<div className="text-4xl text-teal-400">
+  <Icon icon={category.icon} width={36} height={36} />
+</div>              <div className="flex-1">
                 <div className="text-xl font-bold text-teal-400 mb-1">
                   {category.title}
                 </div>

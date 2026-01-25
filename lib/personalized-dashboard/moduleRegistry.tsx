@@ -50,7 +50,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
   title: "Notes",
   description: "Quick notes & reminders",
   category: "temel-veri",
-  defaultSize: { width: 320, height: 260 },
+  defaultSize: { width: 320, height: 320 },
   render: () => <NotesModule />,
 },
 

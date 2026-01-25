@@ -1,6 +1,8 @@
+import { Icon } from "@iconify/react";
+
 const features = [
   {
-    icon: "📊",
+    icon: "material-symbols:monitoring-rounded",
     title: "Gerçek Zamanlı Takip",
     description:
       "Tüm stake pozisyonlarınızı anlık olarak izleyin. Stake edilen miktar, kazanılan rewards ve güncel değeri tek bir ekranda görüntüleyin.",
@@ -12,7 +14,7 @@ const features = [
     ],
   },
   {
-    icon: "💰",
+    icon: "material-symbols:percent-rounded",
     title: "APR/APY Karşılaştırma",
     description:
       "Farklı platformlardaki staking oranlarını karşılaştırın ve en karlı seçeneği bulun.",
@@ -24,7 +26,7 @@ const features = [
     ],
   },
   {
-    icon: "📈",
+    icon: "material-symbols:calculate-rounded",
     title: "ROI Hesaplaması",
     description:
       "Staking yatırımlarınızın gerçek getirisini hesaplayın. APR kazancı ve fiyat değişimini birlikte analiz edin.",
@@ -36,7 +38,7 @@ const features = [
     ],
   },
   {
-    icon: "🏦",
+    icon: "material-symbols:account-balance-rounded",
     title: "TradFi Karşılaştırma",
     description:
       "Crypto staking getirilerinizi geleneksel finans ürünleri ile karşılaştırın.",
@@ -48,7 +50,7 @@ const features = [
     ],
   },
   {
-    icon: "📅",
+    icon: "material-symbols:calendar-clock-rounded",
     title: "Reward Calendar",
     description:
       "Reward dağıtım takvimini görüntüleyin ve gelecek kazançlarınızı projeksiyon yapın.",
@@ -60,7 +62,7 @@ const features = [
     ],
   },
   {
-    icon: "⚡",
+    icon: "material-symbols:stacked-line-chart-rounded",
     title: "Multi-Asset Pano",
     description:
       "Birden fazla coin'de staking yapıyorsanız, tümünü tek bir pano'da yönetin.",
@@ -92,7 +94,14 @@ export default function StakingFeatures() {
             className="bg-[#041F20]/95 border border-white/10 rounded-2xl p-8 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
           >
             {/* Icon */}
-            <span className="text-[40px] block mb-4">{feature.icon}</span>
+<div className="mb-4">
+  <Icon
+    icon={feature.icon}
+    width={40}
+    height={40}
+    className="text-teal-400"
+  />
+</div>
 
             {/* Title */}
             <h3 className="text-xl font-bold mb-3 text-teal-400">

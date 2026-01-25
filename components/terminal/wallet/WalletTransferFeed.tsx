@@ -1,6 +1,9 @@
+import { Icon } from "@iconify/react";
+
+
 const transfers = [
   {
-    icon: "🐋",
+    icon: "mdi:bank-transfer-out",
     type: "EXCHANGE OUTFLOW",
     badgeType: "outflow",
     amount: "320 BTC",
@@ -9,7 +12,7 @@ const transfers = [
     time: "2 min ago",
   },
   {
-    icon: "📊",
+    icon: "mdi:bank-transfer-in",
     type: "EXCHANGE INFLOW",
     badgeType: "inflow",
     amount: "1,250 ETH",
@@ -18,7 +21,7 @@ const transfers = [
     time: "5 min ago",
   },
   {
-    icon: "⚡",
+    icon: "mdi:arrow-expand-horizontal",
     type: "WHALE MOVEMENT",
     badgeType: "outflow",
     amount: "5,000,000 USDT",
@@ -48,9 +51,15 @@ export default function WalletTransferFeed() {
               className="bg-[#041F20]/95 border border-white/10 rounded-xl p-5 grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-5 items-center"
             >
               {/* Transfer Icon */}
-              <div className="flex items-center justify-center w-12 h-12 bg-teal-500/10 rounded-xl text-2xl">
-                {transfer.icon}
-              </div>
+<div className="flex items-center justify-center w-12 h-12 bg-teal-500/10 rounded-xl">
+  <Icon
+    icon={transfer.icon}
+    className="text-teal-400"
+    width={26}
+    height={26}
+  />
+</div>
+              
 
               {/* Transfer Info */}
               <div className="flex-1">

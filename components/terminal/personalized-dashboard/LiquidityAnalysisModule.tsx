@@ -1,9 +1,8 @@
 // components/terminal/personalized-dashboard/LiquidityAnalysisModule.tsx
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { BarChart3, TrendingUp, AlertTriangle } from "lucide-react";
-
 interface Props {
   instanceId: string;
 }
@@ -25,6 +24,12 @@ const SYMBOLS_BY_EXCHANGE = {
 export default function LiquidityAnalysisModule({ instanceId }: Props) {
   const exchangeStorageKey = `liquidity-analysis-${instanceId}-exchange`;
   const symbolStorageKey = `liquidity-analysis-${instanceId}-symbol`;
+
+  const [exchangeOpen, setExchangeOpen] = useState(false);
+const [symbolOpen, setSymbolOpen] = useState(false);
+
+const exchangeRef = useRef<HTMLDivElement>(null);
+const symbolRef = useRef<HTMLDivElement>(null);
 
   // Exchange state
   const [exchange, setExchange] = useState(() => {
@@ -66,6 +71,28 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     }
   }, [exchange, symbol]);
 
+  useEffect(() => {
+  function handle(e: MouseEvent) {
+    if (
+      exchangeRef.current &&
+      !exchangeRef.current.contains(e.target as Node)
+    ) {
+      setExchangeOpen(false);
+    }
+
+    if (
+      symbolRef.current &&
+      !symbolRef.current.contains(e.target as Node)
+    ) {
+      setSymbolOpen(false);
+    }
+  }
+
+  document.addEventListener("pointerdown", handle);
+  return () => document.removeEventListener("pointerdown", handle);
+}, []);
+
+
   // Mock liquidity data
   const liquidityData = useMemo(() => {
     const bidVolume = 50000000 + Math.random() * 100000000; // $50M - $150M
@@ -101,10 +128,13 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
   const availableSymbols =
     SYMBOLS_BY_EXCHANGE[exchange as keyof typeof SYMBOLS_BY_EXCHANGE];
 
-  return (
-    <div className="space-y-3 text-xs">
+return (
+  <div className="space-y-3 text-xs h-full flex flex-col">
+    {/* Fixed Header Section */}
+    <div className="flex-shrink-0 space-y-3">
       {/* Header */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2">
+        {/* SOL YAZI */}
         <div className="text-xs text-white/60">
           <span className="font-semibold text-white/90">
             Liquidity Analysis
@@ -121,32 +151,104 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
           </span>
         </div>
 
-        <div className="flex gap-2">
-          {/* Exchange Selector */}
-          <select
-            value={exchange}
-            onChange={(e) => setExchange(e.target.value)}
-            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
+        {/* EXCHANGE */}
+        <div ref={exchangeRef} className="relative">
+          <button
+            onClick={() => setExchangeOpen(v => !v)}
+            className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white flex items-center gap-2 cursor-pointer"
           >
-            {EXCHANGES.map((ex) => (
-              <option key={ex.id} value={ex.id}>
-                {ex.name}
-              </option>
-            ))}
-          </select>
+            {exchange.charAt(0).toUpperCase() + exchange.slice(1)}
 
-          {/* Symbol Selector */}
-          <select
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
-            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
+            <span className={`transition-transform ${exchangeOpen ? "rotate-180" : ""}`}>
+              ▾
+            </span>
+          </button>
+
+          {exchangeOpen && (
+            <div
+              onWheel={(e) => e.stopPropagation()}
+              className="
+                absolute z-50 mt-1
+                w-[140px]
+                bg-[#0b1f1f]
+                right-0 left-auto
+                border border-emerald-500/20
+                rounded-none
+
+                max-h-[min(72px,30vh)]
+                overflow-y-auto
+                overflow-x-hidden
+
+                [&::-webkit-scrollbar]:w-1.5
+                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-transparent
+              "
+            >
+              {EXCHANGES.map(ex => (
+                <button
+                  key={ex.id}
+                  onClick={() => {
+                    setExchange(ex.id);
+                    setExchangeOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-xs text-white hover:text-emerald-400 cursor-pointer"
+                >
+                  {ex.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* SYMBOL */}
+        <div ref={symbolRef} className="relative">
+          <button
+            onClick={() => setSymbolOpen(v => !v)}
+            className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-white flex items-center gap-2 cursor-pointer"
           >
-            {availableSymbols.map((sym) => (
-              <option key={sym} value={sym}>
-                {sym}
-              </option>
-            ))}
-          </select>
+            {symbol}
+            <span className={`transition-transform ${symbolOpen ? "rotate-180" : ""}`}>
+              ▾
+            </span>
+          </button>
+
+          {symbolOpen && (
+            <div
+              onWheel={(e) => e.stopPropagation()}
+              className="
+                absolute z-50 mt-1
+                right-0 left-auto
+
+                w-[140px]
+                bg-[#0b1f1f]
+                border border-emerald-500/20
+                rounded-none
+
+                max-h-[min(72px,30vh)]
+                overflow-y-auto
+                overflow-x-hidden
+
+                [&::-webkit-scrollbar]:w-1.5
+                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-transparent
+              "
+            >
+              {availableSymbols.map(sym => (
+                <button
+                  key={sym}
+                  onClick={() => {
+                    setSymbol(sym);
+                    setSymbolOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-xs text-white hover:text-emerald-400 cursor-pointer"
+                >
+                  {sym}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -157,7 +259,19 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
           soon. Showing mock liquidity data.
         </div>
       )}
+    </div>
 
+    {/* Scrollable Content */}
+    <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-3
+      [&::-webkit-scrollbar]:w-2
+      [&::-webkit-scrollbar-track]:bg-transparent
+      [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+      scrollbar-thin
+      scrollbar-thumb-teal-400/40
+      scrollbar-track-transparent
+    ">
       {/* Liquidity Score Card */}
       <div className="px-3 py-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20">
         <div className="flex items-center justify-between mb-2">
@@ -342,5 +456,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

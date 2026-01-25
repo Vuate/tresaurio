@@ -24,6 +24,7 @@ export default function FundingRateModule({ instanceId }: Props) {
   const [data, setData] = useState<FundingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [symbolOpen, setSymbolOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -104,17 +105,77 @@ export default function FundingRateModule({ instanceId }: Props) {
           )}
         </div>
 
-        <select
-          value={selectedSymbol}
-          onChange={(e) => setSelectedSymbol(e.target.value)}
-          className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none"
-        >
-          {SYMBOLS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+<div className="relative">
+<button
+  onClick={() => setSymbolOpen(v => !v)}
+  className="
+    h-8 px-3 rounded-lg
+    bg-white/5
+    border border-white/10
+    text-xs text-white
+    flex items-center gap-2
+    cursor-pointer
+  "
+>
+  <span>{selectedSymbol}</span>
+
+  <span
+    className={`
+      text-white/50
+      transition-transform
+      duration-200
+      ${symbolOpen ? "rotate-180" : ""}
+    `}
+  >
+    ▾
+  </span>
+</button>
+
+
+  {symbolOpen && (
+    <div
+      onWheel={(e) => e.stopPropagation()}
+      className="
+        absolute right-0 mt-1 z-50
+        w-[140px]
+        max-h-[72px]
+        overflow-y-auto
+
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-none
+
+        [&::-webkit-scrollbar]:w-1.5
+        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-transparent
+      "
+    >
+{SYMBOLS.map((s) => (
+  <button
+    key={s}
+    onClick={() => {
+      setSelectedSymbol(s);
+      setSymbolOpen(false);
+    }}
+    className="
+      w-full px-3 py-2
+      text-left text-xs
+      cursor-pointer
+      bg-transparent
+      text-white
+      transition-colors
+      hover:text-emerald-400
+    "
+  >
+    {s}
+  </button>
+))}
+
+    </div>
+  )}
+</div>
+
       </div>
 
       {loading && !data ? (

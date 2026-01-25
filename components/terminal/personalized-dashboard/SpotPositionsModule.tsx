@@ -1,10 +1,10 @@
 // components/terminal/personalized-dashboard/SpotPositionsModule.tsx
 "use client";
 
-import { useMemo, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { usePriceStore } from "@/store/priceStore";
+import { useEffect, useRef, useState, useMemo } from "react";
 
 interface Props {
   instanceId: string;
@@ -111,6 +111,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     const price = parseFloat(entryPrice);
     const qty = parseFloat(quantity);
 
+
+
+
     if (isNaN(price) || isNaN(qty) || price <= 0 || qty <= 0) {
       alert("Please enter valid price and quantity");
       return;
@@ -165,7 +168,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
  <div className="relative h-full flex flex-col text-xs">
       {/* Portfolio Summary */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white/5 border border-white/10 rounded p-3">
+<div className="bg-white/5 border border-white/10 rounded p-3 pointer-events-none hover:bg-white/5">
           <div className="text-white/40 text-[10px] mb-1">Total Investment</div>
           <div className="text-white font-semibold">
             $
@@ -175,7 +178,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             })}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded p-3">
+<div className="bg-white/5 border border-white/10 rounded p-3 pointer-events-none hover:bg-white/5">
           <div className="text-white/40 text-[10px] mb-1">Current Value</div>
           <div className="text-white font-semibold">
             $
@@ -185,7 +188,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             })}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded p-3">
+<div className="bg-white/5 border border-white/10 rounded p-3 pointer-events-none hover:bg-white/5">
           <div className="text-white/40 text-[10px] mb-1">Total P&L</div>
           <div
             className={`font-semibold ${
@@ -199,7 +202,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             })}
           </div>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded p-3">
+<div className="bg-white/5 border border-white/10 rounded p-3 pointer-events-none hover:bg-white/5">
           <div className="text-white/40 text-[10px] mb-1">P&L %</div>
           <div
             className={`font-semibold ${
@@ -222,7 +225,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   border border-white/10
   py-2.5
   rounded-lg
-  mt-3 mb-4 hover:bg-white/15 text-white py-2 rounded transition-colors flex items-center justify-center gap-2 font-semibold border border-white/20 select-none"
+  mt-3 mb-4 hover:bg-white/15 text-white py-2 rounded transition-colors flex items-center justify-center gap-2 font-semibold border border-white/20 select-none cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Add Position
@@ -230,21 +233,21 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       )}
 
       {!showAddModal && (
-<div
-  className="
-    flex-1 overflow-y-auto space-y-4
+  <div
+    className="
+      flex-1  space-y-4
 
-    [&::-webkit-scrollbar]:w-2
-    [&::-webkit-scrollbar-track]:bg-transparent
-    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-    [&::-webkit-scrollbar-thumb]:rounded-full
-    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+      [&::-webkit-scrollbar]:w-2
+      [&::-webkit-scrollbar-track]:bg-transparent
+      [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
 
-    scrollbar-thin
-    scrollbar-thumb-teal-400/40
-    scrollbar-track-transparent
-  "
->
+      scrollbar-thin
+      scrollbar-thumb-teal-400/40
+      scrollbar-track-transparent
+    "
+  >
           {spotPositions.length === 0 ? (
             <div className="text-center py-8 text-white/40 text-[10px]">
               No positions yet. Click "Add Position" to start tracking.
@@ -261,9 +264,17 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               return (
                 <div
                   key={position.id}
-                  className="bg-white/5 border border-white/10 rounded p-4 space-y-3 hover:bg-white/8 transition-colors"
+className="
+  bg-white/5
+  border border-white/10
+  rounded p-4
+  space-y-3
+
+  hover:bg-white/5
+  transition-none
+"
                 >
-                  <div className="flex justify-between items-start">
+<div className="flex justify-between items-center relative">
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-white font-semibold text-sm">
@@ -277,17 +288,28 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                         {position.formattedPair}
                       </div>
                     </div>
-                    <button
-                      onClick={() => {
-                        if (confirm("Delete this position?")) {
-                          removeSpotPosition(position.id);
-                        }
-                      }}
-                      className="text-red-400 hover:text-red-300 p-1 transition-colors"
-                      title="Delete position"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+<button
+  onClick={() => removeSpotPosition(position.id)}
+  title="Delete position"
+  className="
+    absolute
+    top-1/2
+    right-0
+    -translate-y-1/2
+
+    text-white/40
+    cursor-pointer
+    transition-all
+    duration-150
+    hover:text-red-400
+    hover:scale-110
+    hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.6)]
+  "
+>
+  <Trash2 className="w-3 h-3" />
+</button>
+
+
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 text-[10px]">
@@ -371,13 +393,27 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </h3>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white text-xl leading-none"
+              className="text-white/50 hover:text-white text-xl leading-none cursor-pointer"
             >
               ×
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+<div
+  className="
+    flex-1 overflow-y-auto p-3 space-y-4
+
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+    scrollbar-thin
+    scrollbar-thumb-teal-400/40
+    scrollbar-track-transparent
+  "
+>
             <div>
               <label className="block text-white/50 mb-1 text-[10px]">
                 Exchange
@@ -490,7 +526,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 onChange={(e) =>
                   setFormData({ ...formData, entryDate: e.target.value })
                 }
-                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs  cursor-pointer"
               />
             </div>
 
@@ -513,7 +549,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           <div className="p-3 border-t border-white/10">
             <button
               onClick={addPosition}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded font-semibold text-xs"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded font-semibold text-xs cursor-pointer"
             >
               Add Position
             </button>
@@ -548,24 +584,74 @@ function ExchangeSelect({
   onChange: (v: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
 
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs text-left"
-      >
-        {value ? value.toUpperCase() : "Select Exchange"}
-      </button>
+    <div ref={ref} className="relative">
+<button
+  type="button"
+  onClick={() => setOpen((o) => !o)}
+  className="
+    w-full
+    flex items-center justify-between
+    bg-white/5
+    border border-white/10
+    rounded
+    px-2 py-1.5
+    text-white text-xs
+    cursor-pointer
+    hover:bg-white/10
+  "
+>
+  <span>
+    {value ? value.toUpperCase() : "Select Exchange"}
+  </span>
+
+  <span
+    className={`
+      text-white/40
+      transition-transform
+      duration-200
+      ${open ? "rotate-180" : ""}
+    `}
+  >
+    ▾
+  </span>
+</button>
+
 
       {open && (
-        <div
+<div
   className="
-    absolute z-50 mt-1 w-full
-    max-h-40 overflow-y-auto
-    rounded border border-white/10
-    bg-[#0a0e1a]
+    absolute
+    left-0 right-0
+    top-full mt-1
+
+    max-h-32        /* 👈 3–4 tane görünür */
+    overflow-y-auto
+
+    bg-[#0b1f24]
+    border border-white/10
+    rounded-none
+    p-2
+    space-y-1
+
+    z-50
 
     [&::-webkit-scrollbar]:w-2
     [&::-webkit-scrollbar-track]:bg-transparent
@@ -577,7 +663,9 @@ function ExchangeSelect({
     scrollbar-thumb-teal-400/40
     scrollbar-track-transparent
   "
-        >
+  onWheel={(e) => e.stopPropagation()}
+>
+
           {EXCHANGES.map((ex) => (
             <button
               key={ex}
@@ -586,8 +674,15 @@ function ExchangeSelect({
                 onChange(ex);
                 setOpen(false);
               }}
-              className="w-full px-2 py-1.5 text-left text-xs hover:bg-white/10 text-white"
-            >
+className="
+  w-full px-2 py-1.5
+  text-left text-xs
+  text-white/90
+
+  hover:text-emerald-400
+
+  transition-colors cursor-pointer
+"            >
               {ex.toUpperCase()}
             </button>
           ))}

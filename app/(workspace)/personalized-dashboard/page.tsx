@@ -8,7 +8,7 @@ import PortfolioObserver from "@/components/terminal/personalized-dashboard/Port
 
 export default function Page() {
   return (
-    <>
+    <div className="fixed inset-0 overflow-hidden bg-[#041F20]">
       <PortfolioObserver />
       <AlertObserver />
       <TopBar />
@@ -17,6 +17,6 @@ export default function Page() {
 
       <WorkspaceControls />
       <NotesPanel />
-    </>
+    </div>
   );
 }

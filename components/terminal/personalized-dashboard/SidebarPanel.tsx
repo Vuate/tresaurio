@@ -2,6 +2,7 @@
 
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 export default function SidebarPanel() {
   const { sidebarOpen, toggleSidebar } =
@@ -9,32 +10,47 @@ export default function SidebarPanel() {
 
   const router = useRouter();
   const pathname = usePathname();
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
-  if (!sidebarOpen) return null;
+
+  useEffect(() => {
+  if (!sidebarOpen) return;
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (
+      sidebarRef.current &&
+      !sidebarRef.current.contains(e.target as Node)
+    ) {
+      toggleSidebar();
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [sidebarOpen, toggleSidebar]);
+
+if (!sidebarOpen) return null;
 
   return (
-    <div
-      className="
-        fixed left-4 top-20 z-40
-        w-[260px] max-h-[80vh]
-        bg-[#041F20]/95 backdrop-blur
-        border border-white/10 rounded-xl
-        shadow-[0_12px_40px_rgba(0,0,0,0.45)]
+<div
+  ref={sidebarRef}
+  data-ui-panel 
+    onWheelCapture={(e) => e.stopPropagation()}   // 🔥 EN KRİTİK SATIR
+  onMouseDownCapture={(e) => e.stopPropagation()}
+  onPointerDownCapture={(e) => e.stopPropagation()}
+  className="
+    fixed left-4 top-20 z-40
+    w-[260px] max-h-[80vh]
+        overflow-hidden
+    bg-[#041F20]/95 backdrop-blur
+    border border-white/10 rounded-xl
+    shadow-[0_12px_40px_rgba(0,0,0,0.45)]
+  "
+>
 
-        overflow-y-auto
-
-        [&::-webkit-scrollbar]:w-2
-        [&::-webkit-scrollbar-track]:bg-transparent
-        [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-        [&::-webkit-scrollbar-thumb]:rounded-full
-        [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
-        scrollbar-thin
-        scrollbar-thumb-teal-400/40
-        scrollbar-track-transparent
-      "
-      onWheelCapture={(e) => e.stopPropagation()}
-    >
       {/* HEADER */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
         <div className="flex items-center gap-2">
@@ -50,7 +66,26 @@ export default function SidebarPanel() {
       </div>
 
       {/* CONTENT */}
-      <div className="p-3 space-y-4">
+<div
+  className="
+    p-3 space-y-4
+    max-h-[calc(80vh-64px)]
+    overflow-y-auto
+
+    [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+    scrollbar-thin
+    scrollbar-thumb-teal-400/40
+    scrollbar-track-transparent
+  "
+  onWheel={(e) => {e.stopPropagation();}}
+  onMouseDown={(e) => e.stopPropagation()}
+  onPointerDownCapture={(e) => e.stopPropagation()}
+>
 
         {/* TOP NAV */}
         <div className="space-y-1">
@@ -168,3 +203,4 @@ function SidebarItem({
     </button>
   );
 }
+

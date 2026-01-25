@@ -1,7 +1,8 @@
+
 // components/terminal/personalized-dashboard/OrderBookModule.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { wsService } from "@/services/WebSocketService";
 
 interface Props {
@@ -52,6 +53,8 @@ function mockDepth(symbol: string) {
   const bids = buildSide(mk(false), false);
   const asks = buildSide(mk(true), true);
 
+
+
   return { symbol, bids, asks, mid, source: "mock" as const };
 }
 
@@ -75,6 +78,42 @@ export default function OrderBookModule({ instanceId }: Props) {
     }
     return SYMBOLS_BY_EXCHANGE[exchange as keyof typeof SYMBOLS_BY_EXCHANGE][0];
   });
+
+  const [exchangeOpen, setExchangeOpen] = useState(false);
+const exchangeRef = useRef<HTMLDivElement>(null);
+
+const [symbolOpen, setSymbolOpen] = useState(false);
+const symbolRef = useRef<HTMLDivElement>(null);
+
+useEffect(() => {
+  if (!symbolOpen) return;
+
+  const handler = (e: MouseEvent) => {
+    if (symbolRef.current && !symbolRef.current.contains(e.target as Node)) {
+      setSymbolOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handler);
+  return () => document.removeEventListener("mousedown", handler);
+}, [symbolOpen]);
+
+
+useEffect(() => {
+  if (!exchangeOpen) return;
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (
+      exchangeRef.current &&
+      !exchangeRef.current.contains(e.target as Node)
+    ) {
+      setExchangeOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, [exchangeOpen]);
 
   // 🔥 OrderBook data
   const [orderBookData, setOrderBookData] = useState<{
@@ -203,248 +242,364 @@ export default function OrderBookModule({ instanceId }: Props) {
 
   const selectedExchange = EXCHANGES.find((e) => e.id === exchange);
 
-  return (
-    <div className="space-y-3">
-      {/* Header Row */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="text-xs text-white/60">
-          <span className="font-semibold text-white/90">Order Book</span>{" "}
-          <span className="text-white/40">•</span>{" "}
-          <span className="text-white/70">{symbol}</span>{" "}
-          <span className="text-white/40">•</span>{" "}
-          <span
-            className={`${
-              source === "api" ? "text-emerald-400" : "text-yellow-400"
-            }`}
-          >
-            {source === "api" ? "LIVE" : "MOCK"}
-          </span>
-        </div>
-
-        <div className="flex gap-2">
-          {/* Exchange Selector */}
-          <select
-            value={exchange}
-            onChange={(e) => setExchange(e.target.value)}
-className="
-  h-8 rounded-lg
-  bg-[#0b1f1f]
-  border border-white/10
-  text-xs text-white
-  px-2
-  outline-none
-  cursor-pointer
-  hover:bg-[#0f2a2a]
-  transition-colors
-"
-          >
-            {EXCHANGES.map((ex) => (
-              <option key={ex.id} value={ex.id}>
-                {ex.name}
-              </option>
-            ))}
-          </select>
-
-          {/* Symbol Selector */}
-          <select
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
-className="
-  h-8 rounded-lg
-  bg-[#0b1f1f]
-  border border-white/10
-  text-xs text-white
-  px-2
-  outline-none
-  cursor-pointer
-  hover:bg-[#0f2a2a]
-  transition-colors
-"
-          >
-            {SYMBOLS_BY_EXCHANGE[
-              exchange as keyof typeof SYMBOLS_BY_EXCHANGE
-            ].map((sym) => (
-              <option key={sym} value={sym}>
-                {sym}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Exchange Badge - Only show for non-Binance */}
-      {exchange !== "binance" && (
-        <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs flex items-center gap-2">
-          <span>⚠️</span>
-          <span>
-            {selectedExchange?.name} WebSocket coming soon. Showing mock data
-            for testing.
-          </span>
-        </div>
-      )}
-
-{/* Side Headers */}
-<div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
-
-  {/* SELL HEADER */}
-  <div>
-    <div className="text-red-400 mb-1">SELL (Asks)</div>
-<div className="
-  grid
-  grid-cols-[1.2fr_1fr]
-  sm:grid-cols-[1.2fr_1fr_1fr]
-  text-white/40
-">      <div>Price</div>
-      <div className="text-right">Qty</div>
-      <div className="text-right hidden sm:block">Total</div>
-    </div>
-  </div>
-
-{/* BUY HEADER */}
-<div>
-  <div className="text-emerald-400 mb-1 text-right">BUY (Bids)</div>
-  <div
-    className="
-      grid
-      grid-cols-[1.2fr_1fr]
-      sm:grid-cols-[1.2fr_1fr_1fr]
-      text-white/40
-    "
-  >
-    <div>Price</div>
-    <div className="text-right">Qty</div>
-    <div className="text-right hidden sm:block">Total</div>
-  </div>
-</div>
-
-
-</div>
-
-{/* Order Book Sides */}
-<div className="grid grid-cols-2 gap-2">
-
-
-      {/* Asks */}
-      <div className="space-y-1">
-        {asks
-          .slice(0, 12)
-          .reverse()
-          .map((r, idx) => {
-            const pct = Math.min((r.total / maxAskTotal) * 100, 100);
-            return (
-              <div
-                key={`a-${idx}`}
-                className="relative overflow-hidden rounded-md"
-              >
-                <div
-                  className="absolute inset-0 bg-red-500/10"
-                  style={{ width: `${pct}%` }}
-                />
-<div className="
-  relative grid
-  grid-cols-[1.2fr_1fr]
-  sm:grid-cols-[1.2fr_1fr_1fr]
-  text-[11px] px-2 py-1
-">
-  <div className="text-red-300 whitespace-nowrap overflow-hidden text-ellipsis">
-  {fmt.price(r.price)}
-</div>
-
-<div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
-  {fmt.qty(r.qty)}
-</div>
-                  
-<div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
-  {fmt.total(r.total)}
-</div>
-                </div>
-              </div>
-            );
-          })}
-      </div>
-
-
-      {/* Bids */}
-      <div className="space-y-1">
-        {bids.slice(0, 12).map((r, idx) => {
-          const pct = Math.min((r.total / maxBidTotal) * 100, 100);
-          return (
-            <div
-              key={`b-${idx}`}
-              className="relative overflow-hidden rounded-md"
+return (
+    <div className="space-y-3 h-full flex flex-col">
+      {/* Fixed Header Section */}
+      <div className="flex-shrink-0 space-y-3">
+        {/* Header Row */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-xs text-white/60">
+            <span className="font-semibold text-white/90">Order Book</span>{" "}
+            <span className="text-white/40">•</span>{" "}
+            <span className="text-white/70">{symbol}</span>{" "}
+            <span className="text-white/40">•</span>{" "}
+            <span
+              className={`${
+                source === "api" ? "text-emerald-400" : "text-yellow-400"
+              }`}
             >
-              <div
-                className="absolute inset-0 bg-emerald-500/10"
-                style={{ width: `${pct}%` }}
-              />
-<div className="
-  relative grid
-  grid-cols-[1.2fr_1fr]
-  sm:grid-cols-[1.2fr_1fr_1fr]
-  text-[11px] px-2 py-1
-"> 
-<div className="text-emerald-300 whitespace-nowrap overflow-hidden text-ellipsis">
-  {fmt.price(r.price)}
-</div>
+              {source === "api" ? "LIVE" : "MOCK"}
+            </span>
+          </div>
 
-<div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
-  {fmt.qty(r.qty)}
-</div>
+          <div className="flex gap-2">
+            {/* Exchange Selector */}
+            <div ref={exchangeRef} className="relative">
+              <button
+                onClick={() => setExchangeOpen(v => !v)}
+                className="
+                  h-8 px-3 rounded-lg
+                  bg-[#0b1f1f]
+                  border border-white/10
+                  text-xs text-white
+                  flex items-center gap-2
+                  cursor-pointer
+                "
+              >
+                <span>
+                  {EXCHANGES.find(e => e.id === exchange)?.name}
+                </span>
 
-<div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
-  {fmt.total(r.total)}
-</div>
+                <span
+                  className={`
+                    text-white/50
+                    transition-transform duration-200
+                    ${exchangeOpen ? "rotate-180" : ""}
+                  `}
+                >
+                  ▾
+                </span>
+              </button>
+
+              {exchangeOpen && (
+                <div
+                  onWheel={(e) => e.stopPropagation()}
+                  className="
+                    absolute right-0 mt-1 z-50
+                    w-[140px]
+                    max-h-[72px]
+                    overflow-y-auto
+                    bg-[#0b1f1f]
+                    border border-emerald-500/20
+                    rounded-none
+
+                    [&::-webkit-scrollbar]:w-1.5
+                    [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                    [&::-webkit-scrollbar-track]:bg-transparent
+                  "
+                >
+                  {EXCHANGES.map(ex => {
+                    const isActive = exchange === ex.id;
+
+                    return (
+                      <button
+                        key={ex.id}
+                        onClick={() => {
+                          setExchange(ex.id);
+                          setExchangeOpen(false);
+                        }}
+                        className="
+                          w-full px-3 py-2
+                          text-left text-xs
+                          bg-transparent cursor-pointer
+                          text-white
+                          transition-colors
+                          hover:text-emerald-400
+                        "
+                      >
+                        {ex.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Symbol Selector */}
+            <div ref={symbolRef} className="relative">
+              <button
+                onClick={() => setSymbolOpen(v => !v)}
+                className="
+                  h-8 px-3 rounded-lg
+                  bg-[#0b1f1f]
+                  border border-white/10
+                  text-xs text-white
+                  flex items-center gap-2
+                  cursor-pointer
+                "
+              >
+                <span>{symbol}</span>
+                <span
+                  className={`transition-transform ${
+                    symbolOpen ? "rotate-180" : ""
+                  }`}
+                >
+                  ▾
+                </span>
+              </button>
+
+              {symbolOpen && (
+                <div
+                  onWheel={(e) => e.stopPropagation()}
+                  className="
+                    absolute right-0 mt-1 z-50
+                    w-[140px]
+                    max-h-[96px]
+                    overflow-y-auto
+                    bg-[#0b1f1f]
+                    border border-emerald-500/20
+                    rounded-none
+
+                    [&::-webkit-scrollbar]:w-1.5
+                    [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                    [&::-webkit-scrollbar-track]:bg-transparent
+                  "
+                >
+                  {SYMBOLS_BY_EXCHANGE[
+                    exchange as keyof typeof SYMBOLS_BY_EXCHANGE
+                  ].map(sym => {
+                    const active = sym === symbol;
+
+                    return (
+                      <button
+                        key={sym}
+                        onClick={() => {
+                          setSymbol(sym);
+                          setSymbolOpen(false);
+                        }}
+                        className="
+                          w-full px-3 py-2
+                          text-left text-xs
+                          bg-transparent cursor-pointer
+                          text-white
+                          transition-colors
+                          hover:text-emerald-400
+                        "
+                      >
+                        {sym}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Exchange Badge - Only show for non-Binance */}
+        {exchange !== "binance" && (
+          <div className="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-xs flex items-center gap-2">
+            <span>⚠️</span>
+            <span>
+              {selectedExchange?.name} WebSocket coming soon. Showing mock data
+              for testing.
+            </span>
+          </div>
+        )}
+
+        {/* Side Headers */}
+        <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold px-3">
+          {/* SELL HEADER */}
+          <div>
+            <div className="text-red-400 mb-1">SELL (Asks)</div>
+            <div className="
+              grid
+              grid-cols-[1.2fr_1fr]
+              sm:grid-cols-[1.2fr_1fr_1fr]
+              text-white/40
+            ">
+              <div>Price</div>
+              <div className="text-right">Qty</div>
+              <div className="text-right hidden sm:block">Total</div>
+            </div>
+          </div>
+
+          {/* BUY HEADER */}
+          <div>
+            <div className="text-emerald-400 mb-1 text-right">BUY (Bids)</div>
+            <div
+              className="
+                grid
+                grid-cols-[1.2fr_1fr]
+                sm:grid-cols-[1.2fr_1fr_1fr]
+                text-white/40
+              "
+            >
+              <div>Price</div>
+              <div className="text-right">Qty</div>
+              <div className="text-right hidden sm:block">Total</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scrollable Content */}
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-3
+        [&::-webkit-scrollbar]:w-2
+        [&::-webkit-scrollbar-track]:bg-transparent
+        [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+        scrollbar-thin
+        scrollbar-thumb-teal-400/40
+        scrollbar-track-transparent
+      ">
+        {/* Order Book Sides */}
+{/* Order Book Sides */}
+<div className="grid grid-cols-2 gap-2 px-3">
+  {/* Asks */}
+  <div className="space-y-1 overflow-y-auto max-h-[400px]
+    [&::-webkit-scrollbar]:w-1.5
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-red-500/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-red-500/70
+  ">
+    {asks
+      .slice(0, 12)
+      .reverse()
+      .map((r, idx) => {
+        const pct = Math.min((r.total / maxAskTotal) * 100, 100);
+        return (
+          <div
+            key={`a-${idx}`}
+            className="relative overflow-hidden rounded-md"
+          >
+            <div
+              className="absolute inset-0 bg-red-500/10"
+              style={{ width: `${pct}%` }}
+            />
+            <div className="
+              relative grid
+              grid-cols-[1.2fr_1fr]
+              sm:grid-cols-[1.2fr_1fr_1fr]
+              text-[11px] px-2 py-1
+            ">
+              <div className="text-red-300 whitespace-nowrap overflow-hidden text-ellipsis">
+                {fmt.price(r.price)}
+              </div>
+
+              <div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+                {fmt.qty(r.qty)}
+              </div>
+              
+              <div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+                {fmt.total(r.total)}
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
+  </div>
 
-      </div>
+  {/* Bids */}
+  <div className="space-y-1 overflow-y-auto max-h-[400px]
+    [&::-webkit-scrollbar]:w-1.5
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb:hover]:bg-emerald-500/70
+  ">
+    {bids.slice(0, 12).map((r, idx) => {
+      const pct = Math.min((r.total / maxBidTotal) * 100, 100);
+      return (
+        <div
+          key={`b-${idx}`}
+          className="relative overflow-hidden rounded-md"
+        >
+          <div
+            className="absolute inset-0 bg-emerald-500/10"
+            style={{ width: `${pct}%` }}
+          />
+          <div className="
+            relative grid
+            grid-cols-[1.2fr_1fr]
+            sm:grid-cols-[1.2fr_1fr_1fr]
+            text-[11px] px-2 py-1
+          "> 
+            <div className="text-emerald-300 whitespace-nowrap overflow-hidden text-ellipsis">
+              {fmt.price(r.price)}
+            </div>
 
-            {/* Mid + Spread */}
-      <div className="py-2 border-y border-white/10 space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="text-[11px] text-white/40">Mid</div>
-          <div className="text-sm font-semibold text-teal-300">
-            {mid ? fmt.price(mid) : "—"}
+            <div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+              {fmt.qty(r.qty)}
+            </div>
+
+            <div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+              {fmt.total(r.total)}
+            </div>
           </div>
         </div>
+      );
+    })}
+  </div>
+</div>
 
-        <div className="flex items-center justify-between text-[11px]">
-          <div className="text-white/40">Spread</div>
-          <div className="text-white/70">
-            {spread
-              ? `${spread.value.toFixed(2)} (${spread.pct.toFixed(3)}%)`
-              : "—"}
-          </div>
-        </div>
-
-        {/* Buy/Sell balance */}
-        <div className="space-y-1 pt-1">
-          <div className="flex justify-between text-[11px] text-white/40">
-            <span>Buy</span>
-            <span>Sell</span>
+        {/* Mid + Spread */}
+        <div className="py-2 border-y border-white/10 space-y-2 px-3">
+          <div className="flex items-center justify-between">
+            <div className="text-[11px] text-white/40">Mid</div>
+            <div className="text-sm font-semibold text-teal-300">
+              {mid ? fmt.price(mid) : "—"}
+            </div>
           </div>
 
-          <div className="h-2 w-full rounded bg-white/10 overflow-hidden flex">
-            <div
-              className="bg-emerald-500"
-              style={{ width: `${balance.bidPct}%` }}
-            />
-            <div
-              className="bg-red-500"
-              style={{ width: `${balance.askPct}%` }}
-            />
+          <div className="flex items-center justify-between text-[11px]">
+            <div className="text-white/40">Spread</div>
+            <div className="text-white/70">
+              {spread
+                ? `${spread.value.toFixed(2)} (${spread.pct.toFixed(3)}%)`
+                : "—"}
+            </div>
           </div>
 
-          <div className="flex justify-between text-[11px] text-white/60">
-            <span>{balance.bidPct.toFixed(1)}%</span>
-            <span>{balance.askPct.toFixed(1)}%</span>
+          {/* Buy/Sell balance */}
+          <div className="space-y-1 pt-1">
+            <div className="flex justify-between text-[11px] text-white/40">
+              <span>Buy</span>
+              <span>Sell</span>
+            </div>
+
+            <div className="h-2 w-full rounded bg-white/10 overflow-hidden flex">
+              <div
+                className="bg-emerald-500"
+                style={{ width: `${balance.bidPct}%` }}
+              />
+              <div
+                className="bg-red-500"
+                style={{ width: `${balance.askPct}%` }}
+              />
+            </div>
+
+            <div className="flex justify-between text-[11px] text-white/60">
+              <span>{balance.bidPct.toFixed(1)}%</span>
+              <span>{balance.askPct.toFixed(1)}%</span>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

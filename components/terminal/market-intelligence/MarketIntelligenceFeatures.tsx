@@ -1,6 +1,8 @@
+import { Icon } from "@iconify/react";
+
 const features = [
   {
-    icon: "🧮",
+    icon: "mdi:calculator-variant-outline",
     title: "Toplam Maliyet Hesaplayıcı",
     description:
       "Bir trade'in gerçek maliyetini hesaplayın. Fee + Spread + Slippage + Funding'i tek bir percentage'da toplayın.",
@@ -12,7 +14,7 @@ const features = [
     ],
   },
   {
-    icon: "🏦",
+icon: "mdi:compare-horizontal",
     title: "Borsa Karşılaştırma",
     description:
       "Aynı trade'i farklı exchange'lerde yapmak ne kadara mal olur? Binance vs OKX vs Bybit vs Kraken karşılaştırması.",
@@ -24,7 +26,7 @@ const features = [
     ],
   },
   {
-    icon: "📊",
+    icon: "mdi:percent-outline",
     title: "Fee Structure Analysis",
     description:
       "Exchange fee yapılarını detaylı inceleyin. VIP tier'lar, discount token'lar (BNB, OKB) ve volume-based rebate'leri hesaplayın.",
@@ -36,7 +38,7 @@ const features = [
     ],
   },
   {
-    icon: "📉",
+    icon: "mdi:arrow-expand-horizontal",
     title: "Spread & Slippage",
     description:
       "Bid-ask spread'i ve farklı order size'larda slippage'ı ölçün. $10K, $100K, $1M trade için gerçek maliyeti görün.",
@@ -48,7 +50,7 @@ const features = [
     ],
   },
   {
-    icon: "⚡",
+    icon: "mdi:flash-outline",
     title: "Funding Rate Tracking",
     description:
       "Perpetual futures için funding rate'leri takip edin. Pozitif/negatif funding'in trade maliyetine etkisini hesaplayın.",
@@ -60,7 +62,7 @@ const features = [
     ],
   },
   {
-    icon: "🎯",
+    icon: "mdi:speedometer",
     title: "Piyasa Verimliliği Score",
     description:
       "Her exchange'in ve coin pair'in market efficiency score'unu hesaplayın (0-100). Liquidity, spread, execution quality'i tek bir metric'te toplayın.",
@@ -92,8 +94,12 @@ export default function MarketIntelligenceFeatures() {
             className="bg-[#041F20]/95 border border-white/10 rounded-2xl p-8 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
           >
             {/* Icon */}
-            <span className="text-[40px] block mb-4">{feature.icon}</span>
-
+<Icon
+  icon={feature.icon}
+  width={40}
+  height={40}
+  className="mb-4 text-teal-400"
+/>
             {/* Title */}
             <h3 className="text-xl font-bold mb-3 text-teal-400">
               {feature.title}

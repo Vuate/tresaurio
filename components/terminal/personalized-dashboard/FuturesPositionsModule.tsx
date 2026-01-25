@@ -85,7 +85,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setSide("long")}
-              className={`py-2 rounded text-xs transition ${
+              className={`py-2 rounded text-xs cursor-pointer transition ${
                 side === "long"
                   ? "bg-emerald-500 text-white"
                   : "bg-white/5 text-white/50"
@@ -95,7 +95,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             </button>
             <button
               onClick={() => setSide("short")}
-              className={`py-2 rounded text-xs transition ${
+              className={`py-2 rounded text-xs cursor-pointer transition ${
                 side === "short"
                   ? "bg-red-500 text-white"
                   : "bg-white/5 text-white/50"
@@ -131,13 +131,13 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
               max="125"
               value={leverage}
               onChange={(e) => setLeverage(parseInt(e.target.value))}
-              className="w-full"
+              className="w-full cursor-pointer"
             />
           </div>
 
           <button
             onClick={addPosition}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition text-xs font-semibold"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition text-xs font-semibold cursor-pointer"
           >
             Add Position
           </button>
@@ -185,7 +185,15 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
               <button
                 onClick={() => removePosition(pos.id)}
-                className="text-white/40 hover:text-red-400"
+  className="
+    text-white/40
+    cursor-pointer
+    transition-all
+    duration-150
+    hover:text-red-400
+    hover:scale-110
+    hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.6)]
+  "
               >
                 <X className="w-3 h-3" />
               </button>

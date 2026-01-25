@@ -1,21 +1,38 @@
+import { Icon } from "@iconify/react";
+
 const patterns = [
-  { icon: "📈", name: "Accumulation" },
-  { icon: "📉", name: "Distribution" },
-  { icon: "🎯", name: "Whale Buy" },
-  { icon: "💰", name: "Whale Sell" },
-  { icon: "🏦", name: "Exchange Dump" },
-  { icon: "🔄", name: "CEX↔DEX Flow" },
-  { icon: "⚡", name: "Flash Accumulation" },
-  { icon: "🎪", name: "Pump Setup" },
-  { icon: "📊", name: "Smart Money Entry" },
-  { icon: "🚪", name: "Smart Money Exit" },
-  { icon: "🔮", name: "Insider Trading" },
-  { icon: "🌊", name: "Whale Wash Trade" },
-  { icon: "🎲", name: "Manipulation" },
-  { icon: "🎭", name: "Fake Volume" },
-  { icon: "💎", name: "Diamond Hands" },
-  { icon: "🧠", name: "Strategic Hold" },
+  // === CORE MARKET STRUCTURE ===
+  { icon: "material-symbols:trending-up-rounded", name: "Accumulation" },
+{ icon: "material-symbols:trending-down-rounded", name: "Distribution" },
+
+  // === WHALE ACTIONS ===
+  { icon: "lucide:crosshair", name: "Whale Buy" },
+  { icon: "lucide:circle-dollar-sign", name: "Whale Sell" },
+
+  // === EXCHANGE FLOWS ===
+  { icon: "lucide:building-2", name: "Exchange Dump" },
+  { icon: "material-symbols:swap-horiz-rounded", name: "CEX↔DEX Flow" },
+
+  // === MOMENTUM EVENTS ===
+  { icon: "lucide:zap", name: "Flash Accumulation" },
+  { icon: "lucide:rocket", name: "Pump Setup" },
+
+  // === SMART MONEY ===
+  { icon: "lucide:line-chart", name: "Smart Money Entry" },
+  { icon: "lucide:log-out", name: "Smart Money Exit" },
+
+  // === RISK / MANIPULATION ===
+  { icon: "lucide:eye", name: "Insider Trading" },
+  { icon: "lucide:waves", name: "Whale Wash Trade" },
+
+  { icon: "lucide:shuffle", name: "Manipulation" },
+{ icon: "lucide:repeat", name: "Fake Volume" },
+
+  // === PSYCHOLOGY ===
+  { icon: "lucide:gem", name: "Diamond Hands" },
+  { icon: "lucide:brain-circuit", name: "Strategic Hold" },
 ];
+
 
 export default function WalletPatterns() {
   return (
@@ -36,8 +53,11 @@ export default function WalletPatterns() {
             className="bg-[#041F20] border border-white/10 rounded-xl p-5 text-center transition-all duration-300 hover:border-teal-400 hover:-translate-y-0.5"
           >
             {/* Icon */}
-            <span className="text-[32px] block mb-3">{pattern.icon}</span>
-
+            <Icon
+              icon={pattern.icon}
+              className="text-[32px] mb-3 text-teal-400 mx-auto"
+            />
+            
             {/* Pattern Name */}
             <div className="text-sm font-semibold text-white">
               {pattern.name}

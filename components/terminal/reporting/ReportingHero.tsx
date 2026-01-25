@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { Icon } from "@iconify/react";
 
 const stats = [
   { value: "39", label: "Reporting Modules" },
@@ -10,7 +11,6 @@ export default function ReportingHero() {
   return (
     <>
       <Head>
-        <title>Raporlama Motoru | Treasurio</title>
         <meta
           name="description"
           content="39 modül, 8 kategori ile profesyonel crypto raporları oluşturun. Otomatik data toplama, AI-powered insight'lar ve özelleştirilebilir template'ler."
@@ -19,9 +19,14 @@ export default function ReportingHero() {
 
       <div className="px-6 py-20 pb-16 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
         {/* Hero Icon with Float Animation */}
-        <div className="text-6xl mb-6 inline-block animate-float">
-          📊
-        </div>
+<div className="text-6xl mb-6 inline-block animate-float">
+  <Icon
+    icon="mdi:file-chart-outline"
+    width={56}
+    height={56}
+    className="text-teal-400"
+  />
+</div>
 
         {/* Main Title */}
         <h1 className="text-5xl font-black mb-4 text-teal-400">

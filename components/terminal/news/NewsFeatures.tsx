@@ -1,6 +1,8 @@
+import { Icon } from "@iconify/react";
+
 const features = [
   {
-    icon: "🤖",
+    icon: "material-symbols:psychology-rounded",
     title: "Yapay Zeka Duygu Analizi",
     description:
       "Her haberi AI ile analiz ederek bullish/bearish/neutral sentiment puanı belirleyin. Toplam market sentiment'i anlık takip edin.",
@@ -12,7 +14,7 @@ const features = [
     ],
   },
   {
-    icon: "📊",
+    icon: "material-symbols:show-chart-rounded",
     title: "Fiyat Etkisi Takibi",
     description:
       "Haberlerin fiyat üzerindeki etkisini ölçün. Haber sonrası 5dk, 15dk, 1h fiyat değişimlerini otomatik hesaplayın.",
@@ -24,7 +26,7 @@ const features = [
     ],
   },
   {
-    icon: "🌐",
+    icon: "lucide:layers",
     title: "Çoklu Kaynak Toplama",
     description:
       "CoinDesk, CoinTelegraph, Bloomberg Crypto, Twitter, Reddit ve 50+ kaynaktan haberleri tek bir feed'de toplayın.",
@@ -36,7 +38,7 @@ const features = [
     ],
   },
   {
-    icon: "🎯",
+    icon: "lucide:filter",
     title: "Token-Specific News",
     description:
       "Her token için özel haber feed'i. BTC, ETH, SOL gibi token'lara özel haberleri filtreleyin ve sadece ilgili içeriği görün.",
@@ -48,7 +50,7 @@ const features = [
     ],
   },
   {
-    icon: "⚡",
+    icon: "material-symbols:notifications-active-rounded",
     title: "Breaking News Alerts",
     description:
       "Kritik haberler çıktığında anında alert alın. High-impact news'ler için otomatik bildirim sistemi.",
@@ -60,7 +62,7 @@ const features = [
     ],
   },
   {
-    icon: "📈",
+    icon: "material-symbols:trending-up-rounded",
     title: "Sentiment Trends",
     description:
       "Market sentiment'inin zaman içindeki değişimini grafik olarak görüntüleyin. Bullish/Bearish dönüm noktalarını tespit edin.",
@@ -92,8 +94,14 @@ export default function NewsFeatures() {
             className="bg-[#041F20]/95 border border-white/10 rounded-2xl p-8 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
           >
             {/* Icon */}
-            <span className="text-[40px] block mb-4">{feature.icon}</span>
-
+<div className="mb-4">
+  <Icon
+    icon={feature.icon}
+    width={40}
+    height={40}
+    className="text-teal-400"
+  />
+</div>
             {/* Title */}
             <h3 className="text-xl font-bold mb-3 text-teal-400">
               {feature.title}

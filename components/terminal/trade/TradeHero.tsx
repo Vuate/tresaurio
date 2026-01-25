@@ -1,12 +1,12 @@
 // components/terminal/trade/TradeHero.tsx
 
 import Head from "next/head";
+import { Icon } from "@iconify/react";
 
 export default function TradeHero() {
   return (
     <>
       <Head>
-        <title>Trade & Portföy Yönetimi | Treasurio</title>
         <meta
           name="description"
           content="Spot ve futures işlemlerinizi tek bir panoda yönetin. Açık pozisyonlarınızı takip edin, PnL hesaplamaları yapın ve portföy performansınızı analiz edin."
@@ -15,9 +15,9 @@ export default function TradeHero() {
 
       <div className="px-6 py-20 pb-16 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
         {/* Hero Icon with Float Animation */}
-        <div className="text-6xl mb-6 inline-block animate-float">
-          📊
-        </div>
+<div className="text-6xl mb-6 inline-block animate-float text-teal-400">
+  <Icon icon="mdi:briefcase-variant-outline" />
+</div>
 
         {/* Main Title */}
         <h1 className="text-5xl font-black mb-4 text-teal-400">
