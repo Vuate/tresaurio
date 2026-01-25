@@ -2,6 +2,7 @@
 // Prisma client singleton for Next.js (Prisma 7)
 
 import { PrismaClient } from "./generated/prisma";
+
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
