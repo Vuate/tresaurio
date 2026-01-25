@@ -350,14 +350,26 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         </select>
 
         {hasApiKey(selectedExchange) ? (
-          <button
-            onClick={syncFromExchange}
-            disabled={syncing}
-            className="px-3 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded text-xs hover:bg-emerald-500/30 transition-colors flex items-center gap-1 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-3 h-3 ${syncing ? "animate-spin" : ""}`} />
-            {syncing ? "Syncing..." : "Sync"}
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={syncFromExchange}
+              disabled={syncing}
+              className="px-3 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded text-xs hover:bg-emerald-500/30 transition-colors flex items-center gap-1 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3 h-3 ${syncing ? "animate-spin" : ""}`} />
+              {syncing ? "Syncing..." : "Sync"}
+            </button>
+            <button
+              onClick={() => {
+                setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
+                setShowApiKeyModal(true);
+              }}
+              className="px-2 py-1.5 bg-white/5 border border-white/10 text-white/60 rounded text-xs hover:bg-white/10 transition-colors"
+              title="Change API Key"
+            >
+              <Key className="w-3 h-3" />
+            </button>
+          </div>
         ) : (
           <button
             onClick={() => {
