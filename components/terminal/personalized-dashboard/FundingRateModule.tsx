@@ -1,8 +1,9 @@
 // components/terminal/personalized-dashboard/FundingRateModule.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { TrendingUp, TrendingDown, Clock, AlertCircle } from "lucide-react";
+import type { Exchange } from "@/services/WebSocketService";
 
 interface FundingData {
   symbol: string;
@@ -10,7 +11,8 @@ interface FundingData {
   fundingTime: number;
   markPrice: number;
   indexPrice: number;
-  source: "api" | "mock";
+  source: "websocket" | "api";
+  exchange: string;
 }
 
 interface Props {
@@ -19,63 +21,224 @@ interface Props {
 
 const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
 
+const EXCHANGES = [
+  { id: "binance", name: "Binance" },
+  { id: "okx", name: "OKX" },
+  { id: "bybit", name: "Bybit" },
+];
+
+// 🔥 WebSocket URLs for each exchange
+const getWebSocketUrl = (exchange: Exchange, symbol: string): string => {
+  const upperSymbol = symbol.toUpperCase();
+  const lowerSymbol = symbol.toLowerCase();
+
+  switch (exchange) {
+    case "binance":
+      return `wss://fstream.binance.com/ws/${lowerSymbol}@markPrice`;
+    case "okx":
+      return `wss://ws.okx.com:8443/ws/v5/public`;
+    case "bybit":
+      return `wss://stream.bybit.com/v5/public/linear`;
+    default:
+      return "";
+  }
+};
+
+// 🔥 Parse WebSocket messages for each exchange
+const parseMessage = (exchange: Exchange, data: any, symbol: string): Partial<FundingData> | null => {
+  try {
+    switch (exchange) {
+      case "binance": {
+        // Binance markPrice stream: { e: "markPriceUpdate", s: "BTCUSDT", p: "...", r: "...", T: ... }
+        if (data.e === "markPriceUpdate") {
+          return {
+            symbol: data.s,
+            fundingRate: parseFloat(data.r || "0"),
+            fundingTime: data.T || Date.now() + 8 * 60 * 60 * 1000,
+            markPrice: parseFloat(data.p || "0"),
+            indexPrice: parseFloat(data.i || data.p || "0"),
+            source: "websocket",
+            exchange: "Binance",
+          };
+        }
+        break;
+      }
+
+      case "okx": {
+        // OKX funding-rate channel
+        if (data.arg?.channel === "funding-rate" && data.data?.[0]) {
+          const d = data.data[0];
+          return {
+            fundingRate: parseFloat(d.fundingRate || "0"),
+            fundingTime: parseInt(d.nextFundingTime || Date.now() + 8 * 60 * 60 * 1000),
+            source: "websocket",
+            exchange: "OKX",
+          };
+        }
+        // OKX mark-price channel
+        if (data.arg?.channel === "mark-price" && data.data?.[0]) {
+          const d = data.data[0];
+          return {
+            markPrice: parseFloat(d.markPx || "0"),
+            indexPrice: parseFloat(d.markPx || "0"),
+            source: "websocket",
+            exchange: "OKX",
+          };
+        }
+        break;
+      }
+
+      case "bybit": {
+        // Bybit tickers stream
+        if (data.topic?.includes("tickers") && data.data) {
+          const d = data.data;
+          return {
+            symbol: d.symbol,
+            fundingRate: parseFloat(d.fundingRate || "0"),
+            fundingTime: Date.now() + 8 * 60 * 60 * 1000, // Bybit has 8h intervals
+            markPrice: parseFloat(d.markPrice || "0"),
+            indexPrice: parseFloat(d.indexPrice || "0"),
+            source: "websocket",
+            exchange: "Bybit",
+          };
+        }
+        break;
+      }
+    }
+  } catch (err) {
+    console.error("[FundingRate] Parse error:", err);
+  }
+  return null;
+};
+
 export default function FundingRateModule({ instanceId }: Props) {
+  const storageKey = `funding-rate-${instanceId}`;
   const [selectedSymbol, setSelectedSymbol] = useState("BTCUSDT");
+  const [exchange, setExchange] = useState<Exchange>("binance");
   const [data, setData] = useState<FundingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [symbolOpen, setSymbolOpen] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
 
+  // Load settings from localStorage
   useEffect(() => {
-    let mounted = true;
-
-    const fetchFunding = async () => {
-      try {
-        const response = await fetch(
-          `/api/markets/binance/funding?symbol=${selectedSymbol}`,
-          { cache: "no-store" }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const json = await response.json();
-
-        if (!mounted) return;
-
-        if (json.ok) {
-          setData({
-            symbol: json.symbol,
-            fundingRate: json.fundingRate,
-            fundingTime: json.fundingTime,
-            markPrice: json.markPrice,
-            indexPrice: json.indexPrice,
-            source: json.source || "api",
-          });
-          setError(null);
-        } else {
-          throw new Error(json.error || "Invalid response");
-        }
-      } catch (err) {
-        console.error("[FundingRate] Error:", err);
-        if (!mounted) return;
-        setError(err instanceof Error ? err.message : "Unable to fetch");
-      } finally {
-        if (mounted) {
-          setLoading(false);
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const settings = JSON.parse(saved);
+          if (settings.symbol) setSelectedSymbol(settings.symbol);
+          if (settings.exchange) setExchange(settings.exchange);
+        } catch (err) {
+          console.error("[FundingRate] Failed to load settings:", err);
         }
       }
-    };
+    }
+  }, [storageKey]);
 
-    fetchFunding();
-    const interval = setInterval(fetchFunding, 10000);
+  // Save settings to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, JSON.stringify({ symbol: selectedSymbol, exchange }));
+    }
+  }, [selectedSymbol, exchange, storageKey]);
+
+  // 🔥 WebSocket connection
+  const connectWebSocket = useCallback(() => {
+    // Cleanup existing connection
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+
+    const url = getWebSocketUrl(exchange, selectedSymbol);
+    if (!url) return;
+
+    try {
+      const ws = new WebSocket(url);
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        console.log(`[FundingRate] Connected to ${exchange}`);
+        setConnected(true);
+        setLoading(false);
+        setError(null);
+
+        // Subscribe for OKX and Bybit
+        if (exchange === "okx") {
+          const okxSymbol = selectedSymbol.replace(/USDT$/, "-USDT-SWAP");
+          ws.send(JSON.stringify({
+            op: "subscribe",
+            args: [
+              { channel: "funding-rate", instId: okxSymbol },
+              { channel: "mark-price", instId: okxSymbol },
+            ],
+          }));
+        } else if (exchange === "bybit") {
+          ws.send(JSON.stringify({
+            op: "subscribe",
+            args: [`tickers.${selectedSymbol}`],
+          }));
+        }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const rawData = JSON.parse(event.data);
+          const parsed = parseMessage(exchange, rawData, selectedSymbol);
+
+          if (parsed) {
+            setData((prev) => ({
+              symbol: selectedSymbol,
+              fundingRate: parsed.fundingRate ?? prev?.fundingRate ?? 0,
+              fundingTime: parsed.fundingTime ?? prev?.fundingTime ?? Date.now() + 8 * 60 * 60 * 1000,
+              markPrice: parsed.markPrice ?? prev?.markPrice ?? 0,
+              indexPrice: parsed.indexPrice ?? prev?.indexPrice ?? 0,
+              source: "websocket",
+              exchange: parsed.exchange ?? prev?.exchange ?? exchange,
+            }));
+          }
+        } catch (err) {
+          console.error("[FundingRate] Message parse error:", err);
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.error("[FundingRate] WebSocket error:", err);
+        setError("Connection error");
+        setConnected(false);
+      };
+
+      ws.onclose = () => {
+        console.log("[FundingRate] WebSocket closed");
+        setConnected(false);
+        // Reconnect after 5 seconds
+        setTimeout(() => {
+          if (wsRef.current === ws) {
+            connectWebSocket();
+          }
+        }, 5000);
+      };
+    } catch (err) {
+      console.error("[FundingRate] Failed to connect:", err);
+      setError("Failed to connect");
+      setLoading(false);
+    }
+  }, [exchange, selectedSymbol]);
+
+  useEffect(() => {
+    setLoading(true);
+    setData(null);
+    connectWebSocket();
 
     return () => {
-      mounted = false;
-      clearInterval(interval);
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
     };
-  }, [selectedSymbol]);
+  }, [connectWebSocket]);
 
   const timeUntilFunding = data
     ? Math.max(0, data.fundingTime - Date.now())
@@ -94,93 +257,46 @@ export default function FundingRateModule({ instanceId }: Props) {
       <div className="flex items-center justify-between">
         <div className="text-white/60 text-xs flex items-center gap-2">
           <span className="font-semibold text-white/90">Funding Rate</span>
-          {data && (
-            <span
-              className={`text-[9px] ${
-                data.source === "api" ? "text-emerald-400" : "text-yellow-400"
-              }`}
-            >
-              {data.source === "api" ? "LIVE" : "MOCK"}
+          {connected && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              LIVE
             </span>
           )}
         </div>
 
-<div className="relative">
-<button
-  onClick={() => setSymbolOpen(v => !v)}
-  className="
-    h-8 px-3 rounded-lg
-    bg-white/5
-    border border-white/10
-    text-xs text-white
-    flex items-center gap-2
-    cursor-pointer
-  "
->
-  <span>{selectedSymbol}</span>
+        <div className="flex gap-2">
+          {/* Exchange Selector */}
+          <select
+            value={exchange}
+            onChange={(e) => setExchange(e.target.value as Exchange)}
+            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
+          >
+            {EXCHANGES.map((ex) => (
+              <option key={ex.id} value={ex.id}>
+                {ex.name}
+              </option>
+            ))}
+          </select>
 
-  <span
-    className={`
-      text-white/50
-      transition-transform
-      duration-200
-      ${symbolOpen ? "rotate-180" : ""}
-    `}
-  >
-    ▾
-  </span>
-</button>
-
-
-  {symbolOpen && (
-    <div
-      onWheel={(e) => e.stopPropagation()}
-      className="
-        absolute right-0 mt-1 z-50
-        w-[140px]
-        max-h-[72px]
-        overflow-y-auto
-
-        bg-[#0b1f1f]
-        border border-emerald-500/20
-        rounded-none
-
-        [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-        [&::-webkit-scrollbar-thumb]:rounded-full
-        [&::-webkit-scrollbar-track]:bg-transparent
-      "
-    >
-{SYMBOLS.map((s) => (
-  <button
-    key={s}
-    onClick={() => {
-      setSelectedSymbol(s);
-      setSymbolOpen(false);
-    }}
-    className="
-      w-full px-3 py-2
-      text-left text-xs
-      cursor-pointer
-      bg-transparent
-      text-white
-      transition-colors
-      hover:text-emerald-400
-    "
-  >
-    {s}
-  </button>
-))}
-
-    </div>
-  )}
-</div>
-
+          {/* Symbol Selector */}
+          <select
+            value={selectedSymbol}
+            onChange={(e) => setSelectedSymbol(e.target.value)}
+            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
+          >
+            {SYMBOLS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {loading && !data ? (
         <div className="text-center py-8 text-white/40 text-[10px]">
-          Loading funding rate...
+          Connecting to {exchange}...
         </div>
       ) : error ? (
         <div className="bg-red-500/10 border border-red-400/40 rounded p-3">

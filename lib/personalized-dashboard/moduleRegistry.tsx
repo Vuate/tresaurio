@@ -21,6 +21,22 @@ import DCACalculatorModule from "@/components/terminal/personalized-dashboard/DC
 import AllInCostCalculatorModule from "@/components/terminal/personalized-dashboard/AllInCostCalculatorModule";
 import FeeStructureAnalyzerModule from "@/components/terminal/personalized-dashboard/FeeStructureAnalyzerModule";
 import NotesModule from "@/components/terminal/personalized-dashboard/NotesModule";
+import PnLAnalysisModule from "@/components/terminal/personalized-dashboard/PnLAnalysisModule";
+import NewsModule from "@/components/terminal/personalized-dashboard/NewsModule";
+import LastOrdersModule from "@/components/terminal/personalized-dashboard/LastOrdersModule";
+import SpotActionsModule from "@/components/terminal/personalized-dashboard/SpotActionsModule";
+import FuturesActionsModule from "@/components/terminal/personalized-dashboard/FuturesActionsModule";
+import RewardCalendarModule from "@/components/terminal/personalized-dashboard/RewardCalendarModule";
+import ICOCalendarModule from "@/components/terminal/personalized-dashboard/ICOCalendarModule";
+import TokenUnlockModule from "@/components/terminal/personalized-dashboard/TokenUnlockModule";
+import SlippageMonitorModule from "@/components/terminal/personalized-dashboard/SlippageMonitorModule";
+import RSIHeatmapModule from "@/components/terminal/personalized-dashboard/RSIHeatmapModule";
+import MarketEfficiencyModule from "@/components/terminal/personalized-dashboard/MarketEfficiencyModule";
+import ExchangeNetflowModule from "@/components/terminal/personalized-dashboard/ExchangeNetflowModule";
+import ETFFlowsModule from "@/components/terminal/personalized-dashboard/ETFFlowsModule";
+import StackPositionModule from "@/components/terminal/personalized-dashboard/StackPositionModule";
+import WalletInspectorModule from "@/components/terminal/personalized-dashboard/WalletInspectorModule";
+import TokenFlowModule from "@/components/terminal/personalized-dashboard/TokenFlowModule";
 
 export type ModuleDefinition = {
   type: string;
@@ -35,65 +51,134 @@ export type ModuleDefinition = {
 };
 
 export const moduleRegistry: Record<string, ModuleDefinition> = {
-  /* ---------------- TEMEL VERİ ---------------- */
-  "live-prices": {
-    type: "live-prices",
-    title: "Live Prices",
-    description: "Real-time cryptocurrency prices",
-    category: "temel-veri",
+  /* ---------------- 1. MARKET DATA ---------------- */
+  "live-prices-spot": {
+    type: "live-prices-spot",
+    title: "Live Prices (Spot)",
+    description: "Real-time spot market prices",
+    category: "market-data",
     defaultSize: { width: 380, height: 240 },
-    render: (instanceId: string) => <LivePrices instanceId={instanceId} />,
-  },
-
-  "notes": {
-  type: "notes",
-  title: "Notes",
-  description: "Quick notes & reminders",
-  category: "temel-veri",
-  defaultSize: { width: 320, height: 320 },
-  render: () => <NotesModule />,
-},
-
-  /* ---------------- PORTFÖY ---------------- */
-  "spot-positions": {
-    type: "spot-positions",
-    title: "Spot Positions",
-    description: "Your active spot positions",
-    category: "trader-portfoy",
-    defaultSize: { width: 420, height: 300 },
     render: (instanceId: string) => (
-      <SpotPositionsModule instanceId={instanceId} />
+      <LivePrices instanceId={instanceId} marketType="spot" />
     ),
   },
 
-  "futures-positions": {
-    type: "futures-positions",
-    title: "Futures Positions",
-    description: "Active futures contracts",
-    category: "trader-portfoy",
-    defaultSize: { width: 420, height: 340 },
+  "live-prices-futures": {
+    type: "live-prices-futures",
+    title: "Live Prices (Futures)",
+    description: "Real-time futures market prices",
+    category: "market-data",
+    defaultSize: { width: 380, height: 240 },
     render: (instanceId: string) => (
-      <FuturesPositionsModule instanceId={instanceId} />
+      <LivePrices instanceId={instanceId} marketType="futures" />
     ),
   },
 
-  "pnl-overview": {
-    type: "pnl-overview",
-    title: "PnL Overview",
-    description: "Profit & Loss summary",
-    category: "trader-portfoy",
-    defaultSize: { width: 360, height: 220 },
+  notes: {
+    type: "notes",
+    title: "Notes",
+    description: "Quick notes & reminders",
+    category: "market-data",
+    defaultSize: { width: 320, height: 260 },
+    render: () => <NotesModule />,
+  },
+
+  /* ---------------- 2. MARKET MICROSTRUCTURE ---------------- */
+  "order-book-spot": {
+    type: "order-book-spot",
+    title: "Order Book (Spot)",
+    description: "Live spot order book depth",
+    category: "market-microstructure",
+    defaultSize: { width: 420, height: 380 },
     render: (instanceId: string) => (
-      <PnLOverviewModule instanceId={instanceId} />
+      <OrderBookModule instanceId={instanceId} marketType="spot" />
     ),
   },
 
-  /* ---------------- DW / FLOW ---------------- */
+  "order-book-futures": {
+    type: "order-book-futures",
+    title: "Order Book (Futures)",
+    description: "Live futures order book depth",
+    category: "market-microstructure",
+    defaultSize: { width: 420, height: 380 },
+    render: (instanceId: string) => (
+      <OrderBookModule instanceId={instanceId} marketType="futures" />
+    ),
+  },
+
+  "liquidity-analysis": {
+    type: "liquidity-analysis",
+    title: "Liquidity Analysis",
+    description: "Bid / Ask imbalance & market pressure",
+    category: "market-microstructure",
+    defaultSize: { width: 360, height: 260 },
+    render: (instanceId: string) => (
+      <LiquidityAnalysisModule instanceId={instanceId} />
+    ),
+  },
+
+  "spread-monitor-spot": {
+    type: "spread-monitor-spot",
+    title: "Spread Monitor (Spot)",
+    description: "Real-time spot bid-ask spread & volume imbalance",
+    category: "market-microstructure",
+    defaultSize: { width: 320, height: 400 },
+    render: (instanceId: string) => (
+      <SpreadMonitorModule instanceId={instanceId} marketType="spot" />
+    ),
+  },
+
+  "spread-monitor-futures": {
+    type: "spread-monitor-futures",
+    title: "Spread Monitor (Futures)",
+    description: "Real-time futures bid-ask spread & volume imbalance",
+    category: "market-microstructure",
+    defaultSize: { width: 320, height: 400 },
+    render: (instanceId: string) => (
+      <SpreadMonitorModule instanceId={instanceId} marketType="futures" />
+    ),
+  },
+
+  "funding-rate": {
+    type: "funding-rate",
+    title: "Funding Rate Tracker",
+    description: "8-hour funding rate takibi ve trend analizi",
+    category: "market-microstructure",
+    defaultSize: { width: 320, height: 400 },
+    render: (instanceId: string) => (
+      <FundingRateModule instanceId={instanceId} />
+    ),
+  },
+
+  "all-in-cost": {
+    type: "all-in-cost",
+    title: "All-in Cost Calculator",
+    description:
+      "Calculate total trading costs including fees, slippage, and funding",
+    category: "market-microstructure",
+    defaultSize: { width: 360, height: 700 },
+    render: (instanceId: string) => (
+      <AllInCostCalculatorModule instanceId={instanceId} />
+    ),
+  },
+
+  "fee-structure": {
+    type: "fee-structure",
+    title: "Fee Structure Analyzer",
+    description: "Analyze fee tiers and optimize trading costs",
+    category: "market-microstructure",
+    defaultSize: { width: 360, height: 650 },
+    render: (instanceId: string) => (
+      <FeeStructureAnalyzerModule instanceId={instanceId} />
+    ),
+  },
+
+  /* ---------------- 3. FLOW (Akış & Transfer) ---------------- */
   "exchange-flow": {
     type: "exchange-flow",
     title: "Exchange Flow",
     description: "Deposit / Withdraw tracking",
-    category: "dw-flow",
+    category: "flow",
     defaultSize: { width: 420, height: 300 },
     render: (instanceId: string) => (
       <ExchangeFlowModule instanceId={instanceId} />
@@ -104,68 +189,81 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     type: "whale-alerts",
     title: "Whale Alerts",
     description: "Large on-chain / exchange transfers",
-    category: "dw-flow",
+    category: "flow",
     defaultSize: { width: 380, height: 260 },
     render: (instanceId: string) => (
       <WhaleAlertsModule instanceId={instanceId} />
     ),
   },
 
-  /* ---------------- LİKİDİTE ---------------- */
-  "order-book": {
-    type: "order-book",
-    title: "Order Book",
-    description: "Live order book depth (lite)",
-    category: "likidite",
-    defaultSize: { width: 420, height: 380 },
-    render: (instanceId: string) => <OrderBookModule instanceId={instanceId} />,
-  },
-
   "exchange-comparison": {
     type: "exchange-comparison",
     title: "Exchange Comparison",
     description: "Binance vs KuCoin price difference",
-    category: "likidite",
+    category: "flow",
     defaultSize: { width: 320, height: 200 },
     render: (instanceId: string) => (
       <ExchangeComparisonModule instanceId={instanceId} />
     ),
   },
 
-  "liquidity-analysis": {
-    type: "liquidity-analysis",
-    title: "Liquidity Analysis",
-    description: "Bid / Ask imbalance & market pressure",
-    category: "likidite",
-    defaultSize: { width: 360, height: 260 },
+  /* ---------------- 4. TRADE & PORTFOLIO ---------------- */
+  "spot-positions": {
+    type: "spot-positions",
+    title: "Spot Positions",
+    description: "Your active spot positions",
+    category: "portfolio",
+    defaultSize: { width: 420, height: 300 },
     render: (instanceId: string) => (
-      <LiquidityAnalysisModule instanceId={instanceId} />
+      <SpotPositionsModule instanceId={instanceId} />
     ),
   },
 
-  "spread-monitor": {
-    type: "spread-monitor",
-    title: "Spread Monitor",
-    description: "Real-time bid-ask spread & volume imbalance",
-    category: "likidite",
-    defaultSize: { width: 320, height: 400 },
+  "futures-positions": {
+    type: "futures-positions",
+    title: "Futures Positions",
+    description: "Active futures contracts",
+    category: "portfolio",
+    defaultSize: { width: 420, height: 340 },
     render: (instanceId: string) => (
-      <SpreadMonitorModule instanceId={instanceId} />
+      <FuturesPositionsModule instanceId={instanceId} />
     ),
   },
 
-  "funding-rate": {
-    type: "funding-rate",
-    title: "Funding Rate Tracker",
-    description: "8-hour funding rate takibi ve trend analizi",
-    category: "likidite",
-    defaultSize: { width: 320, height: 400 },
+  "pnl-overview": {
+    type: "pnl-overview",
+    title: "PnL Overview",
+    description: "Profit & Loss summary",
+    category: "portfolio",
+    defaultSize: { width: 360, height: 220 },
     render: (instanceId: string) => (
-      <FundingRateModule instanceId={instanceId} />
+      <PnLOverviewModule instanceId={instanceId} />
     ),
   },
 
-  /* ---------------- ALERT ---------------- */
+  "dca-calculator": {
+    type: "dca-calculator",
+    title: "DCA Calculator",
+    description: "Calculate average entry price and simulate next DCA",
+    category: "portfolio",
+    defaultSize: { width: 360, height: 600 },
+    render: (instanceId: string) => (
+      <DCACalculatorModule instanceId={instanceId} />
+    ),
+  },
+
+  "risk-calculator": {
+    type: "risk-calculator",
+    title: "Risk Calculator",
+    description: "Calculate position risk & size",
+    category: "portfolio",
+    defaultSize: { width: 360, height: 320 },
+    render: (instanceId: string) => (
+      <RiskCalculatorModule instanceId={instanceId} />
+    ),
+  },
+
+  /* ---------------- 5. ALERTS ---------------- */
   "create-alert": {
     type: "create-alert",
     title: "Create Alert",
@@ -187,50 +285,166 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
       <ActiveAlertsModule instanceId={instanceId} />
     ),
   },
-
-  /* ---------------- RISK ---------------- */
-  "risk-calculator": {
-    type: "risk-calculator",
-    title: "Risk Calculator",
-    description: "Calculate position risk & size",
-    category: "risk",
-    defaultSize: { width: 360, height: 320 },
+  "pnl-analysis": {
+    type: "pnl-analysis",
+    title: "PnL Analysis",
+    description: "Detailed profit & loss breakdown with real-time tracking",
+    category: "portfolio",
+    defaultSize: { width: 380, height: 580 }, // Biraz daha uzun yaptım
     render: (instanceId: string) => (
-      <RiskCalculatorModule instanceId={instanceId} />
+      <PnLAnalysisModule instanceId={instanceId} />
     ),
   },
-
-  "dca-calculator": {
-    type: "dca-calculator",
-    title: "DCA Calculator",
-    description: "Calculate average entry price and simulate next DCA",
-    category: "trader-portfoy",
-    defaultSize: { width: 360, height: 600 },
+  news: {
+    type: "news",
+    title: "Crypto News",
+    description: "Latest cryptocurrency news and updates",
+    category: "market-data",
+    defaultSize: { width: 400, height: 600 },
+    render: (instanceId: string) => <NewsModule instanceId={instanceId} />,
+  },
+  "last-orders": {
+    type: "last-orders",
+    title: "Last Orders",
+    description: "Recent trade history and order status",
+    category: "portfolio",
+    defaultSize: { width: 420, height: 600 },
     render: (instanceId: string) => (
-      <DCACalculatorModule instanceId={instanceId} />
+      <LastOrdersModule instanceId={instanceId} />
     ),
   },
-
-  "all-in-cost": {
-    type: "all-in-cost",
-    title: "All-in Cost Calculator",
-    description:
-      "Calculate total trading costs including fees, slippage, and funding",
-    category: "likidite",
+  "spot-actions": {
+    type: "spot-actions",
+    title: "Spot Actions",
+    description: "Quick buy/sell spot positions",
+    category: "portfolio",
+    defaultSize: { width: 360, height: 620 },
+    render: (instanceId: string) => (
+      <SpotActionsModule instanceId={instanceId} />
+    ),
+  },
+  "futures-actions": {
+    type: "futures-actions",
+    title: "Futures Actions",
+    description: "Quick long/short futures positions with leverage",
+    category: "portfolio",
     defaultSize: { width: 360, height: 700 },
     render: (instanceId: string) => (
-      <AllInCostCalculatorModule instanceId={instanceId} />
+      <FuturesActionsModule instanceId={instanceId} />
+    ),
+  },
+  "reward-calendar": {
+    type: "reward-calendar",
+    title: "Reward Calendar",
+    description: "Upcoming staking rewards and airdrops",
+    category: "portfolio",
+    defaultSize: { width: 360, height: 600 },
+    render: (instanceId: string) => (
+      <RewardCalendarModule instanceId={instanceId} />
     ),
   },
 
-  "fee-structure": {
-    type: "fee-structure",
-    title: "Fee Structure Analyzer",
-    description: "Analyze fee tiers and optimize trading costs",
-    category: "likidite",
+  "ico-calendar": {
+    type: "ico-calendar",
+    title: "ICO Calendar",
+    description: "Upcoming token sales and ICOs",
+    category: "market-data",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => (
+      <ICOCalendarModule instanceId={instanceId} />
+    ),
+  },
+
+  "token-unlock": {
+    type: "token-unlock",
+    title: "Token Unlocks",
+    description: "Token vesting schedule and unlock events",
+    category: "market-data",
+    defaultSize: { width: 360, height: 600 },
+    render: (instanceId: string) => (
+      <TokenUnlockModule instanceId={instanceId} />
+    ),
+  },
+  "slippage-monitor": {
+    type: "slippage-monitor",
+    title: "Slippage Monitor",
+    description: "Calculate order slippage and market impact",
+    category: "market-microstructure",
+    defaultSize: { width: 360, height: 600 },
+    render: (instanceId: string) => (
+      <SlippageMonitorModule instanceId={instanceId} />
+    ),
+  },
+
+  "rsi-heatmap": {
+    type: "rsi-heatmap",
+    title: "RSI Heatmap",
+    description: "Multi-asset RSI overview with heatmap",
+    category: "market-data",
+    defaultSize: { width: 380, height: 650 },
+    render: (instanceId: string) => (
+      <RSIHeatmapModule instanceId={instanceId} />
+    ),
+  },
+
+  "market-efficiency": {
+    type: "market-efficiency",
+    title: "Market Efficiency",
+    description: "Market quality score based on spread, depth & volume",
+    category: "market-microstructure",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => (
+      <MarketEfficiencyModule instanceId={instanceId} />
+    ),
+  },
+
+  "exchange-netflow": {
+    type: "exchange-netflow",
+    title: "Exchange Netflow",
+    description: "Track inflow/outflow across exchanges",
+    category: "flow",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => (
+      <ExchangeNetflowModule instanceId={instanceId} />
+    ),
+  },
+  "etf-flows": {
+    type: "etf-flows",
+    title: "ETF Flows",
+    description: "Bitcoin ETF inflow/outflow tracking",
+    category: "flow",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => <ETFFlowsModule instanceId={instanceId} />,
+  },
+
+  "stack-position": {
+    type: "stack-position",
+    title: "Stack Tracker",
+    description: "Group and track token positions by category",
+    category: "portfolio",
+    defaultSize: { width: 380, height: 600 },
+    render: (instanceId: string) => (
+      <StackPositionModule instanceId={instanceId} />
+    ),
+  },
+
+  "wallet-inspector": {
+    type: "wallet-inspector",
+    title: "Wallet Inspector",
+    description: "Analyze any wallet's holdings and transactions",
+    category: "flow",
     defaultSize: { width: 360, height: 650 },
     render: (instanceId: string) => (
-      <FeeStructureAnalyzerModule instanceId={instanceId} />
+      <WalletInspectorModule instanceId={instanceId} />
     ),
+  },
+
+  "token-flow": {
+    type: "token-flow",
+    title: "Token Flow Analysis",
+    description: "Cross-chain token movement tracking",
+    category: "flow",
+    defaultSize: { width: 380, height: 650 },
+    render: (instanceId: string) => <TokenFlowModule instanceId={instanceId} />,
   },
 };

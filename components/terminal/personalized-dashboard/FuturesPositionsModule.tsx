@@ -1,49 +1,285 @@
 // components/terminal/personalized-dashboard/FuturesPositionsModule.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useFuturesPositionStore } from "@/store/futuresPositionStore";
-import { TrendingUp, TrendingDown, X } from "lucide-react";
+import { TrendingUp, TrendingDown, X, RefreshCw, Key, Link2, AlertCircle } from "lucide-react";
 import { usePriceStore } from "@/store/priceStore";
 
 interface Props {
   instanceId: string;
 }
 
+interface ApiKeyInfo {
+  id: string;
+  exchange: string;
+  label: string | null;
+  isActive: boolean;
+}
+
+interface FuturesPositionFromAPI {
+  symbol: string;
+  side: "long" | "short";
+  size: number;
+  entryPrice: number;
+  markPrice: number;
+  leverage: number;
+  unrealizedPnl: number;
+  marginType: "cross" | "isolated";
+  liquidationPrice: number;
+}
+
+type FundingRate = {
+  symbol: string;
+  fundingRate: number;
+  fundingTime: number;
+  lastUpdate: number;
+};
+
+const SUPPORTED_EXCHANGES = ["binance", "okx", "bybit"];
+
 export default function FuturesPositionsModule({ instanceId }: Props) {
   const storageKey = `futures-positions-${instanceId}`;
 
   const positions = useFuturesPositionStore((s) => s.positions);
   const removePosition = useFuturesPositionStore((s) => s.removePosition);
+  const addPosition = useFuturesPositionStore((s) => s.addPosition);
   const prices = usePriceStore((s) => s.prices);
 
+  // API Key states
+  const [apiKeys, setApiKeys] = useState<ApiKeyInfo[]>([]);
+  const [selectedExchange, setSelectedExchange] = useState<string>("binance");
+  const [syncing, setSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [lastSync, setLastSync] = useState<Date | null>(null);
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+
+  // API Key form
+  const [apiKeyForm, setApiKeyForm] = useState({
+    exchange: "binance",
+    apiKey: "",
+    apiSecret: "",
+    passphrase: "",
+    label: "",
+  });
+  const [savingKey, setSavingKey] = useState(false);
+
+  // Position form
   const [symbol, setSymbol] = useState("");
   const [side, setSide] = useState<"long" | "short">("long");
   const [entry, setEntry] = useState("");
   const [size, setSize] = useState("");
   const [leverage, setLeverage] = useState(10);
+  const [leverageInput, setLeverageInput] = useState("10");
 
+  // Funding rates
+  const [fundingRates, setFundingRates] = useState<Record<string, FundingRate>>({});
+  const [loadingFunding, setLoadingFunding] = useState(false);
+
+  // Fetch API keys on mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          // Could restore positions here if needed
-        } catch (e) {
-          console.warn("Failed to parse saved positions");
-        }
+    fetchApiKeys();
+  }, []);
+
+  const fetchApiKeys = async () => {
+    try {
+      const response = await fetch("/api/exchange/keys");
+      const data = await response.json();
+      if (data.success) {
+        setApiKeys(data.data);
       }
+    } catch (error) {
+      console.error("Failed to fetch API keys:", error);
     }
-  }, [storageKey]);
+  };
 
+  const hasApiKey = useCallback(
+    (exchange: string) => {
+      return apiKeys.some((k) => k.exchange === exchange && k.isActive);
+    },
+    [apiKeys]
+  );
+
+  const syncFromExchange = async () => {
+    if (!hasApiKey(selectedExchange)) {
+      setSyncError("No API key configured for this exchange");
+      return;
+    }
+
+    setSyncing(true);
+    setSyncError(null);
+
+    try {
+      const response = await fetch(
+        `/api/exchange/positions?exchange=${selectedExchange}`
+      );
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to fetch positions");
+      }
+
+      const apiPositions: FuturesPositionFromAPI[] = data.data;
+
+      // Add positions from API
+      apiPositions.forEach((pos) => {
+        const existingPosition = positions.find(
+          (p) => p.symbol === pos.symbol && p.side === pos.side
+        );
+
+        if (!existingPosition) {
+          addPosition({
+            symbol: pos.symbol,
+            side: pos.side,
+            entryPrice: pos.entryPrice,
+            size: pos.size,
+            leverage: pos.leverage,
+          });
+        }
+      });
+
+      setLastSync(new Date());
+    } catch (error) {
+      console.error("Sync error:", error);
+      setSyncError(
+        error instanceof Error ? error.message : "Failed to sync"
+      );
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const saveApiKey = async () => {
+    if (!apiKeyForm.apiKey || !apiKeyForm.apiSecret) {
+      alert("API Key and Secret are required");
+      return;
+    }
+
+    if (apiKeyForm.exchange === "okx" && !apiKeyForm.passphrase) {
+      alert("Passphrase is required for OKX");
+      return;
+    }
+
+    setSavingKey(true);
+
+    try {
+      const response = await fetch("/api/exchange/keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          exchange: apiKeyForm.exchange,
+          apiKey: apiKeyForm.apiKey,
+          apiSecret: apiKeyForm.apiSecret,
+          passphrase: apiKeyForm.passphrase || undefined,
+          label: apiKeyForm.label || undefined,
+          permissions: ["futures"],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to save API key");
+      }
+
+      await fetchApiKeys();
+      setShowApiKeyModal(false);
+      setApiKeyForm({
+        exchange: "binance",
+        apiKey: "",
+        apiSecret: "",
+        passphrase: "",
+        label: "",
+      });
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to save API key");
+    } finally {
+      setSavingKey(false);
+    }
+  };
+
+  // Fetch funding rates
   useEffect(() => {
-    if (typeof window !== "undefined" && positions.length > 0) {
-      localStorage.setItem(storageKey, JSON.stringify(positions));
-    }
-  }, [positions, storageKey]);
+    if (positions.length === 0) return;
 
-  const addPosition = () => {
+    const fetchFundingRates = async () => {
+      setLoadingFunding(true);
+
+      try {
+        const symbols = [...new Set(positions.map((p) => p.symbol))];
+
+        const requests = symbols.map(async (symbol) => {
+          try {
+            const response = await fetch(
+              `https://fapi.binance.com/fapi/v1/fundingRate?symbol=${symbol}&limit=1`
+            );
+
+            if (!response.ok) throw new Error("API failed");
+
+            const data = await response.json();
+
+            if (data && data.length > 0) {
+              return {
+                symbol,
+                fundingRate: parseFloat(data[0].fundingRate) * 100,
+                fundingTime: data[0].fundingTime,
+                lastUpdate: Date.now(),
+              };
+            }
+            return null;
+          } catch {
+            return null;
+          }
+        });
+
+        const results = await Promise.all(requests);
+
+        const newRates: Record<string, FundingRate> = {};
+        results.forEach((result) => {
+          if (result) {
+            newRates[result.symbol] = result;
+          }
+        });
+
+        setFundingRates(newRates);
+      } catch {
+        console.error("Failed to fetch funding rates");
+      } finally {
+        setLoadingFunding(false);
+      }
+    };
+
+    fetchFundingRates();
+    const interval = setInterval(fetchFundingRates, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [positions]);
+
+  const handleLeverageSliderChange = (value: number) => {
+    setLeverage(value);
+    setLeverageInput(value.toString());
+  };
+
+  const handleLeverageInputChange = (value: string) => {
+    setLeverageInput(value);
+    const numValue = parseInt(value);
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 125) {
+      setLeverage(numValue);
+    }
+  };
+
+  const handleLeverageInputBlur = () => {
+    const numValue = parseInt(leverageInput);
+    if (isNaN(numValue) || numValue < 1) {
+      setLeverage(1);
+      setLeverageInput("1");
+    } else if (numValue > 125) {
+      setLeverage(125);
+      setLeverageInput("125");
+    }
+  };
+
+  const addManualPosition = () => {
     if (!symbol || !entry || !size) {
       alert("Please fill all fields");
       return;
@@ -57,7 +293,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
       return;
     }
 
-    useFuturesPositionStore.getState().addPosition({
+    addPosition({
       symbol: symbol.toUpperCase(),
       side,
       entryPrice,
@@ -70,10 +306,99 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
     setSize("");
   };
 
-  if (positions.length === 0) {
-    return (
-      <div className="space-y-3 text-xs">
-        <div className="space-y-2">
+  const refreshFundingRate = async (symbolToRefresh: string) => {
+    try {
+      const response = await fetch(
+        `https://fapi.binance.com/fapi/v1/fundingRate?symbol=${symbolToRefresh}&limit=1`
+      );
+
+      if (!response.ok) throw new Error("API failed");
+
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setFundingRates((prev) => ({
+          ...prev,
+          [symbolToRefresh]: {
+            symbol: symbolToRefresh,
+            fundingRate: parseFloat(data[0].fundingRate) * 100,
+            fundingTime: data[0].fundingTime,
+            lastUpdate: Date.now(),
+          },
+        }));
+      }
+    } catch {
+      console.error(`Failed to refresh funding rate for ${symbolToRefresh}`);
+    }
+  };
+
+  return (
+    <div className="relative h-full flex flex-col text-xs">
+      {/* Exchange Sync Section */}
+      <div className="flex items-center gap-2 mb-3">
+        <select
+          value={selectedExchange}
+          onChange={(e) => setSelectedExchange(e.target.value)}
+          className="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+        >
+          {SUPPORTED_EXCHANGES.map((ex) => (
+            <option key={ex} value={ex}>
+              {ex.toUpperCase()} {hasApiKey(ex) ? "✓" : ""}
+            </option>
+          ))}
+        </select>
+
+        {hasApiKey(selectedExchange) ? (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={syncFromExchange}
+              disabled={syncing}
+              className="px-3 py-1.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded text-xs hover:bg-emerald-500/30 transition-colors flex items-center gap-1 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3 h-3 ${syncing ? "animate-spin" : ""}`} />
+              {syncing ? "Syncing..." : "Sync"}
+            </button>
+            <button
+              onClick={() => {
+                setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
+                setShowApiKeyModal(true);
+              }}
+              className="px-2 py-1.5 bg-white/5 border border-white/10 text-white/60 rounded text-xs hover:bg-white/10 transition-colors"
+              title="Change API Key"
+            >
+              <Key className="w-3 h-3" />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => {
+              setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
+              setShowApiKeyModal(true);
+            }}
+            className="px-3 py-1.5 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded text-xs hover:bg-blue-500/30 transition-colors flex items-center gap-1"
+          >
+            <Key className="w-3 h-3" />
+            Connect
+          </button>
+        )}
+      </div>
+
+      {syncError && (
+        <div className="mb-3 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-[10px] flex items-center gap-2">
+          <AlertCircle className="w-3 h-3" />
+          {syncError}
+        </div>
+      )}
+
+      {lastSync && (
+        <div className="mb-3 text-white/40 text-[10px]">
+          Last sync: {lastSync.toLocaleTimeString()}
+        </div>
+      )}
+
+      {/* Add Position Form (when no positions) */}
+      {positions.length === 0 && !showApiKeyModal && (
+        <div className="space-y-2 mb-4">
           <input
             type="text"
             placeholder="Symbol (e.g. BTCUSDT)"
@@ -122,112 +447,248 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           />
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
-              Leverage: {leverage}x
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-white/50 text-[10px]">Leverage</label>
+              <input
+                type="number"
+                min="1"
+                max="125"
+                value={leverageInput}
+                onChange={(e) => handleLeverageInputChange(e.target.value)}
+                onBlur={handleLeverageInputBlur}
+                className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-xs outline-none text-right"
+              />
+            </div>
             <input
               type="range"
               min="1"
               max="125"
               value={leverage}
-              onChange={(e) => setLeverage(parseInt(e.target.value))}
-              className="w-full cursor-pointer"
+              onChange={(e) => handleLeverageSliderChange(parseInt(e.target.value))}
+              className="w-full accent-blue-500"
             />
           </div>
 
           <button
-            onClick={addPosition}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition text-xs font-semibold cursor-pointer"
+            onClick={addManualPosition}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition text-xs font-semibold"
           >
             Add Position
           </button>
+
+          <div className="text-center text-white/40 text-[10px]">
+            No futures positions. Sync from exchange or add manually.
+          </div>
         </div>
+      )}
 
-        <div className="text-center text-white/40 text-[10px]">
-          No futures positions
-        </div>
-      </div>
-    );
-  }
+      {/* Positions List */}
+      {positions.length > 0 && !showApiKeyModal && (
+        <div className="flex-1 overflow-y-auto space-y-2">
+          {positions.map((pos) => {
+            const currentPrice = prices[pos.symbol] || pos.entryPrice;
+            const pnl =
+              pos.side === "long"
+                ? (currentPrice - pos.entryPrice) * pos.size
+                : (pos.entryPrice - currentPrice) * pos.size;
 
-  return (
-    <div className="space-y-2">
-      {positions.map((pos) => {
-        const currentPrice = prices[pos.symbol] || pos.entryPrice;
-        const pnl =
-          pos.side === "long"
-            ? (currentPrice - pos.entryPrice) * pos.size
-            : (pos.entryPrice - currentPrice) * pos.size;
+            const pnlPercent = (pnl / (pos.entryPrice * pos.size)) * 100 * pos.leverage;
+            const isProfit = pnl >= 0;
 
-        const pnlPercent =
-          (pnl / (pos.entryPrice * pos.size)) * 100 * pos.leverage;
-        const isProfit = pnl >= 0;
+            const fundingRate = fundingRates[pos.symbol];
+            const fundingCost = fundingRate
+              ? pos.entryPrice * pos.size * (fundingRate.fundingRate / 100)
+              : null;
 
-        return (
-          <div
-            key={pos.id}
-            className="px-3 py-2 rounded-lg bg-white/5 border border-white/10"
-          >
-            <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-2">
-                {pos.side === "long" ? (
-                  <TrendingUp className="w-3 h-3 text-emerald-400" />
-                ) : (
-                  <TrendingDown className="w-3 h-3 text-red-400" />
-                )}
-                <span className="text-sm font-semibold text-white">
-                  {pos.symbol.replace("USDT", "")}
-                </span>
-                <span className="text-[10px] text-white/40">
-                  {pos.leverage}x
-                </span>
-              </div>
-
-              <button
-                onClick={() => removePosition(pos.id)}
-  className="
-    text-white/40
-    cursor-pointer
-    transition-all
-    duration-150
-    hover:text-red-400
-    hover:scale-110
-    hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.6)]
-  "
+            return (
+              <div
+                key={pos.id}
+                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10"
               >
-                <X className="w-3 h-3" />
-              </button>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    {pos.side === "long" ? (
+                      <TrendingUp className="w-3 h-3 text-emerald-400" />
+                    ) : (
+                      <TrendingDown className="w-3 h-3 text-red-400" />
+                    )}
+                    <span className="text-sm font-semibold text-white">
+                      {pos.symbol.replace("USDT", "")}
+                    </span>
+                    <span className="text-[10px] text-white/40">
+                      {pos.leverage}x
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => removePosition(pos.id)}
+                    className="text-white/40 hover:text-red-400"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+
+                <div className="text-[11px] space-y-0.5">
+                  <div className="flex justify-between text-white/50">
+                    <span>Entry</span>
+                    <span>${pos.entryPrice.toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between text-white/50">
+                    <span>Current</span>
+                    <span>${currentPrice.toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex justify-between text-white/50">
+                    <span>Size</span>
+                    <span>{pos.size}</span>
+                  </div>
+
+                  {fundingRate && (
+                    <div className="flex justify-between items-center text-white/50 pt-1 border-t border-white/10">
+                      <div className="flex items-center gap-1">
+                        <span>Funding</span>
+                        <button
+                          onClick={() => refreshFundingRate(pos.symbol)}
+                          className="text-white/30 hover:text-white/60 transition-colors"
+                        >
+                          <RefreshCw className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <div className="text-right">
+                        <div
+                          className={
+                            fundingRate.fundingRate >= 0
+                              ? "text-red-400"
+                              : "text-emerald-400"
+                          }
+                        >
+                          {fundingRate.fundingRate >= 0 ? "+" : ""}
+                          {fundingRate.fundingRate.toFixed(4)}%
+                        </div>
+                        {fundingCost !== null && (
+                          <div className="text-[9px] text-white/30">
+                            ~${Math.abs(fundingCost).toFixed(2)}/8h
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {loadingFunding && !fundingRate && (
+                    <div className="flex justify-between text-white/30 text-[10px] pt-1 border-t border-white/10">
+                      <span>Funding</span>
+                      <span>Loading...</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between font-semibold pt-1 border-t border-white/10">
+                    <span className="text-white/70">PnL</span>
+                    <span className={isProfit ? "text-emerald-400" : "text-red-400"}>
+                      {isProfit ? "+" : ""}${pnl.toFixed(2)} ({isProfit ? "+" : ""}
+                      {pnlPercent.toFixed(2)}%)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* API Key Modal */}
+      {showApiKeyModal && (
+        <div className="absolute inset-[-16px] bg-[#0a0e1a] z-50 flex flex-col">
+          <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
+            <h3 className="text-white font-semibold text-sm flex items-center gap-2">
+              <Key className="w-4 h-4" />
+              Connect Futures API
+            </h3>
+            <button
+              onClick={() => setShowApiKeyModal(false)}
+              className="text-white/50 hover:text-white text-xl leading-none"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded text-yellow-400 text-[10px]">
+              ⚠️ Only use READ-ONLY API keys! Enable Futures permissions in your exchange API settings.
             </div>
 
-            <div className="text-[11px] space-y-0.5">
-              <div className="flex justify-between text-white/50">
-                <span>Entry</span>
-                <span>${pos.entryPrice.toLocaleString()}</span>
-              </div>
+            <div>
+              <label className="block text-white/50 mb-1 text-[10px]">Exchange</label>
+              <select
+                value={apiKeyForm.exchange}
+                onChange={(e) => setApiKeyForm({ ...apiKeyForm, exchange: e.target.value })}
+                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+              >
+                {SUPPORTED_EXCHANGES.map((ex) => (
+                  <option key={ex} value={ex}>{ex.toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
 
-              <div className="flex justify-between text-white/50">
-                <span>Current</span>
-                <span>${currentPrice.toLocaleString()}</span>
-              </div>
+            <div>
+              <label className="block text-white/50 mb-1 text-[10px]">API Key</label>
+              <input
+                type="password"
+                value={apiKeyForm.apiKey}
+                onChange={(e) => setApiKeyForm({ ...apiKeyForm, apiKey: e.target.value })}
+                placeholder="Enter your API key"
+                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+              />
+            </div>
 
-              <div className="flex justify-between text-white/50">
-                <span>Size</span>
-                <span>{pos.size}</span>
-              </div>
+            <div>
+              <label className="block text-white/50 mb-1 text-[10px]">API Secret</label>
+              <input
+                type="password"
+                value={apiKeyForm.apiSecret}
+                onChange={(e) => setApiKeyForm({ ...apiKeyForm, apiSecret: e.target.value })}
+                placeholder="Enter your API secret"
+                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+              />
+            </div>
 
-              <div className="flex justify-between font-semibold pt-1 border-t border-white/10">
-                <span className="text-white/70">PnL</span>
-                <span
-                  className={isProfit ? "text-emerald-400" : "text-red-400"}
-                >
-                  {isProfit ? "+" : ""}${pnl.toFixed(2)} ({isProfit ? "+" : ""}
-                  {pnlPercent.toFixed(2)}%)
-                </span>
+            {apiKeyForm.exchange === "okx" && (
+              <div>
+                <label className="block text-white/50 mb-1 text-[10px]">Passphrase</label>
+                <input
+                  type="password"
+                  value={apiKeyForm.passphrase}
+                  onChange={(e) => setApiKeyForm({ ...apiKeyForm, passphrase: e.target.value })}
+                  placeholder="Enter your passphrase"
+                  className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+                />
               </div>
+            )}
+
+            <div>
+              <label className="block text-white/50 mb-1 text-[10px]">Label (Optional)</label>
+              <input
+                type="text"
+                value={apiKeyForm.label}
+                onChange={(e) => setApiKeyForm({ ...apiKeyForm, label: e.target.value })}
+                placeholder="e.g., Futures Account"
+                className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+              />
             </div>
           </div>
-        );
-      })}
+
+          <div className="p-3 border-t border-white/10">
+            <button
+              onClick={saveApiKey}
+              disabled={savingKey}
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white py-2 rounded font-semibold text-xs flex items-center justify-center gap-2"
+            >
+              <Link2 className="w-4 h-4" />
+              {savingKey ? "Connecting..." : "Connect & Save"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
