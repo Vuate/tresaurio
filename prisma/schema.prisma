@@ -1,0 +1,89 @@
+// Prisma Schema for Tresaurio Trading Platform
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// API Keys for exchange connections
+model ApiKey {
+  id            String   @id @default(cuid())
+  exchange      String   // binance, okx, bybit, coinbase
+  label         String?  // User-defined label (e.g., "Main Account", "Trading Bot")
+  apiKey        String   // Encrypted API key
+  apiSecret     String   // Encrypted API secret
+  passphrase    String?  // Encrypted passphrase (required for OKX, Coinbase)
+  permissions   String[] // ["spot", "futures", "withdraw"]
+  isTestnet     Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  lastUsedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([exchange, label])
+  @@index([exchange])
+  @@index([isActive])
+}
+
+// Trade history (synced from exchanges)
+model Trade {
+  id            String   @id @default(cuid())
+  exchange      String
+  symbol        String   // BTCUSDT
+  side          String   // buy, sell
+  type          String   // market, limit
+  quantity      Float
+  price         Float
+  quoteQty      Float    // Total cost/value
+  commission    Float?
+  commissionAsset String?
+  orderId       String
+  tradeId       String?
+  isMaker       Boolean  @default(false)
+  executedAt    DateTime
+  createdAt     DateTime @default(now())
+
+  @@unique([exchange, orderId])
+  @@index([exchange, symbol])
+  @@index([executedAt])
+}
+
+// Open orders (synced from exchanges)
+model Order {
+  id            String   @id @default(cuid())
+  exchange      String
+  symbol        String
+  orderId       String
+  clientOrderId String?
+  side          String   // buy, sell
+  type          String   // market, limit, stop_limit
+  status        String   // open, filled, cancelled, expired
+  quantity      Float
+  price         Float?
+  stopPrice     Float?
+  filledQty     Float    @default(0)
+  avgPrice      Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([exchange, orderId])
+  @@index([exchange, symbol])
+  @@index([status])
+}
+
+// Portfolio snapshots for historical tracking
+model PortfolioSnapshot {
+  id            String   @id @default(cuid())
+  totalValueUSD Float
+  spotValueUSD  Float
+  futuresValueUSD Float
+  unrealizedPnL Float
+  realizedPnL   Float
+  snapshotAt    DateTime @default(now())
+
+  @@index([snapshotAt])
+}
