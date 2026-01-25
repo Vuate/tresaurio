@@ -1,9 +1,10 @@
 // Prisma Schema for Tresaurio Trading Platform
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
+  provider   = "prisma-client-js"
+  engineType = "client"
 }
+
 
 datasource db {
   provider = "postgresql"
