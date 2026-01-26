@@ -197,18 +197,41 @@ export default function OrderBookModule({
     };
   }, [bids, asks]);
 
+  // Dynamic decimal calculation based on price magnitude
+  const getDecimals = useMemo(() => {
+    const midPrice = mid || bestBid || bestAsk || 0;
+
+    // Price decimals based on magnitude
+    let priceDecimals = 2;
+    if (midPrice >= 10000) priceDecimals = 2;      // BTC: 96500.12
+    else if (midPrice >= 100) priceDecimals = 2;   // ETH: 3500.25
+    else if (midPrice >= 1) priceDecimals = 4;     // SOL: 150.1234
+    else if (midPrice >= 0.01) priceDecimals = 6;  // DOGE: 0.123456
+    else if (midPrice >= 0.0001) priceDecimals = 8; // Low cap
+    else priceDecimals = 10;                        // SHIB etc.
+
+    // Quantity decimals based on price (inverse relationship)
+    let qtyDecimals = 4;
+    if (midPrice >= 10000) qtyDecimals = 5;
+    else if (midPrice >= 100) qtyDecimals = 4;
+    else if (midPrice >= 1) qtyDecimals = 2;
+    else qtyDecimals = 0;
+
+    return { priceDecimals, qtyDecimals };
+  }, [mid, bestBid, bestAsk]);
+
   const fmt = useMemo(
     () => ({
       price: (v: number) =>
         v.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+          minimumFractionDigits: getDecimals.priceDecimals,
+          maximumFractionDigits: getDecimals.priceDecimals,
         }),
-      qty: (v: number) => v.toFixed(6),
+      qty: (v: number) => v.toFixed(getDecimals.qtyDecimals),
       total: (v: number) =>
-        v >= 1000 ? `${(v / 1000).toFixed(2)}k` : v.toFixed(6),
+        v >= 1000 ? `${(v / 1000).toFixed(2)}k` : v.toFixed(getDecimals.qtyDecimals),
     }),
-    []
+    [getDecimals]
   );
 
   const popularQuoteAssets =
@@ -350,7 +373,7 @@ export default function OrderBookModule({
           <div className="text-white/40">Spread</div>
           <div className="text-white/70">
             {spread
-              ? `${spread.value.toFixed(2)} (${spread.pct.toFixed(3)}%)`
+              ? `${spread.value.toFixed(getDecimals.priceDecimals)} (${spread.pct.toFixed(4)}%)`
               : "—"}
           </div>
         </div>

@@ -2,7 +2,14 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { TrendingUp, TrendingDown, Clock, AlertCircle } from "lucide-react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Clock,
+  AlertCircle,
+  Plus,
+  X,
+} from "lucide-react";
 import type { Exchange } from "@/services/WebSocketService";
 
 interface FundingData {
@@ -19,7 +26,25 @@ interface Props {
   instanceId: string;
 }
 
-const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
+const DEFAULT_SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT"];
+
+const POPULAR_SYMBOLS = [
+  "BTCUSDT",
+  "ETHUSDT",
+  "BNBUSDT",
+  "SOLUSDT",
+  "XRPUSDT",
+  "ADAUSDT",
+  "DOGEUSDT",
+  "MATICUSDT",
+  "AVAXUSDT",
+  "DOTUSDT",
+  "LINKUSDT",
+  "UNIUSDT",
+  "ATOMUSDT",
+  "LTCUSDT",
+  "NEARUSDT",
+];
 
 const EXCHANGES = [
   { id: "binance", name: "Binance" },
@@ -27,9 +52,8 @@ const EXCHANGES = [
   { id: "bybit", name: "Bybit" },
 ];
 
-// 🔥 WebSocket URLs for each exchange
+// 🔥 WebSocket URLs
 const getWebSocketUrl = (exchange: Exchange, symbol: string): string => {
-  const upperSymbol = symbol.toUpperCase();
   const lowerSymbol = symbol.toLowerCase();
 
   switch (exchange) {
@@ -44,12 +68,15 @@ const getWebSocketUrl = (exchange: Exchange, symbol: string): string => {
   }
 };
 
-// 🔥 Parse WebSocket messages for each exchange
-const parseMessage = (exchange: Exchange, data: any, symbol: string): Partial<FundingData> | null => {
+// 🔥 Parse WS messages
+const parseMessage = (
+  exchange: Exchange,
+  data: any,
+  symbol: string,
+): Partial<FundingData> | null => {
   try {
     switch (exchange) {
-      case "binance": {
-        // Binance markPrice stream: { e: "markPriceUpdate", s: "BTCUSDT", p: "...", r: "...", T: ... }
+      case "binance":
         if (data.e === "markPriceUpdate") {
           return {
             symbol: data.s,
@@ -62,20 +89,17 @@ const parseMessage = (exchange: Exchange, data: any, symbol: string): Partial<Fu
           };
         }
         break;
-      }
 
-      case "okx": {
-        // OKX funding-rate channel
+      case "okx":
         if (data.arg?.channel === "funding-rate" && data.data?.[0]) {
           const d = data.data[0];
           return {
             fundingRate: parseFloat(d.fundingRate || "0"),
-            fundingTime: parseInt(d.nextFundingTime || Date.now() + 8 * 60 * 60 * 1000),
+            fundingTime: parseInt(d.nextFundingTime),
             source: "websocket",
             exchange: "OKX",
           };
         }
-        // OKX mark-price channel
         if (data.arg?.channel === "mark-price" && data.data?.[0]) {
           const d = data.data[0];
           return {
@@ -86,16 +110,14 @@ const parseMessage = (exchange: Exchange, data: any, symbol: string): Partial<Fu
           };
         }
         break;
-      }
 
-      case "bybit": {
-        // Bybit tickers stream
+      case "bybit":
         if (data.topic?.includes("tickers") && data.data) {
           const d = data.data;
           return {
             symbol: d.symbol,
             fundingRate: parseFloat(d.fundingRate || "0"),
-            fundingTime: Date.now() + 8 * 60 * 60 * 1000, // Bybit has 8h intervals
+            fundingTime: Date.now() + 8 * 60 * 60 * 1000,
             markPrice: parseFloat(d.markPrice || "0"),
             indexPrice: parseFloat(d.indexPrice || "0"),
             source: "websocket",
@@ -103,7 +125,6 @@ const parseMessage = (exchange: Exchange, data: any, symbol: string): Partial<Fu
           };
         }
         break;
-      }
     }
   } catch (err) {
     console.error("[FundingRate] Parse error:", err);
@@ -113,40 +134,52 @@ const parseMessage = (exchange: Exchange, data: any, symbol: string): Partial<Fu
 
 export default function FundingRateModule({ instanceId }: Props) {
   const storageKey = `funding-rate-${instanceId}`;
+  const symbolsStorageKey = `funding-rate-symbols-${instanceId}`;
+
+  const [symbols, setSymbols] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(symbolsStorageKey);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {}
+      }
+    }
+    return DEFAULT_SYMBOLS;
+  });
+
   const [selectedSymbol, setSelectedSymbol] = useState("BTCUSDT");
   const [exchange, setExchange] = useState<Exchange>("binance");
   const [data, setData] = useState<FundingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newSymbol, setNewSymbol] = useState("");
   const wsRef = useRef<WebSocket | null>(null);
 
-  // Load settings from localStorage
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        try {
-          const settings = JSON.parse(saved);
-          if (settings.symbol) setSelectedSymbol(settings.symbol);
-          if (settings.exchange) setExchange(settings.exchange);
-        } catch (err) {
-          console.error("[FundingRate] Failed to load settings:", err);
-        }
-      }
+    localStorage.setItem(symbolsStorageKey, JSON.stringify(symbols));
+  }, [symbols, symbolsStorageKey]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      const s = JSON.parse(saved);
+      if (s.symbol) setSelectedSymbol(s.symbol);
+      if (s.exchange) setExchange(s.exchange);
     }
   }, [storageKey]);
 
-  // Save settings to localStorage
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, JSON.stringify({ symbol: selectedSymbol, exchange }));
-    }
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({ symbol: selectedSymbol, exchange }),
+    );
   }, [selectedSymbol, exchange, storageKey]);
 
-  // 🔥 WebSocket connection
+  // 🔥 WebSocket
   const connectWebSocket = useCallback(() => {
-    // Cleanup existing connection
     if (wsRef.current) {
       wsRef.current.close();
       wsRef.current = null;
@@ -155,99 +188,64 @@ export default function FundingRateModule({ instanceId }: Props) {
     const url = getWebSocketUrl(exchange, selectedSymbol);
     if (!url) return;
 
-    try {
-      const ws = new WebSocket(url);
-      wsRef.current = ws;
+    const ws = new WebSocket(url);
+    wsRef.current = ws;
 
-      ws.onopen = () => {
-        console.log(`[FundingRate] Connected to ${exchange}`);
-        setConnected(true);
-        setLoading(false);
-        setError(null);
+    ws.onopen = () => {
+      setConnected(true);
+      setError(null);
+      // ❗ loading burada KAPANMIYOR
+    };
 
-        // Subscribe for OKX and Bybit
-        if (exchange === "okx") {
-          const okxSymbol = selectedSymbol.replace(/USDT$/, "-USDT-SWAP");
-          ws.send(JSON.stringify({
-            op: "subscribe",
-            args: [
-              { channel: "funding-rate", instId: okxSymbol },
-              { channel: "mark-price", instId: okxSymbol },
-            ],
-          }));
-        } else if (exchange === "bybit") {
-          ws.send(JSON.stringify({
-            op: "subscribe",
-            args: [`tickers.${selectedSymbol}`],
+    ws.onmessage = (e) => {
+      try {
+        const raw = JSON.parse(e.data);
+        const parsed = parseMessage(exchange, raw, selectedSymbol);
+
+        if (parsed) {
+          setLoading(false); // ✅ ilk veri gelince kapanır
+
+          setData((prev) => ({
+            symbol: selectedSymbol,
+            fundingRate: parsed.fundingRate ?? prev?.fundingRate ?? 0,
+            fundingTime:
+              parsed.fundingTime ??
+              prev?.fundingTime ??
+              Date.now() + 8 * 60 * 60 * 1000,
+            markPrice: parsed.markPrice ?? prev?.markPrice ?? 0,
+            indexPrice: parsed.indexPrice ?? prev?.indexPrice ?? 0,
+            source: "websocket",
+            exchange: parsed.exchange ?? exchange,
           }));
         }
-      };
+      } catch (err) {
+        console.error("[FundingRate] Message parse error:", err);
+      }
+    };
 
-      ws.onmessage = (event) => {
-        try {
-          const rawData = JSON.parse(event.data);
-          const parsed = parseMessage(exchange, rawData, selectedSymbol);
+    ws.onerror = () => {
+      // ❗ fatal değil
+      setConnected(false);
+    };
 
-          if (parsed) {
-            setData((prev) => ({
-              symbol: selectedSymbol,
-              fundingRate: parsed.fundingRate ?? prev?.fundingRate ?? 0,
-              fundingTime: parsed.fundingTime ?? prev?.fundingTime ?? Date.now() + 8 * 60 * 60 * 1000,
-              markPrice: parsed.markPrice ?? prev?.markPrice ?? 0,
-              indexPrice: parsed.indexPrice ?? prev?.indexPrice ?? 0,
-              source: "websocket",
-              exchange: parsed.exchange ?? prev?.exchange ?? exchange,
-            }));
-          }
-        } catch (err) {
-          console.error("[FundingRate] Message parse error:", err);
-        }
-      };
-
-      ws.onerror = (err) => {
-        console.error("[FundingRate] WebSocket error:", err);
-        setError("Connection error");
-        setConnected(false);
-      };
-
-      ws.onclose = () => {
-        console.log("[FundingRate] WebSocket closed");
-        setConnected(false);
-        // Reconnect after 5 seconds
-        setTimeout(() => {
-          if (wsRef.current === ws) {
-            connectWebSocket();
-          }
-        }, 5000);
-      };
-    } catch (err) {
-      console.error("[FundingRate] Failed to connect:", err);
-      setError("Failed to connect");
-      setLoading(false);
-    }
+    ws.onclose = () => {
+      setConnected(false);
+      setTimeout(connectWebSocket, 5000);
+    };
   }, [exchange, selectedSymbol]);
 
   useEffect(() => {
     setLoading(true);
     setData(null);
     connectWebSocket();
-
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
-    };
+    return () => wsRef.current?.close();
   }, [connectWebSocket]);
 
   const timeUntilFunding = data
     ? Math.max(0, data.fundingTime - Date.now())
     : 0;
-  const hours = Math.floor(timeUntilFunding / (1000 * 60 * 60));
-  const minutes = Math.floor(
-    (timeUntilFunding % (1000 * 60 * 60)) / (1000 * 60)
-  );
-
+  const hours = Math.floor(timeUntilFunding / 3_600_000);
+  const minutes = Math.floor((timeUntilFunding % 3_600_000) / 60_000);
   const fundingRatePercent = data ? data.fundingRate * 100 : 0;
   const annualizedRate = fundingRatePercent * 3 * 365;
 
@@ -255,22 +253,20 @@ export default function FundingRateModule({ instanceId }: Props) {
     <div className="space-y-3 text-xs">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="text-white/60 text-xs flex items-center gap-2">
-          <span className="font-semibold text-white/90">Funding Rate</span>
+        <div className="flex items-center gap-2 text-white/70">
+          <span className="font-semibold">Funding Rate</span>
           {connected && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
               LIVE
             </span>
           )}
         </div>
 
         <div className="flex gap-2">
-          {/* Exchange Selector */}
           <select
             value={exchange}
             onChange={(e) => setExchange(e.target.value as Exchange)}
-            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
+            className="h-8 rounded bg-white/5 border border-white/10 px-2"
           >
             {EXCHANGES.map((ex) => (
               <option key={ex.id} value={ex.id}>
@@ -279,40 +275,42 @@ export default function FundingRateModule({ instanceId }: Props) {
             ))}
           </select>
 
-          {/* Symbol Selector */}
           <select
             value={selectedSymbol}
             onChange={(e) => setSelectedSymbol(e.target.value)}
-            className="h-8 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
+            className="h-8 rounded bg-white/5 border border-white/10 px-2"
           >
-            {SYMBOLS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
+            {symbols.map((s) => (
+              <option key={s}>{s}</option>
             ))}
           </select>
+
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="h-8 px-2 rounded bg-blue-500/20 border border-blue-500/30"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      {loading && !data ? (
-        <div className="text-center py-8 text-white/40 text-[10px]">
+      {loading && (
+        <div className="text-center py-6 text-white/40">
           Connecting to {exchange}...
         </div>
-      ) : error ? (
-        <div className="bg-red-500/10 border border-red-400/40 rounded p-3">
-          <div className="flex items-center gap-2 text-red-400 text-xs">
-            <AlertCircle className="w-4 h-4" />
-            <span className="font-semibold">Connection Error</span>
-          </div>
-          <div className="text-red-300/80 text-[10px] mt-1">{error}</div>
+      )}
+
+      {!loading && !error && !data && (
+        <div className="text-center py-6 text-white/40">
+          Waiting for data from {exchange}...
         </div>
-      ) : data ? (
+      )}
+
+      {data && (
         <>
           {/* Current Funding Rate */}
           <div className="bg-white/5 border border-white/10 rounded p-3">
-            <div className="text-white/40 text-[10px] mb-1">
-              Current Funding Rate
-            </div>
+            <div className="text-white/40 mb-1">Current Funding Rate</div>
             <div className="flex items-baseline gap-2">
               <span
                 className={`text-2xl font-bold ${
@@ -322,82 +320,97 @@ export default function FundingRateModule({ instanceId }: Props) {
                 {fundingRatePercent >= 0 ? "+" : ""}
                 {fundingRatePercent.toFixed(4)}%
               </span>
-              {fundingRatePercent !== 0 && (
-                <span className="text-white/40 text-[10px]">
-                  ({annualizedRate >= 0 ? "+" : ""}
-                  {annualizedRate.toFixed(2)}% APR)
-                </span>
-              )}
+              <span className="text-white/40 text-[10px]">
+                ({annualizedRate.toFixed(2)}% APR)
+              </span>
             </div>
           </div>
 
-          {/* Time Until Next Funding */}
+          {/* Next Funding */}
           <div className="bg-white/5 border border-white/10 rounded p-3">
-            <div className="flex items-center gap-2 text-white/40 text-[10px] mb-2">
+            <div className="flex items-center gap-2 text-white/40 mb-2">
               <Clock className="w-3 h-3" />
-              <span>Next Funding In</span>
+              Next Funding In
             </div>
-            <div className="text-white text-xl font-bold">
+            <div className="text-xl font-bold">
               {hours}h {minutes}m
             </div>
           </div>
 
-          {/* Mark vs Index Price */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-white/5 border border-white/10 rounded p-2">
-              <div className="text-white/40 text-[10px] mb-1">Mark Price</div>
-              <div className="text-white font-semibold">
-                $
-                {data.markPrice.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </div>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded p-2">
-              <div className="text-white/40 text-[10px] mb-1">Index Price</div>
-              <div className="text-white font-semibold">
-                $
-                {data.indexPrice.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Funding Interpretation */}
-          <div className="bg-white/5 border border-white/10 rounded p-2">
-            <div className="flex justify-between items-center text-[10px]">
-              <span className="text-white/50">Market Sentiment</span>
-              <span
-                className={`font-semibold flex items-center gap-1 ${
-                  fundingRatePercent > 0.01
-                    ? "text-emerald-400"
-                    : fundingRatePercent < -0.01
+          {/* Sentiment */}
+          <div className="bg-white/5 border border-white/10 rounded p-2 flex justify-between">
+            <span className="text-white/50">Market Sentiment</span>
+            <span
+              className={`font-semibold flex items-center gap-1 ${
+                fundingRatePercent > 0.01
+                  ? "text-emerald-400"
+                  : fundingRatePercent < -0.01
                     ? "text-red-400"
                     : "text-yellow-400"
-                }`}
-              >
-                {fundingRatePercent > 0.01 ? (
-                  <>
-                    <TrendingUp className="w-3 h-3" />
-                    Bullish (Longs Pay)
-                  </>
-                ) : fundingRatePercent < -0.01 ? (
-                  <>
-                    <TrendingDown className="w-3 h-3" />
-                    Bearish (Shorts Pay)
-                  </>
-                ) : (
-                  "Neutral"
-                )}
-              </span>
-            </div>
+              }`}
+            >
+              {fundingRatePercent > 0.01 ? (
+                <>
+                  <TrendingUp className="w-3 h-3" /> Bullish
+                </>
+              ) : fundingRatePercent < -0.01 ? (
+                <>
+                  <TrendingDown className="w-3 h-3" /> Bearish
+                </>
+              ) : (
+                "Neutral"
+              )}
+            </span>
           </div>
         </>
-      ) : null}
+      )}
+
+      {/* 🔥 Add Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="w-full max-w-sm rounded-lg bg-[#0b0f1a] border border-white/10 p-4">
+            <div className="flex justify-between mb-3">
+              <h3 className="text-sm font-semibold">Add Funding Symbol</h3>
+              <button onClick={() => setShowAddModal(false)}>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <input
+              value={newSymbol}
+              onChange={(e) => setNewSymbol(e.target.value)}
+              placeholder="BTCUSDT"
+              className="w-full mb-3 px-3 py-2 rounded bg-black/40 border border-white/10"
+            />
+
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              {POPULAR_SYMBOLS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setNewSymbol(s)}
+                  className="text-xs bg-white/5 hover:bg-white/10 rounded px-2 py-1"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => {
+                const symbol = newSymbol.trim().toUpperCase();
+                if (!symbol || symbols.includes(symbol)) return;
+                setSymbols((p) => [...p, symbol]);
+                setSelectedSymbol(symbol);
+                setNewSymbol("");
+                setShowAddModal(false);
+              }}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-black py-2 rounded font-semibold"
+            >
+              Add Symbol
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
