@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useFuturesPositionStore } from "@/store/futuresPositionStore";
-import { TrendingUp, TrendingDown, X, RefreshCw, Key, Link2, AlertCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, X, RefreshCw, Key, Link2, AlertCircle, Trash2 } from "lucide-react";
 import { usePriceStore } from "@/store/priceStore";
 
 interface Props {
@@ -198,6 +198,28 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
     }
   };
 
+  const deleteExchangeKey = async (exchange: string) => {
+    const key = apiKeys.find((k) => k.exchange === exchange);
+    if (!key) return;
+
+    if (!confirm(`Delete API key for ${exchange.toUpperCase()}?`)) return;
+
+    try {
+      const response = await fetch(`/api/exchange/keys?id=${key.id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      if (data.success) {
+        await fetchApiKeys();
+        setSyncError(null);
+      } else {
+        alert(data.error || "Failed to delete API key");
+      }
+    } catch (error) {
+      alert("Failed to delete API key");
+    }
+  };
+
   // Fetch funding rates
   useEffect(() => {
     if (positions.length === 0) return;
@@ -367,6 +389,13 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
               title="Change API Key"
             >
               <Key className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => deleteExchangeKey(selectedExchange)}
+              className="px-2 py-1.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded text-xs hover:bg-red-500/20 transition-colors"
+              title="Delete API Key"
+            >
+              <Trash2 className="w-3 h-3" />
             </button>
           </div>
         ) : (

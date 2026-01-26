@@ -196,6 +196,16 @@ export default function SpreadMonitorModule({
       ? POPULAR_QUOTE_ASSETS_SPOT
       : POPULAR_QUOTE_ASSETS_FUTURES;
 
+  // Dynamic decimal calculation based on price magnitude
+  const getDecimals = (price: number) => {
+    if (price >= 10000) return { price: 2, spread: 2 };     // BTC: 96500.12
+    if (price >= 100) return { price: 2, spread: 4 };      // ETH: 3500.25
+    if (price >= 1) return { price: 4, spread: 6 };        // SOL: 150.1234
+    if (price >= 0.01) return { price: 6, spread: 8 };     // DOGE: 0.123456
+    if (price >= 0.0001) return { price: 8, spread: 10 };  // Low cap
+    return { price: 10, spread: 12 };                       // SHIB etc.
+  };
+
   return (
     <div className="space-y-3 text-xs h-full flex flex-col">
       <div className="flex items-center justify-between gap-2">
@@ -277,8 +287,8 @@ export default function SpreadMonitorModule({
                     <div className="text-white font-mono">
                       {price > 0 ? (
                         `$${price.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
+                          minimumFractionDigits: getDecimals(price).price,
+                          maximumFractionDigits: getDecimals(price).price,
                         })}`
                       ) : (
                         <span className="text-white/40">Loading...</span>
@@ -289,7 +299,7 @@ export default function SpreadMonitorModule({
                   <div>
                     <div className="text-white/50">Spread</div>
                     <div className="text-white font-mono">
-                      {price > 0 ? `$${spread.toFixed(2)}` : "—"}
+                      {price > 0 ? `$${spread.toFixed(getDecimals(price).spread)}` : "—"}
                     </div>
                   </div>
 
@@ -300,7 +310,7 @@ export default function SpreadMonitorModule({
                         isNarrow ? "text-emerald-400" : "text-yellow-400"
                       }`}
                     >
-                      {price > 0 ? `${spreadPercent.toFixed(3)}%` : "—"}
+                      {price > 0 ? `${spreadPercent.toFixed(4)}%` : "—"}
                     </div>
                   </div>
                 </div>
