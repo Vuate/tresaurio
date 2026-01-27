@@ -23,84 +23,154 @@ interface WalletData {
   label?: string;
 }
 
+type Chain = "ethereum" | "bsc" | "tron" | "solana";
+
+const CHAINS = [
+  { id: "ethereum" as Chain, name: "Ethereum (ERC-20)", explorer: "Etherscan" },
+  { id: "bsc" as Chain, name: "Binance Smart Chain", explorer: "BSCScan" },
+  { id: "tron" as Chain, name: "Tron (TRC-20)", explorer: "Tronscan" },
+  { id: "solana" as Chain, name: "Solana", explorer: "Solscan" },
+];
+
+// 🔥 Validate address based on chain
+const validateAddress = (address: string, chain: Chain): boolean => {
+  switch (chain) {
+    case "ethereum":
+    case "bsc":
+      // EVM addresses (0x...)
+      return /^0x[a-fA-F0-9]{40}$/.test(address);
+    case "tron":
+      // Tron addresses (T...)
+      return /^T[a-zA-Z0-9]{33}$/.test(address);
+    case "solana":
+      // Solana addresses (base58, 32-44 chars)
+      return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
+    default:
+      return false;
+  }
+};
+
 // 🔥 Fetch wallet data from multiple APIs
-const fetchWalletData = async (address: string): Promise<WalletData> => {
-  // Validate Ethereum address
-  if (!address.match(/^0x[a-fA-F0-9]{40}$/)) {
-    throw new Error("Invalid Ethereum address");
+const fetchWalletData = async (address: string, chain: Chain): Promise<WalletData> => {
+  // Validate address based on chain
+  if (!validateAddress(address, chain)) {
+    throw new Error(`Invalid ${chain} address format`);
   }
 
   try {
-    // Fetch ETH balance and transactions from Etherscan (free API)
-    const [balanceRes, txRes] = await Promise.all([
-      fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest`),
-      fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc`),
-    ]);
+    let balance = 0;
+    let transactions24h = 0;
+    let tokens: TokenBalance[] = [];
+    let nativeSymbol = "";
+    let priceSymbol = "";
 
-    const balanceData = await balanceRes.json();
-    const txData = await txRes.json();
+    if (chain === "ethereum") {
+      nativeSymbol = "ETH";
+      priceSymbol = "ETHUSDT";
 
-    // Calculate ETH balance (wei to ETH)
-    const ethBalance = balanceData.status === "1"
-      ? parseFloat(balanceData.result) / 1e18
-      : 0;
+      // Fetch ETH balance and transactions from Etherscan
+      const [balanceRes, txRes] = await Promise.all([
+        fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest`),
+        fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc`),
+      ]);
 
-    // Count transactions in last 24h
-    const now = Date.now() / 1000;
-    const oneDayAgo = now - 86400;
-    const recentTxs = txData.status === "1"
-      ? txData.result.filter((tx: any) => parseInt(tx.timeStamp) > oneDayAgo).length
-      : 0;
+      const balanceData = await balanceRes.json();
+      const txData = await txRes.json();
 
-    // Fetch token balances from Etherscan
-    const tokenRes = await fetch(
-      `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=1&offset=100&sort=desc`
-    );
-    const tokenData = await tokenRes.json();
+      balance = balanceData.status === "1" ? parseFloat(balanceData.result) / 1e18 : 0;
 
-    // Aggregate token balances
-    const tokenMap = new Map<string, TokenBalance>();
-    if (tokenData.status === "1" && Array.isArray(tokenData.result)) {
-      for (const tx of tokenData.result) {
-        const symbol = tx.tokenSymbol;
-        const decimals = parseInt(tx.tokenDecimal) || 18;
-        const amount = parseFloat(tx.value) / Math.pow(10, decimals);
+      const now = Date.now() / 1000;
+      const oneDayAgo = now - 86400;
+      transactions24h = txData.status === "1"
+        ? txData.result.filter((tx: any) => parseInt(tx.timeStamp) > oneDayAgo).length
+        : 0;
 
-        if (!tokenMap.has(symbol)) {
-          tokenMap.set(symbol, {
-            symbol,
-            amount: 0,
-            value: 0,
-            contractAddress: tx.contractAddress,
-          });
-        }
+      // Fetch token balances
+      const tokenRes = await fetch(
+        `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=1&offset=100&sort=desc`
+      );
+      const tokenData = await tokenRes.json();
 
-        const token = tokenMap.get(symbol)!;
-        // Approximate: if received add, if sent subtract
-        if (tx.to.toLowerCase() === address.toLowerCase()) {
-          token.amount += amount;
-        } else {
-          token.amount -= amount;
+      const tokenMap = new Map<string, TokenBalance>();
+      if (tokenData.status === "1" && Array.isArray(tokenData.result)) {
+        for (const tx of tokenData.result) {
+          const symbol = tx.tokenSymbol;
+          const decimals = parseInt(tx.tokenDecimal) || 18;
+          const amount = parseFloat(tx.value) / Math.pow(10, decimals);
+
+          if (!tokenMap.has(symbol)) {
+            tokenMap.set(symbol, {
+              symbol,
+              amount: 0,
+              value: 0,
+              contractAddress: tx.contractAddress,
+            });
+          }
+
+          const token = tokenMap.get(symbol)!;
+          if (tx.to.toLowerCase() === address.toLowerCase()) {
+            token.amount += amount;
+          } else {
+            token.amount -= amount;
+          }
         }
       }
+
+      tokens = Array.from(tokenMap.values())
+        .filter(t => t.amount > 0)
+        .slice(0, 10);
+
+    } else if (chain === "bsc") {
+      nativeSymbol = "BNB";
+      priceSymbol = "BNBUSDT";
+
+      // Fetch BNB balance from BSCScan
+      const [balanceRes, txRes] = await Promise.all([
+        fetch(`https://api.bscscan.com/api?module=account&action=balance&address=${address}&tag=latest`),
+        fetch(`https://api.bscscan.com/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc`),
+      ]);
+
+      const balanceData = await balanceRes.json();
+      const txData = await txRes.json();
+
+      balance = balanceData.status === "1" ? parseFloat(balanceData.result) / 1e18 : 0;
+
+      const now = Date.now() / 1000;
+      const oneDayAgo = now - 86400;
+      transactions24h = txData.status === "1"
+        ? txData.result.filter((tx: any) => parseInt(tx.timeStamp) > oneDayAgo).length
+        : 0;
+
+    } else if (chain === "tron") {
+      nativeSymbol = "TRX";
+      priceSymbol = "TRXUSDT";
+
+      // Fetch TRX balance from Tronscan API
+      const accountRes = await fetch(`https://apilist.tronscan.org/api/account?address=${address}`);
+      const accountData = await accountRes.json();
+
+      balance = accountData.balance ? accountData.balance / 1e6 : 0;
+      transactions24h = accountData.transactions || 0;
+
+    } else if (chain === "solana") {
+      nativeSymbol = "SOL";
+      priceSymbol = "SOLUSDT";
+
+      // Fetch SOL balance from Solscan API
+      const accountRes = await fetch(`https://public-api.solscan.io/account/${address}`);
+      const accountData = await accountRes.json();
+
+      balance = accountData.lamports ? accountData.lamports / 1e9 : 0;
+      transactions24h = 0; // Would need separate API call
     }
-
-    // Filter positive balances and limit to top 10
-    const tokens = Array.from(tokenMap.values())
-      .filter(t => t.amount > 0)
-      .slice(0, 10);
-
-    // Fetch current ETH price for value calculation
-    const priceRes = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
-    const priceData = await priceRes.json();
-    const ethPrice = parseFloat(priceData.price) || 0;
 
     return {
       address,
-      balance: ethBalance,
+      balance,
       tokens,
-      nfts: 0, // NFT count requires separate API
-      transactions24h: recentTxs,
+      nfts: 0,
+      transactions24h,
+      label: nativeSymbol,
     };
   } catch (err) {
     console.error("[WalletInspector] Fetch error:", err);
@@ -111,12 +181,13 @@ const fetchWalletData = async (address: string): Promise<WalletData> => {
 export default function WalletInspectorModule({ instanceId }: Props) {
   const storageKey = `wallet-inspector-${instanceId}`;
   const [address, setAddress] = useState("");
+  const [selectedChain, setSelectedChain] = useState<Chain>("ethereum");
   const [inspecting, setInspecting] = useState(false);
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [ethPrice, setEthPrice] = useState(0);
+  const [nativePrice, setNativePrice] = useState(0);
 
-  // Load last inspected address
+  // Load last inspected address and chain
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(storageKey);
@@ -124,6 +195,7 @@ export default function WalletInspectorModule({ instanceId }: Props) {
         try {
           const settings = JSON.parse(saved);
           if (settings.lastAddress) setAddress(settings.lastAddress);
+          if (settings.chain) setSelectedChain(settings.chain);
         } catch (err) {
           console.error("[WalletInspector] Failed to load settings:", err);
         }
@@ -131,19 +203,26 @@ export default function WalletInspectorModule({ instanceId }: Props) {
     }
   }, [storageKey]);
 
-  // Fetch ETH price on mount
+  // Fetch native token price based on selected chain
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const res = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT");
+        const symbols: Record<Chain, string> = {
+          ethereum: "ETHUSDT",
+          bsc: "BNBUSDT",
+          tron: "TRXUSDT",
+          solana: "SOLUSDT",
+        };
+        const symbol = symbols[selectedChain];
+        const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
         const data = await res.json();
-        setEthPrice(parseFloat(data.price) || 0);
+        setNativePrice(parseFloat(data.price) || 0);
       } catch (err) {
         console.error("[WalletInspector] Price fetch error:", err);
       }
     };
     fetchPrice();
-  }, []);
+  }, [selectedChain]);
 
   const handleInspect = async () => {
     if (!address) return;
@@ -151,12 +230,15 @@ export default function WalletInspectorModule({ instanceId }: Props) {
     setError(null);
 
     try {
-      const data = await fetchWalletData(address);
+      const data = await fetchWalletData(address, selectedChain);
       setWalletData(data);
 
-      // Save last inspected address
+      // Save last inspected address and chain
       if (typeof window !== "undefined") {
-        localStorage.setItem(storageKey, JSON.stringify({ lastAddress: address }));
+        localStorage.setItem(storageKey, JSON.stringify({
+          lastAddress: address,
+          chain: selectedChain
+        }));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch wallet data");
@@ -167,9 +249,11 @@ export default function WalletInspectorModule({ instanceId }: Props) {
   };
 
   const totalValue = walletData
-    ? walletData.balance * ethPrice +
+    ? walletData.balance * nativePrice +
       walletData.tokens.reduce((sum, t) => sum + t.value, 0)
     : 0;
+
+  const nativeSymbol = CHAINS.find(c => c.id === selectedChain)?.name.split(" ")[0] || "Token";
 
   return (
     <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
@@ -184,13 +268,35 @@ export default function WalletInspectorModule({ instanceId }: Props) {
         </div>
       </div>
 
+      {/* Chain Selector */}
+      <div className="p-3 border-b border-white/10">
+        <label className="text-xs text-white/60 mb-2 block">Blockchain</label>
+        <select
+          value={selectedChain}
+          onChange={(e) => setSelectedChain(e.target.value as Chain)}
+          className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm text-white outline-none cursor-pointer"
+        >
+          {CHAINS.map((chain) => (
+            <option key={chain.id} value={chain.id}>
+              {chain.name} - {chain.explorer}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Input */}
       <div className="p-3 border-b border-white/10 space-y-2">
         <input
           type="text"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          placeholder="Enter wallet address (0x...)"
+          placeholder={
+            selectedChain === "ethereum" || selectedChain === "bsc"
+              ? "Enter wallet address (0x...)"
+              : selectedChain === "tron"
+              ? "Enter wallet address (T...)"
+              : "Enter wallet address"
+          }
           className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
         />
         <button
@@ -232,12 +338,12 @@ export default function WalletInspectorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* ETH Balance */}
+            {/* Native Balance */}
             <div className="bg-white/5 rounded-lg p-3">
               <div className="flex justify-between">
-                <span className="text-sm text-white/60">ETH Balance</span>
+                <span className="text-sm text-white/60">{walletData.label || nativeSymbol} Balance</span>
                 <span className="text-sm font-bold text-white">
-                  {walletData.balance} ETH
+                  {walletData.balance.toFixed(4)} {walletData.label || nativeSymbol}
                 </span>
               </div>
             </div>

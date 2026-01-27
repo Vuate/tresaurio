@@ -1,8 +1,8 @@
 // components/terminal/personalized-dashboard/AllInCostCalculatorModule.tsx
 "use client";
 
-import { useState, useMemo } from "react";
-import { Calculator, TrendingUp, AlertTriangle } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Calculator, TrendingUp, AlertTriangle, Plus, X } from "lucide-react";
 
 type PositionSide = "long" | "short";
 type FeeType = "maker" | "taker";
@@ -30,8 +30,49 @@ interface Props {
   instanceId: string;
 }
 
+const DEFAULT_TOKENS = [
+  { symbol: "BTCUSDT", name: "BTC", defaultPrice: 95000 },
+  { symbol: "ETHUSDT", name: "ETH", defaultPrice: 3500 },
+  { symbol: "BNBUSDT", name: "BNB", defaultPrice: 600 },
+  { symbol: "SOLUSDT", name: "SOL", defaultPrice: 150 },
+];
+
+const POPULAR_TOKENS = [
+  { symbol: "BTCUSDT", name: "BTC" },
+  { symbol: "ETHUSDT", name: "ETH" },
+  { symbol: "BNBUSDT", name: "BNB" },
+  { symbol: "SOLUSDT", name: "SOL" },
+  { symbol: "XRPUSDT", name: "XRP" },
+  { symbol: "ADAUSDT", name: "ADA" },
+  { symbol: "DOGEUSDT", name: "DOGE" },
+  { symbol: "MATICUSDT", name: "MATIC" },
+  { symbol: "AVAXUSDT", name: "AVAX" },
+  { symbol: "DOTUSDT", name: "DOT" },
+];
+
 export default function AllInCostCalculatorModule({ instanceId }: Props) {
-  const [entryPrice, setEntryPrice] = useState(95000);
+  const tokensStorageKey = `all-in-cost-tokens-${instanceId}`;
+
+  const [tokens, setTokens] = useState<typeof DEFAULT_TOKENS>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(tokensStorageKey);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          return DEFAULT_TOKENS;
+        }
+      }
+    }
+    return DEFAULT_TOKENS;
+  });
+
+  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newTokenSymbol, setNewTokenSymbol] = useState("");
+  const [newTokenPrice, setNewTokenPrice] = useState("");
+
+  const [entryPrice, setEntryPrice] = useState(selectedToken.defaultPrice);
   const [quantity, setQuantity] = useState(1);
   const [leverage, setLeverage] = useState(1);
   const [side, setSide] = useState<PositionSide>("long");
@@ -42,6 +83,59 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
   const [slippagePercent, setSlippagePercent] = useState(0.05);
   const [fundingRate, setFundingRate] = useState(0.0125);
   const [holdingHours, setHoldingHours] = useState(24);
+
+  // Update entry price when token changes
+  useEffect(() => {
+    setEntryPrice(selectedToken.defaultPrice);
+  }, [selectedToken]);
+
+  // Save tokens to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(tokensStorageKey, JSON.stringify(tokens));
+    }
+  }, [tokens, tokensStorageKey]);
+
+  const addToken = () => {
+    const symbol = newTokenSymbol.trim().toUpperCase();
+    const price = parseFloat(newTokenPrice);
+
+    if (!symbol || !price || isNaN(price)) {
+      alert("Please enter valid symbol and price");
+      return;
+    }
+
+    if (tokens.some((t) => t.symbol === symbol)) {
+      alert("Token already exists");
+      return;
+    }
+
+    const newToken = {
+      symbol,
+      name: symbol.replace("USDT", "").replace("BUSD", "").replace("USDC", ""),
+      defaultPrice: price,
+    };
+
+    setTokens([...tokens, newToken]);
+    setSelectedToken(newToken);
+    setNewTokenSymbol("");
+    setNewTokenPrice("");
+    setShowAddModal(false);
+  };
+
+  const removeToken = (symbol: string) => {
+    if (tokens.length <= 1) {
+      alert("Cannot remove last token");
+      return;
+    }
+
+    const filtered = tokens.filter((t) => t.symbol !== symbol);
+    setTokens(filtered);
+
+    if (selectedToken.symbol === symbol) {
+      setSelectedToken(filtered[0]);
+    }
+  };
 
   const exchangeFees = {
     binance: {
@@ -159,6 +253,42 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
         </div>
 
         <div>
+          <label className="block text-white/50 mb-1 text-[10px]">Token</label>
+          <div className="flex gap-2">
+            <select
+              value={selectedToken.symbol}
+              onChange={(e) => {
+                const token = tokens.find((t) => t.symbol === e.target.value);
+                if (token) setSelectedToken(token);
+              }}
+              className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white text-xs outline-none"
+            >
+              {tokens.map((t) => (
+                <option key={t.symbol} value={t.symbol} className="bg-[#112240]">
+                  {t.name} (${t.defaultPrice.toLocaleString()})
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-2 py-1.5 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded hover:bg-blue-500/30"
+              title="Add Token"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
+            {tokens.length > 1 && (
+              <button
+                onClick={() => removeToken(selectedToken.symbol)}
+                className="px-2 py-1.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded hover:bg-red-500/30"
+                title="Remove Token"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div>
           <label className="block text-white/50 mb-1 text-[10px]">
             Exchange
           </label>
@@ -245,7 +375,7 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
 
         <div>
           <label className="block text-white/50 mb-1 text-[10px]">
-            Quantity (BTC)
+            Quantity ({selectedToken.name})
           </label>
           <input
             type="number"
@@ -460,6 +590,74 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
           ? `📈 Price must reach $${costs.effectivePrice.toLocaleString()} to break even`
           : `📉 Price must drop to $${costs.effectivePrice.toLocaleString()} to break even`}
       </div>
+
+      {/* Add Token Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="w-full max-w-md rounded-lg bg-[#0b0f1a] border border-white/10 p-4">
+            <div className="flex justify-between mb-3">
+              <h3 className="text-sm font-semibold">Add Token</h3>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-white/50 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-white/50 mb-1 text-[10px]">
+                  Symbol (e.g., BTCUSDT)
+                </label>
+                <input
+                  value={newTokenSymbol}
+                  onChange={(e) => setNewTokenSymbol(e.target.value)}
+                  placeholder="BTCUSDT"
+                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-white/50 mb-1 text-[10px]">
+                  Default Price ($)
+                </label>
+                <input
+                  type="number"
+                  value={newTokenPrice}
+                  onChange={(e) => setNewTokenPrice(e.target.value)}
+                  placeholder="95000"
+                  className="w-full px-3 py-2 rounded bg-white/5 border border-white/10 text-white text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-white/50 mb-2 text-[10px]">
+                  Popular Tokens
+                </label>
+                <div className="grid grid-cols-5 gap-2">
+                  {POPULAR_TOKENS.map((t) => (
+                    <button
+                      key={t.symbol}
+                      onClick={() => setNewTokenSymbol(t.symbol)}
+                      className="text-xs bg-white/5 hover:bg-white/10 rounded px-2 py-1 text-white/70"
+                    >
+                      {t.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={addToken}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded text-xs font-semibold"
+              >
+                Add Token
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

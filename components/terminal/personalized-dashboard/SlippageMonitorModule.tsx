@@ -26,7 +26,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
   const { bids, asks, midPrice, loading, error, status } = useOrderBook({
     symbol,
     marketType,
-    exchange, // 🔥 Multi-exchange support
+    exchange,
     limit: 100, // Get deep order book for accurate slippage calculation
   });
 
