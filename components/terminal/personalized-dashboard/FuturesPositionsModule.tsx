@@ -513,6 +513,43 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
       {/* Positions List */}
       {positions.length > 0 && !showApiKeyModal && (
+        <>
+          {/* Total Net PnL Summary */}
+          {(() => {
+            const totalNetPnL = positions.reduce((sum, pos) => {
+              const currentPrice = prices[pos.symbol] || pos.entryPrice;
+              const pnl =
+                pos.side === "long"
+                  ? (currentPrice - pos.entryPrice) * pos.size
+                  : (pos.entryPrice - currentPrice) * pos.size;
+              return sum + pnl;
+            }, 0);
+
+            const totalValue = positions.reduce((sum, pos) => {
+              return sum + pos.entryPrice * pos.size;
+            }, 0);
+
+            const totalPnlPercent = totalValue > 0 ? (totalNetPnL / totalValue) * 100 : 0;
+            const isProfit = totalNetPnL >= 0;
+
+            return (
+              <div className="mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10">
+                <div className="text-[10px] text-white/50 mb-1">Total Net PnL</div>
+                <div className="flex items-baseline justify-between">
+                  <div className={`text-xl font-bold ${isProfit ? "text-emerald-400" : "text-red-400"}`}>
+                    {isProfit ? "+" : ""}${totalNetPnL.toFixed(2)}
+                  </div>
+                  <div className={`text-sm font-semibold ${isProfit ? "text-emerald-400" : "text-red-400"}`}>
+                    {isProfit ? "+" : ""}{totalPnlPercent.toFixed(2)}%
+                  </div>
+                </div>
+                <div className="text-[9px] text-white/40 mt-1">
+                  {positions.length} position{positions.length > 1 ? "s" : ""} • ${totalValue.toFixed(2)} total value
+                </div>
+              </div>
+            );
+          })()}
+
         <div className="flex-1 overflow-y-auto space-y-2">
           {positions.map((pos) => {
             const currentPrice = prices[pos.symbol] || pos.entryPrice;
@@ -623,6 +660,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             );
           })}
         </div>
+        </>
       )}
 
       {/* API Key Modal */}

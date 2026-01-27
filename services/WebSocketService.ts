@@ -110,7 +110,7 @@ class WebSocketService {
   /**
    * Format symbol for different exchanges
    */
-  private formatSymbol(symbol: string, exchange: Exchange): string {
+  private formatSymbol(symbol: string, exchange: Exchange, marketType?: "spot" | "futures"): string {
     const upper = symbol.toUpperCase();
 
     switch (exchange) {
@@ -119,8 +119,13 @@ class WebSocketService {
         return upper; // BTCUSDT
 
       case "okx":
-        // BTCUSDT -> BTC-USDT
-        return upper.replace(/^([A-Z]+)(USDT|USDC|USD)$/, "$1-$2");
+        // OKX Spot: BTCUSDT -> BTC-USDT
+        // OKX Futures: BTCUSDT -> BTC-USDT-SWAP
+        const formatted = upper.replace(/^([A-Z]+)(USDT|USDC|USD)$/, "$1-$2");
+        if (marketType === "futures") {
+          return formatted + "-SWAP";
+        }
+        return formatted;
 
       case "coinbase":
         // BTCUSDT -> BTC-USD (Coinbase uses USD not USDT)
@@ -134,9 +139,9 @@ class WebSocketService {
   /**
    * Build subscribe message for each exchange
    */
-  private buildSubscribeMessage(exchange: Exchange, stream: string): any {
+  private buildSubscribeMessage(exchange: Exchange, stream: string, marketType: "spot" | "futures"): any {
     const [symbolPart, streamType] = stream.split("@");
-    const symbol = this.formatSymbol(symbolPart, exchange);
+    const symbol = this.formatSymbol(symbolPart, exchange, marketType);
 
     switch (exchange) {
       case "binance":
@@ -159,16 +164,17 @@ class WebSocketService {
         break;
 
       case "bybit":
+        const bybitSymbol = symbolPart.toUpperCase();
         if (streamType?.includes("depth")) {
           return {
             op: "subscribe",
-            args: [`orderbook.50.${symbolPart.toUpperCase()}`],
+            args: [`orderbook.50.${bybitSymbol}`],
           };
         }
         if (streamType?.includes("ticker")) {
           return {
             op: "subscribe",
-            args: [`tickers.${symbolPart.toUpperCase()}`],
+            args: [`tickers.${bybitSymbol}`],
           };
         }
         break;
@@ -199,7 +205,16 @@ class WebSocketService {
   private normalizeMessage(exchange: Exchange, data: any): any {
     switch (exchange) {
       case "binance":
-        return data; // Already correct format
+        // Binance spot and futures have slightly different formats
+        // Normalize to ensure consistent structure
+        if (data.e === "depthUpdate" || data.lastUpdateId || data.b || data.a) {
+          return {
+            bids: data.b || data.bids || [],
+            asks: data.a || data.asks || [],
+            ...data, // Keep other fields
+          };
+        }
+        return data; // Already correct format for other message types
 
       case "okx":
         if (data.arg?.channel === "books5") {
@@ -220,7 +235,7 @@ class WebSocketService {
             s: t.instId.replace("-", ""),
             c: t.last,
             p: (last - open).toString(),
-            P: open > 0 ? (((last / open) - 1) * 100).toFixed(2) : "0",
+            P: open > 0 ? ((last / open - 1) * 100).toFixed(2) : "0",
             h: t.high24h || t.last,
             l: t.low24h || t.last,
             v: t.vol24h || "0",
@@ -248,7 +263,7 @@ class WebSocketService {
             e: "24hrTicker",
             s: t.symbol,
             c: t.lastPrice,
-            p: (last * pcnt / 100).toString(),
+            p: ((last * pcnt) / 100).toString(),
             P: (pcnt * 100).toFixed(2),
             h: t.highPrice24h || t.lastPrice,
             l: t.lowPrice24h || t.lastPrice,
@@ -268,8 +283,14 @@ class WebSocketService {
         }
         if (data.type === "l2update") {
           return {
-            bids: data.changes?.filter((c: any) => c[0] === "buy").map((c: any) => [c[1], c[2]]) || [],
-            asks: data.changes?.filter((c: any) => c[0] === "sell").map((c: any) => [c[1], c[2]]) || [],
+            bids:
+              data.changes
+                ?.filter((c: any) => c[0] === "buy")
+                .map((c: any) => [c[1], c[2]]) || [],
+            asks:
+              data.changes
+                ?.filter((c: any) => c[0] === "sell")
+                .map((c: any) => [c[1], c[2]]) || [],
           };
         }
         if (data.type === "ticker") {
@@ -280,7 +301,7 @@ class WebSocketService {
             s: data.product_id.replace("-", ""),
             c: data.price,
             p: (price - open).toString(),
-            P: open > 0 ? (((price / open) - 1) * 100).toFixed(2) : "0",
+            P: open > 0 ? ((price / open - 1) * 100).toFixed(2) : "0",
             h: data.high_24h || data.price,
             l: data.low_24h || data.price,
             v: data.volume_24h || "0",
@@ -306,9 +327,8 @@ class WebSocketService {
       const baseUrl = this.getWsUrl(sub.exchange, sub.marketType);
 
       // For Binance, append stream to URL
-      const wsUrl = sub.exchange === "binance"
-        ? `${baseUrl}/${sub.stream}`
-        : baseUrl;
+      const wsUrl =
+        sub.exchange === "binance" ? `${baseUrl}/${sub.stream}` : baseUrl;
 
       console.log(
         `🔌 [WebSocket] Connecting to ${sub.exchange.toUpperCase()} ${sub.marketType.toUpperCase()}: ${sub.stream}`,
@@ -335,10 +355,17 @@ class WebSocketService {
 
         // Send subscribe message for non-Binance exchanges
         if (sub.exchange !== "binance") {
-          const subscribeMsg = this.buildSubscribeMessage(sub.exchange, sub.stream);
+          const subscribeMsg = this.buildSubscribeMessage(
+            sub.exchange,
+            sub.stream,
+            sub.marketType,
+          );
           if (subscribeMsg) {
             ws.send(JSON.stringify(subscribeMsg));
-            console.log(`📤 [${sub.exchange.toUpperCase()}] Sent subscribe message`);
+            console.log(
+              `📤 [${sub.exchange.toUpperCase()}] Sent subscribe message:`,
+              subscribeMsg,
+            );
           }
         }
       };
