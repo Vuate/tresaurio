@@ -10,8 +10,14 @@ export default function ReportingPage() {
       {/* Hero Section */}
       <ReportingHero />
 
-      {/* Main Container */}
-      <div className="max-w-9xl mx-auto px-6 py-16">
+      {/* Main Container - Fully Responsive */}
+      <div className="
+        w-full 
+        max-w-screen-sm sm:max-w-screen-md md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl 
+        mx-auto 
+        px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12
+        py-6 sm:py-8 lg:py-10 xl:py-12 2xl:py-14
+      ">
         {/* 8 Rapor Kategorisi */}
         <ReportingCategories />
 

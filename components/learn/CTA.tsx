@@ -1,3 +1,5 @@
+import { Icon } from "@iconify/react";
+
 export default function CTA() {
   return (
     <section className="section px-6">
@@ -19,13 +21,18 @@ export default function CTA() {
 
           <div className="relative mt-8 flex justify-center gap-4">
             {/* PRIMARY */}
-            <button className="group cursor-pointer rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 px-8 py-4 font-bold text-black transition hover:shadow-[0_0_24px_rgba(45,212,191,0.4)]">
-              🚀 Hemen Başla
+            <button className="group flex items-center gap-2 cursor-pointer rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 px-8 py-4 font-bold text-black transition">
+              <Icon icon="mdi:rocket-launch-outline" className="text-xl" />
+              Hemen Başla
             </button>
 
             {/* SECONDARY */}
-            <button className="cursor-pointer rounded-xl border border-white/15 bg-white/5 px-8 py-4 font-bold transition hover:bg-white/10">
-              📖 Dokümantasyon
+            <button className="flex items-center gap-2 cursor-pointer rounded-xl border border-white/15 bg-white/5 px-8 py-4 font-bold transition">
+              <Icon
+                icon="mdi:book-open-page-variant-outline"
+                className="text-xl text-white/80"
+              />
+              Dokümantasyon
             </button>
           </div>
         </div>

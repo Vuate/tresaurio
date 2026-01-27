@@ -1,3 +1,5 @@
+import { Icon } from "@iconify/react";
+
 export default function FeatureCard({
   icon,
   title,
@@ -11,8 +13,8 @@ export default function FeatureCard({
 }) {
   return (
     <div className="group relative rounded-2xl border border-white/10 bg-[#041F20]/95 p-7 transition hover:-translate-y-1 hover:border-teal-400/50 hover:shadow-[0_8px_32px_rgba(25,216,208,0.15)]">
-      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-400/10 text-2xl">
-        {icon}
+      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-400/10 text-2xl text-teal-400">
+        <Icon icon={icon} />
       </div>
 
       <h3 className="text-lg font-bold">{title}</h3>

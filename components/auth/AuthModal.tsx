@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
@@ -17,23 +18,69 @@ export default function AuthModal({
   onClose: () => void;
   onChange: (m: AuthMode) => void;
 }) {
-  if (!open || typeof window === "undefined") return null;
+  const [mounted, setMounted] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // 🔒 Mount safety (Next.js / SSR)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 🔒 Body scroll lock
+  useEffect(() => {
+    if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [open]);
+
+  // ⎋ ESC ile kapatma
+  useEffect(() => {
+    if (!open) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  // 🎯 Focus modal içine girsin
+  useEffect(() => {
+    if (open && dialogRef.current) {
+      dialogRef.current.focus();
+    }
+  }, [open]);
+
+  if (!mounted || !open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+    >
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* CARD - Compact Size */}
+      {/* CARD */}
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         className="
           relative w-full max-w-[400px] z-10
           rounded-xl border border-white/10
           bg-[#0d0f14] p-6
           shadow-2xl
+          outline-none
         "
       >
         {/* === HEADER === */}
@@ -51,13 +98,16 @@ export default function AuthModal({
               <span className="text-lg font-semibold block text-gray-100">
                 Treasurio
               </span>
-              <span className="text-[10px] text-gray-500 block">Terminal</span>
+              <span className="text-[10px] text-gray-500 block">
+                Terminal
+              </span>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition -mt-1"
+            className="text-gray-400 hover:text-white transition -mt-1 cursor-pointer"
+            aria-label="Close"
           >
             <svg
               className="w-5 h-5"
@@ -80,7 +130,7 @@ export default function AuthModal({
           <button
             onClick={() => onChange("login")}
             className={`
-              flex-1 py-1.5 text-sm font-medium rounded-md transition-all
+              flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer
               ${
                 mode === "login"
                   ? "bg-white/10 text-white"
@@ -94,7 +144,7 @@ export default function AuthModal({
           <button
             onClick={() => onChange("signup")}
             className={`
-              flex-1 py-1.5 text-sm font-medium rounded-md transition-all
+              flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer
               ${
                 mode === "signup"
                   ? "bg-white/10 text-white"
@@ -116,8 +166,10 @@ export default function AuthModal({
               ? "Hesabınız yok mu? "
               : "Zaten hesabınız var mı? "}
             <button
-              onClick={() => onChange(mode === "login" ? "signup" : "login")}
-              className="text-white hover:underline"
+              onClick={() =>
+                onChange(mode === "login" ? "signup" : "login")
+              }
+              className="text-white hover:underline cursor-pointer"
             >
               {mode === "login" ? "Kayıt olun" : "Giriş yapın"}
             </button>

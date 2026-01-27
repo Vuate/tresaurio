@@ -20,12 +20,15 @@ export default function LearnPage() {
         <FeatureGrid />
         <AdvancedFeatures />
         <AnalyticsModules />
+
         <ComparisonHeader />
-     {/* TABLES — YAN YANA */}
-      <div className="grid gap-8 md:grid-cols-2 -mt-12 ">
-        <TreasurioComparison />
-        <ExchangeComparison />
-      </div>
+
+        {/* TABLES — YAN YANA (NEGATİF MARGIN YOK) */}
+        <div className="grid gap-8 md:grid-cols-2">
+          <TreasurioComparison />
+          <ExchangeComparison />
+        </div>
+
         <UseCasesSection />
         <KeyBenefitsHeader />
         <KeyBenefitsList />

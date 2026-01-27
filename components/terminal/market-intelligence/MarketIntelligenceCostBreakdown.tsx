@@ -7,54 +7,56 @@ const costItems = [
 
 export default function MarketIntelligenceCostBreakdown() {
   return (
-    <section className="mb-20">
+    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       {/* Section Header */}
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-extrabold mb-3">All-in Cost Örneği</h2>
-        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
+        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+          All-in Cost Örneği
+        </h2>
+        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
           $100,000 BTC trade için maliyet breakdown
         </p>
       </div>
 
       {/* Visual Example Container */}
-      <div className="bg-[#041F20] rounded-[20px] p-12 border border-white/10 mt-12">
-        <h3 className="text-lg mb-6 text-teal-400">
+      <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
+        <h3 className="text-base sm:text-lg mb-4 sm:mb-5 lg:mb-6 text-teal-400">
           Binance - BTC/USDT Perpetual
         </h3>
 
         {/* Cost Breakdown Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {costItems.map((item, index) => (
             <div
               key={index}
-              className="bg-[#041F20]/95 rounded-xl p-5 text-center"
+              className="bg-[#041F20]/95 rounded-lg sm:rounded-xl p-4 sm:p-5 text-center"
             >
-              <div className="text-xs text-gray-400 mb-2">{item.label}</div>
-              <div className="text-2xl font-extrabold text-teal-400 mb-1">
+              <div className="text-[10px] sm:text-xs text-gray-400 mb-1.5 sm:mb-2">{item.label}</div>
+              <div className="text-xl sm:text-2xl font-extrabold text-teal-400 mb-0.5 sm:mb-1">
                 {item.value}
               </div>
-              <div className="text-[13px] text-gray-300">{item.percent}</div>
+              <div className="text-xs sm:text-[13px] text-gray-300">{item.percent}</div>
             </div>
           ))}
         </div>
 
         {/* All-in Cost Summary */}
-        <div className="mt-8 p-6 bg-[#041F20]/95 rounded-xl border-2 border-teal-400">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="mt-6 sm:mt-7 lg:mt-8 p-4 sm:p-5 lg:p-6 bg-[#041F20]/95 rounded-lg sm:rounded-xl border-2 border-teal-400">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-5 lg:gap-6">
             {/* All-in Cost */}
             <div>
-              <div className="text-sm text-gray-400">ALL-IN COST</div>
-              <div className="text-[32px] font-extrabold text-teal-400 mt-2">
+              <div className="text-xs sm:text-sm text-gray-400">ALL-IN COST</div>
+              <div className="text-2xl sm:text-3xl lg:text-[32px] font-extrabold text-teal-400 mt-1.5 sm:mt-2">
                 $62 (0.062%)
               </div>
             </div>
 
             {/* Annual Savings */}
             <div className="text-center md:text-right">
-              <div className="text-[13px] text-gray-300">
+              <div className="text-xs sm:text-[13px] text-gray-300">
                 Annual Savings Potential
               </div>
-              <div className="text-2xl font-bold text-green-500 mt-1">
+              <div className="text-xl sm:text-2xl font-bold text-green-500 mt-0.5 sm:mt-1">
                 $22,680
               </div>
             </div>

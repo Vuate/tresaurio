@@ -1,4 +1,5 @@
 import UseCaseList from "./UseCaseList";
+import { Icon } from "@iconify/react";
 
 export default function UseCasesSection() {
   return (
@@ -7,10 +8,10 @@ export default function UseCasesSection() {
       <div className="mx-auto max-w-7xl">
         {/* HEADER */}
         <div className="mb-12 text-center">
-          <span className="inline-block rounded-full border border-purple-400/30 bg-purple-400/10 px-4 py-1 text-sm font-bold text-purple-400">
-            💡 KULLANIM SENARYOLARI
-          </span>
-
+<span className="inline-flex items-center gap-2 rounded-full border border-purple-400/30 bg-purple-400/10 px-4 py-1 text-sm font-bold text-purple-400">
+  <Icon icon="mdi:lightbulb-outline" className="text-base" />
+  KULLANIM SENARYOLARI
+</span>
           <h2 className="mt-4 text-3xl font-extrabold">
             Treasurio Kimler İçin?
           </h2>

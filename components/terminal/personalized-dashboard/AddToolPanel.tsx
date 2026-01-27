@@ -32,10 +32,19 @@ useEffect(() => {
     }
   };
 
+  // ESC İLE KAPATMA
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      toggleAddTool();
+    }
+  };
+
   document.addEventListener("mousedown", handleClickOutside);
+  document.addEventListener("keydown", handleKeyDown);
 
   return () => {
     document.removeEventListener("mousedown", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDown);
   };
 }, [addToolOpen, toggleAddTool]);
 

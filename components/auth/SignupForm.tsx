@@ -4,13 +4,27 @@ import { useState } from "react";
 
 export default function SignupForm() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <form
-      onSubmit={(e) => {
+      noValidate
+      aria-busy={loading}
+      onSubmit={async (e) => {
         e.preventDefault();
+        if (loading) return;
+
+        setError(null);
         setLoading(true);
-        setTimeout(() => setLoading(false), 800);
+
+        try {
+          // ⏳ Simülasyon (backend bağlanınca burası değişir)
+          await new Promise((r) => setTimeout(r, 800));
+        } catch {
+          setError("Kayıt başarısız");
+        } finally {
+          setLoading(false);
+        }
       }}
       className="space-y-4"
     >
@@ -18,8 +32,12 @@ export default function SignupForm() {
       <div className="space-y-3">
         <input
           type="email"
+          name="email"
+          autoComplete="email"
           placeholder="E-posta"
           required
+          disabled={loading}
+          aria-label="E-posta"
           className="
             w-full rounded-lg bg-white/5 border border-white/10
             px-4 py-2.5 text-sm outline-none
@@ -27,13 +45,18 @@ export default function SignupForm() {
             focus:border-white/20 focus:bg-white/[0.07]
             transition-all
             placeholder:text-gray-500
+            disabled:opacity-60
           "
         />
 
         <input
           type="password"
+          name="password"
+          autoComplete="new-password"
           placeholder="Parola"
           required
+          disabled={loading}
+          aria-label="Parola"
           className="
             w-full rounded-lg bg-white/5 border border-white/10
             px-4 py-2.5 text-sm outline-none
@@ -41,13 +64,18 @@ export default function SignupForm() {
             focus:border-white/20 focus:bg-white/[0.07]
             transition-all
             placeholder:text-gray-500
+            disabled:opacity-60
           "
         />
 
         <input
           type="password"
+          name="passwordConfirm"
+          autoComplete="new-password"
           placeholder="Parola tekrar"
           required
+          disabled={loading}
+          aria-label="Parola tekrar"
           className="
             w-full rounded-lg bg-white/5 border border-white/10
             px-4 py-2.5 text-sm outline-none
@@ -55,6 +83,7 @@ export default function SignupForm() {
             focus:border-white/20 focus:bg-white/[0.07]
             transition-all
             placeholder:text-gray-500
+            disabled:opacity-60
           "
         />
       </div>
@@ -63,8 +92,16 @@ export default function SignupForm() {
       <label className="flex items-start gap-2 text-xs text-gray-400 cursor-pointer">
         <input
           type="checkbox"
+          name="agreement"
           required
-          className="mt-0.5 rounded border-white/20 bg-white/5 text-white focus:ring-0 focus:ring-offset-0 cursor-pointer"
+          disabled={loading}
+          aria-label="Kullanım koşulları ve gizlilik politikası"
+          className="
+            mt-0.5 rounded border-white/20 bg-white/5
+            text-white focus:ring-0 focus:ring-offset-0
+            cursor-pointer
+            disabled:opacity-60
+          "
         />
         <span>
           <a href="#" className="hover:text-white transition">
@@ -78,15 +115,23 @@ export default function SignupForm() {
         </span>
       </label>
 
+      {/* Error (şu an görünmez ama hazır) */}
+      {error && (
+        <p className="text-xs text-red-400" role="alert">
+          {error}
+        </p>
+      )}
+
       {/* Submit */}
       <button
+        type="submit"
         disabled={loading}
         className="
           w-full rounded-lg bg-white text-black
           py-2.5 text-sm font-medium
           hover:bg-gray-100
           transition-all
-          disabled:opacity-50 disabled:cursor-not-allowed
+          disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
         "
       >
         {loading ? "Hesap oluşturuluyor..." : "Kayıt Ol"}
@@ -98,7 +143,9 @@ export default function SignupForm() {
           <div className="w-full border-t border-white/10"></div>
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-[#0d0f14] px-3 text-xs text-gray-500">veya</span>
+          <span className="bg-[#0d0f14] px-3 text-xs text-gray-500">
+            veya
+          </span>
         </div>
       </div>
 
@@ -106,12 +153,14 @@ export default function SignupForm() {
       <div className="space-y-2">
         <button
           type="button"
+          disabled={loading}
           className="
             w-full flex items-center justify-center gap-2
             rounded-lg border border-white/10 bg-white/[0.03]
             px-4 py-2.5 text-sm text-white
             hover:bg-white/[0.06] hover:border-white/20
             transition-all
+            disabled:opacity-50 cursor-pointer
           "
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -137,15 +186,21 @@ export default function SignupForm() {
 
         <button
           type="button"
+          disabled={loading}
           className="
             w-full flex items-center justify-center gap-2
             rounded-lg border border-white/10 bg-white/[0.03]
             px-4 py-2.5 text-sm text-white
             hover:bg-white/[0.06] hover:border-white/20
             transition-all
+            disabled:opacity-50 cursor-pointer
           "
         >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+          <svg
+            className="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
             <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
           </svg>
           <span>Apple ile devam et</span>

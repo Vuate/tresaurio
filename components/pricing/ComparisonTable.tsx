@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Lock, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Check,
+  X,
+  Lock,
+  Plus,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { PRICING_TABLE } from "@/data/pricingTable";
 
 function renderCell(value: string) {
@@ -24,83 +31,97 @@ export default function ComparisonTable() {
   const visibleRows = open ? allRows : allRows.slice(0, visibleCount);
 
   return (
-    <section className="w-full pt-10 pb-32 bg-[#031A1C] text-white">
-      {/* FULL WIDTH – NO CONTAINER */}
+    <section
+      className="w-full pt-10 pb-32 bg-[#031A1C] text-white"
+
+    >
       <div className="w-full px-0">
         {/* TITLE */}
         <h2 className="text-5xl font-bold text-center mb-10">
           Özellikleri <span className="text-teal-400">kıyasla</span>
         </h2>
 
-          {/* TABLE OVERFLOW SAFETY WRAPPER */}
-          <div className="w-full overflow-x-auto"></div>
-        {/* TABLE CONTAINER */}
+        {/* TABLE WRAPPER – overflow YOK (sticky bozulmaz) */}
         <div className="w-full bg-[#041F20] border-t border-white/10 p-2">
-          {/* HEADER */}
+          {/* STICKY HEADER */}
           <div
             className="
-              grid grid-cols-[3fr_repeat(4,1fr)_3fr]
-              py-8 px-6
-              text-gray-100 text-lg font-semibold
-              border-b border-white/10
-              sticky top-[80px]
+              sticky
+            top-[var(--topbar-height)]
               z-50
               bg-[#041F20]
+              border-b border-white/10
             "
           >
-            <div>Özellik</div>
-            <div className="text-center">Trader</div>
-            <div className="text-center">Pro Trader</div>
-            <div className="text-center">Enterprise</div>
-            <div className="text-center">Add-on</div>
-            <div className="text-center">Açıklama</div>
+            <div
+              className="
+                grid grid-cols-[3fr_repeat(4,1fr)_3fr]
+                py-8 px-6
+                text-gray-100 text-lg font-semibold
+              "
+            >
+              <div>Özellik</div>
+              <div className="text-center">Trader</div>
+              <div className="text-center">Pro Trader</div>
+              <div className="text-center">Enterprise</div>
+              <div className="text-center">Add-on</div>
+              <div className="text-center">Açıklama</div>
+            </div>
           </div>
 
           {/* ROWS */}
-          {visibleRows.map((row, i) => (
-            <div
-              key={i}
-              className="
-                grid grid-cols-[3fr_repeat(4,1fr)_3fr]
-                py-6 px-6
-                border-b border-white/5
-              "
-            >
-              <div className="font-medium text-gray-200">{row.feature}</div>
-              <div className="flex justify-center">
-                {renderCell(row.trader)}
+          <div>
+            {visibleRows.map((row, i) => (
+              <div
+                key={i}
+                className="
+                  grid grid-cols-[3fr_repeat(4,1fr)_3fr]
+                  py-6 px-6
+                  border-b border-white/5
+                "
+              >
+                <div className="font-medium text-gray-200">
+                  {row.feature}
+                </div>
+
+                <div className="flex justify-center">
+                  {renderCell(row.trader)}
+                </div>
+
+                <div className="flex justify-center">
+                  {renderCell(row.proTrader)}
+                </div>
+
+                <div className="flex justify-center">
+                  {renderCell(row.enterprise)}
+                </div>
+
+                <div className="flex justify-center">
+                  {renderCell(row.addOn)}
+                </div>
+
+                <div className="text-gray-400 text-sm leading-relaxed">
+                  {row.desc}
+                </div>
               </div>
-              <div className="flex justify-center">
-                {renderCell(row.proTrader)}
-              </div>
-              <div className="flex justify-center">
-                {renderCell(row.enterprise)}
-              </div>
-              <div className="flex justify-center">
-                {renderCell(row.addOn)}
-              </div>
-              <div className="text-gray-400 text-sm leading-relaxed">
-                {row.desc}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        {/* BUTTON – MODERN BLACK STYLE */}
+        {/* BUTTON */}
         <div className="flex justify-center mt-12">
           <button
             onClick={() => setOpen(!open)}
             className="
-              px-12 py-5 
+              px-12 py-5
               rounded-2xl
-              text-lg font-semibold 
-              text-white 
-              bg-black/20 
+              text-lg font-semibold
+              text-white
+              bg-black/20
               border border-white/20
               hover:bg-white/10
               transition-all duration-300
-              flex items-center gap-3
-              cursor-pointer
+              flex items-center gap-3 cursor-pointer
             "
           >
             {open ? "Daha az göster" : "Tüm özellikleri göster"}
@@ -116,10 +137,3 @@ export default function ComparisonTable() {
     </section>
   );
 }
-
-/*
-NOT (ŞU AN DEVRE DIŞI – DOKUNMADIK):
-Eğer ileride çok dar ekranlarda tablo taşarsa,
-bu container dışına overflow-x-auto wrapper eklenebilir.
-ŞU AN GEREK YOK, GÖRÜNTÜ DOĞRU.
-*/

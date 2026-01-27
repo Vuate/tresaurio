@@ -13,7 +13,7 @@ export default function SidebarPanel() {
   const sidebarRef = useRef<HTMLDivElement>(null);
 
 
-  useEffect(() => {
+useEffect(() => {
   if (!sidebarOpen) return;
 
   const handleClickOutside = (e: MouseEvent) => {
@@ -25,12 +25,22 @@ export default function SidebarPanel() {
     }
   };
 
+  //  ESC İLE KAPATMA
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      toggleSidebar();
+    }
+  };
+
   document.addEventListener("mousedown", handleClickOutside);
+  document.addEventListener("keydown", handleKeyDown);
 
   return () => {
     document.removeEventListener("mousedown", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDown);
   };
 }, [sidebarOpen, toggleSidebar]);
+
 
 if (!sidebarOpen) return null;
 
@@ -38,7 +48,7 @@ if (!sidebarOpen) return null;
 <div
   ref={sidebarRef}
   data-ui-panel 
-    onWheelCapture={(e) => e.stopPropagation()}   // 🔥 EN KRİTİK SATIR
+    onWheelCapture={(e) => e.stopPropagation()}   //  EN KRİTİK SATIR
   onMouseDownCapture={(e) => e.stopPropagation()}
   onPointerDownCapture={(e) => e.stopPropagation()}
   className="
@@ -48,6 +58,7 @@ if (!sidebarOpen) return null;
     bg-[#041F20]/95 backdrop-blur
     border border-white/10 rounded-xl
     shadow-[0_12px_40px_rgba(0,0,0,0.45)]
+    cursor-default
   "
 >
 
@@ -195,7 +206,7 @@ function SidebarItem({
         ${
           active
             ? "bg-teal-400/15 border-teal-400/40 text-teal-300"
-            : "bg-white/5 border-white/10 text-white/80 hover:bg-white/10"
+            : "bg-white/5 border-white/10 text-white/80 hover:bg-teal-400/10"
         }
       `}
     >

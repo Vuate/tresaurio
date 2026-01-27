@@ -1,9 +1,5 @@
-// components/terminal/staking/StakingHero.tsx
-
-
-import { Icon } from "@iconify/react";
-
 import Head from "next/head";
+import { Icon } from "@iconify/react";
 
 export default function StakingHero() {
   return (
@@ -15,41 +11,35 @@ export default function StakingHero() {
         />
       </Head>
 
-      <div className="px-6 py-20 pb-16 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
+      <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 pb-5 sm:pb-7 lg:pb-9 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
         {/* Hero Icon with Float Animation */}
-<div className="mb-6 inline-block animate-float">
-  <Icon
-    icon="material-symbols:savings-rounded"
-    className="text-teal-400"
-    width={64}
-    height={64}
-  />
-</div>
-
+        <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-3 sm:mb-4 lg:mb-5 inline-block animate-float text-teal-400">
+          <Icon icon="material-symbols:savings-rounded" />
+        </div>
 
         {/* Main Title */}
-        <h1 className="text-5xl font-black mb-4 text-teal-400">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-2 sm:mb-3 lg:mb-4 text-teal-400">
           Staking & Getiri Takibi
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8 leading-relaxed">
+        <p className="text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl text-gray-300 max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl mx-auto mb-4 sm:mb-5 lg:mb-6 leading-relaxed px-4">
           Stake verilerinizi merkezi bir pano'da takip edin, gerçek zamanlı ROI hesaplamaları yapın ve 
           farklı platformlardaki kazançlarınızı karşılaştırın.
         </p>
 
         {/* Tags */}
-        <div className="flex gap-3 justify-center flex-wrap">
-          <span className="px-4 py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[13px] font-semibold text-teal-400">
+        <div className="flex gap-2 sm:gap-2.5 lg:gap-3 justify-center flex-wrap px-4">
+          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
             Anlık Takip
           </span>
-          <span className="px-4 py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[13px] font-semibold text-teal-400">
+          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
             Çoklu Platform
           </span>
-          <span className="px-4 py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[13px] font-semibold text-teal-400">
+          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
             ROI Analizi
           </span>
-          <span className="px-4 py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[13px] font-semibold text-teal-400">
+          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
             Geleneksel Finans Karşılaştırma
           </span>
         </div>

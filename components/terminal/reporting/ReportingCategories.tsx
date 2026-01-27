@@ -37,7 +37,7 @@ const categories = [
     ],
   },
   {
-icon:"mdi:brain",
+    icon:"mdi:brain",
     title: "Smart Money",
     count: "4 Modules",
     modules: [
@@ -100,31 +100,34 @@ icon:"mdi:brain",
 
 export default function ReportingCategories() {
   return (
-    <section className="mb-20">
+    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       {/* Section Header */}
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-extrabold mb-3">8 Rapor Kategorisi</h2>
-        <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
+        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+          8 Rapor Kategorisi
+        </h2>
+        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
           Her türlü analiz ihtiyacınız için kapsamlı modül koleksiyonu
         </p>
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 xl:gap-6">
         {categories.map((category, index) => (
           <div
             key={index}
-            className="bg-[#041F20]/95 border border-white/10 rounded-2xl p-8 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
+            className="bg-[#041F20]/95 border border-white/10 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-5 lg:p-6 xl:p-7 2xl:p-8 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
           >
             {/* Category Header */}
-            <div className="flex items-center gap-4 mb-5">
-<div className="text-4xl text-teal-400">
-  <Icon icon={category.icon} width={36} height={36} />
-</div>              <div className="flex-1">
-                <div className="text-xl font-bold text-teal-400 mb-1">
+            <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+              <div className="text-2xl sm:text-3xl lg:text-4xl text-teal-400">
+                <Icon icon={category.icon} />
+              </div>
+              <div className="flex-1">
+                <div className="text-base sm:text-lg lg:text-xl font-bold text-teal-400 mb-0.5 sm:mb-1">
                   {category.title}
                 </div>
-                <div className="text-xs text-gray-400">{category.count}</div>
+                <div className="text-[10px] sm:text-xs text-gray-400">{category.count}</div>
               </div>
             </div>
 
@@ -133,7 +136,7 @@ export default function ReportingCategories() {
               {category.modules.map((module, moduleIndex) => (
                 <li
                   key={moduleIndex}
-                  className="py-2.5 border-b border-white/5 last:border-b-0 text-sm text-gray-300 flex items-center gap-3 before:content-['▸'] before:text-teal-400 before:font-bold"
+                  className="py-2 sm:py-2.5 border-b border-white/5 last:border-b-0 text-xs sm:text-sm text-gray-300 flex items-center gap-2 sm:gap-3 before:content-['▸'] before:text-teal-400 before:font-bold"
                 >
                   {module}
                 </li>
