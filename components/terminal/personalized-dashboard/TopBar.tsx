@@ -2,18 +2,39 @@
 
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react"; 
 
 export default function TopBar() {
+  const topBarRef = useRef<HTMLDivElement>(null);
   const toggleAddTool = usePersonalizedDashboardStore((s) => s.toggleAddTool);
   const toggleSidebar = usePersonalizedDashboardStore((s) => s.toggleSidebar);
+  const setTopBarHeight = usePersonalizedDashboardStore((s) => s.setTopBarHeight); 
   const router = useRouter();
 
+
+    /* YENİ: Yükseklik ölçümü */
+  useEffect(() => {
+    const measureHeight = () => {
+      if (topBarRef.current) {
+        const height = topBarRef.current.getBoundingClientRect().height;
+        setTopBarHeight(height);
+      }
+    };
+
+    measureHeight();
+    window.addEventListener("resize", measureHeight);
+    return () => window.removeEventListener("resize", measureHeight);
+  }, [setTopBarHeight]);
+
+  
   return (
     <div
+      ref={topBarRef} 
+    onMouseDown={(e) => e.preventDefault()}
       className="fixed top-0 left-0 right-0 z-50 h-14
         flex items-center justify-between px-6
         bg-[#031A1C]/95 backdrop-blur
-        border-b border-white/10"
+        border-b border-white/10 select-none"
     >
       {/* SOL TARAF */}
       <div className="flex items-center gap-4">
