@@ -113,23 +113,34 @@ class WebSocketService {
   private formatSymbol(symbol: string, exchange: Exchange, marketType?: "spot" | "futures"): string {
     const upper = symbol.toUpperCase();
 
+    // Remove any existing suffixes first for consistent handling
+    const clean = upper.replace(/-SWAP$/, "").replace(/-PERP$/, "");
+
     switch (exchange) {
       case "binance":
       case "bybit":
-        return upper; // BTCUSDT
+        // Convert BTC-USDT to BTCUSDT if needed
+        return clean.replace(/-/g, "");
 
       case "okx":
-        // OKX Spot: BTCUSDT -> BTC-USDT
-        // OKX Futures: BTCUSDT -> BTC-USDT-SWAP
-        const formatted = upper.replace(/^([A-Z]+)(USDT|USDC|USD)$/, "$1-$2");
-        if (marketType === "futures") {
-          return formatted + "-SWAP";
+        // OKX needs dash format: BTC-USDT or BTC-USDT-SWAP
+        let okxSymbol = clean;
+        // If already has dash, keep it. If not, add it.
+        if (!okxSymbol.includes("-")) {
+          okxSymbol = okxSymbol.replace(/^([A-Z]+)(USDT|USDC|USD)$/, "$1-$2");
         }
-        return formatted;
+        if (marketType === "futures") {
+          return okxSymbol + "-SWAP";
+        }
+        return okxSymbol;
 
       case "coinbase":
-        // BTCUSDT -> BTC-USD (Coinbase uses USD not USDT)
-        return upper.replace("USDT", "USD").replace(/^([A-Z]+)(USD)$/, "$1-$2");
+        // Coinbase: BTC-USD format
+        let cbSymbol = clean.replace("USDT", "USD");
+        if (!cbSymbol.includes("-")) {
+          cbSymbol = cbSymbol.replace(/^([A-Z]+)(USD)$/, "$1-$2");
+        }
+        return cbSymbol;
 
       default:
         return upper;
@@ -217,9 +228,14 @@ class WebSocketService {
         return data; // Already correct format for other message types
 
       case "okx":
-        if (data.arg?.channel === "books5") {
+        // OKX uses "action" for orderbook updates: snapshot or update
+        if (data.arg?.channel === "books5" || data.arg?.channel?.startsWith("books")) {
           const book = data.data?.[0];
-          if (!book) return null;
+          if (!book) {
+            console.warn(`[OKX] No book data in message:`, data);
+            return null;
+          }
+          console.log(`📊 [OKX] OrderBook received: ${book.bids?.length} bids, ${book.asks?.length} asks`);
           return {
             bids: book.bids || [],
             asks: book.asks || [],
@@ -243,12 +259,20 @@ class WebSocketService {
             o: t.open24h || t.last,
           };
         }
+        // Log unhandled OKX messages for debugging
+        if (data.arg?.channel) {
+          console.log(`[OKX] Unhandled channel: ${data.arg.channel}`, data);
+        }
         break;
 
       case "bybit":
         if (data.topic?.includes("orderbook")) {
           const book = data.data;
-          if (!book) return null;
+          if (!book) {
+            console.warn(`[Bybit] No book data in message:`, data);
+            return null;
+          }
+          console.log(`📊 [Bybit] OrderBook received: ${book.b?.length} bids, ${book.a?.length} asks`);
           return {
             bids: book.b || [],
             asks: book.a || [],
@@ -271,6 +295,10 @@ class WebSocketService {
             q: t.turnover24h || "0",
             o: t.prevPrice24h || t.lastPrice,
           };
+        }
+        // Log unhandled Bybit messages for debugging
+        if (data.topic) {
+          console.log(`[Bybit] Unhandled topic: ${data.topic}`, data);
         }
         break;
 
@@ -373,6 +401,22 @@ class WebSocketService {
       ws.onmessage = (event) => {
         try {
           const rawData = JSON.parse(event.data);
+
+          // 🔥 Handle ping/pong for exchanges that require it
+          if (sub.exchange === "bybit" && rawData.op === "ping") {
+            ws.send(JSON.stringify({ op: "pong" }));
+            return;
+          }
+          if (sub.exchange === "okx" && rawData.event === "ping") {
+            ws.send(JSON.stringify({ event: "pong" }));
+            return;
+          }
+
+          // Skip subscribe confirmation messages
+          if (rawData.event === "subscribe" || rawData.op === "subscribe" || rawData.success === true) {
+            console.log(`✅ [${sub.exchange.toUpperCase()}] Subscription confirmed`);
+            return;
+          }
 
           // Normalize data based on exchange
           const normalizedData = this.normalizeMessage(sub.exchange, rawData);

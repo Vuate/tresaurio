@@ -53,18 +53,61 @@ const EXCHANGES = [
 ];
 
 // 🔥 WebSocket URLs
-const getWebSocketUrl = (exchange: Exchange, symbol: string): string => {
-  const lowerSymbol = symbol.toLowerCase();
-
+const getWebSocketUrl = (exchange: Exchange): string => {
   switch (exchange) {
     case "binance":
-      return `wss://fstream.binance.com/ws/${lowerSymbol}@markPrice`;
+      return `wss://fstream.binance.com/ws`;
     case "okx":
       return `wss://ws.okx.com:8443/ws/v5/public`;
     case "bybit":
       return `wss://stream.bybit.com/v5/public/linear`;
     default:
       return "";
+  }
+};
+
+// 🔥 Format symbol for each exchange
+const formatSymbol = (symbol: string, exchange: Exchange): string => {
+  const upper = symbol.toUpperCase();
+  switch (exchange) {
+    case "binance":
+    case "bybit":
+      return upper; // BTCUSDT
+    case "okx":
+      // BTCUSDT -> BTC-USDT-SWAP
+      return upper.replace(/^([A-Z]+)(USDT|USDC|USD)$/, "$1-$2") + "-SWAP";
+    default:
+      return upper;
+  }
+};
+
+// 🔥 Build subscribe message for each exchange
+const buildSubscribeMessage = (exchange: Exchange, symbol: string): any => {
+  const formattedSymbol = formatSymbol(symbol, exchange);
+  const lowerSymbol = symbol.toLowerCase();
+
+  switch (exchange) {
+    case "binance":
+      return {
+        method: "SUBSCRIBE",
+        params: [`${lowerSymbol}@markPrice`],
+        id: Date.now(),
+      };
+    case "okx":
+      return {
+        op: "subscribe",
+        args: [
+          { channel: "funding-rate", instId: formattedSymbol },
+          { channel: "mark-price", instId: formattedSymbol },
+        ],
+      };
+    case "bybit":
+      return {
+        op: "subscribe",
+        args: [`tickers.${formattedSymbol}`],
+      };
+    default:
+      return null;
   }
 };
 
@@ -117,7 +160,7 @@ const parseMessage = (
           return {
             symbol: d.symbol,
             fundingRate: parseFloat(d.fundingRate || "0"),
-            fundingTime: Date.now() + 8 * 60 * 60 * 1000,
+            fundingTime: parseInt(d.nextFundingTime) || Date.now() + 8 * 60 * 60 * 1000,
             markPrice: parseFloat(d.markPrice || "0"),
             indexPrice: parseFloat(d.indexPrice || "0"),
             source: "websocket",
@@ -185,25 +228,49 @@ export default function FundingRateModule({ instanceId }: Props) {
       wsRef.current = null;
     }
 
-    const url = getWebSocketUrl(exchange, selectedSymbol);
+    const url = getWebSocketUrl(exchange);
     if (!url) return;
 
+    console.log(`🔌 [FundingRate] Connecting to ${exchange.toUpperCase()}...`);
     const ws = new WebSocket(url);
     wsRef.current = ws;
 
     ws.onopen = () => {
       setConnected(true);
       setError(null);
-      // ❗ loading burada KAPANMIYOR
+
+      // 🔥 Send subscribe message for all exchanges
+      const subscribeMsg = buildSubscribeMessage(exchange, selectedSymbol);
+      if (subscribeMsg) {
+        ws.send(JSON.stringify(subscribeMsg));
+        console.log(`📤 [FundingRate] Sent subscribe:`, subscribeMsg);
+      }
     };
 
     ws.onmessage = (e) => {
       try {
         const raw = JSON.parse(e.data);
+
+        // 🔥 Handle ping/pong for exchanges
+        if (exchange === "bybit" && raw.op === "ping") {
+          ws.send(JSON.stringify({ op: "pong" }));
+          return;
+        }
+        if (exchange === "okx" && raw.event === "ping") {
+          ws.send(JSON.stringify({ event: "pong" }));
+          return;
+        }
+
+        // Skip subscription confirmations
+        if (raw.event === "subscribe" || raw.op === "subscribe" || raw.success === true) {
+          console.log(`✅ [FundingRate] Subscription confirmed for ${exchange}`);
+          return;
+        }
+
         const parsed = parseMessage(exchange, raw, selectedSymbol);
 
         if (parsed) {
-          setLoading(false); // ✅ ilk veri gelince kapanır
+          setLoading(false);
 
           setData((prev) => ({
             symbol: selectedSymbol,
@@ -250,26 +317,31 @@ export default function FundingRateModule({ instanceId }: Props) {
   const annualizedRate = fundingRatePercent * 3 * 365;
 
   return (
-    <div className="space-y-3 text-xs">
+    <div className="relative space-y-3 text-xs">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 text-white/70">
-          <span className="font-semibold">Funding Rate</span>
-          {connected && (
+          <span className="font-semibold text-white">Funding Rate</span>
+          {connected ? (
             <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
               LIVE
             </span>
-          )}
+          ) : loading ? (
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 animate-pulse">
+              CONNECTING
+            </span>
+          ) : null}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <select
             value={exchange}
             onChange={(e) => setExchange(e.target.value as Exchange)}
-            className="h-8 rounded bg-white/5 border border-white/10 px-2"
+            className="h-7 rounded-md bg-[#0b1f1f] border border-white/10 px-2 text-white text-xs outline-none cursor-pointer hover:border-white/20 transition-colors"
+            style={{ colorScheme: "dark" }}
           >
             {EXCHANGES.map((ex) => (
-              <option key={ex.id} value={ex.id}>
+              <option key={ex.id} value={ex.id} className="bg-[#0b1f1f] text-white">
                 {ex.name}
               </option>
             ))}
@@ -278,31 +350,36 @@ export default function FundingRateModule({ instanceId }: Props) {
           <select
             value={selectedSymbol}
             onChange={(e) => setSelectedSymbol(e.target.value)}
-            className="h-8 rounded bg-white/5 border border-white/10 px-2"
+            className="h-7 rounded-md bg-[#0b1f1f] border border-white/10 px-2 text-white text-xs outline-none cursor-pointer hover:border-white/20 transition-colors"
+            style={{ colorScheme: "dark" }}
           >
             {symbols.map((s) => (
-              <option key={s}>{s}</option>
+              <option key={s} value={s} className="bg-[#0b1f1f] text-white">
+                {s}
+              </option>
             ))}
           </select>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="h-8 px-2 rounded bg-blue-500/20 border border-blue-500/30"
+            className="h-7 px-2 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
       {loading && (
-        <div className="text-center py-6 text-white/40">
-          Connecting to {exchange}...
+        <div className="flex flex-col items-center justify-center py-8 text-white/40">
+          <div className="w-5 h-5 border-2 border-white/20 border-t-blue-400 rounded-full animate-spin mb-2" />
+          <span className="text-[11px]">Connecting to {exchange.toUpperCase()}...</span>
         </div>
       )}
 
-      {!loading && !error && !data && (
-        <div className="text-center py-6 text-white/40">
-          Waiting for data from {exchange}...
+      {!loading && !data && (
+        <div className="flex flex-col items-center justify-center py-8 text-white/40">
+          <AlertCircle className="w-5 h-5 mb-2 text-yellow-400/60" />
+          <span className="text-[11px]">No data from {exchange.toUpperCase()}</span>
         </div>
       )}
 
@@ -367,34 +444,60 @@ export default function FundingRateModule({ instanceId }: Props) {
 
       {/* 🔥 Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="w-full max-w-sm rounded-lg bg-[#0b0f1a] border border-white/10 p-4">
-            <div className="flex justify-between mb-3">
-              <h3 className="text-sm font-semibold">Add Funding Symbol</h3>
-              <button onClick={() => setShowAddModal(false)}>
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+        <div
+          className="absolute inset-0 z-50 flex flex-col bg-[#0a0e1a] rounded-lg overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
+            <h3 className="text-sm font-semibold text-white">Add Symbol</h3>
+            <button
+              onClick={() => setShowAddModal(false)}
+              className="text-white/50 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
 
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">
             <input
               value={newSymbol}
-              onChange={(e) => setNewSymbol(e.target.value)}
-              placeholder="BTCUSDT"
-              className="w-full mb-3 px-3 py-2 rounded bg-black/40 border border-white/10"
+              onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const symbol = newSymbol.trim().toUpperCase();
+                  if (!symbol || symbols.includes(symbol)) return;
+                  setSymbols((p) => [...p, symbol]);
+                  setSelectedSymbol(symbol);
+                  setNewSymbol("");
+                  setShowAddModal(false);
+                }
+              }}
+              placeholder="Enter symbol (e.g. BTCUSDT)"
+              className="w-full px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-blue-500/50"
             />
 
-            <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="grid grid-cols-3 gap-1.5">
               {POPULAR_SYMBOLS.map((s) => (
                 <button
                   key={s}
-                  onClick={() => setNewSymbol(s)}
-                  className="text-xs bg-white/5 hover:bg-white/10 rounded px-2 py-1"
+                  onClick={() => {
+                    setSymbols((p) => p.includes(s) ? p : [...p, s]);
+                    setSelectedSymbol(s);
+                    setShowAddModal(false);
+                  }}
+                  className={`text-[10px] rounded px-2 py-1.5 transition-colors ${
+                    symbols.includes(s)
+                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                      : "bg-white/5 hover:bg-white/10 text-white/70"
+                  }`}
                 >
                   {s}
                 </button>
               ))}
             </div>
+          </div>
 
+          <div className="p-3 border-t border-white/10">
             <button
               onClick={() => {
                 const symbol = newSymbol.trim().toUpperCase();
@@ -404,9 +507,10 @@ export default function FundingRateModule({ instanceId }: Props) {
                 setNewSymbol("");
                 setShowAddModal(false);
               }}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-black py-2 rounded font-semibold"
+              disabled={!newSymbol.trim()}
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 text-white py-2 rounded-md font-semibold text-xs transition-colors"
             >
-              Add Symbol
+              Add Custom Symbol
             </button>
           </div>
         </div>
