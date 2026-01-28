@@ -1,7 +1,7 @@
 // hooks/useTicker.ts
 
-import { useState, useEffect } from "react";
-import { wsService, type Exchange } from "@/services/WebSocketService";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { wsService, type Exchange, type ConnectionStatus } from "@/services/WebSocketService";
 
 export interface TickerData {
   symbol: string;
@@ -21,13 +21,15 @@ export interface UseTickerOptions {
   marketType?: "spot" | "futures";
   exchange?: Exchange;
   enabled?: boolean;
+  timeoutMs?: number;
 }
 
 export interface UseTickerReturn {
   data: TickerData | null;
   loading: boolean;
   error: string | null;
-  status: "connected" | "connecting" | "disconnected" | "fallback";
+  status: ConnectionStatus;
+  retry: () => void;
 }
 
 /**
@@ -38,9 +40,10 @@ export interface UseTickerReturn {
  *
  * @example
  * ```tsx
- * const { data, loading } = useTicker({
+ * const { data, loading, retry } = useTicker({
  *   symbol: "BTCUSDT",
- *   marketType: "spot"
+ *   marketType: "spot",
+ *   exchange: "binance"
  * });
  *
  * console.log(data?.lastPrice); // Current price
@@ -52,11 +55,29 @@ export function useTicker({
   marketType = "spot",
   exchange = "binance",
   enabled = true,
+  timeoutMs = 30000,
 }: UseTickerOptions): UseTickerReturn {
   const [data, setData] = useState<TickerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<"connected" | "connecting" | "disconnected" | "fallback">("connecting");
+  const [status, setStatus] = useState<ConnectionStatus>("connecting");
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const retryCountRef = useRef(0);
+  const maxRetries = 3;
+
+  // Retry function
+  const retry = useCallback(() => {
+    if (!enabled || !symbol) return;
+
+    console.log(`🔄 [useTicker] Manual retry for ${exchange}:${symbol}`);
+    setLoading(true);
+    setError(null);
+    retryCountRef.current = 0;
+
+    const stream = `${symbol.toLowerCase()}@ticker`;
+    wsService.forceReconnect(stream, marketType, exchange);
+  }, [symbol, marketType, exchange, enabled]);
 
   useEffect(() => {
     if (!enabled || !symbol) {
@@ -66,13 +87,39 @@ export function useTicker({
 
     setLoading(true);
     setError(null);
+    retryCountRef.current = 0;
 
     const stream = `${symbol.toLowerCase()}@ticker`;
+
+    // Set timeout for loading state
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      if (loading && !data) {
+        retryCountRef.current++;
+
+        if (retryCountRef.current >= maxRetries) {
+          setError(`Connection timeout for ${exchange.toUpperCase()}. No ticker data received.`);
+          setLoading(false);
+        } else {
+          console.log(`⏱️ [useTicker] Timeout, retrying (${retryCountRef.current}/${maxRetries})...`);
+          wsService.forceReconnect(stream, marketType, exchange);
+        }
+      }
+    }, timeoutMs);
 
     const unsubscribe = wsService.subscribe(
       stream,
       (rawData: any) => {
         try {
+          // Clear timeout on first data
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+          }
+
           // Parse ticker data from WebSocket
           const tickerData: TickerData = {
             symbol: rawData.s || symbol,
@@ -90,6 +137,7 @@ export function useTicker({
           setData(tickerData);
           setLoading(false);
           setError(null);
+          retryCountRef.current = 0;
         } catch (err) {
           console.error("[useTicker] Parse error:", err);
           setError("Failed to parse ticker data");
@@ -103,18 +151,36 @@ export function useTicker({
     const statusInterval = setInterval(() => {
       const currentStatus = wsService.getStatus(stream, marketType, exchange);
       setStatus(currentStatus);
+
+      // If status is error and we have no data, show error
+      if (currentStatus === "error" && !data) {
+        setError(`Connection error for ${exchange.toUpperCase()}`);
+        setLoading(false);
+      }
     }, 1000);
 
     return () => {
       unsubscribe();
       clearInterval(statusInterval);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
-  }, [symbol, marketType, exchange, enabled]);
+  }, [symbol, marketType, exchange, enabled, timeoutMs]);
+
+  // Reset state when exchange changes
+  useEffect(() => {
+    setData(null);
+    setLoading(true);
+    setError(null);
+  }, [exchange]);
 
   return {
     data,
     loading,
     error,
     status,
+    retry,
   };
 }

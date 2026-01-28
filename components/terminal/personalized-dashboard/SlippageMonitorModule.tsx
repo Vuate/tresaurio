@@ -1,6 +1,7 @@
 // components/terminal/personalized-dashboard/SlippageMonitorModule.tsx
 
 import { useState, useMemo, useEffect } from "react";
+import { RefreshCw, AlertTriangle } from "lucide-react";
 import { useOrderBook } from "@/hooks";
 import type { Exchange } from "@/services/WebSocketService";
 
@@ -23,11 +24,12 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
   const [orderType, setOrderType] = useState<"buy" | "sell">("buy");
 
   // ✅ USE REAL WEBSOCKET DATA with multi-exchange support
-  const { bids, asks, midPrice, loading, error, status } = useOrderBook({
+  const { bids, asks, midPrice, loading, error, status, retry } = useOrderBook({
     symbol,
     marketType,
     exchange,
     limit: 100, // Get deep order book for accurate slippage calculation
+    timeoutMs: 30000,
   });
 
   // Save settings to localStorage
@@ -266,11 +268,18 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
         {/* Error State */}
         {error && !loading && (
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-            <div className="flex items-start gap-2">
-              <span className="text-red-400">❌</span>
-              <div className="text-xs text-red-400">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+              <div className="text-xs text-red-400 flex-1">
                 <strong>Error:</strong> {error}
               </div>
+              <button
+                onClick={retry}
+                className="px-2 py-1 bg-red-500/20 hover:bg-red-500/30 rounded text-[10px] font-medium text-red-300 flex items-center gap-1"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Retry
+              </button>
             </div>
           </div>
         )}

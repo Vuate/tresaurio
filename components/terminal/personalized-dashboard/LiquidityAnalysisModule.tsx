@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { BarChart3, TrendingUp, AlertTriangle } from "lucide-react";
+import { BarChart3, TrendingUp, AlertTriangle, RefreshCw } from "lucide-react";
 import { useOrderBook } from "@/hooks";
 import type { Exchange } from "@/services/WebSocketService";
 
@@ -66,11 +66,12 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
   }, [symbol, marketType, exchange, storageKey]);
 
   // ✅ USE REAL WEBSOCKET DATA with multi-exchange support
-  const { bids, asks, midPrice, loading, error, status } = useOrderBook({
+  const { bids, asks, midPrice, loading, error, status, retry } = useOrderBook({
     symbol,
     marketType,
-    exchange, // 🔥 Multi-exchange support
+    exchange,
     limit: 100, // Get deep order book for liquidity analysis
+    timeoutMs: 30000,
   });
 
   // ✅ REAL LIQUIDITY CALCULATION
@@ -209,8 +210,16 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
 
       {/* Error State */}
       {error && !loading && (
-        <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-xs">
-          ❌ Error: {error}
+        <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span className="flex-1">{error}</span>
+          <button
+            onClick={retry}
+            className="px-2 py-1 bg-red-500/20 hover:bg-red-500/30 rounded text-[10px] font-medium flex items-center gap-1"
+          >
+            <RefreshCw className="w-3 h-3" />
+            Retry
+          </button>
         </div>
       )}
 
