@@ -48,13 +48,13 @@ if (!sidebarOpen) return null;
 <div
   ref={sidebarRef}
   data-ui-panel 
-    onWheelCapture={(e) => e.stopPropagation()}   //  EN KRİTİK SATIR
+    onWheelCapture={(e) => e.stopPropagation()}
   onMouseDownCapture={(e) => e.stopPropagation()}
   onPointerDownCapture={(e) => e.stopPropagation()}
   className="
     fixed left-4 top-20 z-40
-    w-[260px] max-h-[80vh]
-        overflow-hidden
+    w-[260px] xl:w-[280px] 2xl:w-[320px] max-h-[80vh]
+    overflow-hidden
     bg-[#041F20]/95 backdrop-blur
     border border-white/10 rounded-xl
     shadow-[0_12px_40px_rgba(0,0,0,0.45)]
@@ -65,12 +65,12 @@ if (!sidebarOpen) return null;
       {/* HEADER */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-white">Sidebar</span>
+          <span className="text-sm xl:text-[15px] 2xl:text-base font-bold text-white">Sidebar</span>
         </div>
 
         <button
           onClick={toggleSidebar}
-          className="text-white/40 hover:text-white transition cursor-pointer"
+          className="text-white/40 hover:text-white transition cursor-pointer xl:text-lg 2xl:text-xl"
         >
           ✕
         </button>
@@ -176,7 +176,7 @@ function SidebarSection({
 }) {
   return (
     <div className="space-y-2">
-      <div className="px-2 text-[10px] tracking-widest font-bold text-white/40">
+      <div className="px-2 text-[10px] xl:text-[10.5px] 2xl:text-[11px] tracking-widest font-bold text-white/40">
         {title}
       </div>
       <div className="space-y-1">{children}</div>
@@ -199,7 +199,7 @@ function SidebarItem({
       className={`
         w-full text-left rounded-lg
         px-3 py-2
-        text-[13px]
+        text-[13px] xl:text-[13.5px] 2xl:text-sm
         transition
         border
         cursor-pointer
@@ -214,4 +214,3 @@ function SidebarItem({
     </button>
   );
 }
-

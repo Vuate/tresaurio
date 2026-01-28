@@ -18,7 +18,6 @@ export default function SignupForm() {
         setLoading(true);
 
         try {
-          // ⏳ Simülasyon (backend bağlanınca burası değişir)
           await new Promise((r) => setTimeout(r, 800));
         } catch {
           setError("Kayıt başarısız");
@@ -26,10 +25,10 @@ export default function SignupForm() {
           setLoading(false);
         }
       }}
-      className="space-y-4"
+      className="space-y-3.5 xl:space-y-3.75 2xl:space-y-4"
     >
       {/* Inputs */}
-      <div className="space-y-3">
+      <div className="space-y-2.5 xl:space-y-2.75 2xl:space-y-3">
         <input
           type="email"
           name="email"
@@ -39,8 +38,13 @@ export default function SignupForm() {
           disabled={loading}
           aria-label="E-posta"
           className="
-            w-full rounded-lg bg-white/5 border border-white/10
-            px-4 py-2.5 text-sm outline-none
+            w-full 
+            rounded-lg xl:rounded-lg 2xl:rounded-xl
+            bg-white/5 border border-white/10
+            px-3.5 xl:px-3.75 2xl:px-4
+            py-2 xl:py-2.25 2xl:py-2.5
+            text-xs xl:text-[13px] 2xl:text-sm
+            outline-none
             text-white
             focus:border-white/20 focus:bg-white/[0.07]
             transition-all
@@ -58,8 +62,13 @@ export default function SignupForm() {
           disabled={loading}
           aria-label="Parola"
           className="
-            w-full rounded-lg bg-white/5 border border-white/10
-            px-4 py-2.5 text-sm outline-none
+            w-full 
+            rounded-lg xl:rounded-lg 2xl:rounded-xl
+            bg-white/5 border border-white/10
+            px-3.5 xl:px-3.75 2xl:px-4
+            py-2 xl:py-2.25 2xl:py-2.5
+            text-xs xl:text-[13px] 2xl:text-sm
+            outline-none
             text-white
             focus:border-white/20 focus:bg-white/[0.07]
             transition-all
@@ -77,8 +86,13 @@ export default function SignupForm() {
           disabled={loading}
           aria-label="Parola tekrar"
           className="
-            w-full rounded-lg bg-white/5 border border-white/10
-            px-4 py-2.5 text-sm outline-none
+            w-full 
+            rounded-lg xl:rounded-lg 2xl:rounded-xl
+            bg-white/5 border border-white/10
+            px-3.5 xl:px-3.75 2xl:px-4
+            py-2 xl:py-2.25 2xl:py-2.5
+            text-xs xl:text-[13px] 2xl:text-sm
+            outline-none
             text-white
             focus:border-white/20 focus:bg-white/[0.07]
             transition-all
@@ -89,7 +103,7 @@ export default function SignupForm() {
       </div>
 
       {/* Agreement */}
-      <label className="flex items-start gap-2 text-xs text-gray-400 cursor-pointer">
+      <label className="flex items-start gap-2 text-[11px] xl:text-[11.5px] 2xl:text-xs text-gray-400 cursor-pointer">
         <input
           type="checkbox"
           name="agreement"
@@ -115,9 +129,9 @@ export default function SignupForm() {
         </span>
       </label>
 
-      {/* Error (şu an görünmez ama hazır) */}
+      {/* Error */}
       {error && (
-        <p className="text-xs text-red-400" role="alert">
+        <p className="text-[11px] xl:text-[11.5px] 2xl:text-xs text-red-400" role="alert">
           {error}
         </p>
       )}
@@ -127,8 +141,12 @@ export default function SignupForm() {
         type="submit"
         disabled={loading}
         className="
-          w-full rounded-lg bg-white text-black
-          py-2.5 text-sm font-medium
+          w-full 
+          rounded-lg xl:rounded-lg 2xl:rounded-xl
+          bg-white text-black
+          py-2 xl:py-2.25 2xl:py-2.5
+          text-xs xl:text-[13px] 2xl:text-sm
+          font-medium
           hover:bg-gray-100
           transition-all
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
@@ -138,32 +156,37 @@ export default function SignupForm() {
       </button>
 
       {/* Divider */}
-      <div className="relative py-3">
+      <div className="relative py-2.5 xl:py-2.75 2xl:py-3">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-white/10"></div>
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-[#0d0f14] px-3 text-xs text-gray-500">
+          <span className="bg-[#0d0f14] px-3 text-[11px] xl:text-[11.5px] 2xl:text-xs text-gray-500">
             veya
           </span>
         </div>
       </div>
 
       {/* Social Logins */}
-      <div className="space-y-2">
+      <div className="space-y-2 xl:space-y-2 2xl:space-y-2">
         <button
           type="button"
           disabled={loading}
           className="
-            w-full flex items-center justify-center gap-2
-            rounded-lg border border-white/10 bg-white/[0.03]
-            px-4 py-2.5 text-sm text-white
+            w-full flex items-center justify-center 
+            gap-2 xl:gap-2 2xl:gap-2
+            rounded-lg xl:rounded-lg 2xl:rounded-xl
+            border border-white/10 bg-white/[0.03]
+            px-3.5 xl:px-3.75 2xl:px-4
+            py-2 xl:py-2.25 2xl:py-2.5
+            text-xs xl:text-[13px] 2xl:text-sm
+            text-white
             hover:bg-white/[0.06] hover:border-white/20
             transition-all
             disabled:opacity-50 cursor-pointer
           "
         >
-          <svg className="w-4 h-4" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5 xl:w-3.75 xl:h-3.75 2xl:w-4 2xl:h-4" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -188,16 +211,21 @@ export default function SignupForm() {
           type="button"
           disabled={loading}
           className="
-            w-full flex items-center justify-center gap-2
-            rounded-lg border border-white/10 bg-white/[0.03]
-            px-4 py-2.5 text-sm text-white
+            w-full flex items-center justify-center 
+            gap-2 xl:gap-2 2xl:gap-2
+            rounded-lg xl:rounded-lg 2xl:rounded-xl
+            border border-white/10 bg-white/[0.03]
+            px-3.5 xl:px-3.75 2xl:px-4
+            py-2 xl:py-2.25 2xl:py-2.5
+            text-xs xl:text-[13px] 2xl:text-sm
+            text-white
             hover:bg-white/[0.06] hover:border-white/20
             transition-all
             disabled:opacity-50 cursor-pointer
           "
         >
           <svg
-            className="w-4 h-4"
+            className="w-3.5 h-3.5 xl:w-3.75 xl:h-3.75 2xl:w-4 2xl:h-4"
             viewBox="0 0 24 24"
             fill="currentColor"
           >

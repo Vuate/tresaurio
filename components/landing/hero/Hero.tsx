@@ -15,14 +15,12 @@ export default function Hero() {
       <div
         className="
           relative z-[5] mt-[140px]
-
-          /* LAPTOP OPTİK DENGE – MİKRO FIX */
           min-[1280px]:pr-10
           min-[1536px]:pr-0
         "
       >
         {/* TITLE */}
-        <h1 className="text-[4rem] font-black leading-tight">
+        <h1 className="text-3xl lg:text-4xl xl:text-[4rem] font-black leading-tight">
           Manage your treasury anywhere <br />
           <span className="bg-gradient-to-br from-white to-[#19d8d0] bg-clip-text text-transparent">
             with Treasurio
@@ -38,11 +36,12 @@ export default function Hero() {
         <CryptoTicker />
       </div>
 
-      {/* 🌍 GLOBE – ALT KATMAN */}
+      {/* 🌍 GLOBE – RESPONSIVE */}
       <div
         className="
-          pointer-events-none absolute bottom-[-350px] left-1/2
-          z-[1] h-[600px] w-[600px] -translate-x-1/2
+          pointer-events-none absolute 
+          bottom-[-280px] lg:bottom-[-320px] xl:bottom-[-350px] 2xl:bottom-[-400px]
+          left-1/2 z-[1] -translate-x-1/2
         "
       >
         <Globe />

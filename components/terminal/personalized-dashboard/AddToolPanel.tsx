@@ -81,7 +81,7 @@ if (!addToolOpen) return null;
   ref={panelRef}
   className="
     fixed left-4 top-20 z-40
-    w-[260px] max-h-[80vh]
+    w-[260px] xl:w-[280px] 2xl:w-[320px] max-h-[80vh]
     bg-[#041F20]/95 backdrop-blur
     border border-white/10 rounded-xl
     shadow-[0_12px_40px_rgba(0,0,0,0.45)]
@@ -104,10 +104,10 @@ if (!addToolOpen) return null;
 
       {/* HEADER */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-white/10 select-none">
-        <div className="text-[13px] font-semibold text-white">Add Tool</div>
+        <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">Add Tool</div>
         <button
           onClick={toggleAddTool}
-          className="text-white/50 hover:text-white transition cursor-pointer"
+          className="text-white/50 hover:text-white transition cursor-pointer xl:text-lg 2xl:text-xl"
         >
           ✕
         </button>
@@ -136,7 +136,7 @@ if (!addToolOpen) return null;
 >
         {Object.entries(grouped).map(([category, mods]) => (
           <div key={category}>
-            <div className="px-1 py-1 text-[10px] uppercase text-white/40 font-bold">
+            <div className="px-1 py-1 text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/40 font-bold">
               {category.replace("-", " ")}
             </div>
 
@@ -153,10 +153,10 @@ if (!addToolOpen) return null;
                     transition cursor-pointer
                   "
                 >
-                  <div className="text-[13px] font-semibold text-white">
+                  <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">
                     {m.title}
                   </div>
-                  <div className="text-[11px] text-white/50 leading-tight">
+                  <div className="text-[11px] xl:text-[11.5px] 2xl:text-xs text-white/50 leading-tight">
                     {m.description}
                   </div>
                 </button>

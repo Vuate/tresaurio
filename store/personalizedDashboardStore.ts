@@ -107,8 +107,8 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
 
     /* ---------- VIEW ---------- */
     zoom: 1,
-    panX: -4500,
-    panY: -4500,
+    panX: 0,
+    panY: 0,
 
     /* ---------- NOTES ---------- */
     notesOpen: true,

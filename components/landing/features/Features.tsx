@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@iconify/react";
+
 export default function Features() {
   return (
     <section className="bg-[#031a1c] py-[90px] text-gray-200">
@@ -20,15 +22,32 @@ export default function Features() {
         </h2>
 
         {/* GRID */}
-        <div className="grid grid-cols-4 gap-12">
-          {/* CARD */}
-          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300">
+<div className="
+  grid
+  grid-cols-1
+  sm:grid-cols-2
+  lg:grid-cols-4
+  gap-8
+  xl:gap-12
+">          {/* CARD */}
+          <div className="relative min-h-[340px] rounded-[28px] p-8
+lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10 blur-[0.5px]" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
             <div className="relative z-10">
-              <div className="mb-8 text-[64px]">📊</div>
-              <h3 className="mb-4 text-[22px] font-semibold text-white">
+<div className="mb-8 flex justify-center">
+  <Icon
+    icon="mdi:chart-bar"
+className="
+  w-12 h-12
+  lg:w-14 lg:h-14
+  xl:w-16 xl:h-16
+  text-teal-400
+"  />
+</div>
+              <h3 className="mb-4 text-lg
+lg:text-[22px] font-semibold text-white">
                 Real-Time Analytics
               </h3>
               <p className="text-[15px] leading-relaxed text-slate-300">
@@ -39,13 +58,23 @@ export default function Features() {
           </div>
 
           {/* CARD */}
-          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300">
+          <div className="relative min-h-[340px] rounded-[28px] p-8
+lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
             <div className="relative z-10">
-              <div className="mb-8 text-[64px]">💼</div>
-              <h3 className="mb-4 text-[22px] font-semibold text-white">
+<div className="mb-8 flex justify-center">
+  <Icon
+    icon="mdi:briefcase-variant"
+className="
+  w-12 h-12
+  lg:w-14 lg:h-14
+  xl:w-16 xl:h-16
+  text-teal-400
+"  />
+</div>              <h3 className="mb-4 text-lg
+lg:text-[22px] font-semibold text-white">
                 Portfolio Management
               </h3>
               <p className="text-[15px] leading-relaxed text-slate-300">
@@ -56,13 +85,23 @@ export default function Features() {
           </div>
 
           {/* CARD */}
-          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300">
+          <div className="relative min-h-[340px] rounded-[28px] p-8
+lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
             <div className="relative z-10">
-              <div className="mb-8 text-[64px]">⚡</div>
-              <h3 className="mb-4 text-[22px] font-semibold text-white">
+<div className="mb-8 flex justify-center">
+  <Icon
+    icon="mdi:lightning-bolt"
+className="
+  w-12 h-12
+  lg:w-14 lg:h-14
+  xl:w-16 xl:h-16
+  text-teal-400
+"  />
+</div>              <h3 className="mb-4 text-lg
+lg:text-[22px] font-semibold text-white">
                 Lightning Fast
               </h3>
               <p className="text-[15px] leading-relaxed text-slate-300">
@@ -73,13 +112,24 @@ export default function Features() {
           </div>
 
           {/* CARD */}
-          <div className="relative min-h-[340px] rounded-[28px] p-[55px] text-center transition-all duration-300">
+          <div className="relative min-h-[340px] rounded-[28px] p-8
+lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
             <div className="relative z-10">
-              <div className="mb-8 text-[64px]">🔗</div>
-              <h3 className="mb-4 text-[22px] font-semibold text-white">
+<div className="mb-8 flex justify-center">
+  <Icon
+    icon="mdi:link-variant"
+className="
+  w-12 h-12
+  lg:w-14 lg:h-14
+  xl:w-16 xl:h-16
+  text-teal-400
+"  />
+</div>              
+<h3 className="mb-4 text-lg
+lg:text-[22px] font-semibold text-white">
                 Multi-Exchange Connectivity
               </h3>
               <p className="text-[15px] leading-relaxed text-slate-300">

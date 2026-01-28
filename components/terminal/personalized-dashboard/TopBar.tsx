@@ -11,8 +11,7 @@ export default function TopBar() {
   const setTopBarHeight = usePersonalizedDashboardStore((s) => s.setTopBarHeight); 
   const router = useRouter();
 
-
-    /* YENİ: Yükseklik ölçümü */
+  /* Yükseklik ölçümü */
   useEffect(() => {
     const measureHeight = () => {
       if (topBarRef.current) {
@@ -30,14 +29,14 @@ export default function TopBar() {
   return (
     <div
       ref={topBarRef} 
-    onMouseDown={(e) => e.preventDefault()}
+      onMouseDown={(e) => e.preventDefault()}
       className="fixed top-0 left-0 right-0 z-50 h-14
         flex items-center justify-between px-6
         bg-[#031A1C]/95 backdrop-blur
         border-b border-white/10 select-none"
     >
       {/* SOL TARAF */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* BACK BUTTON */}
         <button
           onClick={() => router.back()}
@@ -67,14 +66,14 @@ export default function TopBar() {
         </div>
 
         {/* ACTION BUTTONS */}
-        <div className="flex items-center gap-3 ml-6">
+        <div className="flex items-center gap-3 ml-4">
           <button
             onClick={toggleSidebar}
             className="px-4 py-1.5 rounded-lg
               bg-[#041F20]/90
               border border-white/10
               text-teal-300 text-sm font-semibold
-              hover:bg-teal-400/10 transition"
+              hover:bg-teal-400/10 transition cursor-pointer"
           >
             Sidebar
           </button>
@@ -84,7 +83,7 @@ export default function TopBar() {
             className="px-4 py-1.5 rounded-lg
               bg-teal-400/10 border border-teal-400/30
               text-teal-300 text-sm font-semibold
-              hover:bg-teal-400/20 transition"
+              hover:bg-teal-400/20 transition cursor-pointer"
           >
             + Add Tool
           </button>

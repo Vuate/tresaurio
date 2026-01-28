@@ -4,7 +4,7 @@ export default function WorkspaceLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-screen h-screen bg-[#031A1C] overflow-hidden">
+    <div className="w-full h-screen bg-[#031A1C] overflow-auto">
       {children}
     </div>
   );

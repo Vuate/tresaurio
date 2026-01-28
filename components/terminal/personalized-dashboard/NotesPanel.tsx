@@ -1,7 +1,8 @@
 "use client";
 
+import { Icon } from "@iconify/react";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
-import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore"; // 🔥 EKLE
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
 import { useEffect, useRef, useState } from "react";
 import NotificationPopup from "@/components/terminal/personalized-dashboard/NotificationPopup"; 
 
@@ -168,30 +169,34 @@ useEffect(() => {
           />
         )}
 
-        {/* ================= HEADER ================= */}
-        <div
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={toggleNotes}
-          className="h-[48px] px-6 flex items-center justify-between
-            cursor-pointer select-none"
-        >
-          <div className="flex items-center gap-2 text-sm font-semibold text-white">
-            📝 Notes
-          </div>
+{/* ================= HEADER ================= */}
+<div
+  onMouseDown={(e) => e.stopPropagation()}
+  onClick={toggleNotes}
+  className="h-[48px] px-6 xl:px-8 2xl:px-12 flex items-center justify-between
+    cursor-pointer select-none"
+>
+  <div className="flex items-center gap-2 text-sm xl:text-[15px] 2xl:text-base font-semibold text-white">
+    <Icon
+      icon="material-symbols:note-alt-outline"
+      className="text-white w-[1.1em] h-[1.1em] xl:w-[1.15em] xl:h-[1.15em] 2xl:w-[1.2em] 2xl:h-[1.2em]"
+    />
+    Notes
+  </div>
 
-          <div
-            className={`text-white/60 transition-transform duration-300
-              ${notesOpen ? "rotate-180" : ""}`}
-          >
-            ▼
-          </div>
-        </div>
+  <div
+    className={`text-white/60 transition-transform duration-300 xl:text-lg 2xl:text-xl
+      ${!notesOpen ? "rotate-180" : ""}`}
+  >
+    ▲
+  </div>
+</div>
 
         {/* ================= CONTENT ================= */}
         {notesOpen && (
-          <div className="h-[calc(100%-48px)] flex gap-4 px-6 pb-4 overflow-hidden select-none">
+          <div className="h-[calc(100%-48px)] flex gap-4 xl:gap-5 2xl:gap-6 px-6 xl:px-8 2xl:px-12 pb-4 xl:pb-5 2xl:pb-6 overflow-hidden select-none">
             {/* INPUT */}
-            <div className="flex flex-col w-1/2 gap-2">
+            <div className="flex flex-col w-1/2 gap-2 xl:gap-2.5 2xl:gap-3">
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
@@ -204,16 +209,16 @@ useEffect(() => {
                 placeholder="Write your trading notes…"
                 className="flex-1 resize-none rounded-lg
                   bg-black/30 border border-white/10
-                  p-3 text-xs text-white
+                  p-3 xl:p-3.5 2xl:p-4 text-xs xl:text-[13px] 2xl:text-sm text-white
                   focus:outline-none focus:border-teal-400"
               />
 
               <button
                 onClick={handleSave}
-                className="self-end px-4 py-1.5 rounded-md
+                className="self-end px-4 xl:px-5 2xl:px-6 py-1.5 xl:py-2 2xl:py-2.5 rounded-md
                   bg-teal-400/20 text-teal-300
-                  text-xs font-semibold
-                  hover:bg-teal-400/30 transition"
+                  text-xs xl:text-[13px] 2xl:text-sm font-semibold
+                  hover:bg-teal-400/30 transition cursor-pointer"
               >
                 Save Note
               </button>
@@ -223,7 +228,7 @@ useEffect(() => {
             <div className="
               flex-1 
               overflow-y-auto 
-              space-y-2 
+              space-y-2 xl:space-y-2.5 2xl:space-y-3
               pr-2
 
               [&::-webkit-scrollbar]:w-2
@@ -237,16 +242,16 @@ useEffect(() => {
               scrollbar-track-transparent
             ">
               {notes.length === 0 && (
-                <div className="text-xs text-white/40">No notes yet</div>
+                <div className="text-xs xl:text-[13px] 2xl:text-sm text-white/40">No notes yet</div>
               )}
 
               {notes.map((n) => (
                 <div
                   key={n.id}
                   className="rounded-lg border border-white/10
-                    bg-white/5 px-3 py-2 text-xs text-white/80"
+                    bg-white/5 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80"
                 >
-                  <div className="text-[10px] text-white/40 mb-1">
+                  <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-white/40 mb-1">
                     {new Date(n.createdAt).toLocaleString()}
                   </div>
                   {n.text}

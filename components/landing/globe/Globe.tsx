@@ -3,7 +3,6 @@
 import * as THREE from "three";
 import { useEffect, useRef } from "react";
 
-// 🔥 SADECE TEK SEFER INIT İÇİN FLAG
 let globeInstance: any = null;
 
 export default function Globe() {
@@ -12,18 +11,16 @@ export default function Globe() {
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // ★ Eğer globe daha önce oluşturulduysa tekrar oluşturma
     if (globeInstance) {
       mountRef.current.appendChild(globeInstance.renderer.domElement);
       return;
     }
 
-    // ▼ İlk defa oluşturuluyor
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
       40,
-      mountRef.current.clientWidth / mountRef.current.clientHeight,
+      1, // 1:1 aspect ratio (kare)
       0.1,
       1000
     );
@@ -38,7 +35,6 @@ export default function Globe() {
 
     mountRef.current.appendChild(renderer.domElement);
 
-    // 🌐 TEXTURE
     const textureLoader = new THREE.TextureLoader();
     const dotMap = textureLoader.load("/textures/dots5.png", (texture) => {
       texture.offset.y = -0.16;
@@ -62,11 +58,21 @@ export default function Globe() {
 
     animate();
 
-    // ★ İlk Globe oluşturuldu → kaydediyoruz
-    globeInstance = { renderer };
+    globeInstance = { renderer, camera };
+
+    // Responsive resize
+    const handleResize = () => {
+      if (!mountRef.current) return;
+      const width = mountRef.current.clientWidth;
+      const height = mountRef.current.clientHeight;
+      
+      renderer.setSize(width, height);
+        };
+
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      // Unmount sırasında DOM’u temizle ama instance kalacak
+      window.removeEventListener('resize', handleResize);
       try {
         mountRef.current?.removeChild(renderer.domElement);
       } catch {}
@@ -74,7 +80,7 @@ export default function Globe() {
   }, []);
 
   return (
-    <div className="relative w-[500px] h-[500px] mx-auto">
+    <div className="relative w-[480px] lg:w-[540px] xl:w-[600px] 2xl:w-[680px] h-[480px] lg:h-[540px] xl:h-[600px] 2xl:h-[680px] mx-auto">
       <div
         ref={mountRef}
         className="w-full h-full pointer-events-none select-none"

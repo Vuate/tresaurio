@@ -56,7 +56,6 @@ export default function TickerBar() {
     return () => clearInterval(i);
   }, []);
 
-  // 🔒 GERÇEK GENİŞLİĞE GÖRE AKIŞ
   useEffect(() => {
     if (!trackRef.current) return;
 
@@ -70,15 +69,20 @@ export default function TickerBar() {
   if (!items.length) return null;
 
   return (
-    <div className="relative w-full overflow-hidden border-y border-white/10 bg-[#041f20]/95 py-4">
+    <div className="relative w-full overflow-hidden border-y border-white/10 bg-[#041f20]/95 py-3 xl:py-4 2xl:py-5">
       <div
         ref={trackRef}
-        className="ticker-track flex flex-nowrap"
+        className="flex flex-nowrap"
+        style={{
+          width: 'max-content',
+          willChange: 'transform',
+          animation: 'marquee 25s linear infinite',
+        }}
       >
         {[...Array(3)].map((_, blockIndex) => (
           <div
             key={blockIndex}
-            className="flex items-center gap-6 px-6"
+            className="flex items-center gap-4 xl:gap-6 2xl:gap-7 px-4 xl:px-6 2xl:px-7"
           >
             {items.map((item, i) => (
               <TickerItem key={`${blockIndex}-${i}`} item={item} />
@@ -88,12 +92,6 @@ export default function TickerBar() {
       </div>
 
       <style jsx>{`
-        .ticker-track {
-          width: max-content;
-          animation: marquee 25s linear infinite;
-          will-change: transform;
-        }
-
         @keyframes marquee {
           from {
             transform: translateX(0);
@@ -109,11 +107,11 @@ export default function TickerBar() {
 
 function TickerItem({ item }: { item: Item }) {
   return (
-    <div className="flex min-w-[220px] items-center gap-3 whitespace-nowrap rounded-full bg-white/5 px-6 py-3 text-sm">
+    <div className="flex min-w-[190px] xl:min-w-[220px] 2xl:min-w-[240px] items-center gap-2.5 xl:gap-3 2xl:gap-3.5 whitespace-nowrap rounded-full bg-white/5 px-5 xl:px-6 2xl:px-7 py-2.5 xl:py-3 2xl:py-3.5 text-xs xl:text-sm 2xl:text-[15px]">
       <img
         src={item.icon}
         alt={item.name}
-        className="h-[22px] w-[22px] rounded-full"
+        className="h-[18px] xl:h-[22px] 2xl:h-[24px] w-[18px] xl:w-[22px] 2xl:w-[24px] rounded-full"
       />
       <span className="font-semibold text-white">{item.name}</span>
       <span className="text-gray-400">{item.price}</span>
