@@ -46,7 +46,7 @@ function SymbolEfficiencyTracker({
   symbol: string;
   marketType: "spot" | "futures";
   exchange: Exchange;
-}) {
+}): EfficiencyData | null {
   // Get order book data with multi-exchange support
   // Use limit: 20 for Binance compatibility (max supported)
   const { bids, asks, spread, spreadPercent, midPrice, loading: obLoading, error: obError } = useOrderBook({
@@ -81,7 +81,7 @@ function SymbolEfficiencyTracker({
         volume24h: 0,
         volatility: 0,
         loading: false,
-        error,
+        error: error as string,
       };
     }
 
