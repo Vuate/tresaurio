@@ -143,7 +143,6 @@ const animate = () => {
     const clampedPanY = Math.min(maxPanY, Math.max(minPanY, nextPanY));
     
     store.setPan(clampedPanX, clampedPanY);
-    // 🔥 startPan'i GÜNCELLEME! Pan yapınca window birlikte hareket etmeli
   }
 
 // === WINDOW POZİSYONUNU HESAPLA ===
@@ -178,6 +177,7 @@ const animate = () => {
   };
 
 const onUp = () => {
+    isDragging = false; 
     setIsDraggingWindow(false); // 🔥 EKLE
 
 if (animationFrameId) cancelAnimationFrame(animationFrameId);

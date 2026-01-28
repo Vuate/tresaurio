@@ -67,7 +67,10 @@ export default function CryptoTicker() {
   return (
     <div
       className="
-        mx-auto mt-[72px] flex max-w-[1400px] gap-6
+        mx-auto 
+        mt-[56px] xl:mt-[72px] 2xl:mt-[80px]
+        flex max-w-[1400px] 
+        gap-4 xl:gap-6 2xl:gap-7
         overflow-x-auto px-6
         max-[1200px]:flex-wrap max-[1200px]:justify-center
       "
@@ -79,31 +82,50 @@ export default function CryptoTicker() {
           <div
             key={coin.id}
             className="
-              flex h-[90px] w-[180px] flex-shrink-0 items-center gap-3
-              rounded-[18px] bg-[rgba(4,31,32,0.9)] p-5
+              flex items-center
+              h-[78px] xl:h-[90px] 2xl:h-[100px]
+              w-[160px] xl:w-[180px] 2xl:w-[200px]
+              flex-shrink-0
+              gap-2.5 xl:gap-3 2xl:gap-3.5
+              rounded-[16px] xl:rounded-[18px] 2xl:rounded-[20px]
+              bg-[rgba(4,31,32,0.9)] 
+              p-4 xl:p-5 2xl:p-6
             "
           >
-            {/* Icon */}
+            {/* Icon - Responsive size */}
             <img
               src={coin.image}
               alt={coin.name}
-              className="h-[42px] w-[42px]"
+              className="
+                h-[36px] xl:h-[42px] 2xl:h-[48px]
+                w-[36px] xl:w-[42px] 2xl:w-[48px]
+              "
             />
 
             {/* Info */}
-            <div className="flex min-w-0 flex-col gap-1">
-              <span className="text-[14px] font-bold tracking-wide text-white">
+            <div className="flex min-w-0 flex-col gap-0.5 xl:gap-1">
+              <span className="
+                text-[13px] xl:text-[14px] 2xl:text-[15px]
+                font-bold tracking-wide text-white
+              ">
                 {coin.symbol.toUpperCase()}
               </span>
 
-              <span className="whitespace-nowrap text-[15px] text-gray-200 tabular-nums">
+              <span className="
+                whitespace-nowrap 
+                text-[14px] xl:text-[15px] 2xl:text-[16px]
+                text-gray-200 tabular-nums
+              ">
                 ${coin.current_price.toLocaleString("en-US")}
               </span>
 
               <span
-                className={`whitespace-nowrap text-[13px] font-semibold ${
-                  isUp ? "text-green-400" : "text-red-400"
-                }`}
+                className={`
+                  whitespace-nowrap 
+                  text-[12px] xl:text-[13px] 2xl:text-[14px]
+                  font-semibold 
+                  ${isUp ? "text-green-400" : "text-red-400"}
+                `}
               >
                 {isUp ? "▲" : "▼"}{" "}
                 {coin.price_change_percentage_24h.toFixed(2)}%

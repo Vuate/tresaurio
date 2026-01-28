@@ -6,19 +6,12 @@ export default function PricingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className="min-h-screen w-full bg-[#031A1C]"
-      style={{
-        ["--topbar-height" as any]: "80px",
-      }}
-    >
+    <div className="min-h-screen w-full bg-[#031A1C]">
       <Navbar />
 
-      {/* ✅ Tek kaynak kullanımı */}
-      <div className="pt-[var(--topbar-height)] px-6">
+      <div className="pt-16 xl:pt-18 2xl:pt-20 px-4 xl:px-5 2xl:px-6">
         {children}
       </div>
     </div>
   );
 }
-

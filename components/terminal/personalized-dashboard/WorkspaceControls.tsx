@@ -178,17 +178,16 @@ console.log("calculated top:", Math.max(
 ));
 console.log("max possible top:", minimapHeaderHeight + actualMapHeight - viewportH);
 
-const bottomOffset = notesBarHeight + 16;
-
+const bottomOffset = notesBarHeight + (window.innerWidth >= 1536 ? 24 : window.innerWidth >= 1280 ? 20 : 16);
 
   return (
     <div
-      className="fixed right-6 z-50"
+className="fixed right-6 xl:right-8 2xl:right-12 z-50"
       style={{ bottom: bottomOffset }}
       onMouseEnter={() => setMapOpen(true)}
       onMouseLeave={() => setMapOpen(false)}
     >
-      <div className="flex items-end gap-4">
+<div className="flex items-end gap-4 xl:gap-5 2xl:gap-6">
         {/* MAP */}
         <div
           className={`
@@ -202,7 +201,7 @@ const bottomOffset = notesBarHeight + 16;
               className="
                 absolute inset-0
                 flex items-center justify-center
-                text-teal-400 text-sm leading-none
+text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
                 select-none
                 pointer-events-none
               "
@@ -223,7 +222,7 @@ const bottomOffset = notesBarHeight + 16;
               ref={headerRef}
               className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 flex items-center px-3"
             >
-              <span className="text-[11px] text-white/40 font-bold uppercase select-none pointer-events-none">
+<span className="text-[11px] xl:text-xs 2xl:text-sm text-white/40 font-bold uppercase select-none pointer-events-none">
                 Map
               </span>
             </div>
@@ -279,7 +278,7 @@ const bottomOffset = notesBarHeight + 16;
 
         {/* CONTROLS */}
         <div
-          className="flex flex-col gap-2 select-none"
+className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
           onMouseDown={(e) => e.preventDefault()}
         >
           <ZoomBtn onClick={() => handleZoom(0.1)}>+</ZoomBtn>
@@ -289,10 +288,10 @@ const bottomOffset = notesBarHeight + 16;
               w-8 h-8 rounded-lg
               bg-[#031A1C]/95
               border border-white/10
-              text-[10px] font-bold text-teal-400
+text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-teal-400
               flex items-center justify-center
               select-none
-              pointer-events-none
+              pointer-events-none cursor-default
             "
           >
             {Math.round(zoom * 100)}%
@@ -321,10 +320,11 @@ function ZoomBtn({
         w-8 h-8 rounded-lg
         bg-[#031A1C]/95
         border border-white/10
-        text-white text-sm
+       text-white text-sm xl:text-base 2xl:text-lg
         hover:bg-teal-400/20
         transition
         select-none
+        cursor-pointer
       "
     >
       {children}

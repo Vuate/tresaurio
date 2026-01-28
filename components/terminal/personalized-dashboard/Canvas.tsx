@@ -244,7 +244,7 @@ useEffect(() => {
     if (zoomChanged) setZoom(currentZoom);
     setPan(newPanX, newPanY);
   }
-}, [ topBarHeight, notesBarHeight, zoom, panX, panY]);
+}, [ topBarHeight, notesBarHeight, setZoom, setPan]);
 
 
 
@@ -263,13 +263,7 @@ style={{
     bottom: notesBarHeight || 0, 
   cursor: "grab",
 
-  backgroundColor: "#041F20",
-  backgroundImage: `
-    linear-gradient(rgba(25,216,208,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(25,216,208,0.03) 1px, transparent 1px),
-    radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1px)
-  `,
-  backgroundSize: "50px 50px",
+
 }}
 
 

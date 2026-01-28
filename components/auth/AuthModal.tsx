@@ -21,36 +21,28 @@ export default function AuthModal({
   const [mounted, setMounted] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  // 🔒 Mount safety (Next.js / SSR)
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // 🔒 Body scroll lock
   useEffect(() => {
     if (!open) return;
-
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
     return () => {
       document.body.style.overflow = originalOverflow;
     };
   }, [open]);
 
-  // ⎋ ESC ile kapatma
   useEffect(() => {
     if (!open) return;
-
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  // 🎯 Focus modal içine girsin
   useEffect(() => {
     if (open && dialogRef.current) {
       dialogRef.current.focus();
@@ -61,7 +53,7 @@ export default function AuthModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 xl:p-3.5 2xl:p-4"
       role="dialog"
       aria-modal="true"
     >
@@ -76,29 +68,33 @@ export default function AuthModal({
         ref={dialogRef}
         tabIndex={-1}
         className="
-          relative w-full max-w-[400px] z-10
-          rounded-xl border border-white/10
-          bg-[#0d0f14] p-6
+          relative w-full 
+          max-w-[360px] xl:max-w-[380px] 2xl:max-w-[400px]
+          z-10
+          rounded-lg xl:rounded-xl 2xl:rounded-2xl
+          border border-white/10
+          bg-[#0d0f14] 
+          p-5 xl:p-5.5 2xl:p-6
           shadow-2xl
           outline-none
         "
       >
-        {/* === HEADER === */}
-        <div className="mb-6 flex items-start justify-between">
-          <div className="flex items-center gap-3">
+        {/* HEADER */}
+        <div className="mb-5 xl:mb-5.5 2xl:mb-6 flex items-start justify-between">
+          <div className="flex items-center gap-2.5 xl:gap-2.75 2xl:gap-3">
             <div className="relative">
               <div className="absolute inset-0 bg-white/5 rounded-lg blur-md" />
               <img
                 src="/treasurio.png"
                 alt="Treasurio"
-                className="w-10 h-10 object-contain relative z-10"
+                className="w-9 h-9 xl:w-9.5 xl:h-9.5 2xl:w-10 2xl:h-10 object-contain relative z-10"
               />
             </div>
             <div>
-              <span className="text-lg font-semibold block text-gray-100">
+              <span className="text-base xl:text-[17px] 2xl:text-lg font-semibold block text-gray-100">
                 Treasurio
               </span>
-              <span className="text-[10px] text-gray-500 block">
+              <span className="text-[9px] xl:text-[9.5px] 2xl:text-[10px] text-gray-500 block">
                 Terminal
               </span>
             </div>
@@ -110,7 +106,7 @@ export default function AuthModal({
             aria-label="Close"
           >
             <svg
-              className="w-5 h-5"
+              className="w-4.5 h-4.5 xl:w-4.75 xl:h-4.75 2xl:w-5 2xl:h-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -125,12 +121,15 @@ export default function AuthModal({
           </button>
         </div>
 
-        {/* === TABS === */}
-        <div className="flex gap-1 mb-5 bg-white/5 rounded-lg p-1">
+        {/* TABS */}
+        <div className="flex gap-1 mb-4 xl:mb-4.5 2xl:mb-5 bg-white/5 rounded-lg p-1">
           <button
             onClick={() => onChange("login")}
             className={`
-              flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer
+              flex-1 
+              py-1.5 xl:py-1.5 2xl:py-1.5
+              text-xs xl:text-[13px] 2xl:text-sm
+              font-medium rounded-md transition-all cursor-pointer
               ${
                 mode === "login"
                   ? "bg-white/10 text-white"
@@ -144,7 +143,10 @@ export default function AuthModal({
           <button
             onClick={() => onChange("signup")}
             className={`
-              flex-1 py-1.5 text-sm font-medium rounded-md transition-all cursor-pointer
+              flex-1 
+              py-1.5 xl:py-1.5 2xl:py-1.5
+              text-xs xl:text-[13px] 2xl:text-sm
+              font-medium rounded-md transition-all cursor-pointer
               ${
                 mode === "signup"
                   ? "bg-white/10 text-white"
@@ -156,12 +158,12 @@ export default function AuthModal({
           </button>
         </div>
 
-        {/* === CONTENT === */}
+        {/* CONTENT */}
         {mode === "login" ? <LoginForm /> : <SignupForm />}
 
-        {/* === FOOTER === */}
-        <div className="mt-4 text-center">
-          <p className="text-xs text-gray-500">
+        {/* FOOTER */}
+        <div className="mt-3.5 xl:mt-3.75 2xl:mt-4 text-center">
+          <p className="text-[11px] xl:text-[11.5px] 2xl:text-xs text-gray-500">
             {mode === "login"
               ? "Hesabınız yok mu? "
               : "Zaten hesabınız var mı? "}

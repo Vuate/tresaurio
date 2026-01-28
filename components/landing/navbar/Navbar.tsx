@@ -9,11 +9,9 @@ export default function Navbar() {
   const [hideNavbar, setHideNavbar] = useState(false);
   const router = useRouter();
 
-  // === AUTH MODAL STATE ===
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
-  // === Navbar Hide Logic ===
   useEffect(() => {
     const pricingSection = document.getElementById("pricing-table");
     if (!pricingSection) return;
@@ -27,9 +25,11 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  // === Glass Base Class ===
   const glassBase = `
-    relative overflow-hidden rounded-2xl px-6 py-3 text-white
+    relative overflow-hidden rounded-2xl 
+    px-5 xl:px-5.5 2xl:px-6 
+    py-2.5 xl:py-2.75 2xl:py-3 
+    text-white
     backdrop-blur-xl transition-all duration-300
     cursor-pointer
 
@@ -50,33 +50,38 @@ export default function Navbar() {
       <nav
         className={`
           fixed top-0 left-0 z-50
-          w-full h-20 px-8
+          w-full 
+          h-16 xl:h-18 2xl:h-20
+          px-6 xl:px-7 2xl:px-8
           flex items-center justify-between
           transition-transform duration-300
           ${hideNavbar ? "-translate-y-full" : "translate-y-0"}
           bg-[#031A1C]/80 backdrop-blur-2xl
-          max-[2560px]:mx-auto
         `}
       >
-        {/* === Logo === */}
+        {/* Logo */}
         <div
-          className="flex items-center gap-3 cursor-pointer"
+          className="flex items-center gap-2.5 xl:gap-2.75 2xl:gap-3 cursor-pointer"
           onClick={() => router.push("/")}
         >
           <img
             src="/treasurio.png"
             alt="Treasurio Logo"
-            className="w-16 h-16 object-contain"
+            className="w-12 h-12 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 object-contain"
           />
-          <span className="text-white font-semibold text-3xl leading-none">
+          <span className="text-white font-semibold text-2xl xl:text-[28px] 2xl:text-3xl leading-none">
             Treasurio
           </span>
         </div>
 
-        {/* === Menü === */}
+        {/* Menü */}
         <div
           className="
-            flex-1 flex items-center gap-10 ml-16 text-gray-300 text-sm
+            flex-1 flex items-center 
+            gap-8 xl:gap-9 2xl:gap-10 
+            ml-12 xl:ml-14 2xl:ml-16 
+            text-gray-300 
+            text-xs xl:text-[13px] 2xl:text-sm
             [&>button]:inline-block [&>button]:px-1 [&>button]:font-medium
             [&>button]:transition [&>button]:duration-150 [&>button]:ease-out
             [&>button]:cursor-pointer [&>button]:transform
@@ -89,7 +94,6 @@ export default function Navbar() {
             TERMINAL
           </button>
 
-          {/* 🔒 LEARN – geçici olarak kapalı */}
           <button
             disabled
             title="Coming Soon"
@@ -102,8 +106,8 @@ export default function Navbar() {
           <button onClick={() => router.push("/pricing")}>PRICING</button>
         </div>
 
-        {/* === Sağ Butonlar (Auth) === */}
-        <div className="flex items-center gap-4">
+        {/* Auth Buttons */}
+        <div className="flex items-center gap-3 xl:gap-3.5 2xl:gap-4">
           <Button
             onClick={() => {
               setAuthMode("login");
@@ -111,7 +115,7 @@ export default function Navbar() {
             }}
             className={
               glassBase +
-              " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200"
+              " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200 text-xs xl:text-[13px] 2xl:text-sm"
             }
           >
             LOG IN
@@ -124,7 +128,7 @@ export default function Navbar() {
             }}
             className={
               glassBase +
-              " border border-white/40 bg-white/5 hover:text-teal-200"
+              " border border-white/40 bg-white/5 hover:text-teal-200 text-xs xl:text-[13px] 2xl:text-sm"
             }
           >
             SIGN UP
@@ -132,7 +136,6 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* === AUTH MODAL === */}
       <AuthModal
         open={authOpen}
         mode={authMode}
