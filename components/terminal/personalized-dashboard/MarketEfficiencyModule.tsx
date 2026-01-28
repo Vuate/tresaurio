@@ -1,6 +1,7 @@
 // components/terminal/personalized-dashboard/MarketEfficiencyModule.tsx
 
 import { useState, useMemo, useEffect } from "react";
+import { RefreshCw, AlertTriangle } from "lucide-react";
 import { useOrderBook, useTicker } from "@/hooks";
 import type { Exchange } from "@/services/WebSocketService";
 
@@ -24,6 +25,7 @@ interface EfficiencyData {
   volume24h: number;
   volatility: number;
   loading: boolean;
+  error?: string | null;
 }
 
 const TRACKED_SYMBOLS = [
@@ -44,26 +46,45 @@ function SymbolEfficiencyTracker({
   symbol: string;
   marketType: "spot" | "futures";
   exchange: Exchange;
-}) {
+}): EfficiencyData | null {
   // Get order book data with multi-exchange support
-  const { bids, asks, spread, spreadPercent, midPrice, loading: obLoading } = useOrderBook({
+  // Use limit: 20 for Binance compatibility (max supported)
+  const { bids, asks, spread, spreadPercent, midPrice, loading: obLoading, error: obError } = useOrderBook({
     symbol,
     marketType,
-    exchange, // 🔥 Multi-exchange support
-    limit: 50,
+    exchange,
+    limit: 20, // Binance max is 20 for WebSocket
+    timeoutMs: 30000,
   });
 
   // Get ticker data with multi-exchange support
-  const { data: ticker, loading: tickerLoading } = useTicker({
+  const { data: ticker, loading: tickerLoading, error: tickerError } = useTicker({
     symbol,
     marketType,
-    exchange, // 🔥 Multi-exchange support
+    exchange,
+    timeoutMs: 30000,
   });
 
   const loading = obLoading || tickerLoading;
+  const error = obError || tickerError;
 
   // Calculate efficiency metrics
   const efficiency = useMemo(() => {
+    // Return error state if there's an error
+    if (error) {
+      return {
+        symbol,
+        score: 0,
+        spread: 0,
+        spreadPercent: 0,
+        depth: 0,
+        volume24h: 0,
+        volatility: 0,
+        loading: false,
+        error: error as string,
+      };
+    }
+
     if (loading || !bids || !asks || !ticker || bids.length === 0 || asks.length === 0) {
       return null;
     }
@@ -103,7 +124,7 @@ function SymbolEfficiencyTracker({
       volatility,
       loading: false,
     };
-  }, [symbol, bids, asks, ticker, midPrice, spreadPercent, loading]);
+  }, [symbol, bids, asks, ticker, midPrice, spread, spreadPercent, loading, error]);
 
   return efficiency;
 }
@@ -154,18 +175,21 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
   }, [btcData, ethData, solData, bnbData, xrpData, adaData]);
 
   const sortedData = useMemo(() => {
-    return [...allData].sort((a, b) => {
-      switch (sortBy) {
-        case "score":
-          return b.score - a.score;
-        case "spread":
-          return a.spreadPercent - b.spreadPercent;
-        case "volume":
-          return b.volume24h - a.volume24h;
-        default:
-          return 0;
-      }
-    });
+    // Filter out error items for display
+    return [...allData]
+      .filter(d => !d.error)
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "score":
+            return b.score - a.score;
+          case "spread":
+            return a.spreadPercent - b.spreadPercent;
+          case "volume":
+            return b.volume24h - a.volume24h;
+          default:
+            return 0;
+        }
+      });
   }, [allData, sortBy]);
 
   const getScoreColor = (score: number) => {
@@ -250,11 +274,25 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        {sortedData.length === 0 ? (
+        {/* Check if all data has errors */}
+        {allData.length > 0 && allData.every(d => d.error) ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <AlertTriangle className="w-8 h-8 text-red-400 mx-auto mb-2" />
+              <div className="text-xs text-red-400 mb-2">Failed to load market data</div>
+              <div className="text-[10px] text-white/40">
+                {exchange.toUpperCase()} connection error
+              </div>
+            </div>
+          </div>
+        ) : sortedData.length === 0 ? (
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-2"></div>
               <div className="text-xs text-white/60">Loading market data...</div>
+              <div className="text-[10px] text-white/40 mt-1">
+                Connecting to {exchange.toUpperCase()}...
+              </div>
             </div>
           </div>
         ) : (

@@ -1,9 +1,9 @@
 // components/terminal/personalized-dashboard/OrderBookModule.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { wsService } from "@/services/WebSocketService";
-import { Plus } from "lucide-react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { wsService, type Exchange, type ConnectionStatus } from "@/services/WebSocketService";
+import { Plus, RefreshCw, AlertCircle } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -90,6 +90,14 @@ export default function OrderBookModule({
   const [showAddModal, setShowAddModal] = useState(false);
   const [baseAsset, setBaseAsset] = useState("");
   const [quoteAsset, setQuoteAsset] = useState("");
+  const [status, setStatus] = useState<ConnectionStatus>("connecting");
+  const [error, setError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const retryCountRef = useRef(0);
+  const maxRetries = 3;
+  const timeoutMs = 30000;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -103,17 +111,56 @@ export default function OrderBookModule({
     }
   }, [symbol, symbolStorageKey]);
 
+  // Retry handler
+  const handleRetry = useCallback(() => {
+    const stream = `${symbol.toLowerCase()}@depth20`;
+    console.log(`🔄 [OrderBook] Manual retry for ${exchange}:${symbol}`);
+    setIsRetrying(true);
+    setError(null);
+    retryCountRef.current = 0;
+    setOrderBookData({ bids: [], asks: [], mid: null, source: "mock" });
+    wsService.forceReconnect(stream, marketType, exchange as Exchange);
+    setTimeout(() => setIsRetrying(false), 1000);
+  }, [symbol, exchange, marketType]);
+
   useEffect(() => {
     let mounted = true;
 
-    // 🔥 Binance uses @depth20 for partial book depth (20 levels)
+    // Reset state on exchange/symbol change
+    setOrderBookData({ bids: [], asks: [], mid: null, source: "mock" });
+    setError(null);
+    setStatus("connecting");
+    retryCountRef.current = 0;
+
     const stream = `${symbol.toLowerCase()}@depth20`;
 
-    // 🔥 Multi-exchange support - All exchanges now supported via WebSocketService
+    // Set timeout for loading state
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      if (mounted && orderBookData.bids.length === 0 && orderBookData.asks.length === 0) {
+        retryCountRef.current++;
+        if (retryCountRef.current >= maxRetries) {
+          setError(`Connection timeout for ${(exchange as string).toUpperCase()}. No data received.`);
+        } else {
+          console.log(`⏱️ [OrderBook] Timeout, retrying (${retryCountRef.current}/${maxRetries})...`);
+          wsService.forceReconnect(stream, marketType, exchange as Exchange);
+        }
+      }
+    }, timeoutMs);
+
     const unsubscribe = wsService.subscribe(
       stream,
       (data) => {
         if (!mounted) return;
+
+        // Clear timeout on first data
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
 
         try {
           if (data.bids && data.asks) {
@@ -129,18 +176,32 @@ export default function OrderBookModule({
                 : null;
 
             setOrderBookData({ bids, asks, mid, source: "api" });
+            setError(null);
+            retryCountRef.current = 0;
           }
-        } catch (error) {
-          console.error("[OrderBook] Parse error:", error);
+        } catch (err) {
+          console.error("[OrderBook] Parse error:", err);
+          setError("Failed to parse order book data");
         }
       },
       marketType,
-      exchange as any // 🔥 Pass exchange parameter for multi-exchange support
+      exchange as Exchange
     );
+
+    // Status check interval
+    const statusInterval = setInterval(() => {
+      const currentStatus = wsService.getStatus(stream, marketType, exchange as Exchange);
+      setStatus(currentStatus);
+    }, 1000);
 
     return () => {
       mounted = false;
       unsubscribe();
+      clearInterval(statusInterval);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     };
   }, [symbol, exchange, marketType]);
 
@@ -166,7 +227,7 @@ export default function OrderBookModule({
     setShowAddModal(false);
   };
 
-  const { bids, asks, mid, source } = orderBookData;
+  const { bids, asks, mid } = orderBookData;
 
   const bestBid = bids[0]?.price ?? null;
   const bestAsk = asks[0]?.price ?? null;
@@ -251,14 +312,38 @@ export default function OrderBookModule({
           <span className="text-white/40">•</span>{" "}
           <span
             className={
-              source === "api" ? "text-emerald-400" : "text-yellow-400"
+              status === "connected"
+                ? "text-emerald-400"
+                : status === "fallback"
+                  ? "text-orange-400"
+                  : status === "error"
+                    ? "text-red-400"
+                    : "text-yellow-400"
             }
           >
-            {source === "api" ? "LIVE" : "MOCK"}
+            {status === "connected"
+              ? "LIVE"
+              : status === "fallback"
+                ? "REST"
+                : status === "error"
+                  ? "ERROR"
+                  : "CONNECTING"}
           </span>
         </div>
 
         <div className="flex gap-2">
+          {/* Retry Button */}
+          {(error || status === "error") && (
+            <button
+              onClick={handleRetry}
+              disabled={isRetrying}
+              className="h-8 px-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 hover:bg-red-500/30 transition-colors flex items-center gap-1 disabled:opacity-50"
+              title="Retry connection"
+            >
+              <RefreshCw className={`w-3 h-3 ${isRetrying ? "animate-spin" : ""}`} />
+            </button>
+          )}
+
           <select
             value={exchange}
             onChange={(e) => setExchange(e.target.value)}
@@ -279,6 +364,32 @@ export default function OrderBookModule({
           </button>
         </div>
       </div>
+
+      {/* Error State */}
+      {error && (
+        <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
+          <button
+            onClick={handleRetry}
+            className="ml-auto px-2 py-1 bg-red-500/20 hover:bg-red-500/30 rounded text-[10px] font-medium"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {!error && bids.length === 0 && asks.length === 0 && (
+        <div className="px-3 py-8 rounded-lg bg-white/5 border border-white/10">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
+            <div className="text-xs text-white/60">
+              Connecting to {(exchange as string).toUpperCase()}...
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
         <div>
