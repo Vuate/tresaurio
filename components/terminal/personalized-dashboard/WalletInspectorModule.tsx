@@ -156,12 +156,50 @@ const fetchWalletData = async (address: string, chain: Chain): Promise<WalletDat
       nativeSymbol = "SOL";
       priceSymbol = "SOLUSDT";
 
-      // Fetch SOL balance from Solscan API
-      const accountRes = await fetch(`https://public-api.solscan.io/account/${address}`);
-      const accountData = await accountRes.json();
+      // Fetch SOL balance using Solana RPC (more reliable)
+      try {
+        const rpcRes = await fetch("https://api.mainnet-beta.solana.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "getBalance",
+            params: [address],
+          }),
+        });
 
-      balance = accountData.lamports ? accountData.lamports / 1e9 : 0;
-      transactions24h = 0; // Would need separate API call
+        const rpcData = await rpcRes.json();
+        if (rpcData.result?.value !== undefined) {
+          balance = rpcData.result.value / 1e9;
+        } else if (rpcData.error) {
+          throw new Error(rpcData.error.message || "Failed to fetch Solana balance");
+        }
+
+        // Try to get recent transactions
+        const txRes = await fetch("https://api.mainnet-beta.solana.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "getSignaturesForAddress",
+            params: [address, { limit: 100 }],
+          }),
+        });
+
+        const txData = await txRes.json();
+        if (txData.result) {
+          const now = Date.now() / 1000;
+          const oneDayAgo = now - 86400;
+          transactions24h = txData.result.filter(
+            (tx: any) => tx.blockTime && tx.blockTime > oneDayAgo
+          ).length;
+        }
+      } catch (err) {
+        console.error("[WalletInspector] Solana RPC error:", err);
+        throw new Error("Failed to fetch Solana wallet data. Please check the address.");
+      }
     }
 
     return {

@@ -341,11 +341,23 @@ class WebSocketService {
   ): any {
     switch (exchange) {
       case "binance":
-        if (data.e === "depthUpdate" || data.lastUpdateId || data.b || data.a) {
+        // Order book data (depthUpdate or REST response)
+        if (data.e === "depthUpdate" || data.lastUpdateId) {
           return {
             bids: data.b || data.bids || [],
             asks: data.a || data.asks || [],
           };
+        }
+        // REST order book response (has bids/asks arrays)
+        if (data.bids && data.asks && Array.isArray(data.bids)) {
+          return {
+            bids: data.bids,
+            asks: data.asks,
+          };
+        }
+        // Ticker data - pass through as-is (has e: "24hrTicker")
+        if (data.e === "24hrTicker") {
+          return data;
         }
         return data;
 
@@ -536,10 +548,20 @@ class WebSocketService {
 
       ws.onmessage = (event) => {
         try {
+          // Handle plain text ping/pong messages (some exchanges send these)
+          if (typeof event.data === "string") {
+            const textData = event.data.trim().toLowerCase();
+            if (textData === "pong" || textData === "ping") {
+              sub.lastMessageTime = Date.now();
+              console.log(`🏓 [${sub.exchange.toUpperCase()}] Received: ${textData}`);
+              return;
+            }
+          }
+
           const rawData = JSON.parse(event.data);
           sub.lastMessageTime = Date.now();
 
-          // Handle ping/pong
+          // Handle JSON ping/pong
           if (this.handlePingPong(ws, sub.exchange, rawData)) {
             return;
           }
