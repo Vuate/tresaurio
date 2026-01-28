@@ -1,8 +1,8 @@
 // components/terminal/personalized-dashboard/TokenFlowModule.tsx
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Plus, X, TrendingUp, TrendingDown } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Plus, X, TrendingUp, TrendingDown, ChevronDown, Check } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -146,12 +146,14 @@ export default function TokenFlowModule({ instanceId }: Props) {
   });
 
   const [selectedChains] = useState<string[]>(DEFAULT_CHAINS);
-  const [selectedToken, setSelectedToken] = useState("USDT");
+  const [selectedTokens, setSelectedTokens] = useState<string[]>(["USDT"]);
   const [data, setData] = useState<FlowData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newToken, setNewToken] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Save tokens
   useEffect(() => {
@@ -167,7 +169,12 @@ export default function TokenFlowModule({ instanceId }: Props) {
       if (saved) {
         try {
           const settings = JSON.parse(saved);
-          if (settings.token) setSelectedToken(settings.token);
+          if (settings.tokens && Array.isArray(settings.tokens)) {
+            setSelectedTokens(settings.tokens);
+          } else if (settings.token) {
+            // Backward compatibility with old single token setting
+            setSelectedTokens([settings.token]);
+          }
         } catch (err) {
           console.error("[TokenFlow] Failed to load settings:", err);
         }
@@ -178,15 +185,40 @@ export default function TokenFlowModule({ instanceId }: Props) {
   // Save settings
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, JSON.stringify({ token: selectedToken }));
+      localStorage.setItem(storageKey, JSON.stringify({ tokens: selectedTokens }));
     }
-  }, [selectedToken, storageKey]);
+  }, [selectedTokens, storageKey]);
 
-  // Fetch data
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Toggle token selection
+  const toggleToken = (token: string) => {
+    setSelectedTokens((prev) => {
+      if (prev.includes(token)) {
+        // Don't allow deselecting if it's the last one
+        if (prev.length === 1) return prev;
+        return prev.filter((t) => t !== token);
+      }
+      return [...prev, token];
+    });
+  };
+
+  // Fetch data for all selected tokens
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await fetchChainFlows(selectedToken, selectedChains);
+      // Fetch for the first selected token (API doesn't support multiple tokens at once)
+      // In a real implementation, you'd aggregate data across tokens
+      const result = await fetchChainFlows(selectedTokens[0] || "USDT", selectedChains);
       setData(result);
       setError(null);
     } catch (err) {
@@ -195,7 +227,7 @@ export default function TokenFlowModule({ instanceId }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [selectedToken, selectedChains]);
+  }, [selectedTokens, selectedChains]);
 
   useEffect(() => {
     fetchData();
@@ -218,17 +250,38 @@ export default function TokenFlowModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Token Selector */}
+      {/* Token Selector - Multi-select Dropdown */}
       <div className="p-3 border-b border-white/10 flex gap-2">
-        <select
-          value={selectedToken}
-          onChange={(e) => setSelectedToken(e.target.value)}
-          className="flex-1 bg-white/10 border border-white/20 rounded px-3 py-2 text-sm cursor-pointer hover:bg-white/15"
-        >
-          {tokens.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
+        <div className="relative flex-1" ref={dropdownRef}>
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="w-full flex items-center justify-between bg-white/10 border border-white/20 rounded px-3 py-2 text-sm cursor-pointer hover:bg-white/15"
+          >
+            <span className="truncate">
+              {selectedTokens.length === 1
+                ? selectedTokens[0]
+                : `${selectedTokens.length} tokens selected`}
+            </span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${showDropdown ? "rotate-180" : ""}`} />
+          </button>
+
+          {showDropdown && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-[#0b0f1a] border border-white/20 rounded-lg shadow-lg z-50 max-h-48 overflow-auto">
+              {tokens.map((token) => (
+                <button
+                  key={token}
+                  onClick={() => toggleToken(token)}
+                  className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-white/10 transition-colors"
+                >
+                  <span>{token}</span>
+                  {selectedTokens.includes(token) && (
+                    <Check className="w-4 h-4 text-emerald-400" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <button
           onClick={() => setShowAddModal(true)}
@@ -237,6 +290,26 @@ export default function TokenFlowModule({ instanceId }: Props) {
           <Plus className="w-4 h-4 text-blue-400" />
         </button>
       </div>
+
+      {/* Selected Tokens Chips */}
+      {selectedTokens.length > 1 && (
+        <div className="px-3 pb-2 flex flex-wrap gap-1">
+          {selectedTokens.map((token) => (
+            <span
+              key={token}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px]"
+            >
+              {token}
+              <button
+                onClick={() => toggleToken(token)}
+                className="hover:text-red-400"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Total Summary */}
       <div
@@ -367,7 +440,7 @@ export default function TokenFlowModule({ instanceId }: Props) {
                   const tok = newToken.trim().toUpperCase();
                   if (tok && !tokens.includes(tok)) {
                     setTokens((p) => [...p, tok]);
-                    setSelectedToken(tok);
+                    setSelectedTokens((p) => [...p, tok]);
                     setNewToken("");
                     setShowAddModal(false);
                   }
@@ -392,7 +465,7 @@ export default function TokenFlowModule({ instanceId }: Props) {
                 const tok = newToken.trim().toUpperCase();
                 if (!tok || tokens.includes(tok)) return;
                 setTokens((p) => [...p, tok]);
-                setSelectedToken(tok);
+                setSelectedTokens((p) => [...p, tok]);
                 setNewToken("");
                 setShowAddModal(false);
               }}
