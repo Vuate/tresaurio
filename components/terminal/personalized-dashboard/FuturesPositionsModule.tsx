@@ -81,6 +81,69 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
     fetchApiKeys();
   }, []);
 
+  // Fetch current prices for positions (multi-exchange support)
+  useEffect(() => {
+    if (positions.length === 0) return;
+
+    const fetchPriceFromExchange = async (symbol: string, exchange: string): Promise<number | null> => {
+      try {
+        let url = "";
+
+        if (exchange === "binance") {
+          url = `https://fapi.binance.com/fapi/v1/ticker/price?symbol=${symbol}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            return data.price ? parseFloat(data.price) : null;
+          }
+        } else if (exchange === "bybit") {
+          // Bybit API: BTCUSDT -> BTCUSDT
+          url = `https://api.bybit.com/v5/market/tickers?category=linear&symbol=${symbol}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.result?.list?.[0]?.lastPrice) {
+              return parseFloat(data.result.list[0].lastPrice);
+            }
+          }
+        } else if (exchange === "okx") {
+          // OKX API: BTCUSDT -> BTC-USDT-SWAP
+          const baseAsset = symbol.replace("USDT", "");
+          const instId = `${baseAsset}-USDT-SWAP`;
+          url = `https://www.okx.com/api/v5/market/ticker?instId=${instId}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.data?.[0]?.last) {
+              return parseFloat(data.data[0].last);
+            }
+          }
+        }
+        return null;
+      } catch (err) {
+        console.error(`Failed to fetch price for ${symbol} from ${exchange}:`, err);
+        return null;
+      }
+    };
+
+    const fetchPrices = async () => {
+      const symbols = [...new Set(positions.map((p) => p.symbol))];
+
+      for (const symbol of symbols) {
+        // Seçili borsadan fiyat çek
+        const price = await fetchPriceFromExchange(symbol, selectedExchange);
+        if (price) {
+          usePriceStore.getState().updatePrice(symbol, price);
+        }
+      }
+    };
+
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 5000);
+
+    return () => clearInterval(interval);
+  }, [positions, selectedExchange]);
+
   const fetchApiKeys = async () => {
     try {
       const response = await fetch("/api/exchange/keys");

@@ -50,165 +50,36 @@ const validateAddress = (address: string, chain: Chain): boolean => {
   }
 };
 
-// 🔥 Fetch wallet data from multiple APIs
+// 🔥 Fetch wallet data via server-side API (avoids CORS issues)
 const fetchWalletData = async (address: string, chain: Chain): Promise<WalletData> => {
   // Validate address based on chain
   if (!validateAddress(address, chain)) {
     throw new Error(`Invalid ${chain} address format`);
   }
 
+  const nativeSymbols: Record<Chain, string> = {
+    ethereum: "ETH",
+    bsc: "BNB",
+    tron: "TRX",
+    solana: "SOL",
+  };
+
   try {
-    let balance = 0;
-    let transactions24h = 0;
-    let tokens: TokenBalance[] = [];
-    let nativeSymbol = "";
-    let priceSymbol = "";
+    // Call our server-side API to fetch balance (avoids CORS)
+    const res = await fetch(`/api/wallet/balance?address=${encodeURIComponent(address)}&chain=${chain}`);
+    const data = await res.json();
 
-    if (chain === "ethereum") {
-      nativeSymbol = "ETH";
-      priceSymbol = "ETHUSDT";
-
-      // Fetch ETH balance and transactions from Etherscan
-      const [balanceRes, txRes] = await Promise.all([
-        fetch(`https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest`),
-        fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc`),
-      ]);
-
-      const balanceData = await balanceRes.json();
-      const txData = await txRes.json();
-
-      balance = balanceData.status === "1" ? parseFloat(balanceData.result) / 1e18 : 0;
-
-      const now = Date.now() / 1000;
-      const oneDayAgo = now - 86400;
-      transactions24h = txData.status === "1"
-        ? txData.result.filter((tx: any) => parseInt(tx.timeStamp) > oneDayAgo).length
-        : 0;
-
-      // Fetch token balances
-      const tokenRes = await fetch(
-        `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=1&offset=100&sort=desc`
-      );
-      const tokenData = await tokenRes.json();
-
-      const tokenMap = new Map<string, TokenBalance>();
-      if (tokenData.status === "1" && Array.isArray(tokenData.result)) {
-        for (const tx of tokenData.result) {
-          const symbol = tx.tokenSymbol;
-          const decimals = parseInt(tx.tokenDecimal) || 18;
-          const amount = parseFloat(tx.value) / Math.pow(10, decimals);
-
-          if (!tokenMap.has(symbol)) {
-            tokenMap.set(symbol, {
-              symbol,
-              amount: 0,
-              value: 0,
-              contractAddress: tx.contractAddress,
-            });
-          }
-
-          const token = tokenMap.get(symbol)!;
-          if (tx.to.toLowerCase() === address.toLowerCase()) {
-            token.amount += amount;
-          } else {
-            token.amount -= amount;
-          }
-        }
-      }
-
-      tokens = Array.from(tokenMap.values())
-        .filter(t => t.amount > 0)
-        .slice(0, 10);
-
-    } else if (chain === "bsc") {
-      nativeSymbol = "BNB";
-      priceSymbol = "BNBUSDT";
-
-      // Fetch BNB balance from BSCScan
-      const [balanceRes, txRes] = await Promise.all([
-        fetch(`https://api.bscscan.com/api?module=account&action=balance&address=${address}&tag=latest`),
-        fetch(`https://api.bscscan.com/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=100&sort=desc`),
-      ]);
-
-      const balanceData = await balanceRes.json();
-      const txData = await txRes.json();
-
-      balance = balanceData.status === "1" ? parseFloat(balanceData.result) / 1e18 : 0;
-
-      const now = Date.now() / 1000;
-      const oneDayAgo = now - 86400;
-      transactions24h = txData.status === "1"
-        ? txData.result.filter((tx: any) => parseInt(tx.timeStamp) > oneDayAgo).length
-        : 0;
-
-    } else if (chain === "tron") {
-      nativeSymbol = "TRX";
-      priceSymbol = "TRXUSDT";
-
-      // Fetch TRX balance from Tronscan API
-      const accountRes = await fetch(`https://apilist.tronscan.org/api/account?address=${address}`);
-      const accountData = await accountRes.json();
-
-      balance = accountData.balance ? accountData.balance / 1e6 : 0;
-      transactions24h = accountData.transactions || 0;
-
-    } else if (chain === "solana") {
-      nativeSymbol = "SOL";
-      priceSymbol = "SOLUSDT";
-
-      // Fetch SOL balance using Solana RPC (more reliable)
-      try {
-        const rpcRes = await fetch("https://api.mainnet-beta.solana.com", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 1,
-            method: "getBalance",
-            params: [address],
-          }),
-        });
-
-        const rpcData = await rpcRes.json();
-        if (rpcData.result?.value !== undefined) {
-          balance = rpcData.result.value / 1e9;
-        } else if (rpcData.error) {
-          throw new Error(rpcData.error.message || "Failed to fetch Solana balance");
-        }
-
-        // Try to get recent transactions
-        const txRes = await fetch("https://api.mainnet-beta.solana.com", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 1,
-            method: "getSignaturesForAddress",
-            params: [address, { limit: 100 }],
-          }),
-        });
-
-        const txData = await txRes.json();
-        if (txData.result) {
-          const now = Date.now() / 1000;
-          const oneDayAgo = now - 86400;
-          transactions24h = txData.result.filter(
-            (tx: any) => tx.blockTime && tx.blockTime > oneDayAgo
-          ).length;
-        }
-      } catch (err) {
-        console.error("[WalletInspector] Solana RPC error:", err);
-        throw new Error("Failed to fetch Solana wallet data. Please check the address.");
-      }
+    if (!data.success) {
+      throw new Error(data.error || `Failed to fetch ${chain} balance`);
     }
 
     return {
       address,
-      balance,
-      tokens,
+      balance: data.data.balance || 0,
+      tokens: [],
       nfts: 0,
-      transactions24h,
-      label: nativeSymbol,
+      transactions24h: data.data.transactions24h || 0,
+      label: nativeSymbols[chain],
     };
   } catch (err) {
     console.error("[WalletInspector] Fetch error:", err);
