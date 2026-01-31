@@ -1,6 +1,6 @@
 // components/terminal/personalized-dashboard/SlippageMonitorModule.tsx
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { RefreshCw, AlertTriangle } from "lucide-react";
 import { useOrderBook } from "@/hooks";
 import type { Exchange } from "@/services/WebSocketService";
@@ -22,17 +22,19 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [orderSize, setOrderSize] = useState("10000");
   const [orderType, setOrderType] = useState<"buy" | "sell">("buy");
+  const [exchangeOpen, setExchangeOpen] = useState(false);
 
-  // ✅ USE REAL WEBSOCKET DATA with multi-exchange support
+  const exchangeRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
   const { bids, asks, midPrice, loading, error, status, retry } = useOrderBook({
     symbol,
     marketType,
     exchange,
-    limit: 100, // Get deep order book for accurate slippage calculation
+    limit: 100,
     timeoutMs: 30000,
   });
 
-  // Save settings to localStorage
   useEffect(() => {
     const storageKey = `slippage-monitor-${instanceId}`;
     localStorage.setItem(
@@ -41,7 +43,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
     );
   }, [instanceId, symbol, marketType, exchange, orderSize, orderType]);
 
-  // Load settings from localStorage
   useEffect(() => {
     const storageKey = `slippage-monitor-${instanceId}`;
     const saved = localStorage.getItem(storageKey);
@@ -59,7 +60,24 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
     }
   }, [instanceId]);
 
-  // ✅ REAL SLIPPAGE CALCULATION
+  useEffect(() => {
+    if (!exchangeOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        exchangeRef.current &&
+        !exchangeRef.current.contains(e.target as Node)
+      ) {
+        setExchangeOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [exchangeOpen]);
+
   const slippageData = useMemo(() => {
     if (!bids || !asks || bids.length === 0 || asks.length === 0) {
       return null;
@@ -68,7 +86,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
     const orderSizeUSDT = parseFloat(orderSize) || 0;
     if (orderSizeUSDT <= 0) return null;
 
-    // Select the appropriate side of the order book
     const levels = orderType === "buy" ? asks : bids;
     const basePrice = orderType === "buy" ? asks[0].price : bids[0].price;
 
@@ -77,7 +94,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
     let weightedPriceSum = 0;
     let liquidityDepth = 0;
 
-    // Walk through order book levels
     for (const level of levels) {
       const levelUSDT = level.price * level.quantity;
       liquidityDepth += levelUSDT;
@@ -92,13 +108,11 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
       remainingUSDT -= usedUSDT;
     }
 
-    // Calculate effective price
     const effectivePrice = totalQuantity > 0 ? weightedPriceSum / totalQuantity : basePrice;
     const slippageAmount = Math.abs(effectivePrice - basePrice);
     const slippagePercent = (slippageAmount / basePrice) * 100;
     const totalCost = effectivePrice * totalQuantity;
 
-    // Determine impact level
     const impact = slippagePercent > 0.3 ? "high" : slippagePercent > 0.1 ? "medium" : "low";
 
     return {
@@ -117,110 +131,132 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case "high":
-        return "text-red-400 bg-red-500/10";
+        return "text-red-400 bg-red-500/10 border-red-500/20";
       case "medium":
-        return "text-yellow-400 bg-yellow-500/10";
+        return "text-yellow-400 bg-yellow-500/10 border-yellow-500/20";
       case "low":
-        return "text-emerald-400 bg-emerald-500/10";
+        return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
       default:
-        return "text-white/60 bg-white/5";
+        return "text-white/60 bg-white/5 border-white/10";
     }
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="text-xl">📊</div>
-          <h3 className="font-semibold">Slippage Monitor</h3>
-        </div>
-      </div>
+    <div className="h-full flex flex-col relative">
+      {/* 🎯 Responsive Header */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
+        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+          Slippage Monitor
+        </span>
 
-      {/* Exchange & Market Type */}
-      <div className="flex gap-2 p-3 border-b border-white/10">
-        <select
-          value={exchange}
-          onChange={(e) => setExchange(e.target.value as Exchange)}
-          className="flex-1 py-2 px-3 rounded text-sm font-medium bg-white/5 text-white border border-white/10 outline-none"
-        >
-          {EXCHANGES.map((ex) => (
-            <option key={ex.id} value={ex.id}>
-              {ex.name}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={() => setMarketType("spot")}
-          className={`flex-1 py-2 rounded text-sm font-medium transition-colors ${
-            marketType === "spot"
-              ? "bg-blue-500 text-white"
-              : "bg-white/5 text-white/60 hover:bg-white/10"
-          }`}
-        >
-          Spot
-        </button>
-        <button
-          onClick={() => setMarketType("futures")}
-          className={`flex-1 py-2 rounded text-sm font-medium transition-colors ${
-            marketType === "futures"
-              ? "bg-blue-500 text-white"
-              : "bg-white/5 text-white/60 hover:bg-white/10"
-          }`}
-        >
-          Futures
-        </button>
-      </div>
+        <span className="text-white/40 text-xs">•</span>
 
-      {/* Status Indicator */}
-      {status && (
-        <div className="px-3 py-1 border-b border-white/10">
-          <div className="flex items-center gap-2 text-xs">
-            <div
-              className={`w-2 h-2 rounded-full ${
-                status === "connected"
-                  ? "bg-emerald-400 animate-pulse"
-                  : status === "connecting"
-                    ? "bg-yellow-400 animate-pulse"
-                    : status === "fallback"
-                      ? "bg-orange-400"
-                      : "bg-red-400"
-              }`}
-            />
-            <span className="text-white/60">
-              {status === "connected"
-                ? "Live"
+        {status && (
+          <span
+            className={`text-xs whitespace-nowrap ${
+              status === "connected"
+                ? "text-emerald-400"
                 : status === "connecting"
-                  ? "Connecting..."
+                  ? "text-yellow-400 animate-pulse"
                   : status === "fallback"
-                    ? "REST Fallback"
-                    : "Disconnected"}
-            </span>
-          </div>
+                    ? "text-orange-400"
+                    : "text-red-400"
+            }`}
+          >
+            {status === "connected"
+              ? "LIVE"
+              : status === "connecting"
+                ? "CONNECTING"
+                : status === "fallback"
+                  ? "FALLBACK"
+                  : "ERROR"}
+          </span>
+        )}
+
+        <div className="flex-1 min-w-[20px]"></div>
+
+        <div className="flex gap-1.5">
+          <button
+            onClick={() => setMarketType("spot")}
+            className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
+              marketType === "spot"
+                ? "bg-blue-500 text-white"
+                : "bg-white/5 text-white/60 hover:bg-white/10"
+            }`}
+          >
+            Spot
+          </button>
+          <button
+            onClick={() => setMarketType("futures")}
+            className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
+              marketType === "futures"
+                ? "bg-blue-500 text-white"
+                : "bg-white/5 text-white/60 hover:bg-white/10"
+            }`}
+          >
+            Futures
+          </button>
         </div>
-      )}
+
+        <div ref={exchangeRef} className="relative">
+          <button
+            onClick={() => setExchangeOpen((v) => !v)}
+            className="h-7 px-3 rounded-md bg-[#0b1f1f] border border-white/10 text-white text-xs flex items-center gap-1.5 cursor-pointer hover:bg-white/5 transition-all whitespace-nowrap"
+          >
+            <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
+            <span
+              className={`text-white/50 text-[10px] transition-transform duration-200 ${
+                exchangeOpen ? "rotate-180" : ""
+              }`}
+            >
+              ▾
+            </span>
+          </button>
+
+          {exchangeOpen && (
+            <div
+              onWheel={(e) => e.stopPropagation()}
+              className="absolute right-0 mt-1 z-50 w-[120px] max-h-[160px] overflow-y-auto bg-[#0b1f1f] border border-emerald-500/20 rounded-md shadow-lg animate-in fade-in slide-in-from-top-2 duration-200 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-emerald-500/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
+            >
+              {EXCHANGES.map((ex) => (
+                <button
+                  key={ex.id}
+                  onClick={() => {
+                    setExchange(ex.id as Exchange);
+                    setExchangeOpen(false);
+                  }}
+                  className="w-full px-3 py-2 text-left text-xs bg-transparent cursor-pointer text-white transition-colors hover:bg-emerald-500/10 hover:text-emerald-400"
+                >
+                  {ex.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-4 space-y-4">
-        {/* Symbol Input */}
+      <div
+        ref={contentRef}
+        className="flex-1 min-h-0 px-3 pb-3 overflow-y-auto space-y-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
+      >
         <div>
-          <label className="text-xs text-white/60 mb-1 block">Symbol</label>
+          <label className="text-[10px] text-white/50 mb-1 block">Symbol</label>
           <input
             type="text"
             value={symbol}
             onChange={(e) => setSymbol(e.target.value.toUpperCase())}
             placeholder="BTCUSDT"
-            className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
+            className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
           />
         </div>
 
-        {/* Order Type */}
         <div>
-          <label className="text-xs text-white/60 mb-1 block">Order Type</label>
+          <label className="text-[10px] text-white/50 mb-1 block">Order Type</label>
           <div className="flex gap-2">
             <button
               onClick={() => setOrderType("buy")}
-              className={`flex-1 py-2 rounded text-sm font-medium transition-colors ${
+              className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 orderType === "buy"
                   ? "bg-emerald-500 text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10"
@@ -230,7 +266,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
             </button>
             <button
               onClick={() => setOrderType("sell")}
-              className={`flex-1 py-2 rounded text-sm font-medium transition-colors ${
+              className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 orderType === "sell"
                   ? "bg-red-500 text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10"
@@ -241,41 +277,36 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
           </div>
         </div>
 
-        {/* Order Size Input */}
         <div>
-          <label className="text-xs text-white/60 mb-1 block">
-            Order Size (USDT)
-          </label>
+          <label className="text-[10px] text-white/50 mb-1 block">Order Size (USDT)</label>
           <input
             type="number"
             value={orderSize}
             onChange={(e) => setOrderSize(e.target.value)}
             placeholder="10000"
-            className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
+            className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
           />
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-2"></div>
-              <div className="text-xs text-white/60">Loading order book...</div>
+              <div className="w-6 h-6 border-2 border-white/20 border-t-blue-400 rounded-full animate-spin mx-auto mb-2"></div>
+              <div className="text-[10px] text-white/60">Loading order book...</div>
             </div>
           </div>
         )}
 
-        {/* Error State */}
         {error && !loading && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-            <div className="flex items-center gap-2">
+          <div className="bg-red-500/10 border border-red-500/20 rounded-md p-2.5">
+            <div className="flex flex-wrap items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-              <div className="text-xs text-red-400 flex-1">
+              <div className="text-[10px] text-red-400 flex-1 min-w-0 break-words">
                 <strong>Error:</strong> {error}
               </div>
               <button
                 onClick={retry}
-                className="px-2 py-1 bg-red-500/20 hover:bg-red-500/30 rounded text-[10px] font-medium text-red-300 flex items-center gap-1"
+                className="px-2 py-1 bg-red-500/20 hover:bg-red-500/30 rounded-md text-[10px] font-medium text-red-300 flex items-center gap-1 cursor-pointer transition-colors whitespace-nowrap"
               >
                 <RefreshCw className="w-3 h-3" />
                 Retry
@@ -284,92 +315,107 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
           </div>
         )}
 
-        {/* Results */}
         {!loading && !error && slippageData && (
-          <div className="space-y-3 pt-2">
-            {/* Base Price */}
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-white/60 mb-1">
+          <div className="space-y-2 pt-1">
+            {/* Best Ask/Bid Price */}
+            <div className="bg-white/5 rounded-md p-2 border border-white/10">
+              <div className="text-[10px] text-white/50 mb-0.5 leading-tight">
                 {orderType === "buy" ? "Best Ask" : "Best Bid"} Price
               </div>
-              <div className="text-lg font-bold text-white">
-                ${slippageData.basePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              <div className="text-sm font-bold text-white leading-tight break-all">
+                $
+                {slippageData.basePrice.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </div>
             </div>
 
-            {/* Slippage % */}
-            <div
-              className={`rounded-lg p-3 ${getImpactColor(slippageData.impact)}`}
-            >
-              <div className="text-xs mb-1 opacity-80">Estimated Slippage</div>
-              <div className="text-2xl font-bold">
+            {/* Estimated Slippage */}
+            <div className={`rounded-md p-2 border ${getImpactColor(slippageData.impact)}`}>
+              <div className="text-[10px] mb-0.5 opacity-80 leading-tight">
+                Estimated Slippage
+              </div>
+              <div className="text-lg font-bold leading-tight">
                 {slippageData.slippagePercent.toFixed(3)}%
               </div>
-              <div className="text-xs mt-1 opacity-80">
+              <div className="text-[10px] mt-0.5 opacity-80 leading-tight break-all">
                 ${slippageData.slippageAmount.toFixed(2)} per unit
               </div>
             </div>
 
             {/* Effective Price */}
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-white/60 mb-1">Effective Price</div>
-              <div className="text-lg font-bold text-white">
-                ${slippageData.effectivePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <div className="bg-white/5 rounded-md p-2 border border-white/10">
+              <div className="text-[10px] text-white/50 mb-0.5 leading-tight">
+                Effective Price
+              </div>
+              <div className="text-sm font-bold text-white leading-tight break-all">
+                $
+                {slippageData.effectivePrice.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </div>
             </div>
 
             {/* Total Cost */}
-            <div className="bg-blue-500/10 rounded-lg p-3">
-              <div className="text-xs text-blue-400 mb-1">
+            <div className="bg-blue-500/10 rounded-md p-2 border border-blue-500/20">
+              <div className="text-[10px] text-blue-400 mb-0.5 leading-tight">
                 Total Cost (incl. slippage)
               </div>
-              <div className="text-lg font-bold text-blue-400">
-                ${slippageData.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              <div className="text-sm font-bold text-blue-400 leading-tight break-all">
+                $
+                {slippageData.totalCost.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </div>
-              <div className="text-xs text-blue-400/60 mt-1">
+              <div className="text-[10px] text-blue-400/60 mt-0.5 leading-tight break-all">
                 {slippageData.quantityFilled.toFixed(6)} {symbol.replace("USDT", "")}
               </div>
             </div>
 
             {/* Market Impact */}
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs text-white/60">Market Impact</span>
+            <div className="bg-white/5 rounded-md p-2 border border-white/10">
+              <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
+                <span className="text-[10px] text-white/50 leading-tight">Market Impact</span>
                 <span
-                  className={`text-xs px-2 py-1 rounded font-medium ${getImpactColor(slippageData.impact)}`}
+                  className={`text-[10px] px-1.5 py-0.5 rounded font-medium border ${getImpactColor(
+                    slippageData.impact
+                  )} whitespace-nowrap`}
                 >
                   {slippageData.impact.toUpperCase()}
                 </span>
               </div>
-              <div className="text-xs text-white/60">
-                Liquidity Depth: ${slippageData.liquidityDepth.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              <div className="text-[10px] text-white/50 leading-tight break-all">
+                Liquidity: $
+                {(slippageData.liquidityDepth / 1000000).toFixed(2)}M
               </div>
             </div>
           </div>
         )}
 
-        {/* Warnings */}
         {!loading && !error && slippageData && (
           <>
             {slippageData.impact === "high" && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-md p-2">
                 <div className="flex items-start gap-2">
-                  <span className="text-red-400">⚠️</span>
-                  <div className="text-xs text-red-400">
-                    <strong>High slippage detected!</strong> Consider splitting
-                    your order or using limit orders.
+                  <span className="text-red-400 text-sm leading-none">⚠️</span>
+                  <div className="text-[10px] text-red-400 leading-tight">
+                    <strong>High slippage detected!</strong> Consider splitting your order or
+                    using limit orders.
                   </div>
                 </div>
               </div>
             )}
 
             {slippageData.insufficientLiquidity && (
-              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
+              <div className="bg-orange-500/10 border border-orange-500/20 rounded-md p-2">
                 <div className="flex items-start gap-2">
-                  <span className="text-orange-400">⚠️</span>
-                  <div className="text-xs text-orange-400">
-                    <strong>Insufficient liquidity!</strong> Order cannot be
-                    fully filled at current market depth.
+                  <span className="text-orange-400 text-sm leading-none">⚠️</span>
+                  <div className="text-[10px] text-orange-400 leading-tight">
+                    <strong>Insufficient liquidity!</strong> Order cannot be fully filled at
+                    current market depth.
                   </div>
                 </div>
               </div>

@@ -144,7 +144,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     title: "Funding Rate Tracker",
     description: "8-hour funding rate takibi ve trend analizi",
     category: "market-microstructure",
-    defaultSize: { width: 320, height: 400 },
+    defaultSize: { width: 310, height: 400 },
     render: (instanceId: string) => (
       <FundingRateModule instanceId={instanceId} />
     ),
@@ -156,7 +156,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     description:
       "Calculate total trading costs including fees, slippage, and funding",
     category: "market-microstructure",
-    defaultSize: { width: 360, height: 700 },
+    defaultSize: { width: 320, height: 700 },
     render: (instanceId: string) => (
       <AllInCostCalculatorModule instanceId={instanceId} />
     ),
