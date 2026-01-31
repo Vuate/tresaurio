@@ -52,7 +52,6 @@ const EXCHANGES = [
   { id: "bybit", name: "Bybit" },
 ];
 
-// 🔥 WebSocket URLs
 const getWebSocketUrl = (exchange: Exchange): string => {
   switch (exchange) {
     case "binance":
@@ -66,22 +65,19 @@ const getWebSocketUrl = (exchange: Exchange): string => {
   }
 };
 
-// 🔥 Format symbol for each exchange
 const formatSymbol = (symbol: string, exchange: Exchange): string => {
   const upper = symbol.toUpperCase();
   switch (exchange) {
     case "binance":
     case "bybit":
-      return upper; // BTCUSDT
+      return upper;
     case "okx":
-      // BTCUSDT -> BTC-USDT-SWAP
       return upper.replace(/^([A-Z]+)(USDT|USDC|USD)$/, "$1-$2") + "-SWAP";
     default:
       return upper;
   }
 };
 
-// 🔥 Build subscribe message for each exchange
 const buildSubscribeMessage = (exchange: Exchange, symbol: string): any => {
   const formattedSymbol = formatSymbol(symbol, exchange);
   const lowerSymbol = symbol.toLowerCase();
@@ -111,7 +107,6 @@ const buildSubscribeMessage = (exchange: Exchange, symbol: string): any => {
   }
 };
 
-// 🔥 Parse WS messages
 const parseMessage = (
   exchange: Exchange,
   data: any,
@@ -199,6 +194,12 @@ export default function FundingRateModule({ instanceId }: Props) {
   const [connected, setConnected] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSymbol, setNewSymbol] = useState("");
+  const [exchangeOpen, setExchangeOpen] = useState(false);
+  const [symbolOpen, setSymbolOpen] = useState(false);
+
+  const exchangeRef = useRef<HTMLDivElement>(null);
+  const symbolRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -221,7 +222,63 @@ export default function FundingRateModule({ instanceId }: Props) {
     );
   }, [selectedSymbol, exchange, storageKey]);
 
-  // 🔥 WebSocket
+  // Exchange dropdown outside click
+  useEffect(() => {
+    if (!exchangeOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        exchangeRef.current &&
+        !exchangeRef.current.contains(e.target as Node)
+      ) {
+        setExchangeOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [exchangeOpen]);
+
+  // Symbol dropdown outside click
+  useEffect(() => {
+    if (!symbolOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        symbolRef.current &&
+        !symbolRef.current.contains(e.target as Node)
+      ) {
+        setSymbolOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [symbolOpen]);
+
+  // 🔒 Modal scroll lock
+  useEffect(() => {
+    if (showAddModal) {
+      document.body.style.overflow = 'hidden';
+      if (contentRef.current) {
+        const scrollTop = contentRef.current.scrollTop;
+        contentRef.current.style.overflow = 'hidden';
+        contentRef.current.scrollTop = scrollTop;
+      }
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      if (contentRef.current) {
+        contentRef.current.style.overflow = '';
+      }
+    };
+  }, [showAddModal]);
+
   const connectWebSocket = useCallback(() => {
     if (wsRef.current) {
       wsRef.current.close();
@@ -239,7 +296,6 @@ export default function FundingRateModule({ instanceId }: Props) {
       setConnected(true);
       setError(null);
 
-      // 🔥 Send subscribe message for all exchanges
       const subscribeMsg = buildSubscribeMessage(exchange, selectedSymbol);
       if (subscribeMsg) {
         ws.send(JSON.stringify(subscribeMsg));
@@ -251,7 +307,6 @@ export default function FundingRateModule({ instanceId }: Props) {
       try {
         const raw = JSON.parse(e.data);
 
-        // 🔥 Handle ping/pong for exchanges
         if (exchange === "bybit" && raw.op === "ping") {
           ws.send(JSON.stringify({ op: "pong" }));
           return;
@@ -261,7 +316,6 @@ export default function FundingRateModule({ instanceId }: Props) {
           return;
         }
 
-        // Skip subscription confirmations
         if (raw.event === "subscribe" || raw.op === "subscribe" || raw.success === true) {
           console.log(`✅ [FundingRate] Subscription confirmed for ${exchange}`);
           return;
@@ -291,7 +345,6 @@ export default function FundingRateModule({ instanceId }: Props) {
     };
 
     ws.onerror = () => {
-      // ❗ fatal değil
       setConnected(false);
     };
 
@@ -317,201 +370,406 @@ export default function FundingRateModule({ instanceId }: Props) {
   const annualizedRate = fundingRatePercent * 3 * 365;
 
   return (
-    <div className="relative space-y-3 text-xs">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 text-white/70">
-          <span className="font-semibold text-white">Funding Rate</span>
-          {connected ? (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-              LIVE
-            </span>
-          ) : loading ? (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 animate-pulse">
-              CONNECTING
-            </span>
-          ) : null}
-        </div>
+    <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
+      {/* 🎯 Responsive Header - SpreadMonitor Style */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
+        {/* Title */}
+        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+          Funding Rate
+        </span>
+        
+        {/* Separator */}
+        <span className="text-white/40 text-xs">•</span>
+        
+        {/* Status */}
+        {connected ? (
+          <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
+        ) : loading ? (
+          <span className="text-yellow-400 text-xs whitespace-nowrap animate-pulse">CONNECTING</span>
+        ) : null}
 
-        <div className="flex gap-2 flex-wrap">
-          <select
-            value={exchange}
-            onChange={(e) => setExchange(e.target.value as Exchange)}
-            className="h-7 rounded-md bg-[#0b1f1f] border border-white/10 px-2 text-white text-xs outline-none cursor-pointer hover:border-white/20 transition-colors"
-            style={{ colorScheme: "dark" }}
-          >
-            {EXCHANGES.map((ex) => (
-              <option key={ex.id} value={ex.id} className="bg-[#0b1f1f] text-white">
-                {ex.name}
-              </option>
-            ))}
-          </select>
+        {/* Spacer */}
+        <div className="flex-1 min-w-[20px]"></div>
 
-          <select
-            value={selectedSymbol}
-            onChange={(e) => setSelectedSymbol(e.target.value)}
-            className="h-7 rounded-md bg-[#0b1f1f] border border-white/10 px-2 text-white text-xs outline-none cursor-pointer hover:border-white/20 transition-colors"
-            style={{ colorScheme: "dark" }}
-          >
-            {symbols.map((s) => (
-              <option key={s} value={s} className="bg-[#0b1f1f] text-white">
-                {s}
-              </option>
-            ))}
-          </select>
-
+        {/* Exchange Dropdown */}
+        <div ref={exchangeRef} className="relative">
           <button
-            onClick={() => setShowAddModal(true)}
-            className="h-7 px-2 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 transition-colors"
+            onClick={() => setExchangeOpen((v) => !v)}
+            className="
+              h-7 px-3 rounded-md
+              bg-[#0b1f1f]
+              border border-white/10
+              text-white text-xs
+              flex items-center gap-1.5
+              cursor-pointer
+              hover:bg-white/5
+              transition-all
+              whitespace-nowrap
+            "
           >
-            <Plus className="w-3.5 h-3.5" />
+            <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
+            <span
+              className={`
+                text-white/50 text-[10px]
+                transition-transform duration-200
+                ${exchangeOpen ? "rotate-180" : ""}
+              `}
+            >
+              ▾
+            </span>
           </button>
+
+          {exchangeOpen && (
+            <div
+              onWheel={(e) => e.stopPropagation()}
+              className="
+                absolute left-0 mt-1 z-50
+                w-[120px]
+                max-h-[160px]
+                overflow-y-auto
+                bg-[#0b1f1f]
+                border border-emerald-500/20
+                rounded-md
+                shadow-lg
+                animate-in fade-in slide-in-from-top-2 duration-200
+
+                [&::-webkit-scrollbar]:w-1.5
+                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-transparent
+              "
+            >
+              {EXCHANGES.map((ex) => (
+                <button
+                  key={ex.id}
+                  onClick={() => {
+                    setExchange(ex.id as Exchange);
+                    setExchangeOpen(false);
+                  }}
+                  className="
+                    w-full px-3 py-2
+                    text-left text-xs
+                    bg-transparent cursor-pointer
+                    text-white
+                    transition-colors
+                    hover:bg-emerald-500/10
+                    hover:text-emerald-400
+                  "
+                >
+                  {ex.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+
+        {/* Symbol Dropdown */}
+        <div ref={symbolRef} className="relative">
+          <button
+            onClick={() => setSymbolOpen((v) => !v)}
+            className="
+              h-7 px-3 rounded-md
+              bg-[#0b1f1f]
+              border border-white/10
+              text-white text-xs
+              flex items-center gap-1.5
+              cursor-pointer
+              hover:bg-white/5
+              transition-all
+              whitespace-nowrap
+            "
+          >
+            <span>{selectedSymbol}</span>
+            <span
+              className={`
+                text-white/50 text-[10px]
+                transition-transform duration-200
+                ${symbolOpen ? "rotate-180" : ""}
+              `}
+            >
+              ▾
+            </span>
+          </button>
+
+          {symbolOpen && (
+            <div
+              onWheel={(e) => e.stopPropagation()}
+              className="
+                absolute left-0 mt-1 z-50
+                w-[140px]
+                max-h-[200px]
+                overflow-y-auto
+                bg-[#0b1f1f]
+                border border-emerald-500/20
+                rounded-md
+                shadow-lg
+                animate-in fade-in slide-in-from-top-2 duration-200
+
+                [&::-webkit-scrollbar]:w-1.5
+                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-transparent
+              "
+            >
+              {symbols.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => {
+                    setSelectedSymbol(s);
+                    setSymbolOpen(false);
+                  }}
+                  className="
+                    w-full px-3 py-2
+                    text-left text-xs
+                    bg-transparent cursor-pointer
+                    text-white
+                    transition-colors
+                    hover:bg-emerald-500/10
+                    hover:text-emerald-400
+                  "
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Add Button */}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+        >
+          <Plus className="w-3 h-3" />
+          Add
+        </button>
       </div>
 
-      {loading && (
-        <div className="flex flex-col items-center justify-center py-8 text-white/40">
-          <div className="w-5 h-5 border-2 border-white/20 border-t-blue-400 rounded-full animate-spin mb-2" />
-          <span className="text-[11px]">Connecting to {exchange.toUpperCase()}...</span>
-        </div>
-      )}
+      {/* Content */}
+      <div
+        ref={contentRef}
+        className="
+          flex-1 min-h-0 px-3 pb-3
+          overflow-y-auto
+          space-y-2
 
-      {!loading && !data && (
-        <div className="flex flex-col items-center justify-center py-8 text-white/40">
-          <AlertCircle className="w-5 h-5 mb-2 text-yellow-400/60" />
-          <span className="text-[11px]">No data from {exchange.toUpperCase()}</span>
-        </div>
-      )}
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-track]:bg-transparent
+          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
 
-      {data && (
-        <>
-          {/* Current Funding Rate */}
-          <div className="bg-white/5 border border-white/10 rounded p-3">
-            <div className="text-white/40 mb-1">Current Funding Rate</div>
-            <div className="flex items-baseline gap-2">
+          scrollbar-thin
+          scrollbar-thumb-teal-400/40
+          scrollbar-track-transparent
+        "
+      >
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-8 text-white/40">
+            <div className="w-5 h-5 border-2 border-white/20 border-t-blue-400 rounded-full animate-spin mb-2" />
+            <span className="text-[11px]">Connecting to {exchange.toUpperCase()}...</span>
+          </div>
+        )}
+
+        {!loading && !data && (
+          <div className="flex flex-col items-center justify-center py-8 text-white/40">
+            <AlertCircle className="w-5 h-5 mb-2 text-yellow-400/60" />
+            <span className="text-[11px]">No data from {exchange.toUpperCase()}</span>
+          </div>
+        )}
+
+        {data && (
+          <>
+            {/* Current Funding Rate */}
+            <div className="bg-white/5 border border-white/10 rounded-md p-2">
+              <div className="text-white/40 mb-0.5 text-[9px] leading-tight">Current Funding Rate</div>
+              <div className="flex flex-col gap-0.5">
+                <span
+                  className={`text-base font-bold leading-none break-all ${
+                    fundingRatePercent >= 0 ? "text-emerald-400" : "text-red-400"
+                  }`}
+                >
+                  {fundingRatePercent >= 0 ? "+" : ""}
+                  {fundingRatePercent.toFixed(4)}%
+                </span>
+                <span className="text-white/40 text-[9px] leading-none">
+                  ({annualizedRate.toFixed(1)}% APR)
+                </span>
+              </div>
+            </div>
+
+            {/* Next Funding */}
+            <div className="bg-white/5 border border-white/10 rounded-md p-2">
+              <div className="flex items-center gap-1 text-white/40 mb-0.5 text-[9px] leading-tight">
+                <Clock className="w-2.5 h-2.5 shrink-0" />
+                Next Funding In
+              </div>
+              <div className="text-sm font-bold text-white leading-none">
+                {hours}h {minutes}m
+              </div>
+            </div>
+
+            {/* Sentiment */}
+            <div className="bg-white/5 border border-white/10 rounded-md p-2 flex flex-wrap justify-between items-center gap-2">
+              <span className="text-white/50 text-[9px] leading-tight">Market Sentiment</span>
               <span
-                className={`text-2xl font-bold ${
-                  fundingRatePercent >= 0 ? "text-emerald-400" : "text-red-400"
+                className={`font-semibold flex items-center gap-0.5 text-[10px] leading-tight whitespace-nowrap ${
+                  fundingRatePercent > 0.01
+                    ? "text-emerald-400"
+                    : fundingRatePercent < -0.01
+                      ? "text-red-400"
+                      : "text-yellow-400"
                 }`}
               >
-                {fundingRatePercent >= 0 ? "+" : ""}
-                {fundingRatePercent.toFixed(4)}%
+                {fundingRatePercent > 0.01 ? (
+                  <>
+                    <TrendingUp className="w-2.5 h-2.5" /> Bullish
+                  </>
+                ) : fundingRatePercent < -0.01 ? (
+                  <>
+                    <TrendingDown className="w-2.5 h-2.5" /> Bearish
+                  </>
+                ) : (
+                  "Neutral"
+                )}
               </span>
-              <span className="text-white/40 text-[10px]">
-                ({annualizedRate.toFixed(2)}% APR)
-              </span>
             </div>
-          </div>
+          </>
+        )}
+      </div>
 
-          {/* Next Funding */}
-          <div className="bg-white/5 border border-white/10 rounded p-3">
-            <div className="flex items-center gap-2 text-white/40 mb-2">
-              <Clock className="w-3 h-3" />
-              Next Funding In
-            </div>
-            <div className="text-xl font-bold">
-              {hours}h {minutes}m
-            </div>
-          </div>
-
-          {/* Sentiment */}
-          <div className="bg-white/5 border border-white/10 rounded p-2 flex justify-between">
-            <span className="text-white/50">Market Sentiment</span>
-            <span
-              className={`font-semibold flex items-center gap-1 ${
-                fundingRatePercent > 0.01
-                  ? "text-emerald-400"
-                  : fundingRatePercent < -0.01
-                    ? "text-red-400"
-                    : "text-yellow-400"
-              }`}
-            >
-              {fundingRatePercent > 0.01 ? (
-                <>
-                  <TrendingUp className="w-3 h-3" /> Bullish
-                </>
-              ) : fundingRatePercent < -0.01 ? (
-                <>
-                  <TrendingDown className="w-3 h-3" /> Bearish
-                </>
-              ) : (
-                "Neutral"
-              )}
-            </span>
-          </div>
-        </>
-      )}
-
-      {/* 🔥 Add Modal */}
+      {/* 🔧 Modal - Full Screen SpreadMonitor Style */}
       {showAddModal && (
-        <div
-          className="absolute inset-0 z-50 flex flex-col bg-[#0a0e1a] rounded-lg overflow-hidden"
+        <div 
+          className="
+            fixed inset-0
+            bg-[#0a0e1a] z-[100]
+            flex flex-col overflow-hidden
+            animate-in fade-in slide-in-from-bottom-4 duration-200
+          "
+          style={{
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            margin: 0,
+            padding: 0,
+          }}
           onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
         >
-          <div className="flex justify-between items-center p-3 border-b border-white/10 bg-white/5">
-            <h3 className="text-sm font-semibold text-white">Add Symbol</h3>
+          {/* Modal Header */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
+            <span className="text-white font-semibold text-xs whitespace-nowrap">
+              Add Symbol
+            </span>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white transition-colors"
+              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
             >
-              <X className="w-4 h-4" />
+              ×
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
-            <input
-              value={newSymbol}
-              onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
+          {/* Modal Content */}
+          <div
+            className="
+              flex-1 min-h-0 overflow-y-auto p-3
+
+              [&::-webkit-scrollbar]:w-1.5
+              [&::-webkit-scrollbar-track]:bg-transparent
+              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+              scrollbar-thin
+              scrollbar-thumb-teal-400/40
+              scrollbar-track-transparent
+            "
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="space-y-3">
+              {/* Custom Input */}
+              <div className="space-y-2">
+                <label className="block text-white/50 font-medium text-[10px]">
+                  Add Custom Symbol
+                </label>
+                <input
+                  value={newSymbol}
+                  onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const symbol = newSymbol.trim().toUpperCase();
+                      if (!symbol || symbols.includes(symbol)) return;
+                      setSymbols((p) => [...p, symbol]);
+                      setSelectedSymbol(symbol);
+                      setNewSymbol("");
+                      setShowAddModal(false);
+                    }
+                  }}
+                  placeholder="Enter symbol (e.g. BTCUSDT)"
+                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                />
+                <div className="text-white/40 text-[10px]">
+                  💡 Example: BTCUSDT, ETHUSDT
+                </div>
+              </div>
+
+              {/* Popular Symbols */}
+              <div>
+                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                  Popular Symbols
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {POPULAR_SYMBOLS.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        setSymbols((p) => p.includes(s) ? p : [...p, s]);
+                        setSelectedSymbol(s);
+                        setShowAddModal(false);
+                      }}
+                      className={`
+                        px-2 py-1.5 rounded-md font-semibold text-[10px]
+                        border transition-all duration-150
+                        cursor-pointer
+                        whitespace-nowrap
+                        ${
+                          symbols.includes(s)
+                            ? "bg-emerald-500/30 text-emerald-300 border-emerald-500/50"
+                            : `
+                                bg-white/10 text-white border-white/10
+                                hover:bg-teal-500/15
+                                hover:border-teal-400/40
+                                hover:text-teal-400
+                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                              `
+                        }
+                      `}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Add Button */}
+              <button
+                onClick={() => {
                   const symbol = newSymbol.trim().toUpperCase();
                   if (!symbol || symbols.includes(symbol)) return;
                   setSymbols((p) => [...p, symbol]);
                   setSelectedSymbol(symbol);
                   setNewSymbol("");
                   setShowAddModal(false);
-                }
-              }}
-              placeholder="Enter symbol (e.g. BTCUSDT)"
-              className="w-full px-3 py-2 rounded-md bg-black/40 border border-white/10 text-white text-xs outline-none focus:border-blue-500/50"
-            />
-
-            <div className="grid grid-cols-3 gap-1.5">
-              {POPULAR_SYMBOLS.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => {
-                    setSymbols((p) => p.includes(s) ? p : [...p, s]);
-                    setSelectedSymbol(s);
-                    setShowAddModal(false);
-                  }}
-                  className={`text-[10px] rounded px-2 py-1.5 transition-colors ${
-                    symbols.includes(s)
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                      : "bg-white/5 hover:bg-white/10 text-white/70"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+                }}
+                disabled={!newSymbol.trim()}
+                className="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded-md font-semibold transition-all cursor-pointer text-xs"
+              >
+                Add Custom Symbol
+              </button>
             </div>
-          </div>
-
-          <div className="p-3 border-t border-white/10">
-            <button
-              onClick={() => {
-                const symbol = newSymbol.trim().toUpperCase();
-                if (!symbol || symbols.includes(symbol)) return;
-                setSymbols((p) => [...p, symbol]);
-                setSelectedSymbol(symbol);
-                setNewSymbol("");
-                setShowAddModal(false);
-              }}
-              disabled={!newSymbol.trim()}
-              className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 text-white py-2 rounded-md font-semibold text-xs transition-colors"
-            >
-              Add Custom Symbol
-            </button>
           </div>
         </div>
       )}

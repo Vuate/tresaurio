@@ -23,7 +23,7 @@ const UNLOCK_SCHEDULES: Omit<UnlockEvent, "currentPrice" | "id">[] = [
   {
     token: "Arbitrum",
     symbol: "ARB",
-    date: getNextUnlockDate(21), // 21st of each month
+    date: getNextUnlockDate(21),
     amount: 92650000,
     percentage: 0.93,
     category: "investors",
@@ -70,12 +70,10 @@ const UNLOCK_SCHEDULES: Omit<UnlockEvent, "currentPrice" | "id">[] = [
   },
 ];
 
-// Get next unlock date based on day of month
 function getNextUnlockDate(dayOfMonth: number): string {
   const now = new Date();
   let unlockDate = new Date(now.getFullYear(), now.getMonth(), dayOfMonth);
 
-  // If the date has passed this month, use next month
   if (unlockDate < now) {
     unlockDate = new Date(now.getFullYear(), now.getMonth() + 1, dayOfMonth);
   }
@@ -83,7 +81,6 @@ function getNextUnlockDate(dayOfMonth: number): string {
   return unlockDate.toISOString().split("T")[0];
 }
 
-// Symbol mapping for CoinGecko
 const COINGECKO_IDS: Record<string, string> = {
   ARB: "arbitrum",
   OP: "optimism",
@@ -93,7 +90,6 @@ const COINGECKO_IDS: Record<string, string> = {
   WLD: "worldcoin-wld",
 };
 
-// 🔥 Fetch current prices from CoinGecko
 const fetchTokenPrices = async (): Promise<Record<string, number>> => {
   const ids = Object.values(COINGECKO_IDS).join(",");
 
@@ -112,7 +108,6 @@ const fetchTokenPrices = async (): Promise<Record<string, number>> => {
   } catch (err) {
     console.error("[TokenUnlock] Price fetch error:", err);
 
-    // Fallback to Binance
     const fallbackPrices: Record<string, number> = {};
     for (const symbol of Object.keys(COINGECKO_IDS)) {
       try {
@@ -129,7 +124,6 @@ const fetchTokenPrices = async (): Promise<Record<string, number>> => {
   }
 };
 
-// 🔥 Fetch unlock data with current prices
 const fetchUnlockData = async (): Promise<UnlockEvent[]> => {
   const prices = await fetchTokenPrices();
 
@@ -146,7 +140,6 @@ export default function TokenUnlockModule({ instanceId }: Props) {
   const [data, setData] = useState<UnlockEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load settings
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(storageKey);
@@ -161,14 +154,12 @@ export default function TokenUnlockModule({ instanceId }: Props) {
     }
   }, [storageKey]);
 
-  // Save settings
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem(storageKey, JSON.stringify({ sortBy }));
     }
   }, [sortBy, storageKey]);
 
-  // Fetch data
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -183,7 +174,7 @@ export default function TokenUnlockModule({ instanceId }: Props) {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 300000); // Refresh every 5 minutes
+    const interval = setInterval(fetchData, 300000);
     return () => clearInterval(interval);
   }, [fetchData]);
 
@@ -215,38 +206,51 @@ export default function TokenUnlockModule({ instanceId }: Props) {
     }
   };
 
-  // Calculate days until unlock
   const getDaysUntil = (dateStr: string) => {
     const now = new Date();
     const unlockDate = new Date(dateStr);
-    const diff = Math.ceil((unlockDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const diff = Math.ceil(
+      (unlockDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return diff;
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
+    <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="text-xl">🔓</div>
-          <h3 className="font-semibold">Token Unlocks</h3>
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-            LIVE
+      <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
+        <div className="text-[10px] sm:text-xs text-white/60">
+          <span className="font-semibold text-white/90">
+            <span className="hidden xs:inline">Token Unlocks</span>
+            <span className="xs:hidden">Unlocks</span>
           </span>
+          <span className="text-white/40"> • </span>
+          <span className="text-emerald-400">LIVE</span>
         </div>
       </div>
 
       {/* Sort Options */}
-      <div className="flex gap-1 p-2 border-b border-white/10">
+      <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
         {(["date", "amount", "impact"] as const).map((sort) => (
           <button
             key={sort}
             onClick={() => setSortBy(sort)}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-              sortBy === sort
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
+            className={`
+              flex-1 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold
+              border transition-all duration-150
+              cursor-pointer
+              ${
+                sortBy === sort
+                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  : `
+                      bg-white/10 text-white border-white/10
+                      hover:bg-teal-500/15
+                      hover:border-teal-400/40
+                      hover:text-teal-400
+                      hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                    `
+              }
+            `}
           >
             {sort.charAt(0).toUpperCase() + sort.slice(1)}
           </button>
@@ -254,85 +258,114 @@ export default function TokenUnlockModule({ instanceId }: Props) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto">
+      <div
+        className="
+          flex-1 min-h-0 space-y-1.5 sm:space-y-2
+          overflow-y-auto
+          px-1 sm:px-0
+
+          [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
+          [&::-webkit-scrollbar-track]:bg-transparent
+          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+          scrollbar-thin
+          scrollbar-thumb-teal-400/40
+          scrollbar-track-transparent
+        "
+      >
         {loading && data.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-white/40 text-xs">
+          <div className="text-center py-6 sm:py-8 text-white/40 text-[9px] sm:text-[10px]">
             Loading unlock data...
           </div>
         ) : (
-          <div className="divide-y divide-white/10">
-            {sortedUnlocks.map((unlock) => {
-              const daysUntil = getDaysUntil(unlock.date);
-              const value = unlock.amount * unlock.currentPrice;
+          sortedUnlocks.map((unlock) => {
+            const daysUntil = getDaysUntil(unlock.date);
+            const value = unlock.amount * unlock.currentPrice;
 
-              return (
-                <div
-                  key={unlock.id}
-                  className="p-3 hover:bg-white/5 transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="font-medium text-white">{unlock.token}</div>
-                      <div className="text-xs text-white/60">{unlock.symbol}</div>
+            return (
+              <div
+                key={unlock.id}
+                className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
+              >
+                <div className="flex items-start justify-between mb-1.5 sm:mb-2">
+                  <div className="min-w-0">
+                    <div className="font-semibold text-white text-[10px] sm:text-xs truncate">
+                      {unlock.token}
                     </div>
-                    <span
-                      className={`text-xs px-2 py-1 rounded font-medium ${getCategoryColor(unlock.category)}`}
-                    >
-                      {unlock.category}
+                    <div className="text-[9px] sm:text-[10px] text-white/40">
+                      {unlock.symbol}
+                    </div>
+                  </div>
+                  <span
+                    className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold flex-shrink-0 ml-2 ${getCategoryColor(
+                      unlock.category
+                    )}`}
+                  >
+                    {unlock.category}
+                  </span>
+                </div>
+
+                <div className="space-y-1 sm:space-y-1.5">
+                  <div className="flex justify-between text-[10px] sm:text-[11px]">
+                    <span className="text-white/60">Date</span>
+                    <span className="font-medium text-white flex items-center gap-1.5 sm:gap-2">
+                      {new Date(unlock.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                      <span
+                        className={`text-[9px] sm:text-[10px] ${
+                          daysUntil <= 7 ? "text-yellow-400" : "text-white/40"
+                        }`}
+                      >
+                        ({daysUntil}d)
+                      </span>
                     </span>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Date</span>
-                      <span className="font-medium text-white flex items-center gap-2">
-                        {new Date(unlock.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                        <span className={`text-xs ${daysUntil <= 7 ? "text-yellow-400" : "text-white/40"}`}>
-                          ({daysUntil}d)
-                        </span>
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Amount</span>
-                      <span className="font-medium text-white">
-                        {(unlock.amount / 1000000).toFixed(1)}M {unlock.symbol}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Supply Impact</span>
-                      <span className={`font-bold ${unlock.percentage > 5 ? "text-red-400" : "text-yellow-400"}`}>
-                        +{unlock.percentage.toFixed(2)}%
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Value</span>
-                      <span className="font-medium text-white">
-                        ${value > 1000000000
-                          ? (value / 1000000000).toFixed(2) + "B"
-                          : (value / 1000000).toFixed(1) + "M"}
-                      </span>
-                    </div>
-
-                    {/* Impact Warning */}
-                    {unlock.percentage > 10 && (
-                      <div className="bg-red-500/10 border border-red-500/20 rounded p-2 mt-2">
-                        <div className="flex items-center gap-2 text-xs text-red-400">
-                          <span>⚠️</span>
-                          <span>High supply impact - potential price pressure</span>
-                        </div>
-                      </div>
-                    )}
+                  <div className="flex justify-between text-[10px] sm:text-[11px]">
+                    <span className="text-white/60">Amount</span>
+                    <span className="font-medium text-white">
+                      {(unlock.amount / 1000000).toFixed(1)}M {unlock.symbol}
+                    </span>
                   </div>
+
+                  <div className="flex justify-between text-[10px] sm:text-[11px]">
+                    <span className="text-white/60">Supply Impact</span>
+                    <span
+                      className={`font-bold ${
+                        unlock.percentage > 5 ? "text-red-400" : "text-yellow-400"
+                      }`}
+                    >
+                      +{unlock.percentage.toFixed(2)}%
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-[10px] sm:text-[11px]">
+                    <span className="text-white/60">Value</span>
+                    <span className="font-medium text-white">
+                      $
+                      {value > 1000000000
+                        ? (value / 1000000000).toFixed(2) + "B"
+                        : (value / 1000000).toFixed(1) + "M"}
+                    </span>
+                  </div>
+
+                  {/* Impact Warning */}
+                  {unlock.percentage > 10 && (
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-1.5 sm:p-2 mt-1 sm:mt-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-red-400">
+                        <span>⚠️</span>
+                        <span>High supply impact - potential price pressure</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })
         )}
       </div>
     </div>

@@ -200,35 +200,47 @@ export default function ICOCalendarModule({ instanceId }: Props) {
     const date = new Date(dateStr);
     const diffDays = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-    if (diffDays > 0) return `in ${diffDays}d`;
-    if (diffDays === 0) return "Today";
-    return `${Math.abs(diffDays)}d ago`;
+    if (diffDays > 0) return diffDays;
+    if (diffDays === 0) return 0;
+    return Math.abs(diffDays);
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
+    <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="text-xl">🚀</div>
-          <h3 className="font-semibold">ICO Calendar</h3>
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-            LIVE
+      <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
+        <div className="text-[10px] sm:text-xs text-white/60">
+          <span className="font-semibold text-white/90">
+            <span className="hidden xs:inline">ICO Calendar</span>
+            <span className="xs:hidden">ICO</span>
           </span>
+          <span className="text-white/40"> • </span>
+          <span className="text-emerald-400">LIVE</span>
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-1 p-2 border-b border-white/10">
+      {/* Filter Options */}
+      <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
         {(["all", "live", "upcoming", "ended"] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-              filter === f
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
+            className={`
+              flex-1 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold
+              border transition-all duration-150
+              cursor-pointer
+              ${
+                filter === f
+                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  : `
+                      bg-white/10 text-white border-white/10
+                      hover:bg-teal-500/15
+                      hover:border-teal-400/40
+                      hover:text-teal-400
+                      hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                    `
+              }
+            `}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
@@ -236,92 +248,138 @@ export default function ICOCalendarModule({ instanceId }: Props) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto">
+      <div
+        className="
+          flex-1 min-h-0 space-y-1.5 sm:space-y-2
+          overflow-y-auto
+          px-1 sm:px-0
+
+          [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
+          [&::-webkit-scrollbar-track]:bg-transparent
+          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+          scrollbar-thin
+          scrollbar-thumb-teal-400/40
+          scrollbar-track-transparent
+        "
+      >
         {loading && data.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-white/40 text-xs">
+          <div className="text-center py-6 sm:py-8 text-white/40 text-[9px] sm:text-[10px]">
             Loading ICO data...
           </div>
         ) : filteredICOs.length === 0 ? (
-          <div className="p-8 text-center text-white/40">
-            <div className="text-4xl mb-2">🚫</div>
-            <div className="text-sm">No ICOs found</div>
+          <div className="text-center py-6 sm:py-8 text-white/40 text-[9px] sm:text-[10px]">
+            No ICOs found
           </div>
         ) : (
-          <div className="divide-y divide-white/10">
-            {filteredICOs.map((ico) => (
+          filteredICOs.map((ico) => {
+            const daysLabel = getDaysLabel(ico.date);
+            const isUpcoming = new Date(ico.date) > new Date();
+
+            return (
               <div
                 key={ico.id}
-                className="p-3 hover:bg-white/5 transition-colors"
+                className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <div className="font-medium text-white">{ico.name}</div>
-                    <div className="text-xs text-white/60 flex items-center gap-2 mt-1">
-                      <span>{ico.symbol}</span>
-                      <span>•</span>
-                      <span>{ico.chain}</span>
+                <div className="flex items-start justify-between mb-1.5 sm:mb-2">
+                  <div className="min-w-0">
+                    <div className="font-semibold text-white text-[10px] sm:text-xs truncate">
+                      {ico.name}
+                    </div>
+                    <div className="text-[9px] sm:text-[10px] text-white/40">
+                      {ico.symbol} • {ico.chain}
                     </div>
                   </div>
                   <span
-                    className={`text-xs px-2 py-1 rounded font-medium ${getStatusColor(ico.status)}`}
+                    className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold flex-shrink-0 ml-2 ${getStatusColor(ico.status)}`}
                   >
                     {ico.status}
                   </span>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-1.5">
                   {ico.price > 0 && (
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-[10px] sm:text-[11px]">
                       <span className="text-white/60">Price</span>
                       <span className="font-medium text-white">${ico.price}</span>
                     </div>
                   )}
 
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-[10px] sm:text-[11px]">
                     <span className="text-white/60">Date</span>
-                    <span className="font-medium text-white flex items-center gap-2">
+                    <span className="font-medium text-white flex items-center gap-1.5 sm:gap-2">
                       {new Date(ico.date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                       })}
-                      <span className={`text-xs ${ico.status === "upcoming" ? "text-blue-400" : "text-white/40"}`}>
-                        ({getDaysLabel(ico.date)})
+                      <span
+                        className={`text-[9px] sm:text-[10px] ${
+                          isUpcoming && daysLabel <= 7 
+                            ? "text-yellow-400" 
+                            : "text-white/40"
+                        }`}
+                      >
+                        ({isUpcoming ? `${daysLabel}d` : `${daysLabel}d ago`})
                       </span>
                     </span>
                   </div>
 
-                  {/* Progress Bar */}
                   {ico.raised > 0 && (
-                    <div>
-                      <div className="flex justify-between text-xs text-white/60 mb-1">
-                        <span>Raised: ${(ico.raised / 1000000).toFixed(1)}M</span>
-                        {ico.target !== ico.raised && (
-                          <span>Target: ${(ico.target / 1000000).toFixed(1)}M</span>
-                        )}
+                    <>
+                      <div className="flex justify-between text-[10px] sm:text-[11px]">
+                        <span className="text-white/60">Raised</span>
+                        <span className="font-medium text-white">
+                          ${(ico.raised / 1000000).toFixed(1)}M
+                        </span>
                       </div>
-                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all"
-                          style={{
-                            width: `${getProgressPercent(ico.raised, ico.target)}%`,
-                          }}
-                        />
+
+                      {ico.target !== ico.raised && (
+                        <div className="flex justify-between text-[10px] sm:text-[11px]">
+                          <span className="text-white/60">Target</span>
+                          <span className="font-medium text-white">
+                            ${(ico.target / 1000000).toFixed(1)}M
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Progress Bar */}
+                      <div className="pt-1 sm:pt-1.5">
+                        <div className="h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all"
+                            style={{
+                              width: `${getProgressPercent(ico.raised, ico.target)}%`,
+                            }}
+                          />
+                        </div>
+                        <div className="text-[9px] sm:text-[10px] text-right text-white/60 mt-0.5 sm:mt-1">
+                          {getProgressPercent(ico.raised, ico.target).toFixed(0)}%
+                        </div>
                       </div>
-                      <div className="text-xs text-right text-white/60 mt-1">
-                        {getProgressPercent(ico.raised, ico.target).toFixed(0)}%
-                      </div>
-                    </div>
+                    </>
                   )}
 
                   {ico.category && (
-                    <div className="text-xs text-white/40">
-                      Category: {ico.category}
+                    <div className="text-[9px] sm:text-[10px] text-white/40 pt-0.5">
+                      {ico.category}
+                    </div>
+                  )}
+
+                  {/* High Raise Warning */}
+                  {ico.raised > 100000000 && (
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-1.5 sm:p-2 mt-1 sm:mt-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-blue-400">
+                        <span>💎</span>
+                        <span>Major funding round - high market interest</span>
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })
         )}
       </div>
     </div>
