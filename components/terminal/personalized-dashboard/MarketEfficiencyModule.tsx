@@ -49,14 +49,17 @@ function SymbolEfficiencyTracker({
   marketType: "spot" | "futures";
   exchange: Exchange;
 }): EfficiencyData | null {
+  // Get order book data with multi-exchange support
+  // Use limit: 20 for Binance compatibility (max supported)
   const { bids, asks, spread, spreadPercent, midPrice, loading: obLoading, error: obError } = useOrderBook({
     symbol,
     marketType,
     exchange,
-    limit: 20,
+    limit: 20, // Binance max is 20 for WebSocket
     timeoutMs: 30000,
   });
 
+  // Get ticker data with multi-exchange support
   const { data: ticker, loading: tickerLoading, error: tickerError } = useTicker({
     symbol,
     marketType,
@@ -67,7 +70,9 @@ function SymbolEfficiencyTracker({
   const loading = obLoading || tickerLoading;
   const error = obError || tickerError;
 
+  // Calculate efficiency metrics
   const efficiency = useMemo(() => {
+    // Return error state if there's an error
     if (error) {
       return {
         symbol,
@@ -86,19 +91,23 @@ function SymbolEfficiencyTracker({
       return null;
     }
 
+    // Calculate depth (total value within ±1% of mid price)
     const range1Pct = midPrice * 0.01;
     const depth =
       bids.filter(b => midPrice - b.price <= range1Pct).reduce((sum, l) => sum + l.price * l.quantity, 0) +
       asks.filter(a => a.price - midPrice <= range1Pct).reduce((sum, l) => sum + l.price * l.quantity, 0);
 
+    // Calculate volatility (24h high-low range as % of current price)
     const volatility = ticker.lastPrice > 0
       ? ((ticker.highPrice - ticker.lowPrice) / ticker.lastPrice) * 100
       : 0;
 
-    const spreadScore = Math.max(0, 100 - (spreadPercent * 1000));
-    const depthScore = Math.min(100, (depth / 10000000) * 100);
-    const volumeScore = Math.min(100, (ticker.quoteVolume / 1000000000) * 50);
-    const volatilityScore = Math.max(0, 100 - (volatility * 10));
+    // Calculate efficiency score (0-100)
+    // Factors: tight spread (30%), high depth (30%), high volume (20%), low volatility (20%)
+    const spreadScore = Math.max(0, 100 - (spreadPercent * 1000)); // Tight spread = high score
+    const depthScore = Math.min(100, (depth / 10000000) * 100); // $10M depth = 100 score
+    const volumeScore = Math.min(100, (ticker.quoteVolume / 1000000000) * 50); // $1B volume = 50 score
+    const volatilityScore = Math.max(0, 100 - (volatility * 10)); // Low volatility = high score
 
     const score = Math.round(
       spreadScore * 0.3 +
@@ -132,6 +141,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
   const [newSymbol, setNewSymbol] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
 
+  // Load settings
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(storageKey);
@@ -149,6 +159,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
     }
   }, [instanceId, storageKey]);
 
+  // Save settings
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem(storageKey, JSON.stringify({ marketType, sortBy, exchange, symbols }));
@@ -203,6 +214,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
   }, [allSlots, symbols.length]);
 
   const sortedData = useMemo(() => {
+    // Filter out error items for display
     return [...allData]
       .filter(d => !d.error)
       .sort((a, b) => {
@@ -234,75 +246,51 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
   };
 
   return (
-    <div className="h-full flex flex-col relative">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
-          Market Efficiency
-        </span>
-
-        <span className="text-white/40 text-xs">•</span>
-
-        <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
-
-        <div className="flex-1 min-w-[20px]"></div>
-
-        <div className="flex gap-1.5">
-          <button
-            onClick={() => setMarketType("spot")}
-            className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
-              marketType === "spot"
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
-          >
-            Spot
-          </button>
-          <button
-            onClick={() => setMarketType("futures")}
-            className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
-              marketType === "futures"
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
-          >
-            Futures
-          </button>
+    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
+      {/* Header */}
+      <div className="flex items-center justify-between p-3 border-b border-white/10">
+        <div className="flex items-center gap-2">
+          <div className="text-xl">⚡</div>
+          <h3 className="font-semibold">Market Efficiency</h3>
         </div>
 
-        <div ref={exchangeRef} className="relative">
-          <button
-            onClick={() => setExchangeOpen((v) => !v)}
-            className="h-7 px-3 rounded-md bg-[#0b1f1f] border border-white/10 text-white text-xs flex items-center gap-1.5 cursor-pointer hover:bg-white/5 transition-all whitespace-nowrap"
+        <div className="flex gap-2">
+          {/* Exchange Selector */}
+          <select
+            value={exchange}
+            onChange={(e) => setExchange(e.target.value as Exchange)}
+            className="px-2 py-1 rounded text-xs font-medium bg-white/5 text-white/80 border border-white/10 outline-none cursor-pointer hover:bg-white/10"
           >
-            <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
-            <span
-              className={`text-white/50 text-[10px] transition-transform duration-200 ${
-                exchangeOpen ? "rotate-180" : ""
+            {EXCHANGES.map((ex) => (
+              <option key={ex.id} value={ex.id}>
+                {ex.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Market Type Toggle */}
+          <div className="flex gap-1">
+            <button
+              onClick={() => setMarketType("spot")}
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                marketType === "spot"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white/5 text-white/60 hover:bg-white/10"
               }`}
             >
-              ▾
-            </span>
-          </button>
-
-          {exchangeOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="absolute right-0 mt-1 z-50 w-[120px] max-h-[160px] overflow-y-auto bg-[#0b1f1f] border border-emerald-500/20 rounded-md shadow-lg animate-in fade-in slide-in-from-top-2 duration-200 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-emerald-500/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
+              Spot
+            </button>
+            <button
+              onClick={() => setMarketType("futures")}
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                marketType === "futures"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white/5 text-white/60 hover:bg-white/10"
+              }`}
             >
-              {EXCHANGES.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => {
-                    setExchange(ex.id as Exchange);
-                    setExchangeOpen(false);
-                  }}
-                  className="w-full px-3 py-2 text-left text-xs bg-transparent cursor-pointer text-white transition-colors hover:bg-emerald-500/10 hover:text-emerald-400"
-                >
-                  {ex.name}
-                </button>
-              ))}
-            </div>
-          )}
+              Futures
+            </button>
+          </div>
         </div>
       </div>
 
@@ -388,11 +376,11 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
             </div>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="divide-y divide-white/10">
             {sortedData.map((data) => (
               <div
                 key={data.symbol}
-                className="bg-white/5 rounded-md p-2 border border-white/10 hover:bg-white/8 transition-all"
+                className="p-3 hover:bg-white/5 transition-colors"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -409,56 +397,61 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
                       </button>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <span className={`text-base font-bold leading-none ${getScoreColor(data.score)}`}>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-2xl font-bold ${getScoreColor(data.score)}`}
+                    >
                       {data.score}
                     </span>
-                    <span className="text-[9px] text-white/60 whitespace-nowrap leading-tight">
+                    <span className="text-xs text-white/60">
                       {getScoreLabel(data.score)}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[9px] mb-1 leading-tight">
-                  <div className="flex items-center gap-0.5">
-                    <span className="text-white/50">Spread:</span>
-                    <span className="text-white font-medium">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-white/60">Spread:</span>
+                    <span className="text-white ml-1 font-medium">
                       {data.spreadPercent.toFixed(3)}%
                     </span>
                   </div>
-                  <div className="flex items-center gap-0.5">
-                    <span className="text-white/50">Depth:</span>
-                    <span className="text-white font-medium">
+                  <div>
+                    <span className="text-white/60">Depth:</span>
+                    <span className="text-white ml-1 font-medium">
                       ${(data.depth / 1000000).toFixed(1)}M
                     </span>
                   </div>
-                  <div className="flex items-center gap-0.5">
-                    <span className="text-white/50">Volume:</span>
-                    <span className="text-white font-medium">
+                  <div>
+                    <span className="text-white/60">Volume:</span>
+                    <span className="text-white ml-1 font-medium">
                       ${(data.volume24h / 1000000000).toFixed(2)}B
                     </span>
                   </div>
-                  <div className="flex items-center gap-0.5">
-                    <span className="text-white/50">Volatility:</span>
-                    <span className="text-white font-medium">
+                  <div>
+                    <span className="text-white/60">Volatility:</span>
+                    <span className="text-white ml-1 font-medium">
                       {data.volatility.toFixed(1)}%
                     </span>
                   </div>
                 </div>
 
-                <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${
-                      data.score >= 90
-                        ? "bg-emerald-500"
-                        : data.score >= 70
-                          ? "bg-blue-500"
-                          : data.score >= 50
-                            ? "bg-yellow-500"
-                            : "bg-red-500"
-                    } transition-all`}
-                    style={{ width: `${data.score}%` }}
-                  />
+                {/* Score Bar */}
+                <div className="mt-3">
+                  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${
+                        data.score >= 90
+                          ? "bg-emerald-500"
+                          : data.score >= 70
+                            ? "bg-blue-500"
+                            : data.score >= 50
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
+                      } transition-all`}
+                      style={{ width: `${data.score}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             ))}
