@@ -8,7 +8,7 @@ import type {
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
 
-export const MAX_ZOOM = 2;
+export const MAX_ZOOM = 3;
 export const WORLD_WIDTH = 4000;
 export const WORLD_HEIGHT = 2250;
 
@@ -66,6 +66,7 @@ type Actions = {
 
     setTopBarHeight: (h: number) => void;
   setNotesBarHeight: (h: number) => void;
+  removeNote: (id: string) => void; 
 
   /* MODULES */
   setActiveModule: (id: ModuleId | null) => void;
@@ -102,6 +103,11 @@ const clamp = (v: number, min: number, max: number) =>
 export const usePersonalizedDashboardStore = create<State & Actions>(
   (set, get) => ({
 
+        removeNote: (id) =>
+      set({
+        notes: get().notes.filter((n) => n.id !== id),
+      }),
+      
         /* ---------- UI LOCK ---------- */
     uiBlocked: false,
 
@@ -136,8 +142,19 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
     setUIBlocked: (v) => set({ uiBlocked: v }),
     
     /* VIEW */
-setZoom: (zoom) =>
-  set({ zoom: Math.min(MAX_ZOOM, Math.max(0.1, zoom)) }),
+setZoom: (zoom) => {
+  if (typeof window === 'undefined') {
+    set({ zoom: Math.min(MAX_ZOOM, Math.max(0.1, zoom)) });
+    return;
+  }
+  
+  const { topBarHeight, notesBarHeight } = get();
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+  const minZoom = calculateMinZoom(viewportW, viewportH);
+  
+  set({ zoom: Math.min(MAX_ZOOM, Math.max(minZoom, zoom)) });
+},
     setPan: (panX, panY) => set({ panX, panY }),
     resetView: () => set({ zoom: 1, panX: -4500, panY: -4500 }),
 

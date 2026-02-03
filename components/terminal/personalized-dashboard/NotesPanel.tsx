@@ -16,12 +16,19 @@ export default function NotesPanel() {
     notesHeight,
     setNotesHeight,
     setNotesBarHeight,
+      removeNote, 
     topBarHeight,
   } = usePersonalizedDashboardStore();
 
+  // 🔥 RESPONSIVE HEADER HEIGHT - STATE OLARAK
+  const [headerHeight, setHeaderHeight] = useState(
+    typeof window !== 'undefined' 
+      ? (window.innerWidth >= 1536 ? 56 : window.innerWidth >= 1280 ? 52 : 48)
+      : 48
+  );
+
   const [text, setText] = useState("");
 
-  // 🔥 ERROR POPUP için LOCAL STATE
   const [notification, setNotification] = useState<{
     show: boolean;
     type: "success" | "error" | "info";
@@ -34,10 +41,20 @@ export default function NotesPanel() {
     message: "",
   });
 
-  /* ================= RESIZE REFS ================= */
   const isResizingRef = useRef(false);
   const startYRef = useRef(0);
   const startHeightRef = useRef(0);
+
+  // 🔥 HEADER HEIGHT GÜNCELLEME
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const newHeight = window.innerWidth >= 1536 ? 56 : window.innerWidth >= 1280 ? 52 : 48;
+      setHeaderHeight(newHeight);
+    };
+
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
 
   /* 🔥 Yükseklik ölçümü */
   useEffect(() => {
@@ -51,42 +68,35 @@ export default function NotesPanel() {
     measureHeight();
     window.addEventListener("resize", measureHeight);
     return () => window.removeEventListener("resize", measureHeight);
-  }, [notesOpen, notesHeight, setNotesBarHeight]);
+  }, [notesOpen, notesHeight, headerHeight, setNotesBarHeight]); // headerHeight eklendi
 
-/* ================= RESIZE LOGIC ================= */
+  /* ================= RESIZE LOGIC ================= */
 useEffect(() => {
   const onMouseMove = (e: MouseEvent) => {
     if (!isResizingRef.current) return;
 
-    const MIN_HEIGHT = 140;
+    const MIN_HEIGHT = window.innerWidth >= 1536 ? 180 : window.innerWidth >= 1280 ? 160 : 140;
     const SAFETY_BUFFER = 16;
     
-    // 🔥 EKRAN YÜKSEKLİĞİNE ORANLI MİNİMUM CLEARANCE
-    const MIN_TOP_CLEARANCE_RATIO = 0.40; // Ekranın %40'si her zaman boş kalacak
+    const MIN_TOP_CLEARANCE_RATIO = 0.45;
     const dynamicMinClearance = window.innerHeight * MIN_TOP_CLEARANCE_RATIO;
 
-    // 🔥 DİNAMİK UI ÖLÇÜMÜ
-    const topBarElement = document.querySelector('[class*="TopBar"]') || 
-                          document.querySelector('header') ||
-                          document.querySelector('[class*="topBar"]');
+    // ✅ STORE'DAN AL (DOM query yok!)
+    // topBarHeight zaten component'in üstünde destructure edilmiş
     
-    const mapElement = document.querySelector('[class*="WorkspaceControls"]') ||
-                       document.querySelector('[class*="minimap"]');
+    // ✅ WorkspaceControls height'ı responsive breakpoint'lerle hesapla
+    const mapHeight = window.innerWidth >= 1536 ? 180 : window.innerWidth >= 1280 ? 160 : 140;
     
-    // Gerçek yükseklikleri ölç
-    const measuredTopBarHeight = topBarElement?.getBoundingClientRect().height || topBarHeight || 64;
-    const measuredMapHeight = mapElement?.getBoundingClientRect().height || 0;
+    // ✅ Hiç DOM query yok!
+    const reservedTopSpace = Math.max(
+      topBarHeight + mapHeight + SAFETY_BUFFER,
+      dynamicMinClearance
+    );
     
-    // 🔥 GERÇEKLEŞTİRİLEN CLEARANCE: Ölçülen + Dinamik minimum'dan büyük olanı
-    const measuredClearance = measuredTopBarHeight + measuredMapHeight + SAFETY_BUFFER;
-    const reservedTopSpace = Math.max(measuredClearance, dynamicMinClearance);
-    
-    // Ekranın kullanılabilir yüksekliğini hesapla
     const availableHeight = window.innerHeight - reservedTopSpace;
 
     const delta = startYRef.current - e.clientY;
 
-    // 🔥 DİNAMİK MAKSIMUM
     const maxHeight = Math.max(MIN_HEIGHT, availableHeight);
 
     const newHeight = Math.min(
@@ -110,9 +120,7 @@ useEffect(() => {
   };
 }, [setNotesHeight, topBarHeight]);
 
-  // 🔥 SAVE HANDLER
   const handleSave = () => {
-    // 1️⃣ BOŞSA - ERROR POPUP (NotificationPopup)
     if (!text.trim()) {
       setNotification({
         show: true,
@@ -123,7 +131,6 @@ useEffect(() => {
       return;
     }
 
-    // 2️⃣ BAŞARILI - SUCCESS TOAST (DashboardNotifications)
     addNote(text);
     
     useDashboardNotificationStore.getState().push({
@@ -137,7 +144,6 @@ useEffect(() => {
 
   return (
     <>
-      {/* 🔥 ERROR POPUP */}
       <NotificationPopup
         show={notification.show}
         type={notification.type}
@@ -152,10 +158,9 @@ useEffect(() => {
           bg-[#031A1C]/95 backdrop-blur
           border-t border-white/10"
         style={{
-          height: notesOpen ? notesHeight : 48,
+          height: notesOpen ? notesHeight : headerHeight,
         }}
       >
-        {/* ================= RESIZE HANDLE ================= */}
         {notesOpen && (
           <div
             className="absolute -top-1 left-0 right-0 h-2 cursor-ns-resize z-50"
@@ -169,33 +174,33 @@ useEffect(() => {
           />
         )}
 
-{/* ================= HEADER ================= */}
-<div
-  onMouseDown={(e) => e.stopPropagation()}
-  onClick={toggleNotes}
-  className="h-[48px] px-6 xl:px-8 2xl:px-12 flex items-center justify-between
-    cursor-pointer select-none"
->
-  <div className="flex items-center gap-2 text-sm xl:text-[15px] 2xl:text-base font-semibold text-white">
-    <Icon
-      icon="material-symbols:note-alt-outline"
-      className="text-white w-[1.1em] h-[1.1em] xl:w-[1.15em] xl:h-[1.15em] 2xl:w-[1.2em] 2xl:h-[1.2em]"
-    />
-    Notes
-  </div>
+        <div
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={toggleNotes}
+          className="px-6 xl:px-8 2xl:px-12 flex items-center justify-between cursor-pointer select-none"
+          style={{ height: headerHeight }}
+        >
+          <div className="flex items-center gap-2 xl:gap-2.5 2xl:gap-3 text-sm xl:text-[15px] 2xl:text-base font-semibold text-white">
+            <Icon
+              icon="material-symbols:note-alt-outline"
+              className="text-white w-[1.1em] h-[1.1em] xl:w-[1.15em] xl:h-[1.15em] 2xl:w-[1.2em] 2xl:h-[1.2em]"
+            />
+            Notes
+          </div>
 
-  <div
-    className={`text-white/60 transition-transform duration-300 xl:text-lg 2xl:text-xl
-      ${!notesOpen ? "rotate-180" : ""}`}
-  >
-    ▲
-  </div>
-</div>
+          <div
+            className={`text-white/60 transition-transform duration-300 text-base xl:text-lg 2xl:text-xl
+              ${!notesOpen ? "rotate-180" : ""}`}
+          >
+            ▲
+          </div>
+        </div>
 
-        {/* ================= CONTENT ================= */}
         {notesOpen && (
-          <div className="h-[calc(100%-48px)] flex gap-4 xl:gap-5 2xl:gap-6 px-6 xl:px-8 2xl:px-12 pb-4 xl:pb-5 2xl:pb-6 overflow-hidden select-none">
-            {/* INPUT */}
+          <div 
+            className="flex gap-4 xl:gap-5 2xl:gap-6 px-6 xl:px-8 2xl:px-12 pb-4 xl:pb-5 2xl:pb-6 overflow-hidden select-none"
+            style={{ height: `calc(100% - ${headerHeight}px)` }} // 🔥 DİNAMİK
+          >
             <div className="flex flex-col w-1/2 gap-2 xl:gap-2.5 2xl:gap-3">
               <textarea
                 value={text}
@@ -210,7 +215,19 @@ useEffect(() => {
                 className="flex-1 resize-none rounded-lg
                   bg-black/30 border border-white/10
                   p-3 xl:p-3.5 2xl:p-4 text-xs xl:text-[13px] 2xl:text-sm text-white
-                  focus:outline-none focus:border-teal-400"
+                  focus:outline-none focus:border-teal-400
+                  
+                        [&::-webkit-scrollbar]:w-2
+      [&::-webkit-scrollbar-track]:bg-transparent
+      [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+      
+      scrollbar-thin
+      scrollbar-thumb-teal-400/40
+      scrollbar-track-transparent
+      "
+                  
               />
 
               <button
@@ -224,7 +241,6 @@ useEffect(() => {
               </button>
             </div>
 
-            {/* LIST */}
             <div className="
               flex-1 
               overflow-y-auto 
@@ -245,18 +261,44 @@ useEffect(() => {
                 <div className="text-xs xl:text-[13px] 2xl:text-sm text-white/40">No notes yet</div>
               )}
 
-              {notes.map((n) => (
-                <div
-                  key={n.id}
-                  className="rounded-lg border border-white/10
-                    bg-white/5 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80"
-                >
-                  <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-white/40 mb-1">
-                    {new Date(n.createdAt).toLocaleString()}
-                  </div>
-                  {n.text}
-                </div>
-              ))}
+{notes.map((n) => (
+  <div
+    key={n.id}
+    className="rounded-lg border border-white/10
+      bg-white/5 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80
+      relative group"  // ✅ EKLE
+  >
+    {/* ✅ BU BUTONU EKLE (tarih div'inden önce) */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        removeNote(n.id);
+      }}
+      className="absolute top-2 right-2 
+        opacity-0 group-hover:opacity-100
+        transition-opacity duration-200
+        w-5 h-5 xl:w-5.5 xl:h-5.5 2xl:w-6 2xl:h-6
+        flex items-center justify-center
+        rounded
+        bg-red-500/20 hover:bg-red-500/30
+        text-red-400 hover:text-red-300
+        text-xs xl:text-sm 2xl:text-base
+        cursor-pointer"
+      title="Delete note"
+    >
+      ✕
+    </button>
+
+    <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-white/40 mb-1 xl:mb-1.5 2xl:mb-2">
+      {new Date(n.createdAt).toLocaleString()}
+    </div>
+    
+    {/* ✅ n.text'i div içine al */}
+    <div className="break-words whitespace-pre-wrap overflow-hidden">
+      {n.text}
+    </div>
+  </div>
+))}
             </div>
           </div>
         )}

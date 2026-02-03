@@ -184,7 +184,7 @@ useEffect(() => {
     if (!containerRef.current) return;
 
     const rect = containerRef.current.getBoundingClientRect();
-    const initialZoom = 1; // %100
+    const initialZoom = calculateMinZoom(rect.width, rect.height);
 
     const centerPanX = (rect.width - WORLD_WIDTH * initialZoom) / 2;
     const centerPanY = (rect.height - WORLD_HEIGHT * initialZoom) / 2;
