@@ -1,30 +1,50 @@
 "use client";
 
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-export default function LoginForm() {
+export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (loading) return;
+
+    setError(null);
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("E-posta veya şifre hatalı");
+      } else {
+        onSuccess?.();
+        router.refresh();
+      }
+    } catch {
+      setError("Giriş başarısız");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <form
       noValidate
       aria-busy={loading}
-      onSubmit={async (e) => {
-        e.preventDefault();
-        if (loading) return;
-
-        setError(null);
-        setLoading(true);
-
-        try {
-          await new Promise((r) => setTimeout(r, 800));
-        } catch {
-          setError("Giriş başarısız");
-        } finally {
-          setLoading(false);
-        }
-      }}
+      onSubmit={handleSubmit}
       className="space-y-3.5 xl:space-y-3.75 2xl:space-y-4"
     >
       {/* Inputs */}

@@ -1,30 +1,80 @@
 "use client";
 
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-export default function SignupForm() {
+export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (loading) return;
+
+    setError(null);
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const passwordConfirm = formData.get("passwordConfirm") as string;
+
+    // Validation
+    if (password !== passwordConfirm) {
+      setError("Şifreler eşleşmiyor");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Şifre en az 6 karakter olmalı");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Create account
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Kayıt başarısız");
+        setLoading(false);
+        return;
+      }
+
+      // Auto login after signup
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Hesap oluşturuldu fakat giriş yapılamadı");
+      } else {
+        onSuccess?.();
+        router.refresh();
+      }
+    } catch {
+      setError("Kayıt başarısız");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <form
       noValidate
       aria-busy={loading}
-      onSubmit={async (e) => {
-        e.preventDefault();
-        if (loading) return;
-
-        setError(null);
-        setLoading(true);
-
-        try {
-          await new Promise((r) => setTimeout(r, 800));
-        } catch {
-          setError("Kayıt başarısız");
-        } finally {
-          setLoading(false);
-        }
-      }}
+      onSubmit={handleSubmit}
       className="space-y-3.5 xl:space-y-3.75 2xl:space-y-4"
     >
       {/* Inputs */}

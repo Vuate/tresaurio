@@ -159,7 +159,11 @@ export default function AuthModal({
         </div>
 
         {/* CONTENT */}
-        {mode === "login" ? <LoginForm /> : <SignupForm />}
+        {mode === "login" ? (
+          <LoginForm onSuccess={onClose} />
+        ) : (
+          <SignupForm onSuccess={onClose} />
+        )}
 
         {/* FOOTER */}
         <div className="mt-3.5 xl:mt-3.75 2xl:mt-4 text-center">

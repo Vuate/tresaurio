@@ -2,6 +2,7 @@
 // API Key management endpoints
 
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import {
   saveApiKey,
   getApiKeys,
@@ -13,10 +14,18 @@ import {
 // GET /api/exchange/keys - List all API keys
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const exchange = searchParams.get("exchange") as ApiKeyInput["exchange"] | null;
 
-    const keys = await getApiKeys(exchange || undefined);
+    const keys = await getApiKeys(session.user.id, exchange || undefined);
 
     return NextResponse.json({
       success: true,
@@ -34,6 +43,14 @@ export async function GET(request: NextRequest) {
 // POST /api/exchange/keys - Add new API key
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate required fields
@@ -62,6 +79,7 @@ export async function POST(request: NextRequest) {
     }
 
     const input: ApiKeyInput = {
+      userId: session.user.id,
       exchange: body.exchange,
       label: body.label,
       apiKey: body.apiKey,
@@ -74,7 +92,7 @@ export async function POST(request: NextRequest) {
     const apiKey = await saveApiKey(input);
 
     // Test the API key
-    const isValid = await testApiKey(input.exchange, apiKey.label || undefined);
+    const isValid = await testApiKey(session.user.id, input.exchange, apiKey.label || undefined);
 
     return NextResponse.json({
       success: true,
@@ -102,6 +120,14 @@ export async function POST(request: NextRequest) {
 // DELETE /api/exchange/keys - Delete API key
 export async function DELETE(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
