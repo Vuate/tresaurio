@@ -2,12 +2,21 @@
 // Get spot balances from exchange
 
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import { getSpotBalances, hasApiKey } from "@/lib/services/exchangeService";
 import { Exchange } from "@/lib/services/apiKeyService";
 
 // GET /api/exchange/account?exchange=binance
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const exchange = searchParams.get("exchange") as Exchange | null;
     const label = searchParams.get("label") || undefined;
@@ -20,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if API key exists
-    const hasKey = await hasApiKey(exchange);
+    const hasKey = await hasApiKey(session.user.id, exchange);
     if (!hasKey) {
       return NextResponse.json(
         {
@@ -32,7 +41,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const balances = await getSpotBalances(exchange, label);
+    const balances = await getSpotBalances(session.user.id, exchange, label);
 
     return NextResponse.json({
       success: true,

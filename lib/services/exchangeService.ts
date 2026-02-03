@@ -273,10 +273,11 @@ async function getBybitSpotBalances(
  * Get spot balances from any exchange
  */
 export async function getSpotBalances(
+  userId: string,
   exchange: Exchange,
   label?: string
 ): Promise<SpotBalance[]> {
-  const credentials = await getDecryptedApiKey(exchange, label);
+  const credentials = await getDecryptedApiKey(userId, exchange, label);
   if (!credentials) {
     throw new Error(`No API key found for ${exchange}`);
   }
@@ -300,10 +301,11 @@ export async function getSpotBalances(
  * Get futures positions from any exchange
  */
 export async function getFuturesPositions(
+  userId: string,
   exchange: Exchange,
   label?: string
 ): Promise<FuturesPosition[]> {
-  const credentials = await getDecryptedApiKey(exchange, label);
+  const credentials = await getDecryptedApiKey(userId, exchange, label);
   if (!credentials) {
     throw new Error(`No API key found for ${exchange}`);
   }
@@ -325,7 +327,7 @@ export async function getFuturesPositions(
 /**
  * Check if exchange has valid API key configured
  */
-export async function hasApiKey(exchange: Exchange): Promise<boolean> {
-  const credentials = await getDecryptedApiKey(exchange);
+export async function hasApiKey(userId: string, exchange: Exchange): Promise<boolean> {
+  const credentials = await getDecryptedApiKey(userId, exchange);
   return credentials !== null;
 }

@@ -8,6 +8,7 @@ export type Exchange = "binance" | "okx" | "bybit" | "coinbase";
 export type Permission = "spot" | "futures" | "withdraw";
 
 export interface ApiKeyInput {
+  userId: string;
   exchange: Exchange;
   label?: string;
   apiKey: string;
@@ -40,6 +41,7 @@ export interface DecryptedApiKey {
 export async function saveApiKey(input: ApiKeyInput): Promise<ApiKeyOutput> {
   const apiKey = await prisma.apiKey.create({
     data: {
+      userId: input.userId,
       exchange: input.exchange,
       label: input.label || `${input.exchange}-default`,
       apiKey: encrypt(input.apiKey),
@@ -64,10 +66,12 @@ export async function saveApiKey(input: ApiKeyInput): Promise<ApiKeyOutput> {
 }
 
 /**
- * Get all API keys for an exchange (without secrets)
+ * Get all API keys for a user (without secrets)
  */
-export async function getApiKeys(exchange?: Exchange): Promise<ApiKeyOutput[]> {
-  const where = exchange ? { exchange, isActive: true } : { isActive: true };
+export async function getApiKeys(userId: string, exchange?: Exchange): Promise<ApiKeyOutput[]> {
+  const where = exchange
+    ? { userId, exchange, isActive: true }
+    : { userId, isActive: true };
 
   const keys = await prisma.apiKey.findMany({
     where,
@@ -92,12 +96,13 @@ export async function getApiKeys(exchange?: Exchange): Promise<ApiKeyOutput[]> {
  * ONLY use server-side!
  */
 export async function getDecryptedApiKey(
+  userId: string,
   exchange: Exchange,
   label?: string
 ): Promise<DecryptedApiKey | null> {
   const where = label
-    ? { exchange, label, isActive: true }
-    : { exchange, isActive: true };
+    ? { userId, exchange, label, isActive: true }
+    : { userId, exchange, isActive: true };
 
   const key = await prisma.apiKey.findFirst({
     where,
@@ -144,9 +149,9 @@ export async function deactivateApiKey(id: string): Promise<void> {
 /**
  * Test API key by making a simple request to the exchange
  */
-export async function testApiKey(exchange: Exchange, label?: string): Promise<boolean> {
+export async function testApiKey(userId: string, exchange: Exchange, label?: string): Promise<boolean> {
   try {
-    const credentials = await getDecryptedApiKey(exchange, label);
+    const credentials = await getDecryptedApiKey(userId, exchange, label);
     if (!credentials) return false;
 
     // TODO: Implement actual test calls to each exchange

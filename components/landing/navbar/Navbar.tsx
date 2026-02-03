@@ -2,15 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import AuthModal from "@/components/auth/AuthModal";
+import UserMenu from "@/components/auth/UserMenu";
 
 export default function Navbar() {
   const [hideNavbar, setHideNavbar] = useState(false);
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+
+  const isLoggedIn = status === "authenticated" && session?.user;
 
   useEffect(() => {
     const pricingSection = document.getElementById("pricing-table");
@@ -106,33 +111,39 @@ export default function Navbar() {
           <button onClick={() => router.push("/pricing")}>PRICING</button>
         </div>
 
-        {/* Auth Buttons */}
+        {/* Auth Section */}
         <div className="flex items-center gap-3 xl:gap-3.5 2xl:gap-4">
-          <Button
-            onClick={() => {
-              setAuthMode("login");
-              setAuthOpen(true);
-            }}
-            className={
-              glassBase +
-              " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200 text-xs xl:text-[13px] 2xl:text-sm"
-            }
-          >
-            LOG IN
-          </Button>
+          {isLoggedIn ? (
+            <UserMenu />
+          ) : (
+            <>
+              <Button
+                onClick={() => {
+                  setAuthMode("login");
+                  setAuthOpen(true);
+                }}
+                className={
+                  glassBase +
+                  " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200 text-xs xl:text-[13px] 2xl:text-sm"
+                }
+              >
+                LOG IN
+              </Button>
 
-          <Button
-            onClick={() => {
-              setAuthMode("signup");
-              setAuthOpen(true);
-            }}
-            className={
-              glassBase +
-              " border border-white/40 bg-white/5 hover:text-teal-200 text-xs xl:text-[13px] 2xl:text-sm"
-            }
-          >
-            SIGN UP
-          </Button>
+              <Button
+                onClick={() => {
+                  setAuthMode("signup");
+                  setAuthOpen(true);
+                }}
+                className={
+                  glassBase +
+                  " border border-white/40 bg-white/5 hover:text-teal-200 text-xs xl:text-[13px] 2xl:text-sm"
+                }
+              >
+                SIGN UP
+              </Button>
+            </>
+          )}
         </div>
       </nav>
 
