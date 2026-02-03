@@ -3,11 +3,15 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
-import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore"; // 🔥 EKLE
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore"; 
 import NotificationPopup from "@/components/terminal/personalized-dashboard/NotificationPopup";
 
 export default function NotesModule() {
-  const { notes, addNote } = usePersonalizedDashboardStore();
+  const { 
+    notes, 
+    addNote,
+    removeNote
+   } = usePersonalizedDashboardStore();
   const [text, setText] = useState("");
 
   // 🔥 ERROR POPUP için LOCAL STATE (NotificationPopup - ekranın ortasında)
@@ -94,19 +98,42 @@ export default function NotesModule() {
             </div>
           )}
 
-          {notes.map((n) => (
-            <div
-              key={n.id}
-              className="rounded-lg border border-white/10 bg-white/5 p-2"
-            >
-              <div className="mb-1 text-[10px] text-white/40">
-                {new Date(n.createdAt).toLocaleString("tr-TR")}
-              </div>
-              <div className="text-xs text-white/80">
-                {n.text}
-              </div>
-            </div>
-          ))}
+{notes.map((n) => (
+  <div
+    key={n.id}
+    className="rounded-lg border border-white/10 bg-white/5 p-2 relative group"  // ✅ relative group EKLE
+  >
+    {/* ✅ BU BUTONU EKLE (tarih div'inden önce) */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        removeNote(n.id);
+      }}
+      className="absolute top-1.5 right-1.5
+        opacity-0 group-hover:opacity-100
+        transition-opacity duration-200
+        w-4 h-4
+        flex items-center justify-center
+        rounded
+        bg-red-500/20 hover:bg-red-500/30
+        text-red-400 hover:text-red-300
+        text-[10px]
+        cursor-pointer"
+      title="Delete note"
+    >
+      ✕
+    </button>
+
+    <div className="mb-1 text-[10px] text-white/40">
+      {new Date(n.createdAt).toLocaleString("tr-TR")}
+    </div>
+    
+    {/* ✅ n.text'i div içine al */}
+    <div className="text-xs text-white/80 break-words whitespace-pre-wrap overflow-hidden">
+      {n.text}
+    </div>
+  </div>
+))}
         </div>
 
         {/* INPUT + SAVE */}

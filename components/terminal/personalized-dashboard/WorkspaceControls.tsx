@@ -5,7 +5,14 @@ import { useEffect, useState, useRef } from "react";
 import { usePersonalizedDashboardStore, MAX_ZOOM, WORLD_WIDTH, WORLD_HEIGHT, calculateMinZoom } from "@/store/personalizedDashboardStore";
 
 
-const MAP_SIZE = 180;
+const getResponsiveSize = () => {
+  const w = window.innerWidth;
+  return {
+    mapSize: w >= 1536 ? 180 : w >= 1280 ? 160 : 140,      
+    buttonSize: w >= 1536 ? 32 : w >= 1280 ? 28 : 24     
+  };
+};
+
 
 export default function WorkspaceControls() {
   const {
@@ -22,18 +29,24 @@ export default function WorkspaceControls() {
     notesBarHeight,
   } = usePersonalizedDashboardStore();
 
+  const [sizes, setSizes] = useState(getResponsiveSize());
+  const [viewport, setViewport] = useState({ w: 0, h: 0 });
+  const [mapOpen, setMapOpen] = useState(false);
+  const [minimapHeaderHeight, setMinimapHeaderHeight] = useState(32);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+    const handleResize = () => setSizes(getResponsiveSize());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const effectiveCanvasHeight = WORLD_HEIGHT;
   const effectiveCanvasWidth = WORLD_WIDTH;
 
-  const MAP_SCALE_X = MAP_SIZE / effectiveCanvasWidth;
-  const MAP_SCALE_Y = MAP_SIZE / effectiveCanvasHeight;
+  const MAP_SCALE_X = sizes.mapSize / effectiveCanvasWidth;
+  const MAP_SCALE_Y = sizes.mapSize / effectiveCanvasHeight;
 
-  const [viewport, setViewport] = useState({ w: 0, h: 0 });
-  const [mapOpen, setMapOpen] = useState(false);
-  
-  // 🔥 DİNAMİK HEADER HEIGHT
-  const [minimapHeaderHeight, setMinimapHeaderHeight] = useState(32);
-  const headerRef = useRef<HTMLDivElement>(null);
 
   /* ---------------- VIEWPORT ---------------- */
   useEffect(() => {
@@ -120,11 +133,10 @@ export default function WorkspaceControls() {
 const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   const rect = e.currentTarget.getBoundingClientRect();
   const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top; //  Header offset burada DEĞİL
+  const y = e.clientY - rect.top; 
 
-  // 🔥 DOĞRU: Actual map area içindeki koordinatlar
-  const canvasX = (x / MAP_SIZE) * WORLD_WIDTH;
-  const canvasY = (y / actualMapHeight) * WORLD_HEIGHT; // 🔥 actualMapHeight kullan
+  const canvasX = (x / sizes.mapSize) * WORLD_WIDTH;
+  const canvasY = (y / actualMapHeight) * WORLD_HEIGHT; 
 
   let newPanX = viewport.w / 2 - canvasX * zoom;
   let newPanY = viewport.h / 2 - canvasY * zoom;
@@ -148,8 +160,8 @@ const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   setPan(newPanX, newPanY);
 };
 
-// 🔥 ACTUAL MAP AREA için dinamik scale
-const actualMapHeight = MAP_SIZE - minimapHeaderHeight;
+// ACTUAL MAP AREA için dinamik scale
+const actualMapHeight = sizes.mapSize - minimapHeaderHeight;
 const actualMapScaleY = actualMapHeight / WORLD_HEIGHT;
 
 
@@ -159,43 +171,25 @@ const viewportY = (-panY / zoom) * actualMapScaleY;
 const viewportW = (viewport.w / zoom) * MAP_SCALE_X;
 const viewportH = (viewport.h / zoom) * actualMapScaleY;
 
-// 🔥 DEBUG - BURAYA EKLE ↓↓↓
-console.log("=== MINIMAP DEBUG ===");
-console.log("panX:", panX, "panY:", panY);
-console.log("zoom:", zoom);
-console.log("viewport.h:", viewport.h);
-console.log("minimapHeaderHeight:", minimapHeaderHeight);
-console.log("actualMapHeight:", actualMapHeight);
-console.log("actualMapScaleY:", actualMapScaleY);
-console.log("viewportY:", viewportY);
-console.log("viewportH:", viewportH);
-console.log("calculated top:", Math.max(
-  minimapHeaderHeight, 
-  Math.min(
-    minimapHeaderHeight + actualMapHeight - viewportH,
-    minimapHeaderHeight + viewportY
-  )
-));
-console.log("max possible top:", minimapHeaderHeight + actualMapHeight - viewportH);
 
 const bottomOffset = notesBarHeight + (window.innerWidth >= 1536 ? 24 : window.innerWidth >= 1280 ? 20 : 16);
 
   return (
     <div
-className="fixed right-6 xl:right-8 2xl:right-12 z-50"
+className="fixed right-3 xl:right-4 2xl:right-6 z-50"
       style={{ bottom: bottomOffset }}
       onMouseEnter={() => setMapOpen(true)}
       onMouseLeave={() => setMapOpen(false)}
     >
 <div className="flex items-end gap-4 xl:gap-5 2xl:gap-6">
         {/* MAP */}
-        <div
-          className={`
-            relative rounded-xl border border-white/10 bg-[#031A1C]/95
-            overflow-hidden transition-all duration-300 ease-out
-            ${mapOpen ? "w-[180px] h-[180px]" : "w-8 h-8"}
-          `}
-        >
+<div
+  className="relative rounded-xl border border-white/10 bg-[#031A1C]/95 overflow-hidden transition-all duration-300 ease-out"
+  style={{
+    width: mapOpen ? sizes.mapSize : sizes.buttonSize,
+    height: mapOpen ? sizes.mapSize : sizes.buttonSize,
+  }}
+>
           {!mapOpen && (
             <div
               className="
@@ -238,7 +232,7 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
 >
               {/* MODULES */}
               {modules.map(m => {
-                // 🔥 DİNAMİK SCALE (header'sız alan için)
+                // DİNAMİK SCALE (header'sız alan için)
                 const moduleMapScaleY = actualMapHeight / WORLD_HEIGHT;
                 
                 return (
@@ -260,15 +254,15 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
 <div
   className="absolute border-2 border-white bg-white/5 rounded-[2px]"
   style={{
-    left: Math.max(0, Math.min(MAP_SIZE - viewportW, viewportX)),
+    left: Math.max(0, Math.min(sizes.mapSize - viewportW, viewportX)),
     top: Math.max(
-      0, // ✅ Container zaten minimapHeaderHeight'ta başlıyor
+      0, // Container zaten minimapHeaderHeight'ta başlıyor
       Math.min(
-        actualMapHeight - viewportH, // ✅ Maksimum bottom
+        actualMapHeight - viewportH, // Maksimum bottom
         viewportY
       )
     ),
-    width: Math.min(MAP_SIZE, viewportW),
+    width: Math.min(sizes.mapSize, viewportW),
     height: Math.min(actualMapHeight, viewportH),
   }}
 />
@@ -281,24 +275,20 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
 className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
           onMouseDown={(e) => e.preventDefault()}
         >
-          <ZoomBtn onClick={() => handleZoom(0.1)}>+</ZoomBtn>
+       <ZoomBtn onClick={() => handleZoom(0.1)} size={sizes.buttonSize}>+</ZoomBtn>
 
-          <div
-            className="
-              w-8 h-8 rounded-lg
-              bg-[#031A1C]/95
-              border border-white/10
-text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-teal-400
-              flex items-center justify-center
-              select-none
-              pointer-events-none cursor-default
-            "
-          >
+<div
+  className="rounded-lg bg-[#031A1C]/95 border border-white/10 text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-teal-400 flex items-center justify-center select-none pointer-events-none cursor-default"
+  style={{ 
+    width: sizes.buttonSize, 
+    height: sizes.buttonSize 
+  }}
+>
             {Math.round(zoom * 100)}%
           </div>
 
-          <ZoomBtn onClick={() => handleZoom(-0.1)}>−</ZoomBtn>
-          <ZoomBtn onClick={alignToActiveWindow}>◎</ZoomBtn>
+<ZoomBtn onClick={() => handleZoom(-0.1)} size={sizes.buttonSize}>−</ZoomBtn>
+<ZoomBtn onClick={alignToActiveWindow} size={sizes.buttonSize}>◎</ZoomBtn>
         </div>
       </div>
     </div>
@@ -308,16 +298,18 @@ text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-teal-400
 function ZoomBtn({
   children,
   onClick,
+  size,
 }: {
   children: React.ReactNode;
   onClick: () => void;
+    size: number; 
 }) {
   return (
     <button
       onClick={onClick}
       onMouseDown={(e) => e.preventDefault()}
       className="
-        w-8 h-8 rounded-lg
+      rounded-lg
         bg-[#031A1C]/95
         border border-white/10
        text-white text-sm xl:text-base 2xl:text-lg
@@ -326,6 +318,7 @@ function ZoomBtn({
         select-none
         cursor-pointer
       "
+            style={{ width: size, height: size }}
     >
       {children}
     </button>
