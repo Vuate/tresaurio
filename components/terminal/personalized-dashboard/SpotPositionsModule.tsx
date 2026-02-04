@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { Plus, Trash2, RefreshCw, Key, Link2, AlertCircle } from "lucide-react";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { usePriceStore } from "@/store/priceStore";
+import { useSession } from "next-auth/react";
+import AuthModal from "@/components/auth/AuthModal";
 
 interface Props {
   instanceId: string;
@@ -54,9 +56,12 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   const { spotPositions, addSpotPosition, removeSpotPosition } =
     usePortfolioStore();
   const prices = usePriceStore((s) => s.prices);
+  const { data: session } = useSession();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [apiKeys, setApiKeys] = useState<ApiKeyInfo[]>([]);
   const [selectedExchange, setSelectedExchange] = useState<string>("binance");
   const [syncing, setSyncing] = useState(false);
@@ -383,6 +388,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </button>
             <button
               onClick={() => {
+                if (!session) {
+                  setShowAuthModal(true);
+                  return;
+                }
                 setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
                 setShowApiKeyModal(true);
               }}
@@ -402,6 +411,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         ) : (
           <button
             onClick={() => {
+              if (!session) {
+                setShowAuthModal(true);
+                return;
+              }
               setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
               setShowApiKeyModal(true);
             }}
@@ -788,6 +801,14 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        open={showAuthModal}
+        mode={authMode}
+        onClose={() => setShowAuthModal(false)}
+        onChange={setAuthMode}
+      />
     </div>
   );
 }
