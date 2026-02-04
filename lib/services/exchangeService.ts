@@ -75,12 +75,26 @@ async function binanceRequest(
     },
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(`Binance API Error: ${error.msg || response.statusText}`);
+  const responseText = await response.text();
+  console.log("[Binance] Response status:", response.status);
+  console.log("[Binance] Response body:", responseText.substring(0, 500));
+
+  if (!responseText) {
+    throw new Error("Binance API Error: Empty response - exchange may be blocking requests");
   }
 
-  return response.json();
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    throw new Error(`Binance API Error: Invalid JSON response - ${responseText.substring(0, 200)}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(`Binance API Error: ${data.msg || response.statusText}`);
+  }
+
+  return data;
 }
 
 async function getBinanceSpotBalances(
@@ -169,7 +183,21 @@ async function okxRequest(
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const data = await response.json();
+  const responseText = await response.text();
+  console.log("[OKX] Response status:", response.status);
+  console.log("[OKX] Response body:", responseText.substring(0, 500));
+
+  if (!responseText) {
+    throw new Error("OKX API Error: Empty response - exchange may be blocking requests");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    throw new Error(`OKX API Error: Invalid JSON response - ${responseText.substring(0, 200)}`);
+  }
+
   if (data.code !== "0") {
     throw new Error(`OKX API Error: ${data.msg}`);
   }
@@ -209,20 +237,23 @@ async function bybitRequest(
   params: Record<string, string | number> = {},
   credentials: { apiKey: string; apiSecret: string }
 ): Promise<unknown> {
-  const timestamp = Date.now();
-  const recvWindow = 5000;
+  const timestamp = String(Date.now());
+  const recvWindow = "5000";
 
-  const queryString = Object.entries(params)
+  // Sort params alphabetically and build query string
+  const sortedParams = Object.entries(params)
+    .sort(([a], [b]) => a.localeCompare(b))
     .map(([k, v]) => `${k}=${v}`)
     .join("&");
 
-  const signPayload = `${timestamp}${credentials.apiKey}${recvWindow}${queryString}`;
+  // Bybit V5 signature: timestamp + api_key + recv_window + queryString
+  const signPayload = timestamp + credentials.apiKey + recvWindow + sortedParams;
   const signature = crypto
     .createHmac("sha256", credentials.apiSecret)
     .update(signPayload)
     .digest("hex");
 
-  const url = `https://api.bybit.com${endpoint}${queryString ? "?" + queryString : ""}`;
+  const url = `https://api.bybit.com${endpoint}${sortedParams ? "?" + sortedParams : ""}`;
 
   const response = await fetch(url, {
     method,
@@ -230,12 +261,26 @@ async function bybitRequest(
       "X-BAPI-API-KEY": credentials.apiKey,
       "X-BAPI-SIGN": signature,
       "X-BAPI-SIGN-TYPE": "2",
-      "X-BAPI-TIMESTAMP": String(timestamp),
-      "X-BAPI-RECV-WINDOW": String(recvWindow),
+      "X-BAPI-TIMESTAMP": timestamp,
+      "X-BAPI-RECV-WINDOW": recvWindow,
     },
   });
 
-  const data = await response.json();
+  const responseText = await response.text();
+  console.log("[Bybit] Response status:", response.status);
+  console.log("[Bybit] Response body:", responseText.substring(0, 500));
+
+  if (!responseText) {
+    throw new Error("Bybit API Error: Empty response - exchange may be blocking requests");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    throw new Error(`Bybit API Error: Invalid JSON response - ${responseText.substring(0, 200)}`);
+  }
+
   if (data.retCode !== 0) {
     throw new Error(`Bybit API Error: ${data.retMsg}`);
   }

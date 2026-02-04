@@ -5,6 +5,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useFuturesPositionStore } from "@/store/futuresPositionStore";
 import { TrendingUp, TrendingDown, X, RefreshCw, Key, Link2, AlertCircle, Trash2 } from "lucide-react";
 import { usePriceStore } from "@/store/priceStore";
+import { useSession } from "next-auth/react";
+import AuthModal from "@/components/auth/AuthModal";
 
 interface Props {
   instanceId: string;
@@ -45,6 +47,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   const removePosition = useFuturesPositionStore((s) => s.removePosition);
   const addPosition = useFuturesPositionStore((s) => s.addPosition);
   const prices = usePriceStore((s) => s.prices);
+  const { data: session } = useSession();
 
   // API Key states
   const [apiKeys, setApiKeys] = useState<ApiKeyInfo[]>([]);
@@ -53,6 +56,8 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   const [syncError, setSyncError] = useState<string | null>(null);
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   // API Key form
   const [apiKeyForm, setApiKeyForm] = useState({
@@ -445,6 +450,10 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             </button>
             <button
               onClick={() => {
+                if (!session) {
+                  setShowAuthModal(true);
+                  return;
+                }
                 setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
                 setShowApiKeyModal(true);
               }}
@@ -464,6 +473,10 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
         ) : (
           <button
             onClick={() => {
+              if (!session) {
+                setShowAuthModal(true);
+                return;
+              }
               setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
               setShowApiKeyModal(true);
             }}
@@ -819,6 +832,14 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        open={showAuthModal}
+        mode={authMode}
+        onClose={() => setShowAuthModal(false)}
+        onChange={setAuthMode}
+      />
     </div>
   );
 }
