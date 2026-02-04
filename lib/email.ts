@@ -3,14 +3,22 @@
 
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const FROM_EMAIL = "Tresaurio <onboarding@resend.dev>"; // Resend sandbox, sonra kendi domaininle değiştir
+
+// Lazy initialization - only create client when needed
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+  return new Resend(apiKey);
+}
 
 export async function sendVerificationEmail(email: string, token: string) {
   const verifyUrl = `${process.env.AUTH_URL}/api/auth/verify-email?token=${token}`;
 
   try {
+    const resend = getResendClient();
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
@@ -87,6 +95,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   const resetUrl = `${process.env.AUTH_URL}/reset-password?token=${token}`;
 
   try {
+    const resend = getResendClient();
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
