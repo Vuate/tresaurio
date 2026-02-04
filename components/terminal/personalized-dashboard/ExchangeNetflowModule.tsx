@@ -39,7 +39,6 @@ const fetchOnchainNetflow = async (
   symbol: string,
   timeframe: "24h" | "7d" | "30d"
 ): Promise<Partial<NetflowData>> => {
-  // Map timeframe to multiplier for data scaling
   const timeframeMultiplier: Record<string, number> = {
     "24h": 1,
     "7d": 7,
@@ -47,7 +46,6 @@ const fetchOnchainNetflow = async (
   };
   const multiplier = timeframeMultiplier[timeframe] || 1;
 
-  // Map timeframe to API window parameter
   const windowMap: Record<string, string> = {
     "24h": "day",
     "7d": "week",
@@ -56,7 +54,6 @@ const fetchOnchainNetflow = async (
   const window = windowMap[timeframe] || "day";
 
   try {
-    // Try CryptoQuant's public endpoints first
     const response = await fetch(
       `https://api.cryptoquant.com/v1/btc/exchange-flows/netflow?exchange=${exchange.toLowerCase()}&window=${window}`,
       {
@@ -85,7 +82,6 @@ const fetchOnchainNetflow = async (
     console.warn(`[ExchangeNetflow] CryptoQuant API failed for ${exchange}:`, err);
   }
 
-  // Fallback: Use trading volume to estimate netflow
   try {
     const volumeResponse = await fetch(
       `https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}USDT`
@@ -94,18 +90,13 @@ const fetchOnchainNetflow = async (
     if (volumeResponse.ok) {
       const volumeData = await volumeResponse.json();
       const volume24h = parseFloat(volumeData.quoteVolume || "0");
-
-      // Scale volume by timeframe
       const scaledVolume = volume24h * multiplier;
 
-      // Generate consistent values per exchange/symbol/timeframe combo
-      // Use a seeded approach based on exchange name to get stable values
       const seed = exchange.charCodeAt(0) + (timeframe === "7d" ? 10 : timeframe === "30d" ? 20 : 0);
       const baseRandom = ((seed * 9301 + 49297) % 233280) / 233280;
-      const netFactor = (baseRandom - 0.5) * 0.1; // -5% to +5%
+      const netFactor = (baseRandom - 0.5) * 0.1;
       const estimatedNet = scaledVolume * netFactor;
 
-      // Larger timeframes have larger changes
       const changeScale = {
         "24h": 1,
         "7d": 2.5,
@@ -155,6 +146,10 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
   ]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSymbol, setNewSymbol] = useState("");
+  const [symbolDropdownOpen, setSymbolDropdownOpen] = useState(false);
+  
+  const symbolDropdownRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Save symbols
   useEffect(() => {
@@ -186,11 +181,49 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
     }
   }, [selectedSymbol, timeframe, storageKey]);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!symbolDropdownOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        symbolDropdownRef.current &&
+        !symbolDropdownRef.current.contains(e.target as Node)
+      ) {
+        setSymbolDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [symbolDropdownOpen]);
+
+  // 🔒 Modal açıkken arka plan scroll'unu kilitle
+  useEffect(() => {
+    if (showAddModal) {
+      document.body.style.overflow = 'hidden';
+      
+      if (contentRef.current) {
+        const scrollTop = contentRef.current.scrollTop;
+        contentRef.current.style.overflow = 'hidden';
+        contentRef.current.scrollTop = scrollTop;
+      }
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      if (contentRef.current) {
+        contentRef.current.style.overflow = '';
+      }
+    };
+  }, [showAddModal]);
+
   // 🔥 Fetch onchain data for all exchanges with timeframe
   const fetchAllExchanges = useCallback(async () => {
     const exchanges = ["Binance", "OKX", "Bybit"];
 
-    // Fetch all in parallel with current timeframe
     const results = await Promise.all(
       exchanges.map(async (exchange) => {
         const result = await fetchOnchainNetflow(exchange, selectedSymbol, timeframe);
@@ -221,7 +254,6 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
     setData((prev) => prev.map((d) => ({ ...d, loading: true })));
     fetchAllExchanges();
 
-    // Refresh every 5 minutes (onchain data doesn't change that fast)
     const interval = setInterval(fetchAllExchanges, 300000);
 
     return () => clearInterval(interval);
@@ -230,80 +262,235 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
   const totalNet = data.reduce((sum, d) => sum + d.net, 0);
   const loadingCount = data.filter((d) => d.loading).length;
 
+  const addSymbol = useCallback(() => {
+    const sym = newSymbol.trim().toUpperCase();
+    if (!sym) {
+      alert("Please enter a symbol");
+      return;
+    }
+    if (symbols.includes(sym)) {
+      alert("Symbol already exists");
+      return;
+    }
+    setSymbols((p) => [...p, sym]);
+    setSelectedSymbol(sym);
+    setNewSymbol("");
+    setShowAddModal(false);
+  }, [newSymbol, symbols]);
+
+  const removeSymbol = useCallback((symbol: string) => {
+    if (symbols.length <= 1) {
+      alert("You must have at least one symbol");
+      return;
+    }
+    const newSymbols = symbols.filter((s) => s !== symbol);
+    setSymbols(newSymbols);
+    if (selectedSymbol === symbol) {
+      setSelectedSymbol(newSymbols[0]);
+    }
+  }, [symbols, selectedSymbol]);
+
   return (
-    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="text-xl">💸</div>
-          <h3 className="font-semibold">Exchange Netflow</h3>
-          {loadingCount === 0 && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              ONCHAIN
+    <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
+      {/* 🎯 Fully Responsive Header */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
+        {/* Title - Can wrap independently */}
+        <span className="font-semibold text-white/90 text-xs">
+          Exchange Netflow
+        </span>
+        
+        {/* Separator dot */}
+        <span className="text-white/40 text-xs">•</span>
+        
+        {/* LIVE indicator - Can wrap independently */}
+        {loadingCount === 0 && (
+          <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-emerald-400">ONCHAIN</span>
+          </span>
+        )}
+
+        {/* Spacer to push following items to the right when on same line */}
+        <div className="flex-1 min-w-[20px]"></div>
+
+        {/* Symbol Selector - Can wrap independently */}
+        <div ref={symbolDropdownRef} className="relative">
+          <button
+            onClick={() => setSymbolDropdownOpen((v) => !v)}
+            className="
+              h-7 px-3 rounded-md
+              bg-[#0b1f1f]
+              border border-white/10
+              text-white text-xs
+              flex items-center gap-1.5
+              cursor-pointer
+              hover:bg-white/5
+              transition-all
+              whitespace-nowrap
+            "
+          >
+            <span>{selectedSymbol}</span>
+            <span
+              className={`
+                text-white/50 text-[10px]
+                transition-transform duration-200
+                ${symbolDropdownOpen ? "rotate-180" : ""}
+              `}
+            >
+              ▾
             </span>
+          </button>
+
+          {symbolDropdownOpen && (
+            <div
+              onWheel={(e) => e.stopPropagation()}
+              className="
+                absolute left-0 mt-1 z-50
+                w-[120px]
+                max-h-[160px]
+                overflow-y-auto
+                bg-[#0b1f1f]
+                border border-emerald-500/20
+                rounded-md
+                shadow-lg
+                animate-in fade-in slide-in-from-top-2 duration-200
+
+                [&::-webkit-scrollbar]:w-1.5
+                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-transparent
+              "
+            >
+              {symbols.map((sym) => (
+                <div
+                  key={sym}
+                  className="
+                    flex items-center justify-between
+                    px-3 py-2
+                    text-xs
+                    hover:bg-emerald-500/10
+                    transition-colors
+                    group
+                  "
+                >
+                  <button
+                    onClick={() => {
+                      setSelectedSymbol(sym);
+                      setSymbolDropdownOpen(false);
+                    }}
+                    className="
+                      flex-1 text-left
+                      text-white
+                      hover:text-emerald-400
+                      cursor-pointer
+                    "
+                  >
+                    {sym}
+                  </button>
+                  {symbols.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeSymbol(sym);
+                      }}
+                      className="
+                        text-white/40
+                        hover:text-red-400
+                        transition-colors
+                        cursor-pointer
+                        opacity-0
+                        group-hover:opacity-100
+                      "
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
-        {/* Symbol Selector */}
-        <div className="flex gap-2">
-          <select
-            value={selectedSymbol}
-            onChange={(e) => setSelectedSymbol(e.target.value)}
-            className="h-7 rounded bg-white/5 border border-white/10 text-xs text-white/80 px-2 outline-none cursor-pointer hover:bg-white/10"
-          >
-            {symbols.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="h-7 px-2 rounded bg-blue-500/20 border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
-          >
-            <Plus className="w-3 h-3" />
-          </button>
-        </div>
+        {/* Add Button - Can wrap independently */}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+        >
+          <Plus className="w-3 h-3" />
+          Add
+        </button>
       </div>
 
-      {/* Timeframe */}
-      <div className="flex gap-2 p-3 border-b border-white/10">
+      {/* Timeframe Selector */}
+      <div className="flex gap-1.5 px-3 pb-2 flex-shrink-0">
         {(["24h", "7d", "30d"] as const).map((tf) => (
           <button
             key={tf}
             onClick={() => setTimeframe(tf)}
-            className={`flex-1 py-1.5 rounded text-xs font-medium transition-colors ${
-              timeframe === tf
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
+            className={`
+              flex-1 py-1.5 rounded-md text-[10px] font-semibold
+              border transition-all duration-150
+              cursor-pointer
+              ${
+                timeframe === tf
+                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  : `
+                      bg-white/10 text-white border-white/10
+                      hover:bg-teal-500/15
+                      hover:border-teal-400/40
+                      hover:text-teal-400
+                      hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                    `
+              }
+            `}
           >
             {tf.toUpperCase()}
           </button>
         ))}
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="divide-y divide-white/10">
+{/* Content - FIXED SCROLL CONTAINER */}
+      <div
+        ref={contentRef}
+        className="
+          flex-1 min-h-0 px-3 pb-3
+          overflow-y-auto
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-track]:bg-transparent
+          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+          scrollbar-thin
+          scrollbar-thumb-teal-400/40
+          scrollbar-track-transparent
+        "
+      >
+        <div className="space-y-2">
           {data.map((d) => (
             <div
               key={d.exchange}
-              className="p-3 hover:bg-white/5 transition-colors"
+              className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-white">{d.exchange}</span>
-                  {d.loading ? (
-                    <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-                  ) : (
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  )}
-                </div>
+              {/* Card Header - Fully Responsive */}
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
+                {/* Status Indicator */}
                 <div
-                  className={`text-xs px-2 py-1 rounded ${
+                  className={`w-2 h-2 rounded-full shrink-0 ${
+                    d.loading ? "bg-yellow-400 animate-pulse" : "bg-emerald-400"
+                  }`}
+                />
+
+                {/* Exchange Name */}
+                <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
+                  {d.exchange}
+                </div>
+
+                {/* Spacer */}
+                <div className="flex-1 min-w-[10px]"></div>
+
+                {/* Change Badge */}
+                <div
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded shrink-0 ${
                     d.change24h >= 0
                       ? "text-emerald-400 bg-emerald-500/10"
                       : "text-red-400 bg-red-500/10"
@@ -314,50 +501,71 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="text-emerald-400">↓ Inflow</span>
-                  <span className="text-white font-medium">
-                    ${d.inflow > 1000000
-                      ? (d.inflow / 1000000).toFixed(2) + "M"
-                      : (d.inflow / 1000).toFixed(1) + "K"}
+              {/* Flow Stats - HER ZAMAN GÖRÜNEBİLİR, ALT ALTA DİZİLEBİLİR */}
+              <div className="space-y-1.5 mb-2">
+                {/* Inflow - tek satırda sığmazsa wrap olur */}
+                <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
+                  <span className="text-emerald-400 whitespace-nowrap">↓ Inflow</span>
+                  <span className="text-white font-mono whitespace-nowrap">
+                    {d.loading ? (
+                      <span className="text-white/40">Loading...</span>
+                    ) : (
+                      `$${d.inflow > 1000000
+                        ? (d.inflow / 1000000).toFixed(2) + "M"
+                        : (d.inflow / 1000).toFixed(1) + "K"}`
+                    )}
                   </span>
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-red-400">↑ Outflow</span>
-                  <span className="text-white font-medium">
-                    ${d.outflow > 1000000
-                      ? (d.outflow / 1000000).toFixed(2) + "M"
-                      : (d.outflow / 1000).toFixed(1) + "K"}
+
+                {/* Outflow - tek satırda sığmazsa wrap olur */}
+                <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
+                  <span className="text-red-400 whitespace-nowrap">↑ Outflow</span>
+                  <span className="text-white font-mono whitespace-nowrap">
+                    {d.loading ? (
+                      <span className="text-white/40">Loading...</span>
+                    ) : (
+                      `$${d.outflow > 1000000
+                        ? (d.outflow / 1000000).toFixed(2) + "M"
+                        : (d.outflow / 1000).toFixed(1) + "K"}`
+                    )}
                   </span>
                 </div>
+
                 <div className="h-px bg-white/10 my-1" />
-                <div className="flex justify-between text-sm">
-                  <span className="text-white/80 font-medium">Net Flow</span>
+
+                {/* Net Flow - tek satırda sığmazsa wrap olur */}
+                <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-sm">
+                  <span className="text-white/80 font-medium whitespace-nowrap">Net Flow</span>
                   <span
-                    className={`font-bold ${
+                    className={`font-bold font-mono whitespace-nowrap ${
                       d.net >= 0 ? "text-emerald-400" : "text-red-400"
                     }`}
                   >
-                    {d.net >= 0 ? "+" : "-"}$
-                    {Math.abs(d.net) > 1000000
-                      ? (Math.abs(d.net) / 1000000).toFixed(2) + "M"
-                      : (Math.abs(d.net) / 1000).toFixed(1) + "K"}
+                    {d.loading ? (
+                      <span className="text-white/40 text-xs">Loading...</span>
+                    ) : (
+                      <>
+                        {d.net >= 0 ? "+" : "-"}$
+                        {Math.abs(d.net) > 1000000
+                          ? (Math.abs(d.net) / 1000000).toFixed(2) + "M"
+                          : (Math.abs(d.net) / 1000).toFixed(1) + "K"}
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
 
               {/* Flow Bar */}
-              {(d.inflow + d.outflow) > 0 && (
-                <div className="mt-3 flex gap-1 h-2">
+              {!d.loading && (d.inflow + d.outflow) > 0 && (
+                <div className="flex gap-1 h-2 rounded-full overflow-hidden bg-white/10">
                   <div
-                    className="bg-emerald-500 rounded"
+                    className="bg-emerald-500 transition-all"
                     style={{
                       width: `${(d.inflow / (d.inflow + d.outflow)) * 100}%`,
                     }}
                   />
                   <div
-                    className="bg-red-500 rounded"
+                    className="bg-red-500 transition-all"
                     style={{
                       width: `${(d.outflow / (d.inflow + d.outflow)) * 100}%`,
                     }}
@@ -369,71 +577,141 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Total Summary */}
-      <div className="p-3 border-t border-white/10 bg-white/5">
-        <div className="text-xs text-white/60 mb-1">Total Net Flow (Onchain {timeframe.toUpperCase()})</div>
-        <div className={`text-lg font-bold ${totalNet >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-          {totalNet >= 0 ? "+" : "-"}$
-          {Math.abs(totalNet) > 1000000
-            ? (Math.abs(totalNet) / 1000000).toFixed(2) + "M"
-            : (Math.abs(totalNet) / 1000).toFixed(1) + "K"}
-        </div>
-      </div>
+{/* Total Summary - SCROLL DIŞINDA, SABİT ALTTA */}
+<div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
+  <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
+    Total Net Flow ({timeframe.toUpperCase()})
+  </div>
+  <div 
+    className={`
+      text-sm sm:text-base md:text-lg lg:text-xl 
+      font-bold font-mono 
+      break-words
+      ${totalNet >= 0 ? "text-emerald-400" : "text-red-400"}
+    `}
+  >
+    {totalNet >= 0 ? "+" : "-"}$
+    {Math.abs(totalNet) > 1000000
+      ? (Math.abs(totalNet) / 1000000).toFixed(2) + "M"
+      : (Math.abs(totalNet) / 1000).toFixed(1) + "K"}
+  </div>
+</div>
 
-      {/* Add Symbol Modal */}
+      {/* 🔧 Modal - TRULY FULL SCREEN */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="w-full max-w-sm rounded-lg bg-[#0b0f1a] border border-white/10 p-4">
-            <div className="flex justify-between mb-3">
-              <h3 className="text-sm font-semibold">Add Symbol</h3>
-              <button onClick={() => setShowAddModal(false)}>
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <input
-              value={newSymbol}
-              onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-              placeholder="Enter symbol (e.g., BTC, ETH)"
-              className="w-full mb-3 px-3 py-2 rounded bg-black/40 border border-white/10 text-white text-xs"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const sym = newSymbol.trim().toUpperCase();
-                  if (sym && !symbols.includes(sym)) {
-                    setSymbols((p) => [...p, sym]);
-                    setSelectedSymbol(sym);
-                    setNewSymbol("");
-                    setShowAddModal(false);
-                  }
-                }
-              }}
-            />
-
-            <div className="grid grid-cols-3 gap-2 mb-3">
-              {POPULAR_SYMBOLS.filter((s) => !symbols.includes(s)).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setNewSymbol(s)}
-                  className="text-xs bg-white/5 hover:bg-white/10 rounded px-2 py-1"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => {
-                const sym = newSymbol.trim().toUpperCase();
-                if (!sym || symbols.includes(sym)) return;
-                setSymbols((p) => [...p, sym]);
-                setSelectedSymbol(sym);
-                setNewSymbol("");
-                setShowAddModal(false);
-              }}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded font-semibold text-sm"
-            >
+        <div 
+          className="
+            fixed inset-0
+            bg-[#0a0e1a] z-[100]
+            flex flex-col overflow-hidden
+            animate-in fade-in slide-in-from-bottom-4 duration-200
+          "
+          style={{
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            margin: 0,
+            padding: 0,
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+        >
+          {/* Modal Header */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
+            <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Symbol
+            </span>
+            <button
+              onClick={() => setShowAddModal(false)}
+              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+            >
+              ×
             </button>
+          </div>
+
+          {/* Modal Content */}
+          <div
+            className="
+              flex-1 min-h-0 overflow-y-auto p-3
+
+              [&::-webkit-scrollbar]:w-1.5
+              [&::-webkit-scrollbar-track]:bg-transparent
+              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+              scrollbar-thin
+              scrollbar-thumb-teal-400/40
+              scrollbar-track-transparent
+            "
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="space-y-3">
+              {/* Custom Symbol Input */}
+              <div className="space-y-2">
+                <label className="block text-white/50 font-medium text-[10px]">
+                  Add Custom Symbol
+                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex-1 min-w-[200px]">
+                    <input
+                      type="text"
+                      value={newSymbol}
+                      onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === "Enter" && addSymbol()}
+                      placeholder="Enter symbol (e.g. BTC, ETH)"
+                      className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                    />
+                  </div>
+                  <button
+                    onClick={addSymbol}
+                    disabled={!newSymbol.trim()}
+                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <div className="text-white/40 text-[10px]">
+                  💡 Example: BTC, ETH, SOL
+                </div>
+              </div>
+
+              {/* Popular Symbols */}
+              <div>
+                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                  Popular Symbols
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {POPULAR_SYMBOLS.filter((s) => !symbols.includes(s)).map((sym) => (
+                    <button
+                      key={sym}
+                      onClick={() => setNewSymbol(sym)}
+                      className={`
+                        px-2 py-1.5 rounded-md font-semibold text-[10px]
+                        border transition-all duration-150
+                        cursor-pointer
+                        whitespace-nowrap
+                        ${
+                          newSymbol === sym
+                            ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                            : `
+                                bg-white/10 text-white border-white/10
+                                hover:bg-teal-500/15
+                                hover:border-teal-400/40
+                                hover:text-teal-400
+                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                              `
+                        }
+                      `}
+                    >
+                      {sym}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
