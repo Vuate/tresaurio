@@ -1,7 +1,7 @@
 // components/terminal/personalized-dashboard/ETFFlowsModule.tsx
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface Props {
   instanceId: string;
@@ -15,6 +15,7 @@ interface ETFData {
   aum: number;
   change24h: number;
   date: string;
+  loading: boolean;
 }
 
 // Bitcoin ETF data - holdings estimates (BTC)
@@ -59,6 +60,7 @@ const fetchETFFlows = async (): Promise<ETFData[]> => {
         aum,
         change24h: priceChange24h + (Math.random() - 0.5) * 2, // Slight variation from BTC
         date: today,
+        loading: false,
       });
     });
 
@@ -74,7 +76,10 @@ export default function ETFFlowsModule({ instanceId }: Props) {
   const storageKey = `etf-flows-${instanceId}`;
   const [sortBy, setSortBy] = useState<"flow" | "aum" | "change">("flow");
   const [data, setData] = useState<ETFData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+  
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Load settings
   useEffect(() => {
@@ -98,16 +103,32 @@ export default function ETFFlowsModule({ instanceId }: Props) {
     }
   }, [sortBy, storageKey]);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!sortDropdownOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        sortDropdownRef.current &&
+        !sortDropdownRef.current.contains(e.target as Node)
+      ) {
+        setSortDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [sortDropdownOpen]);
+
   // Fetch data
   const fetchData = useCallback(async () => {
     try {
-      setLoading(true);
       const result = await fetchETFFlows();
       setData(result);
     } catch (err) {
       console.error("[ETFFlows] Fetch error:", err);
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -131,75 +152,121 @@ export default function ETFFlowsModule({ instanceId }: Props) {
   });
 
   const totalFlow = data.reduce((sum, etf) => sum + etf.flow, 0);
+  const loadingCount = data.filter((d) => d.loading).length;
+
+  const getSortLabel = (sort: "flow" | "aum" | "change") => {
+    switch (sort) {
+      case "flow":
+        return "Flow";
+      case "aum":
+        return "AUM";
+      case "change":
+        return "Change";
+    }
+  };
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="text-xl">📈</div>
-          <h3 className="font-semibold">BTC ETF Flows</h3>
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-            LIVE
+    <div className="h-full flex flex-col relative">
+      {/* 🎯 Fully Responsive Header */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
+        {/* Title - Can wrap independently */}
+        <span className="font-semibold text-white/90 text-xs">
+          BTC ETF Flows
+        </span>
+        
+        {/* Separator dot */}
+        <span className="text-white/40 text-xs">•</span>
+        
+        {/* LIVE indicator - Can wrap independently */}
+        {loadingCount === 0 && (
+          <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-emerald-400">LIVE</span>
           </span>
-        </div>
+        )}
+
+        {/* Spacer to push following items to the right when on same line */}
+        <div className="flex-1 min-w-[20px]"></div>
+
+{/* Sort Buttons - Inline, wrap olabilir */}
+<div className="flex flex-wrap gap-1.5">
+  {(["flow", "aum", "change"] as const).map((sort) => (
+    <button
+      key={sort}
+      onClick={() => setSortBy(sort)}
+      className={`
+        h-7 px-3 rounded-md text-[10px] font-semibold
+        border transition-all duration-150
+        cursor-pointer
+        whitespace-nowrap
+        ${
+          sortBy === sort
+            ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+            : `
+                bg-white/10 text-white border-white/10
+                hover:bg-teal-500/15
+                hover:border-teal-400/40
+                hover:text-teal-400
+                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+              `
+        }
+      `}
+    >
+      {getSortLabel(sort)}
+    </button>
+  ))}
+</div>
       </div>
 
-      {/* Sort Options */}
-      <div className="flex gap-1 p-2 border-b border-white/10">
-        {(["flow", "aum", "change"] as const).map((sort) => (
-          <button
-            key={sort}
-            onClick={() => setSortBy(sort)}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-              sortBy === sort
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
-          >
-            {sort === "aum"
-              ? "AUM"
-              : sort.charAt(0).toUpperCase() + sort.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      {/* Total Summary */}
+      {/* Content - FIXED SCROLL CONTAINER */}
       <div
-        className={`p-3 border-b border-white/10 ${
-          totalFlow >= 0 ? "bg-emerald-500/10" : "bg-red-500/10"
-        }`}
-      >
-        <div className="text-xs text-white/60 mb-1">Net Flow (24h)</div>
-        <div
-          className={`text-2xl font-bold ${
-            totalFlow >= 0 ? "text-emerald-400" : "text-red-400"
-          }`}
-        >
-          {totalFlow >= 0 ? "+" : ""}${(totalFlow / 1000000).toFixed(1)}M
-        </div>
-      </div>
+        ref={contentRef}
+        className="
+          flex-1 min-h-0 px-3 pb-3
+          overflow-y-auto
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto">
-        {loading && data.length === 0 ? (
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-track]:bg-transparent
+          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+          scrollbar-thin
+          scrollbar-thumb-teal-400/40
+          scrollbar-track-transparent
+        "
+      >
+        {data.length === 0 ? (
           <div className="flex items-center justify-center h-full text-white/40 text-xs">
             Loading ETF data...
           </div>
         ) : (
-          <div className="divide-y divide-white/10">
+          <div className="space-y-2">
             {sortedData.map((etf) => (
               <div
                 key={etf.id}
-                className="p-3 hover:bg-white/5 transition-colors"
+                className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <div className="font-medium text-white">{etf.ticker}</div>
-                    <div className="text-xs text-white/60">{etf.name}</div>
-                  </div>
+                {/* Card Header - Fully Responsive */}
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
+                  {/* Status Indicator */}
                   <div
-                    className={`text-xs px-2 py-1 rounded ${
+                    className={`w-2 h-2 rounded-full shrink-0 ${
+                      etf.loading ? "bg-yellow-400 animate-pulse" : "bg-emerald-400"
+                    }`}
+                  />
+
+                  {/* ETF Ticker */}
+                  <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
+                    {etf.ticker}
+                  </div>
+
+                  {/* Spacer */}
+                  <div className="flex-1 min-w-[10px]"></div>
+
+                  {/* Change Badge */}
+                  <div
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded shrink-0 ${
                       etf.change24h >= 0
                         ? "text-emerald-400 bg-emerald-500/10"
                         : "text-red-400 bg-red-500/10"
@@ -210,30 +277,48 @@ export default function ETFFlowsModule({ instanceId }: Props) {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/60">Flow (24h)</span>
+                {/* ETF Name - Can wrap */}
+                <div className="text-[10px] text-white/60 mb-2 break-words">
+                  {etf.name}
+                </div>
+
+                {/* ETF Stats - HER ZAMAN GÖRÜNEBİLİR, ALT ALTA DİZİLEBİLİR */}
+                <div className="space-y-1.5 mb-2">
+                  {/* Flow - tek satırda sığmazsa wrap olur */}
+                  <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
+                    <span className="text-white/60 whitespace-nowrap">Flow (24h)</span>
                     <span
-                      className={`font-bold ${
+                      className={`font-bold font-mono whitespace-nowrap ${
                         etf.flow >= 0 ? "text-emerald-400" : "text-red-400"
                       }`}
                     >
-                      {etf.flow >= 0 ? "+" : ""}$
-                      {(Math.abs(etf.flow) / 1000000).toFixed(1)}M
+                      {etf.loading ? (
+                        <span className="text-white/40">Loading...</span>
+                      ) : (
+                        <>
+                          {etf.flow >= 0 ? "+" : ""}$
+                          {(Math.abs(etf.flow) / 1000000).toFixed(1)}M
+                        </>
+                      )}
                     </span>
                   </div>
 
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/60">AUM</span>
-                    <span className="text-white font-medium">
-                      ${(etf.aum / 1000000000).toFixed(2)}B
+                  {/* AUM - tek satırda sığmazsa wrap olur */}
+                  <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
+                    <span className="text-white/60 whitespace-nowrap">AUM</span>
+                    <span className="text-white font-mono font-medium whitespace-nowrap">
+                      {etf.loading ? (
+                        <span className="text-white/40">Loading...</span>
+                      ) : (
+                        `$${(etf.aum / 1000000000).toFixed(2)}B`
+                      )}
                     </span>
                   </div>
                 </div>
 
                 {/* Flow Bar */}
-                <div className="mt-2">
-                  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                {!etf.loading && (
+                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${
                         etf.flow >= 0 ? "bg-emerald-500" : "bg-red-500"
@@ -243,11 +328,29 @@ export default function ETFFlowsModule({ instanceId }: Props) {
                       }}
                     />
                   </div>
-                </div>
+                )}
               </div>
             ))}
           </div>
         )}
+      </div>
+
+      {/* Total Summary - SCROLL DIŞINDA, SABİT ALTTA */}
+      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
+        <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
+          Net Flow (24h)
+        </div>
+        <div
+          className={`
+            text-sm sm:text-base md:text-lg lg:text-xl 
+            font-bold font-mono 
+            break-words
+            ${totalFlow >= 0 ? "text-emerald-400" : "text-red-400"}
+          `}
+        >
+          {totalFlow >= 0 ? "+" : ""}$
+          {(Math.abs(totalFlow) / 1000000).toFixed(1)}M
+        </div>
       </div>
     </div>
   );

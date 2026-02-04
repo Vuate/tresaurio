@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Plus, X, TrendingUp, TrendingDown, ChevronDown, Check } from "lucide-react";
+import { Plus, X, TrendingUp, TrendingDown, Check } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -131,7 +131,6 @@ const fetchChainFlows = async (token: string, chains: string[]): Promise<FlowDat
 export default function TokenFlowModule({ instanceId }: Props) {
   const storageKey = `token-flow-${instanceId}`;
   const tokensStorageKey = `token-flow-tokens-${instanceId}`;
-  const chainsStorageKey = `token-flow-chains-${instanceId}`;
 
   const [tokens, setTokens] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
@@ -152,8 +151,10 @@ export default function TokenFlowModule({ instanceId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newToken, setNewToken] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [tokenDropdownOpen, setTokenDropdownOpen] = useState(false);
+  
+  const tokenDropdownRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Save tokens
   useEffect(() => {
@@ -172,7 +173,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
           if (settings.tokens && Array.isArray(settings.tokens)) {
             setSelectedTokens(settings.tokens);
           } else if (settings.token) {
-            // Backward compatibility with old single token setting
             setSelectedTokens([settings.token]);
           }
         } catch (err) {
@@ -189,35 +189,60 @@ export default function TokenFlowModule({ instanceId }: Props) {
     }
   }, [selectedTokens, storageKey]);
 
-  // Close dropdown when clicking outside
+  // Close dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
+    if (!tokenDropdownOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        tokenDropdownRef.current &&
+        !tokenDropdownRef.current.contains(e.target as Node)
+      ) {
+        setTokenDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [tokenDropdownOpen]);
+
+  // 🔒 Modal açıkken arka plan scroll'unu kilitle
+  useEffect(() => {
+    if (showAddModal) {
+      document.body.style.overflow = 'hidden';
+      
+      if (contentRef.current) {
+        const scrollTop = contentRef.current.scrollTop;
+        contentRef.current.style.overflow = 'hidden';
+        contentRef.current.scrollTop = scrollTop;
+      }
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      if (contentRef.current) {
+        contentRef.current.style.overflow = '';
+      }
+    };
+  }, [showAddModal]);
 
   // Toggle token selection
-  const toggleToken = (token: string) => {
+  const toggleToken = useCallback((token: string) => {
     setSelectedTokens((prev) => {
       if (prev.includes(token)) {
-        // Don't allow deselecting if it's the last one
         if (prev.length === 1) return prev;
         return prev.filter((t) => t !== token);
       }
       return [...prev, token];
     });
-  };
+  }, []);
 
   // Fetch data for all selected tokens
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      // Fetch for the first selected token (API doesn't support multiple tokens at once)
-      // In a real implementation, you'd aggregate data across tokens
       const result = await fetchChainFlows(selectedTokens[0] || "USDT", selectedChains);
       setData(result);
       setError(null);
@@ -231,78 +256,158 @@ export default function TokenFlowModule({ instanceId }: Props) {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 300000); // Refresh every 5 minutes
+    const interval = setInterval(fetchData, 300000);
     return () => clearInterval(interval);
   }, [fetchData]);
+
+  const addToken = useCallback(() => {
+    const tok = newToken.trim().toUpperCase();
+    if (!tok) {
+      alert("Please enter a token symbol");
+      return;
+    }
+    if (tokens.includes(tok)) {
+      alert("Token already exists");
+      return;
+    }
+    setTokens((p) => [...p, tok]);
+    setSelectedTokens((p) => [...p, tok]);
+    setNewToken("");
+    setShowAddModal(false);
+  }, [newToken, tokens]);
 
   const totalNet = data.reduce((sum, f) => sum + f.net, 0);
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="text-xl">🌊</div>
-          <h3 className="font-semibold">Token Flow</h3>
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-            LIVE
+    <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
+      {/* 🎯 Fully Responsive Header */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
+        {/* Title - Can wrap independently */}
+        <span className="font-semibold text-white/90 text-xs">
+          Token Flow
+        </span>
+        
+        {/* Separator dot */}
+        <span className="text-white/40 text-xs">•</span>
+        
+        {/* LIVE indicator - Can wrap independently */}
+        {!loading && (
+          <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-emerald-400">LIVE</span>
           </span>
-        </div>
-      </div>
+        )}
 
-      {/* Token Selector - Multi-select Dropdown */}
-      <div className="p-3 border-b border-white/10 flex gap-2">
-        <div className="relative flex-1" ref={dropdownRef}>
+        {/* Spacer to push following items to the right when on same line */}
+        <div className="flex-1 min-w-[20px]"></div>
+
+        {/* Token Selector - Can wrap independently */}
+        <div ref={tokenDropdownRef} className="relative">
           <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="w-full flex items-center justify-between bg-white/10 border border-white/20 rounded px-3 py-2 text-sm cursor-pointer hover:bg-white/15"
+            onClick={() => setTokenDropdownOpen((v) => !v)}
+            className="
+              h-7 px-3 rounded-md
+              bg-[#0b1f1f]
+              border border-white/10
+              text-white text-xs
+              flex items-center gap-1.5
+              cursor-pointer
+              hover:bg-white/5
+              transition-all
+              whitespace-nowrap
+              max-w-[150px]
+            "
           >
             <span className="truncate">
               {selectedTokens.length === 1
                 ? selectedTokens[0]
-                : `${selectedTokens.length} tokens selected`}
+                : `${selectedTokens.length} tokens`}
             </span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${showDropdown ? "rotate-180" : ""}`} />
+            <span
+              className={`
+                text-white/50 text-[10px]
+                transition-transform duration-200
+                ${tokenDropdownOpen ? "rotate-180" : ""}
+              `}
+            >
+              ▾
+            </span>
           </button>
 
-          {showDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-[#0b0f1a] border border-white/20 rounded-lg shadow-lg z-50 max-h-48 overflow-auto">
-              {tokens.map((token) => (
-                <button
-                  key={token}
-                  onClick={() => toggleToken(token)}
-                  className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-white/10 transition-colors"
-                >
-                  <span>{token}</span>
-                  {selectedTokens.includes(token) && (
-                    <Check className="w-4 h-4 text-emerald-400" />
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
+          {tokenDropdownOpen && (() => {
+            const buttonRect = tokenDropdownRef.current?.getBoundingClientRect();
+            const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
+
+            return (
+              <div
+                onWheel={(e) => e.stopPropagation()}
+                className={`
+                  absolute mt-1 z-50
+                  w-[160px]
+                  max-h-[200px]
+                  overflow-y-auto
+                  bg-[#0b1f1f]
+                  border border-emerald-500/20
+                  rounded-md
+                  shadow-lg
+                  animate-in fade-in slide-in-from-top-2 duration-200
+
+                  [&::-webkit-scrollbar]:w-1.5
+                  [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                  [&::-webkit-scrollbar-thumb]:rounded-full
+                  [&::-webkit-scrollbar-track]:bg-transparent
+
+                  ${shouldOpenLeft ? 'right-0' : 'left-0'}
+                `}
+              >
+                {tokens.map((token) => (
+                  <button
+                    key={token}
+                    onClick={() => toggleToken(token)}
+                    className="
+                      w-full px-3 py-2
+                      text-left text-xs
+                      bg-transparent cursor-pointer
+                      text-white
+                      transition-colors
+                      hover:bg-emerald-500/10
+                      hover:text-emerald-400
+                      flex items-center justify-between
+                    "
+                  >
+                    <span>{token}</span>
+                    {selectedTokens.includes(token) && (
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            );
+          })()}
         </div>
 
+        {/* Add Button - Can wrap independently */}
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-3 py-2 rounded bg-blue-500/20 border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
+          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
         >
-          <Plus className="w-4 h-4 text-blue-400" />
+          <Plus className="w-3 h-3" />
+          Add
         </button>
       </div>
 
       {/* Selected Tokens Chips */}
       {selectedTokens.length > 1 && (
-        <div className="px-3 pb-2 flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5 px-3 pb-2 flex-shrink-0">
           {selectedTokens.map((token) => (
             <span
               key={token}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px]"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] border border-blue-500/30"
             >
               {token}
               <button
                 onClick={() => toggleToken(token)}
-                className="hover:text-red-400"
+                className="hover:text-red-400 transition-colors cursor-pointer"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -311,77 +416,96 @@ export default function TokenFlowModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Total Summary */}
+      {/* Content - FIXED SCROLL CONTAINER */}
       <div
-        className={`p-3 border-b border-white/10 ${
-          totalNet >= 0 ? "bg-emerald-500/10" : "bg-red-500/10"
-        }`}
-      >
-        <div className="text-xs text-white/60 mb-1">Total Net Flow (24h)</div>
-        <div
-          className={`text-2xl font-bold ${
-            totalNet >= 0 ? "text-emerald-400" : "text-red-400"
-          }`}
-        >
-          {totalNet >= 0 ? "+" : "-"}${(Math.abs(totalNet) / 1000000).toFixed(1)}M
-        </div>
-      </div>
+        ref={contentRef}
+        className="
+          flex-1 min-h-0 px-3 pb-3
+          overflow-y-auto
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto">
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-track]:bg-transparent
+          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+          scrollbar-thin
+          scrollbar-thumb-teal-400/40
+          scrollbar-track-transparent
+        "
+      >
         {loading && data.length === 0 ? (
           <div className="flex items-center justify-center h-full text-white/40 text-xs">
             Loading flow data...
           </div>
         ) : error ? (
-          <div className="p-3 text-red-400 text-xs">{error}</div>
+          <div className="flex items-center justify-center h-full text-center">
+            <div className="text-red-400 text-xs px-4 break-words">{error}</div>
+          </div>
         ) : (
-          <div className="divide-y divide-white/10">
+          <div className="space-y-2">
             {data.map((flow) => (
               <div
                 key={flow.chain}
-                className="p-3 hover:bg-white/5 transition-colors"
+                className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="font-medium text-white">{flow.chain}</div>
-                    <div className={`flex items-center gap-0.5 text-[10px] ${
-                      flow.change24h >= 0 ? "text-emerald-400" : "text-red-400"
-                    }`}>
-                      {flow.change24h >= 0 ? (
-                        <TrendingUp className="w-3 h-3" />
-                      ) : (
-                        <TrendingDown className="w-3 h-3" />
-                      )}
-                      {Math.abs(flow.change24h).toFixed(2)}%
-                    </div>
+                {/* Card Header - Fully Responsive */}
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
+                  {/* Chain Name */}
+                  <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
+                    {flow.chain}
                   </div>
-                  <div className="text-xs text-white/40">
+
+                  {/* Change Indicator */}
+                  <div
+                    className={`flex items-center gap-0.5 text-[10px] shrink-0 ${
+                      flow.change24h >= 0 ? "text-emerald-400" : "text-red-400"
+                    }`}
+                  >
+                    {flow.change24h >= 0 ? (
+                      <TrendingUp className="w-3 h-3" />
+                    ) : (
+                      <TrendingDown className="w-3 h-3" />
+                    )}
+                    <span className="whitespace-nowrap">
+                      {Math.abs(flow.change24h).toFixed(2)}%
+                    </span>
+                  </div>
+
+                  {/* Spacer */}
+                  <div className="flex-1 min-w-[10px]"></div>
+
+                  {/* TVL Badge */}
+                  <div className="text-[10px] text-white/60 whitespace-nowrap shrink-0">
                     TVL: ${(flow.tvl / 1000000000).toFixed(2)}B
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-emerald-400">↓ Inflow</span>
-                    <span className="text-white font-medium">
+                {/* Flow Stats - HER ZAMAN GÖRÜNEBİLİR, ALT ALTA DİZİLEBİLİR */}
+                <div className="space-y-1.5 mb-2">
+                  {/* Inflow */}
+                  <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
+                    <span className="text-emerald-400 whitespace-nowrap">↓ Inflow</span>
+                    <span className="text-white font-mono font-medium whitespace-nowrap">
                       ${(flow.inflow / 1000000).toFixed(1)}M
                     </span>
                   </div>
 
-                  <div className="flex justify-between text-xs">
-                    <span className="text-red-400">↑ Outflow</span>
-                    <span className="text-white font-medium">
+                  {/* Outflow */}
+                  <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
+                    <span className="text-red-400 whitespace-nowrap">↑ Outflow</span>
+                    <span className="text-white font-mono font-medium whitespace-nowrap">
                       ${(flow.outflow / 1000000).toFixed(1)}M
                     </span>
                   </div>
 
                   <div className="h-px bg-white/10 my-1" />
 
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/80 font-medium">Net Flow</span>
+                  {/* Net Flow */}
+                  <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-sm">
+                    <span className="text-white/80 font-medium whitespace-nowrap">Net Flow</span>
                     <span
-                      className={`font-bold ${
+                      className={`font-bold font-mono whitespace-nowrap ${
                         flow.net >= 0 ? "text-emerald-400" : "text-red-400"
                       }`}
                     >
@@ -390,24 +514,25 @@ export default function TokenFlowModule({ instanceId }: Props) {
                     </span>
                   </div>
 
-                  <div className="flex justify-between text-xs">
-                    <span className="text-white/60">Volume (24h)</span>
-                    <span className="text-white/80">
+                  {/* Volume */}
+                  <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
+                    <span className="text-white/60 whitespace-nowrap">Volume (24h)</span>
+                    <span className="text-white/80 font-mono whitespace-nowrap">
                       ${(flow.volume24h / 1000000).toFixed(1)}M
                     </span>
                   </div>
                 </div>
 
-                {/* Flow Visualization */}
-                <div className="mt-3 flex gap-1 h-2">
+                {/* Flow Bar */}
+                <div className="flex gap-1 h-2 rounded-full overflow-hidden bg-white/10">
                   <div
-                    className="bg-emerald-500 rounded"
+                    className="bg-emerald-500 transition-all"
                     style={{
                       width: `${(flow.inflow / (flow.inflow + flow.outflow)) * 100}%`,
                     }}
                   />
                   <div
-                    className="bg-red-500 rounded"
+                    className="bg-red-500 transition-all"
                     style={{
                       width: `${(flow.outflow / (flow.inflow + flow.outflow)) * 100}%`,
                     }}
@@ -419,60 +544,139 @@ export default function TokenFlowModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Add Token Modal */}
+      {/* Total Summary - SCROLL DIŞINDA, SABİT ALTTA */}
+      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
+        <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
+          Total Net Flow (24h)
+        </div>
+        <div
+          className={`
+            text-sm sm:text-base md:text-lg lg:text-xl 
+            font-bold font-mono 
+            break-words
+            ${totalNet >= 0 ? "text-emerald-400" : "text-red-400"}
+          `}
+        >
+          {totalNet >= 0 ? "+" : "-"}$
+          {(Math.abs(totalNet) / 1000000).toFixed(1)}M
+        </div>
+      </div>
+
+      {/* 🔧 Modal - TRULY FULL SCREEN */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="w-full max-w-sm rounded-lg bg-[#0b0f1a] border border-white/10 p-4">
-            <div className="flex justify-between mb-3">
-              <h3 className="text-sm font-semibold">Add Token</h3>
-              <button onClick={() => setShowAddModal(false)}>
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <input
-              value={newToken}
-              onChange={(e) => setNewToken(e.target.value.toUpperCase())}
-              placeholder="Enter token symbol (e.g., LINK)"
-              className="w-full mb-3 px-3 py-2 rounded bg-black/40 border border-white/10 text-white text-xs"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const tok = newToken.trim().toUpperCase();
-                  if (tok && !tokens.includes(tok)) {
-                    setTokens((p) => [...p, tok]);
-                    setSelectedTokens((p) => [...p, tok]);
-                    setNewToken("");
-                    setShowAddModal(false);
-                  }
-                }
-              }}
-            />
-
-            <div className="grid grid-cols-3 gap-2 mb-3">
-              {POPULAR_TOKENS.filter((t) => !tokens.includes(t)).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setNewToken(t)}
-                  className="text-xs bg-white/5 hover:bg-white/10 rounded px-2 py-1"
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => {
-                const tok = newToken.trim().toUpperCase();
-                if (!tok || tokens.includes(tok)) return;
-                setTokens((p) => [...p, tok]);
-                setSelectedTokens((p) => [...p, tok]);
-                setNewToken("");
-                setShowAddModal(false);
-              }}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded font-semibold text-sm"
-            >
+        <div 
+          className="
+            fixed inset-0
+            bg-[#0a0e1a] z-[100]
+            flex flex-col overflow-hidden
+            animate-in fade-in slide-in-from-bottom-4 duration-200
+          "
+          style={{
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            margin: 0,
+            padding: 0,
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+        >
+          {/* Modal Header */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
+            <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Token
+            </span>
+            <button
+              onClick={() => setShowAddModal(false)}
+              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+            >
+              ×
             </button>
+          </div>
+
+          {/* Modal Content */}
+          <div
+            className="
+              flex-1 min-h-0 overflow-y-auto p-3
+
+              [&::-webkit-scrollbar]:w-1.5
+              [&::-webkit-scrollbar-track]:bg-transparent
+              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+              scrollbar-thin
+              scrollbar-thumb-teal-400/40
+              scrollbar-track-transparent
+            "
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="space-y-3">
+              {/* Custom Token Input */}
+              <div className="space-y-2">
+                <label className="block text-white/50 font-medium text-[10px]">
+                  Add Custom Token
+                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex-1 min-w-[200px]">
+                    <input
+                      type="text"
+                      value={newToken}
+                      onChange={(e) => setNewToken(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === "Enter" && addToken()}
+                      placeholder="Enter token symbol (e.g. LINK)"
+                      className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                    />
+                  </div>
+                  <button
+                    onClick={addToken}
+                    disabled={!newToken.trim()}
+                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <div className="text-white/40 text-[10px]">
+                  💡 Example: LINK, UNI, AAVE
+                </div>
+              </div>
+
+              {/* Popular Tokens */}
+              <div>
+                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                  Popular Tokens
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {POPULAR_TOKENS.filter((t) => !tokens.includes(t)).map((tok) => (
+                    <button
+                      key={tok}
+                      onClick={() => setNewToken(tok)}
+                      className={`
+                        px-2 py-1.5 rounded-md font-semibold text-[10px]
+                        border transition-all duration-150
+                        cursor-pointer
+                        whitespace-nowrap
+                        ${
+                          newToken === tok
+                            ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                            : `
+                                bg-white/10 text-white border-white/10
+                                hover:bg-teal-500/15
+                                hover:border-teal-400/40
+                                hover:text-teal-400
+                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                              `
+                        }
+                      `}
+                    >
+                      {tok}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

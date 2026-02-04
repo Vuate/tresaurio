@@ -1,7 +1,7 @@
 // components/terminal/personalized-dashboard/WalletInspectorModule.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Props {
   instanceId: string;
@@ -26,10 +26,10 @@ interface WalletData {
 type Chain = "ethereum" | "bsc" | "tron" | "solana";
 
 const CHAINS = [
-  { id: "ethereum" as Chain, name: "Ethereum (ERC-20)", explorer: "Etherscan" },
-  { id: "bsc" as Chain, name: "Binance Smart Chain", explorer: "BSCScan" },
-  { id: "tron" as Chain, name: "Tron (TRC-20)", explorer: "Tronscan" },
-  { id: "solana" as Chain, name: "Solana", explorer: "Solscan" },
+  { id: "ethereum" as Chain, name: "Ethereum", short: "ETH", explorer: "Etherscan" },
+  { id: "bsc" as Chain, name: "BSC", short: "BNB", explorer: "BSCScan" },
+  { id: "tron" as Chain, name: "Tron", short: "TRX", explorer: "Tronscan" },
+  { id: "solana" as Chain, name: "Solana", short: "SOL", explorer: "Solscan" },
 ];
 
 // 🔥 Validate address based on chain
@@ -95,6 +95,10 @@ export default function WalletInspectorModule({ instanceId }: Props) {
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [nativePrice, setNativePrice] = useState(0);
+  const [chainDropdownOpen, setChainDropdownOpen] = useState(false);
+
+  const chainDropdownRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Load last inspected address and chain
   useEffect(() => {
@@ -111,6 +115,25 @@ export default function WalletInspectorModule({ instanceId }: Props) {
       }
     }
   }, [storageKey]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!chainDropdownOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        chainDropdownRef.current &&
+        !chainDropdownRef.current.contains(e.target as Node)
+      ) {
+        setChainDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [chainDropdownOpen]);
 
   // Fetch native token price based on selected chain
   useEffect(() => {
@@ -162,139 +185,239 @@ export default function WalletInspectorModule({ instanceId }: Props) {
       walletData.tokens.reduce((sum, t) => sum + t.value, 0)
     : 0;
 
-  const nativeSymbol = CHAINS.find(c => c.id === selectedChain)?.name.split(" ")[0] || "Token";
+  const selectedChainData = CHAINS.find(c => c.id === selectedChain);
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="text-xl">🔍</div>
-          <h3 className="font-semibold">Wallet Inspector</h3>
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
-            LIVE
-          </span>
-        </div>
+    <div className="h-full flex flex-col relative">
+      {/* 🎯 Fully Responsive Header */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
+        {/* Title - Can wrap independently */}
+        <span className="font-semibold text-white/90 text-xs">
+          Wallet Inspector
+        </span>
+        
+        {/* Separator dot */}
+        <span className="text-white/40 text-xs">•</span>
+        
+        {/* LIVE indicator - Can wrap independently */}
+        <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-emerald-400">LIVE</span>
+        </span>
+
+        {/* Spacer to push following items to the right when on same line */}
+        <div className="flex-1 min-w-[20px]"></div>
+
+{/* Chain Selector - Can wrap independently */}
+<div ref={chainDropdownRef} className="relative">
+  <button
+    onClick={() => setChainDropdownOpen((v) => !v)}
+    className="
+      h-7 px-3 rounded-md
+      bg-[#0b1f1f]
+      border border-white/10
+      text-white text-xs
+      flex items-center gap-1.5
+      cursor-pointer
+      hover:bg-white/5
+      transition-all
+      whitespace-nowrap
+    "
+  >
+    <span>{selectedChainData?.name}</span>
+    <span
+      className={`
+        text-white/50 text-[10px]
+        transition-transform duration-200
+        ${chainDropdownOpen ? "rotate-180" : ""}
+      `}
+    >
+      ▾
+    </span>
+  </button>
+
+  {chainDropdownOpen && (() => {
+    // Butonun pozisyonuna göre dropdown'ın sağda mı solda mı açılacağını belirle
+    const buttonRect = chainDropdownRef.current?.getBoundingClientRect();
+    const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
+
+    return (
+      <div
+        onWheel={(e) => e.stopPropagation()}
+        className={`
+          absolute mt-1 z-50
+          w-[140px]
+          max-h-[200px]
+          overflow-y-auto
+          bg-[#0b1f1f]
+          border border-emerald-500/20
+          rounded-md
+          shadow-lg
+          animate-in fade-in slide-in-from-top-2 duration-200
+
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-track]:bg-transparent
+
+          ${shouldOpenLeft ? 'right-0' : 'left-0'}
+        `}
+      >
+        {CHAINS.map((chain) => (
+          <button
+            key={chain.id}
+            onClick={() => {
+              setSelectedChain(chain.id);
+              setChainDropdownOpen(false);
+            }}
+            className="
+              w-full px-3 py-2
+              text-left text-xs
+              bg-transparent cursor-pointer
+              text-white
+              transition-colors
+              hover:bg-emerald-500/10
+              hover:text-emerald-400
+            "
+          >
+            <div className="font-medium">{chain.name}</div>
+            <div className="text-[9px] text-white/60">{chain.explorer}</div>
+          </button>
+        ))}
+      </div>
+    );
+  })()}
+</div>
       </div>
 
-      {/* Chain Selector */}
-      <div className="p-3 border-b border-white/10">
-        <label className="text-xs text-white/60 mb-2 block">Blockchain</label>
-        <select
-          value={selectedChain}
-          onChange={(e) => setSelectedChain(e.target.value as Chain)}
-          className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm text-white outline-none cursor-pointer"
-        >
-          {CHAINS.map((chain) => (
-            <option key={chain.id} value={chain.id}>
-              {chain.name} - {chain.explorer}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Input */}
-      <div className="p-3 border-b border-white/10 space-y-2">
+      {/* Input Section */}
+      <div className="flex flex-col gap-2 px-3 pb-2 flex-shrink-0">
         <input
           type="text"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleInspect()}
           placeholder={
             selectedChain === "ethereum" || selectedChain === "bsc"
-              ? "Enter wallet address (0x...)"
+              ? "Enter address (0x...)"
               : selectedChain === "tron"
-              ? "Enter wallet address (T...)"
-              : "Enter wallet address"
+              ? "Enter address (T...)"
+              : "Enter address"
           }
-          className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
+          className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder:text-white/40"
         />
         <button
           onClick={handleInspect}
           disabled={!address || inspecting}
-          className="w-full py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 text-white rounded font-medium transition-colors"
+          className="w-full py-1.5 rounded-md bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white font-semibold transition-all cursor-pointer text-xs"
         >
           {inspecting ? "Inspecting..." : "Inspect Wallet"}
         </button>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-4">
+      {/* Content - FIXED SCROLL CONTAINER */}
+      <div
+        ref={contentRef}
+        className="
+          flex-1 min-h-0 px-3 pb-3
+          overflow-y-auto
+
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-track]:bg-transparent
+          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+
+          scrollbar-thin
+          scrollbar-thumb-teal-400/40
+          scrollbar-track-transparent
+        "
+      >
         {error ? (
-          <div className="text-center py-12">
+          <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="text-4xl mb-2">⚠️</div>
-            <div className="text-sm text-red-400">{error}</div>
+            <div className="text-sm text-red-400 px-4 break-words">{error}</div>
           </div>
         ) : !walletData ? (
-          <div className="text-center py-12 text-white/40">
+          <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="text-4xl mb-2">👛</div>
-            <div className="text-sm">Enter a wallet address to inspect</div>
+            <div className="text-sm text-white/40 px-4">
+              Enter a wallet address to inspect
+            </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Address */}
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-xs text-white/60 mb-1">Address</div>
-              <div className="text-xs font-mono text-white break-all">
+          <div className="space-y-2">
+            {/* Address Card */}
+            <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
+              <div className="text-[10px] text-white/60 mb-1">Address</div>
+              <div className="text-xs font-mono text-white break-all leading-relaxed">
                 {walletData.address}
               </div>
             </div>
 
-            {/* Total Value */}
-            <div className="bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-lg p-4">
-              <div className="text-xs text-white/60 mb-1">Total Value</div>
-              <div className="text-3xl font-bold text-white">
-                ${totalValue.toLocaleString()}
+            {/* Total Value Card */}
+            <div className="px-3 py-2 rounded-md bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20">
+              <div className="text-[10px] text-white/60 mb-1">Total Value</div>
+              <div className="text-xl sm:text-2xl font-bold text-white font-mono break-words">
+                ${totalValue.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
               </div>
             </div>
 
-            {/* Native Balance */}
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-white/60">{walletData.label || nativeSymbol} Balance</span>
-                <span className="text-sm font-bold text-white">
-                  {walletData.balance.toFixed(4)} {walletData.label || nativeSymbol}
+            {/* Native Balance Card */}
+            <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
+              <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1">
+                <span className="text-xs text-white/60 whitespace-nowrap">
+                  {walletData.label || selectedChainData?.short} Balance
+                </span>
+                <span className="text-xs font-bold text-white font-mono whitespace-nowrap">
+                  {walletData.balance.toFixed(4)} {walletData.label || selectedChainData?.short}
                 </span>
               </div>
             </div>
 
-            {/* Tokens */}
-            <div>
-              <div className="text-sm font-medium text-white mb-2">
-                Token Holdings
-              </div>
-              <div className="space-y-2">
-                {walletData.tokens.map((token) => (
-                  <div
-                    key={token.symbol}
-                    className="bg-white/5 rounded-lg p-3 flex justify-between items-center"
-                  >
-                    <div>
-                      <div className="font-medium text-white">
-                        {token.symbol}
+            {/* Token Holdings */}
+            {walletData.tokens.length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-white/90 mb-1.5 px-1">
+                  Token Holdings
+                </div>
+                <div className="space-y-1.5">
+                  {walletData.tokens.map((token) => (
+                    <div
+                      key={token.symbol}
+                      className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
+                    >
+                      <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 mb-1">
+                        <div className="font-semibold text-white text-xs whitespace-nowrap">
+                          {token.symbol}
+                        </div>
+                        <div className="text-xs font-bold text-white font-mono whitespace-nowrap">
+                          ${token.value.toLocaleString()}
+                        </div>
                       </div>
-                      <div className="text-xs text-white/60">
-                        {token.amount.toLocaleString()}
+                      <div className="text-[10px] text-white/60 break-words">
+                        {token.amount.toLocaleString()} tokens
                       </div>
                     </div>
-                    <div className="text-sm font-bold text-white">
-                      ${token.value.toLocaleString()}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Stats */}
+            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-2">
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="text-xs text-white/60 mb-1">NFTs</div>
-                <div className="text-lg font-bold text-white">
+              <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
+                <div className="text-[10px] text-white/60 mb-1">NFTs</div>
+                <div className="text-base sm:text-lg font-bold text-white break-words">
                   {walletData.nfts}
                 </div>
               </div>
-              <div className="bg-white/5 rounded-lg p-3">
-                <div className="text-xs text-white/60 mb-1">TX (24h)</div>
-                <div className="text-lg font-bold text-white">
+              <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
+                <div className="text-[10px] text-white/60 mb-1">TX (24h)</div>
+                <div className="text-base sm:text-lg font-bold text-white break-words">
                   {walletData.transactions24h}
                 </div>
               </div>

@@ -201,7 +201,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     title: "Exchange Comparison",
     description: "Binance vs KuCoin price difference",
     category: "flow",
-    defaultSize: { width: 320, height: 200 },
+    defaultSize: { width: 320, height: 300 },
     render: (instanceId: string) => (
       <ExchangeComparisonModule instanceId={instanceId} />
     ),
