@@ -4,10 +4,37 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
+// Şifre gereksinimleri tipi
+interface PasswordRequirement {
+  label: string;
+  met: boolean;
+}
+
+// Şifre validasyonu
+const validatePassword = (password: string): { valid: boolean; requirements: PasswordRequirement[] } => {
+  const requirements: PasswordRequirement[] = [
+    { label: "En az 8 karakter", met: password.length >= 8 },
+    { label: "Büyük harf (A-Z)", met: /[A-Z]/.test(password) },
+    { label: "Küçük harf (a-z)", met: /[a-z]/.test(password) },
+    { label: "Rakam (0-9)", met: /[0-9]/.test(password) },
+  ];
+
+  const valid = requirements.every((r) => r.met);
+  return { valid, requirements };
+};
+
 export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirement[]>([]);
+  const [showRequirements, setShowRequirements] = useState(false);
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { requirements } = validatePassword(e.target.value);
+    setPasswordRequirements(requirements);
+    setShowRequirements(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,15 +48,18 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     const password = formData.get("password") as string;
     const passwordConfirm = formData.get("passwordConfirm") as string;
 
-    // Validation
+    // Şifre eşleşme kontrolü
     if (password !== passwordConfirm) {
       setError("Şifreler eşleşmiyor");
       setLoading(false);
       return;
     }
 
-    if (password.length < 6) {
-      setError("Şifre en az 6 karakter olmalı");
+    // Şifre güvenlik kontrolü
+    const { valid, requirements } = validatePassword(password);
+    if (!valid) {
+      const missing = requirements.filter((r) => !r.met).map((r) => r.label);
+      setError("Eksik: " + missing.join(", "));
       setLoading(false);
       return;
     }
@@ -110,9 +140,10 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           placeholder="Parola"
           required
           disabled={loading}
+          onChange={handlePasswordChange}
           aria-label="Parola"
           className="
-            w-full 
+            w-full
             rounded-lg xl:rounded-lg 2xl:rounded-xl
             bg-white/5 border border-white/10
             px-3.5 xl:px-3.75 2xl:px-4
@@ -126,6 +157,38 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
             disabled:opacity-60
           "
         />
+        {/* Şifre gereksinimleri */}
+        {showRequirements && passwordRequirements.length > 0 && (
+          <div className="grid grid-cols-2 gap-1 mt-2">
+            {passwordRequirements.map((req, i) => (
+              <div
+                key={i}
+                className={`flex items-center gap-1.5 text-[10px] ${
+                  req.met ? "text-green-400" : "text-gray-500"
+                }`}
+              >
+                {req.met ? (
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                ) : (
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+                <span>{req.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         <input
           type="password"
@@ -222,8 +285,9 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
         <button
           type="button"
           disabled={loading}
+          onClick={() => signIn("google", { callbackUrl: "/" })}
           className="
-            w-full flex items-center justify-center 
+            w-full flex items-center justify-center
             gap-2 xl:gap-2 2xl:gap-2
             rounded-lg xl:rounded-lg 2xl:rounded-xl
             border border-white/10 bg-white/[0.03]
