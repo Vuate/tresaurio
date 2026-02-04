@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { sendVerificationEmail, generateVerificationToken } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,9 +17,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: "Şifre en az 6 karakter olmalı" },
+        { error: "Şifre en az 8 karakter olmalı" },
         { status: 400 }
       );
     }
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
+    // Create user (emailVerified will be null until verified)
     const user = await prisma.user.create({
       data: {
         name,
@@ -47,9 +48,31 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Generate verification token
+    const token = generateVerificationToken();
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Save token to database
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires,
+      },
+    });
+
+    // Send verification email
+    const emailResult = await sendVerificationEmail(email, token);
+
+    if (!emailResult.success) {
+      console.error("Failed to send verification email:", emailResult.error);
+      // User is created but email failed - they can request resend later
+    }
+
     return NextResponse.json(
       {
-        message: "Hesap başarıyla oluşturuldu",
+        message: "Hesap oluşturuldu. Lütfen e-postanızı doğrulayın.",
+        requiresVerification: true,
         user: {
           id: user.id,
           name: user.name,

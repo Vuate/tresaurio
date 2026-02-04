@@ -80,19 +80,9 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
         return;
       }
 
-      // Auto login after signup
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError("Hesap oluşturuldu fakat giriş yapılamadı");
-      } else {
-        onSuccess?.();
-        router.refresh();
-      }
+      // Redirect to email verification page
+      router.push("/verify-email");
+      onSuccess?.();
     } catch {
       setError("Kayıt başarısız");
     } finally {
