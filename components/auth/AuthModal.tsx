@@ -67,13 +67,15 @@ export default function AuthModal({
       <div
         ref={dialogRef}
         tabIndex={-1}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         className="
-          relative w-full 
+          relative w-full
           max-w-[360px] xl:max-w-[380px] 2xl:max-w-[400px]
           z-10
           rounded-lg xl:rounded-xl 2xl:rounded-2xl
           border border-white/10
-          bg-[#0d0f14] 
+          bg-[#0d0f14]
           p-5 xl:p-5.5 2xl:p-6
           shadow-2xl
           outline-none
