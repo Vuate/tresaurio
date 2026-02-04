@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
@@ -28,7 +29,11 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
       });
 
       if (result?.error) {
-        setError("E-posta veya şifre hatalı");
+        if (result.error.includes("EMAIL_NOT_VERIFIED")) {
+          setError("E-postanızı henüz doğrulamadınız. Lütfen e-postanızı kontrol edin.");
+        } else {
+          setError("E-posta veya şifre hatalı");
+        }
       } else {
         onSuccess?.();
         router.refresh();
@@ -100,13 +105,12 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
 
       {/* Forgot Password */}
       <div className="flex justify-end">
-        <button
-          type="button"
-          disabled={loading}
-          className="text-[11px] xl:text-[11.5px] 2xl:text-xs text-gray-400 hover:text-white transition disabled:opacity-50 cursor-pointer"
+        <Link
+          href="/forgot-password"
+          className="text-[11px] xl:text-[11.5px] 2xl:text-xs text-gray-400 hover:text-white transition cursor-pointer"
         >
           Şifremi unuttum
-        </button>
+        </Link>
       </div>
 
       {/* Error */}
