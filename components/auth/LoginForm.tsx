@@ -156,7 +156,7 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         <button
           type="button"
           disabled={loading}
-          onClick={() => signIn("google", { callbackUrl: "/" })}
+          onClick={() => signIn("google", { callbackUrl: window.location.pathname })}
           className="
             w-full flex items-center justify-center
             gap-2 xl:gap-2 2xl:gap-2
