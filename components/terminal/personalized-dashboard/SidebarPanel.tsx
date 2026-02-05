@@ -16,9 +16,9 @@ export default function SidebarPanel() {
   const router = useRouter();
   const pathname = usePathname();
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null); // 🔥 EKLE
+  const headerRef = useRef<HTMLDivElement>(null);
 
-  const [headerHeight, setHeaderHeight] = useState(64); // 🔥 EKLE
+  const [headerHeight, setHeaderHeight] = useState(64);
 
   const effectiveNotesHeight = notesOpen ? notesBarHeight : (
     typeof window !== 'undefined' 
@@ -26,19 +26,18 @@ export default function SidebarPanel() {
       : 48
   );
 
-const [availableHeight, setAvailableHeight] = useState(0);
+  const [availableHeight, setAvailableHeight] = useState(0);
 
-useEffect(() => {
-  const updateHeight = () => {
-    setAvailableHeight(window.innerHeight - topBarHeight - effectiveNotesHeight - 32);
-  };
-  
-  updateHeight();
-  window.addEventListener('resize', updateHeight);
-  return () => window.removeEventListener('resize', updateHeight);
-}, [topBarHeight, effectiveNotesHeight]);
+  useEffect(() => {
+    const updateHeight = () => {
+      setAvailableHeight(window.innerHeight - topBarHeight - effectiveNotesHeight - 32);
+    };
+    
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, [topBarHeight, effectiveNotesHeight]);
 
-  // 🔥 HEADER HEIGHT ÖLÇÜMÜ
   useEffect(() => {
     if (sidebarOpen && headerRef.current) {
       const height = headerRef.current.getBoundingClientRect().height;
@@ -46,13 +45,22 @@ useEffect(() => {
     }
   }, [sidebarOpen]);
     
+  // 🔥 DIŞARI TIKLAMA - TOPBAR HARİÇ
   useEffect(() => {
     if (!sidebarOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
-        toggleSidebar();
-      }
+      const target = e.target as Node;
+      
+      // 🔥 Sidebar içindeyse işlem yapma
+      if (sidebarRef.current?.contains(target)) return;
+      
+      // 🔥 TopBar içindeyse işlem yapma (buton toggle'ı halledecek)
+      const topBar = document.querySelector('[data-topbar]');
+      if (topBar?.contains(target)) return;
+      
+      // 🔥 Dışarı tıklandı, kapat
+      toggleSidebar();
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -61,10 +69,14 @@ useEffect(() => {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
+    // 🔥 Biraz gecikme ekle (TopBar tıklamasıyla çakışmasın)
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }, 100);
 
     return () => {
+      clearTimeout(timer);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -77,40 +89,29 @@ useEffect(() => {
       ref={sidebarRef}
       data-ui-panel 
       onWheelCapture={(e) => e.stopPropagation()}
-      onMouseDownCapture={(e) => e.stopPropagation()}
-      onPointerDownCapture={(e) => e.stopPropagation()}
       style={{
         top: topBarHeight + 16,
-        maxHeight: availableHeight   // ✅ KALSIN (taşmasın diye)
+        maxHeight: availableHeight
       }}
       className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] overflow-hidden bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] cursor-default"
     >
-      {/* HEADER */}
+      {/* HEADER - X BUTONU KALDIRILDI */}
       <div 
-        ref={headerRef} // 🔥 EKLE
+        ref={headerRef}
         className="flex items-center justify-between px-4 py-4 border-b border-white/10 bg-[#041F20]/95"
       >
         <div className="flex items-center gap-2">
           <span className="text-sm xl:text-[15px] 2xl:text-base font-bold text-white">Sidebar</span>
         </div>
-
-        <button
-          onClick={toggleSidebar}
-          className="text-white/40 hover:text-white transition cursor-pointer xl:text-lg 2xl:text-xl"
-        >
-          ✕
-        </button>
       </div>
 
       {/* CONTENT */}
       <div
         style={{
-          maxHeight: `calc(${availableHeight}px - ${headerHeight}px)`, // ✅ maxHeight (height değil)
+          maxHeight: `calc(${availableHeight}px - ${headerHeight}px)`,
         }}
         className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
         onWheel={(e) => {e.stopPropagation();}}
-        onMouseDown={(e) => e.stopPropagation()}
-        onPointerDownCapture={(e) => e.stopPropagation()}
       >
         {/* TOP NAV */}
         <div className="space-y-1">

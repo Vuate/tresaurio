@@ -21,9 +21,9 @@ export default function AddToolPanel() {
   } = usePersonalizedDashboardStore();
   
   const panelRef = useRef<HTMLDivElement>(null); 
-  const headerRef = useRef<HTMLDivElement>(null); // 🔥 EKLE
+  const headerRef = useRef<HTMLDivElement>(null);
   
-  const [headerHeight, setHeaderHeight] = useState(56); // 🔥 EKLE
+  const [headerHeight, setHeaderHeight] = useState(56);
 
   const effectiveNotesHeight = notesOpen ? notesBarHeight : (
     typeof window !== 'undefined' 
@@ -31,19 +31,18 @@ export default function AddToolPanel() {
       : 48
   );
 
-const [availableHeight, setAvailableHeight] = useState(0);
+  const [availableHeight, setAvailableHeight] = useState(0);
 
-useEffect(() => {
-  const updateHeight = () => {
-    setAvailableHeight(window.innerHeight - topBarHeight - effectiveNotesHeight - 32);
-  };
-  
-  updateHeight();
-  window.addEventListener('resize', updateHeight);
-  return () => window.removeEventListener('resize', updateHeight);
-}, [topBarHeight, effectiveNotesHeight]);
+  useEffect(() => {
+    const updateHeight = () => {
+      setAvailableHeight(window.innerHeight - topBarHeight - effectiveNotesHeight - 32);
+    };
+    
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, [topBarHeight, effectiveNotesHeight]);
 
-  // 🔥 HEADER HEIGHT ÖLÇÜMÜ
   useEffect(() => {
     if (addToolOpen && headerRef.current) {
       const height = headerRef.current.getBoundingClientRect().height;
@@ -51,13 +50,22 @@ useEffect(() => {
     }
   }, [addToolOpen]);
 
+  // 🔥 DIŞARI TIKLAMA - TOPBAR HARİÇ
   useEffect(() => {
     if (!addToolOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        toggleAddTool();
-      }
+      const target = e.target as Node;
+      
+      // 🔥 Panel içindeyse işlem yapma
+      if (panelRef.current?.contains(target)) return;
+      
+      // 🔥 TopBar içindeyse işlem yapma (buton toggle'ı halledecek)
+      const topBar = document.querySelector('[data-topbar]');
+      if (topBar?.contains(target)) return;
+      
+      // 🔥 Dışarı tıklandı, kapat
+      toggleAddTool();
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -66,10 +74,14 @@ useEffect(() => {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKeyDown);
+    // 🔥 Biraz gecikme ekle (TopBar tıklamasıyla çakışmasın)
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }, 100);
 
     return () => {
+      clearTimeout(timer);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -110,24 +122,18 @@ useEffect(() => {
       }}
       className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden select-none"
     >
-      {/* HEADER */}
+      {/* HEADER - X BUTONU KALDIRILDI */}
       <div 
-        ref={headerRef} // 🔥 EKLE
+        ref={headerRef}
         className="flex items-center justify-between px-3 py-3 border-b border-white/10 select-none bg-[#041F20]/95"
       >
         <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">Add Tool</div>
-        <button
-          onClick={toggleAddTool}
-          className="text-white/50 hover:text-white transition cursor-pointer xl:text-lg 2xl:text-xl"
-        >
-          ✕
-        </button>
       </div>
 
       {/* CONTENT */}
       <div
         style={{
-          height: `calc(${availableHeight}px - ${headerHeight}px)`, // ✅ DİNAMİK
+          height: `calc(${availableHeight}px - ${headerHeight}px)`,
         }}
         className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
         onWheel={(e) => {
