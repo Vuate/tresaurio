@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 // Şifre gereksinimleri tipi
 interface PasswordRequirement {
@@ -24,7 +23,6 @@ const validatePassword = (password: string): { valid: boolean; requirements: Pas
 };
 
 export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirement[]>([]);
@@ -80,9 +78,21 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
         return;
       }
 
-      // Redirect to email verification page
-      router.push("/verify-email");
-      onSuccess?.();
+      // Auto-login after signup (no email verification needed)
+      const signInResult = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (signInResult?.error) {
+        setError("Kayıt başarılı ama giriş yapılamadı. Lütfen manuel giriş yapın.");
+        setLoading(false);
+        return;
+      }
+
+      // Refresh the page to update session
+      window.location.reload();
     } catch {
       setError("Kayıt başarısız");
     } finally {
