@@ -14,18 +14,15 @@ export default function TradeCTA() {
         text-center
       "
     >
-      {/* TITLE */}
       <h2 className="cta-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-extrabold text-white">
         Portföyünüzü Profesyonel Şekilde Yönetin
       </h2>
 
-      {/* DESCRIPTION */}
       <p className="cta-description mx-auto mt-2 sm:mt-3 lg:mt-4 xl:mt-5 max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed text-gray-300 px-4">
         Tüm spot ve futures pozisyonlarınızı tek bir panoda görüntüleyin, PnL
         takibi yapın ve risk yönetimi ile portföyünüzü optimize edin.
       </p>
 
-      {/* BUTTON */}
       <Link
         href="/personalized-dashboard"
         className="

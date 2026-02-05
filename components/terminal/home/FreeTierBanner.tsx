@@ -19,7 +19,6 @@ export default function FreeTierBanner() {
             </p>
           </div>
 
-          {/* CTA BUTTON */}
           <div className="group">
             <button
               className="

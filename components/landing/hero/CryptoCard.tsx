@@ -3,7 +3,6 @@ export default function CryptoCard({ coin }: { coin: any }) {
 
   return (
     <div className="flex items-center gap-4 rounded-xl bg-white/5 p-4">
-      {/* Icon */}
       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black/20">
         <img
           src={coin.icon}
@@ -12,7 +11,6 @@ export default function CryptoCard({ coin }: { coin: any }) {
         />
       </div>
 
-      {/* Info */}
       <div className="flex flex-col">
         <span className="text-sm font-semibold text-white">
           {coin.symbol}

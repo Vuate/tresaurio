@@ -4,13 +4,11 @@ import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
-// Şifre gereksinimleri tipi
 interface PasswordRequirement {
   label: string;
   met: boolean;
 }
 
-// Şifre validasyonu
 const validatePassword = (password: string): { valid: boolean; requirements: PasswordRequirement[] } => {
   const requirements: PasswordRequirement[] = [
     { label: "En az 8 karakter", met: password.length >= 8 },

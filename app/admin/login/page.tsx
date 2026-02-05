@@ -1,11 +1,9 @@
-// app/admin/login/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Eye, EyeOff, AlertCircle, Shield } from "lucide-react";
 
-// Admin şifresi - Production'da .env'den alınmalı
 const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "tresaurio2024";
 
 export default function AdminLoginPage() {
@@ -80,10 +78,8 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-[#030711] flex items-center justify-center p-4">
-      {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-purple-900/20" />
 
-      {/* Grid pattern */}
       <div
         className="absolute inset-0 opacity-5"
         style={{
@@ -94,7 +90,6 @@ export default function AdminLoginPage() {
       />
 
       <div className="relative w-full max-w-md">
-        {/* Logo/Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 mb-4">
             <Shield className="w-8 h-8 text-white" />
@@ -103,10 +98,8 @@ export default function AdminLoginPage() {
           <p className="text-white/50 text-sm">Tresaurio System Management</p>
         </div>
 
-        {/* Login Card */}
         <div className="bg-[#0a0f1a] border border-white/10 rounded-2xl p-6 shadow-xl">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-white/70 mb-2">
                 Admin Password
@@ -136,8 +129,6 @@ export default function AdminLoginPage() {
                 </button>
               </div>
             </div>
-
-            {/* Error Message */}
             {error && (
               <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -145,7 +136,6 @@ export default function AdminLoginPage() {
               </div>
             )}
 
-            {/* Lock Timer */}
             {locked && (
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 mb-2">
@@ -155,7 +145,6 @@ export default function AdminLoginPage() {
               </div>
             )}
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading || locked || !password}
@@ -177,7 +166,6 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          {/* Security Notice */}
           <div className="mt-6 pt-4 border-t border-white/5">
             <p className="text-white/30 text-xs text-center">
               This area is restricted to authorized personnel only.
@@ -187,7 +175,6 @@ export default function AdminLoginPage() {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="text-center mt-6">
           <a
             href="/"

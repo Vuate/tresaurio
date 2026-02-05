@@ -7,20 +7,12 @@ import ReportingCTA from "@/components/terminal/reporting/ReportingCTA";
 export default function ReportingPage() {
   return (
     <div className="min-h-screen bg-[#031A1C] text-white">
-      {/* Hero Section */}
       <ReportingHero />
 
       <div className="w-full mx-auto px-6 py-8">
-        {/* 8 Rapor Kategorisi */}
         <ReportingCategories />
-
-        {/* Öne Çıkan Özellikler */}
         <ReportingFeatures />
-
-        {/* Örnek Rapor Görünümü */}
         <ReportingExample />
-
-        {/* CTA */}
         <ReportingCTA />
       </div>
     </div>

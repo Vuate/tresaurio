@@ -1,4 +1,3 @@
-// lib/personalized-dashboard/useNews.ts
 
 import { useState, useEffect } from "react";
 

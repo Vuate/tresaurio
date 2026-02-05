@@ -7,7 +7,6 @@ const sentimentData = [
 export default function NewsSentiment() {
   return (
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
           Market Sentiment Pano
@@ -17,21 +16,17 @@ export default function NewsSentiment() {
         </p>
       </div>
 
-      {/* Visual Example Container */}
       <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
-        {/* Sentiment Analysis Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
           {sentimentData.map((sentiment, index) => (
             <div
               key={index}
               className="bg-[#041F20]/95 rounded-lg sm:rounded-xl p-4 sm:p-5 lg:p-6 text-center"
             >
-              {/* Label */}
               <div className="text-[11px] sm:text-xs lg:text-sm text-gray-400 mb-2 sm:mb-3">
                 {sentiment.label}
               </div>
 
-              {/* Value */}
               <div
                 className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-1.5 sm:mb-2 ${
                   sentiment.color === "bullish"
@@ -44,7 +39,6 @@ export default function NewsSentiment() {
                 {sentiment.value}
               </div>
 
-              {/* Progress Bar */}
               <div className="w-full h-1.5 sm:h-2 bg-white/10 rounded overflow-hidden">
                 <div
                   className={`h-full transition-all duration-1000 ${
@@ -61,7 +55,6 @@ export default function NewsSentiment() {
           ))}
         </div>
 
-        {/* Overall Sentiment Summary */}
         <div className="mt-6 sm:mt-7 lg:mt-8 p-4 sm:p-5 lg:p-6 bg-[#041F20]/95 rounded-lg sm:rounded-xl text-center">
           <div className="text-xs sm:text-sm text-gray-400 mb-1.5 sm:mb-2">
             Overall Market Sentiment

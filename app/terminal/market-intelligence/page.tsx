@@ -8,24 +8,14 @@ import MarketIntelligenceCTA from "@/components/terminal/market-intelligence/Mar
 export default function MarketIntelligencePage() {
   return (
     <div className="min-h-screen bg-[#031A1C] text-white">
-      {/* Hero Section */}
       <MarketIntelligenceHero />
 
       <div className="w-full mx-auto px-6 py-8">
 
-        {/* Ana Özellikler */}
         <MarketIntelligenceFeatures />
-
-        {/* All-in Cost Örneği */}
         <MarketIntelligenceCostBreakdown />
-
-        {/* Exchange Karşılaştırması */}
         <MarketIntelligenceComparison />
-
-        {/* Nasıl Çalışır */}
         <MarketIntelligenceHowItWorks />
-
-        {/* CTA */}
         <MarketIntelligenceCTA />
       </div>
     </div>

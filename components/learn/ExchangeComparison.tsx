@@ -16,7 +16,6 @@ const items = [
 export default function ExchangeComparison() {
   return (
     <section className="section px-6">
-      {/* SADECE CONTAINER FIX */}
       <div className="mx-auto max-w-7xl">
         <div className="rounded-2xl border border-white/10 bg-[#041F20]/95 p-8">
 <div className="mb-6 flex items-center text-lg font-bold">

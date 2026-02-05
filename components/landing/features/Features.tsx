@@ -21,7 +21,6 @@ export default function Features() {
           </span>
         </h2>
 
-        {/* GRID */}
 <div className="
   grid
   grid-cols-1
@@ -29,7 +28,8 @@ export default function Features() {
   lg:grid-cols-4
   gap-8
   xl:gap-12
-">          {/* CARD */}
+">       
+
           <div className="relative min-h-[340px] rounded-[28px] p-8
 lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10 blur-[0.5px]" />
@@ -57,7 +57,6 @@ lg:text-[22px] font-semibold text-white">
             </div>
           </div>
 
-          {/* CARD */}
           <div className="relative min-h-[340px] rounded-[28px] p-8
 lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
@@ -84,7 +83,6 @@ lg:text-[22px] font-semibold text-white">
             </div>
           </div>
 
-          {/* CARD */}
           <div className="relative min-h-[340px] rounded-[28px] p-8
 lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
@@ -111,7 +109,6 @@ lg:text-[22px] font-semibold text-white">
             </div>
           </div>
 
-          {/* CARD */}
           <div className="relative min-h-[340px] rounded-[28px] p-8
 lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />

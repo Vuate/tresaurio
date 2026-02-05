@@ -11,7 +11,6 @@ export default function Hero() {
         overflow-hidden bg-[#031a1c] px-6 text-center text-white
       "
     >
-      {/* CONTENT (üst katman) */}
       <div
         className="
           relative z-[5] mt-[140px]
@@ -19,7 +18,6 @@ export default function Hero() {
           min-[1536px]:pr-0
         "
       >
-        {/* TITLE */}
         <h1 className="text-3xl lg:text-4xl xl:text-[4rem] font-black leading-tight">
           Manage your treasury anywhere <br />
           <span className="bg-gradient-to-br from-white to-[#19d8d0] bg-clip-text text-transparent">
@@ -27,16 +25,14 @@ export default function Hero() {
           </span>
         </h1>
 
-        {/* SUBTITLE */}
         <p className="mx-auto mt-5 max-w-[520px] text-[16px] text-slate-300">
           A high-performance terminal that doesn&apos;t slow you down.
         </p>
 
-        {/* CRYPTO TICKER */}
         <CryptoTicker />
       </div>
 
-      {/* 🌍 GLOBE – RESPONSIVE */}
+      {/* GLOBE */}
       <div
         className="
           pointer-events-none absolute 

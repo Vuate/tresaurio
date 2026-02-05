@@ -38,7 +38,6 @@ export default function Header() {
       />
 
       <div className="flex justify-between items-end relative z-10">
-{/* SOL TARAF */}
         <div className="space-y-1.5 xl:space-y-2">
 <h1
   className="text-6xl xl:text-7xl 2xl:text-8xl font-extrabold bg-gradient-to-r from-white via-[#19D8D0] to-[#238c7c]
@@ -53,7 +52,6 @@ export default function Header() {
 
           <div className="w-40 xl:w-44 2xl:w-48 h-[2.5px] xl:h-[3px] bg-gradient-to-r from-cyan-400/40 to-purple-500/40 rounded-full translate-y-[118px] xl:translate-y-[126px] 2xl:translate-y-[134px]"></div>
         </div>
-     {/* SAĞ TARAF — GLOBE */}
         <div className="flex items-center gap-6 xl:gap-7 2xl:gap-8">
 <div className="relative w-[220px] xl:w-[250px] 2xl:w-[280px] h-[95px] xl:h-[110px] 2xl:h-[125px] scale-[.42] xl:scale-[.47] 2xl:scale-[.52] opacity-40 pointer-events-none -ml-[420px] xl:-ml-[440px] 2xl:-ml-[460px]">
   <Globe />

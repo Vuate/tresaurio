@@ -14,7 +14,6 @@ export default function Stats() {
           min-[1536px]:pr-0
         "
       >
-        {/* Card 1 */}
         <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/5 to-white/2 p-12 text-center backdrop-blur-md">
           <h3 className="mb-3 text-[48px] font-extrabold text-[#19d8d0]">
             15M+
@@ -24,7 +23,6 @@ export default function Stats() {
           </p>
         </div>
 
-        {/* Card 2 */}
         <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/5 to-white/2 p-12 text-center backdrop-blur-md">
           <h3 className="mb-3 text-[48px] font-extrabold text-[#19d8d0]">
             25+
@@ -34,7 +32,6 @@ export default function Stats() {
           </p>
         </div>
 
-        {/* Card 3 */}
         <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/5 to-white/2 p-12 text-center backdrop-blur-md">
           <h3 className="mb-3 text-[48px] font-extrabold text-[#19d8d0]">
             250+
@@ -44,7 +41,6 @@ export default function Stats() {
           </p>
         </div>
 
-        {/* Card 4 */}
         <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/5 to-white/2 p-12 text-center backdrop-blur-md">
           <h3 className="mb-3 text-[48px] font-extrabold text-[#19d8d0]">
             99.9%

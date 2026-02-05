@@ -53,7 +53,6 @@ const comparisonData = [
 export default function StakingExamples() {
   return (
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
           Örnek Pano Görünümü
@@ -63,7 +62,6 @@ export default function StakingExamples() {
         </p>
       </div>
 
-      {/* BTC Staking Position */}
       <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
         <h3 className="mb-4 sm:mb-5 lg:mb-6 text-base sm:text-lg lg:text-xl font-bold">
           BTC Staking Pozisyonu
@@ -86,13 +84,11 @@ export default function StakingExamples() {
         </div>
       </div>
 
-      {/* TradFi Comparison */}
       <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10 mt-5 sm:mt-6">
         <h3 className="mb-4 sm:mb-5 lg:mb-6 text-base sm:text-lg lg:text-xl font-bold">
           TradFi Karşılaştırması
         </h3>
         <div className="bg-[#041F20]/95 rounded-xl sm:rounded-2xl overflow-hidden border border-white/10">
-          {/* Table Header */}
           <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-4 sm:gap-5 lg:gap-6 p-4 sm:p-5 md:px-6 lg:px-8 border-b border-white/10 bg-teal-500/10 font-bold">
             <div className="text-xs sm:text-sm lg:text-[15px]">Yatırım Türü</div>
             <div className="text-xs sm:text-sm lg:text-[14px] text-gray-300 text-center">
@@ -103,7 +99,6 @@ export default function StakingExamples() {
             </div>
           </div>
 
-          {/* Table Rows */}
           {comparisonData.map((row, index) => (
             <div
               key={index}

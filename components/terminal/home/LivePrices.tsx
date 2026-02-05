@@ -124,9 +124,7 @@ export default function LivePrices() {
 
   return (
     <div className="w-full mt-60 xl:mt-62 2xl:mt-64">
-      {/* HEADER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 sm:mb-6 xl:mb-7 2xl:mb-8 gap-2 sm:gap-0">
-        {/* SOL TARAF */}
         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-2 sm:gap-4 xl:gap-5 2xl:gap-6">
           <h2 className="text-lg sm:text-xl md:text-2xl xl:text-[28px] 2xl:text-3xl font-extrabold text-white leading-none">
             Canlı Piyasa Fiyatları
@@ -138,7 +136,6 @@ export default function LivePrices() {
           </span>
         </div>
 
-        {/* SAĞ TARAF */}
         <div className="flex items-center gap-1 sm:gap-1.5 xl:gap-2 text-left sm:text-right sm:mr-2 xl:mr-2.5 2xl:mr-3">
           <p className="text-gray-400 text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-xs uppercase whitespace-nowrap">
             Last Update:
@@ -149,9 +146,7 @@ export default function LivePrices() {
         </div>
       </div>
 
-      {/* TABLE */}
       <div className="divide-y divide-white/5 border border-white/10 rounded-lg sm:rounded-xl xl:rounded-2xl 2xl:rounded-2xl overflow-hidden">
-        {/* HEADER - Mobilde gizli */}
         <div className="hidden lg:grid grid-cols-[200px_minmax(100px,1fr)_160px_100px] xl:grid-cols-[220px_minmax(120px,1fr)_180px_110px] 2xl:grid-cols-[240px_minmax(140px,1fr)_200px_120px] px-4 xl:px-5 2xl:px-6 py-2.5 xl:py-3 bg-white/[0.02] text-[11px] xl:text-xs 2xl:text-xs text-gray-400 uppercase tracking-wider">
           <span>Coin</span>
           <span>Trend</span>
@@ -159,7 +154,6 @@ export default function LivePrices() {
           <span className="text-right">24h %</span>
         </div>
 
-        {/* ROWS */}
         {prices.map((p) => {
           const name = p.symbol.replace("USDT", "");
           const percent = Number(p.priceChangePercent);
@@ -183,7 +177,6 @@ export default function LivePrices() {
                 items-center
               "
             >
-              {/* COIN - Mobilde sola */}
               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 xl:gap-3.5 2xl:gap-4 col-span-1">
                 <img
                   src={getIcon(name)}
@@ -198,17 +191,14 @@ export default function LivePrices() {
                 </div>
               </div>
 
-              {/* TREND - Mobilde ortada, desktop'ta kendi kolonunda */}
               <div className="flex items-center justify-center lg:justify-start col-span-2 lg:col-span-1">
                 <TrendLine data={trendData[p.symbol]} />
               </div>
 
-              {/* PRICE - Mobilde sağ üst */}
               <p className="text-white text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl font-semibold text-right col-span-1 lg:text-right leading-none">
                 ${Number(p.lastPrice).toLocaleString()}
               </p>
 
-              {/* CHANGE - Mobilde sağ alt, tek başına */}
               <p
                 className={`text-right text-[10px] sm:text-xs lg:text-xs xl:text-sm 2xl:text-sm font-semibold col-start-4 lg:col-start-auto leading-none ${
                   percent >= 0 ? "text-green-400" : "text-red-400"

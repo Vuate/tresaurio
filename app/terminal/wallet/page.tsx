@@ -8,23 +8,13 @@ import WalletCTA from "@/components/terminal/wallet/WalletCTA";
 export default function WalletPage() {
   return (
     <div className="min-h-screen bg-[#031A1C] text-white">
-      {/* Hero Section */}
       <WalletHero />
 
       <div className="w-full mx-auto px-6 py-8">
-        {/* Ana Özellikler */}
         <WalletFeatures />
-
-        {/* Smart Money Patterns */}
         <WalletPatterns />
-
-        {/* Transfer Feed Örneği */}
         <WalletTransferFeed />
-
-        {/* Nasıl Çalışır */}
         <WalletHowItWorks />
-
-        {/* CTA */}
         <WalletCTA />
       </div>
     </div>

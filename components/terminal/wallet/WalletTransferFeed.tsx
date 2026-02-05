@@ -33,7 +33,6 @@ const transfers = [
 export default function WalletTransferFeed() {
   return (
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
           Transfer Feed Örneği
@@ -43,7 +42,6 @@ export default function WalletTransferFeed() {
         </p>
       </div>
 
-      {/* Visual Example Container */}
       <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
         <div className="flex flex-col gap-2.5 sm:gap-3">
           {transfers.map((transfer, index) => (
@@ -51,7 +49,6 @@ export default function WalletTransferFeed() {
               key={index}
               className="bg-[#041F20]/95 border border-white/10 rounded-lg sm:rounded-xl p-4 sm:p-5 grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-4 sm:gap-5 items-center"
             >
-              {/* Transfer Icon */}
               <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-teal-500/10 rounded-lg sm:rounded-xl">
                 <Icon
                   icon={transfer.icon}
@@ -59,9 +56,7 @@ export default function WalletTransferFeed() {
                 />
               </div>
 
-              {/* Transfer Info */}
               <div className="flex-1">
-                {/* Badge */}
                 <div className="mb-1">
                   <span
                     className={`inline-block px-2 sm:px-2.5 lg:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-bold uppercase ${
@@ -74,25 +69,20 @@ export default function WalletTransferFeed() {
                   </span>
                 </div>
 
-                {/* Amount */}
                 <div className="text-base sm:text-lg font-bold text-white mb-0.5 sm:mb-1">
                   {transfer.amount}
                 </div>
 
-                {/* Address */}
                 <div className="text-[10px] sm:text-[11px] text-gray-400 font-mono">
                   {transfer.address}
                 </div>
               </div>
 
-              {/* Transfer Value */}
               <div className="text-right">
-                {/* USD Value */}
                 <div className="text-lg sm:text-xl font-bold text-teal-400">
                   {transfer.usd}
                 </div>
 
-                {/* Time */}
                 <div className="text-[10px] sm:text-[11px] text-gray-400">{transfer.time}</div>
               </div>
             </div>

@@ -56,7 +56,6 @@ function VerifyEmailContent() {
             </>
           ) : error ? (
             <>
-              {/* Error Icon */}
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center">
                 <svg
                   className="w-8 h-8 text-red-400"
@@ -91,7 +90,6 @@ function VerifyEmailContent() {
             </>
           ) : (
             <>
-              {/* Pending Icon */}
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-blue-500/20 flex items-center justify-center">
                 <svg
                   className="w-8 h-8 text-blue-400 animate-pulse"

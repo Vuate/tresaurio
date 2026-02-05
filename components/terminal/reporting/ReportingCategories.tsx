@@ -101,7 +101,6 @@ const categories = [
 export default function ReportingCategories() {
   return (
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
           8 Rapor Kategorisi
@@ -111,14 +110,12 @@ export default function ReportingCategories() {
         </p>
       </div>
 
-      {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 xl:gap-6">
         {categories.map((category, index) => (
           <div
             key={index}
             className="bg-[#041F20]/95 border border-white/10 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-5 lg:p-6 xl:p-7 2xl:p-8 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
           >
-            {/* Category Header */}
             <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
               <div className="text-2xl sm:text-3xl lg:text-4xl text-teal-400">
                 <Icon icon={category.icon} />
@@ -131,7 +128,6 @@ export default function ReportingCategories() {
               </div>
             </div>
 
-            {/* Module List */}
             <ul className="space-y-0">
               {category.modules.map((module, moduleIndex) => (
                 <li

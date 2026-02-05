@@ -10,7 +10,6 @@ const metrics = [
 export default function ReportingExample() {
   return (
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
           Örnek Rapor Görünümü
@@ -20,10 +19,8 @@ export default function ReportingExample() {
         </p>
       </div>
 
-      {/* Visual Example Container */}
       <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
         <div className="bg-[#041F20]/95 rounded-lg sm:rounded-xl p-4 sm:p-5 lg:p-6 xl:p-8 border border-white/10">
-          {/* Report Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-5 lg:mb-6 pb-3 sm:pb-4 border-b border-white/10 gap-2 sm:gap-0">
             <div>
               <div className="text-base sm:text-lg lg:text-xl font-bold">Daily Performance Report</div>
@@ -33,7 +30,6 @@ export default function ReportingExample() {
             </div>
           </div>
 
-          {/* Report Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {metrics.map((metric, index) => (
               <div
@@ -50,7 +46,6 @@ export default function ReportingExample() {
             ))}
           </div>
 
-          {/* AI Insight Box */}
           <div className="mt-4 sm:mt-5 lg:mt-6 p-3 sm:p-4 bg-teal-500/10 rounded-lg border-l-4 border-teal-400">
             <div className="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1">AI INSIGHT</div>
             <div className="text-xs sm:text-sm text-white">

@@ -23,7 +23,6 @@ export default function LearnPage() {
 
         <ComparisonHeader />
 
-        {/* TABLES — YAN YANA (NEGATİF MARGIN YOK) */}
         <div className="grid gap-8 md:grid-cols-2">
           <TreasurioComparison />
           <ExchangeComparison />
