@@ -11,7 +11,7 @@ export default function DashboardNotifications() {
   
   useEffect(() => {
     const timers = notifications.map((n) => 
-      setTimeout(() => remove(n.id), 4000)
+      setTimeout(() => remove(n.id), 2000)
     );
     return () => timers.forEach(clearTimeout);
   }, [notifications, remove]);

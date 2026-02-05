@@ -2,11 +2,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useAlertStore } from "@/store/alertStore";
 import { usePriceStore } from "@/store/priceStore";
 import { Bell } from "lucide-react";
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
-
+import NotificationPopup from "@/components/terminal/personalized-dashboard/NotificationPopup";
 
 const SYMBOLS = [
   "BTCUSDT",
@@ -25,35 +26,45 @@ export default function CreateAlertModule({ instanceId }: Props) {
   const addAlert = useAlertStore((s) => s.addAlert);
   const prices = usePriceStore((s) => s.prices);
 
-const [symbolOpen, setSymbolOpen] = useState(false);
-const [conditionOpen, setConditionOpen] = useState(false);
+  const [symbolOpen, setSymbolOpen] = useState(false);
+  const [conditionOpen, setConditionOpen] = useState(false);
 
-const symbolRef = useRef<HTMLDivElement>(null);
-const conditionRef = useRef<HTMLDivElement>(null);
+  const symbolRef = useRef<HTMLDivElement>(null);
+  const conditionRef = useRef<HTMLDivElement>(null);
 
+  // 🔥 ERROR POPUP için LOCAL STATE (NotificationPopup - ekranın ortasında)
+  const [notification, setNotification] = useState<{
+    show: boolean;
+    type: "success" | "error" | "info";
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    type: "info",
+    title: "",
+    message: "",
+  });
 
-useEffect(() => {
-  const handler = (e: MouseEvent) => {
-    if (
-      symbolRef.current &&
-      !symbolRef.current.contains(e.target as Node)
-    ) {
-      setSymbolOpen(false);
-    }
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        symbolRef.current &&
+        !symbolRef.current.contains(e.target as Node)
+      ) {
+        setSymbolOpen(false);
+      }
 
-    if (
-      conditionRef.current &&
-      !conditionRef.current.contains(e.target as Node)
-    ) {
-      setConditionOpen(false);
-    }
-  };
+      if (
+        conditionRef.current &&
+        !conditionRef.current.contains(e.target as Node)
+      ) {
+        setConditionOpen(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handler);
-  return () => document.removeEventListener("mousedown", handler);
-}, []);
-
-
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [condition, setCondition] = useState<"above" | "below">("above");
@@ -61,229 +72,225 @@ useEffect(() => {
 
   const currentPrice = prices[symbol] || 0;
 
-  return (
-    <div className="space-y-3 text-xs">
-      <div className="flex items-center gap-2 font-semibold text-white/90">
-        <Bell className="w-4 h-4" />
-        <span>Create Price Alert</span>
-      </div>
+  const handleCreateAlert = () => {
+    // 1️⃣ TARGET BOŞSA - ERROR POPUP (NotificationPopup - ekranın ortasında)
+    if (!target) {
+      setNotification({
+        show: true,
+        type: "error",
+        title: "Empty Alert",
+        message: "Please enter a target price",
+      });
+      return;
+    }
 
-      {currentPrice > 0 && (
-        <div className="bg-white/5 border border-white/10 rounded p-2">
-          <div className="flex justify-between items-center">
-            <span className="text-white/50 text-[10px]">Current Price</span>
-            <div className="flex items-center gap-2">
-              <span className="text-white font-semibold">
-                ${currentPrice.toLocaleString()}
-              </span>
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+    // 2️⃣ ALERT OLUŞTURULDU - SUCCESS TOAST (DashboardNotifications - sağ üstte)
+    addAlert({
+      symbol,
+      condition,
+      target: Number(target),
+    });
+
+    useDashboardNotificationStore.getState().push({
+      type: "success",
+      title: "Alert Created",
+      description: `${symbol} ${condition} ${target}`,
+    });
+
+    setTarget("");
+  };
+
+  return (
+    <>
+      {/* 🔥 ERROR POPUP - PORTAL ile ekranın ortasında */}
+      {typeof window !== "undefined" &&
+        createPortal(
+          <NotificationPopup
+            show={notification.show}
+            type={notification.type}
+            title={notification.title}
+            message={notification.message}
+            onClose={() => setNotification({ ...notification, show: false })}
+          />,
+          document.body
+        )}
+
+      <div className="space-y-3 text-xs">
+        <div className="flex items-center gap-2 font-semibold text-white/90">
+          <Bell className="w-4 h-4" />
+          <span>Create Price Alert</span>
+        </div>
+
+        {currentPrice > 0 && (
+          <div className="bg-white/5 border border-white/10 rounded p-2">
+            <div className="flex justify-between items-center">
+              <span className="text-white/50 text-[10px]">Current Price</span>
+              <div className="flex items-center gap-2">
+                <span className="text-white font-semibold">
+                  ${currentPrice.toLocaleString()}
+                </span>
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
             </div>
           </div>
+        )}
+
+        <div>
+          <label className="block text-white/50 mb-1 text-[10px] font-semibold">
+            Symbol
+          </label>
+          <div ref={symbolRef} className="relative">
+            <button
+              onClick={() => setSymbolOpen((v) => !v)}
+              className="
+                w-full h-9
+                flex items-center justify-between
+                bg-[#0b1f1f]
+                border border-emerald-500/20
+                rounded-none px-3
+                text-white text-xs
+                cursor-pointer
+              "
+            >
+              <span>{symbol}</span>
+              <span
+                className={`transition-transform ${symbolOpen ? "rotate-180" : ""}`}
+              >
+                ▾
+              </span>
+            </button>
+
+            {symbolOpen && (
+              <div
+                className="
+                  absolute z-50 mt-1 w-full
+                  max-h-[96px] overflow-y-auto
+                  bg-[#0b1f1f]
+                  border border-emerald-500/20
+                  rounded-none
+
+                  [&::-webkit-scrollbar]:w-1.5
+                  [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                  [&::-webkit-scrollbar-thumb]:rounded-full
+                "
+              >
+                {SYMBOLS.map((s) => {
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        setSymbol(s);
+                        setSymbolOpen(false);
+                      }}
+                      className="
+                        w-full px-3 py-2
+                        text-left text-xs
+                        cursor-pointer
+                        bg-transparent
+                        text-white
+                        transition-colors
+                        hover:text-emerald-400
+                      "
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
-      )}
 
-      <div>
-        <label className="block text-white/50 mb-1 text-[10px] font-semibold">
-          Symbol
-        </label>
-<div ref={symbolRef} className="relative">
-  <button
-    onClick={() => setSymbolOpen(v => !v)}
-    className="
-      w-full h-9
-      flex items-center justify-between
-      bg-[#0b1f1f]
-      border border-emerald-500/20
-      rounded-none px-3
-      text-white text-xs
-      cursor-pointer
-    "
-  >
-    <span>{symbol}</span>
-    <span className={`transition-transform ${symbolOpen ? "rotate-180" : ""}`}>
-      ▾
-    </span>
-  </button>
+        <div>
+          <label className="block text-white/50 mb-1 text-[10px] font-semibold">
+            Condition
+          </label>
+          <div ref={conditionRef} className="relative">
+            <button
+              onClick={() => setConditionOpen((v) => !v)}
+              className="
+                w-full h-9
+                flex items-center justify-between
+                bg-[#0b1f1f]
+                border border-white/10
+                rounded-none px-3
+                text-white text-xs
+                cursor-pointer
+              "
+            >
+              <span>{condition === "above" ? "Price Above" : "Price Below"}</span>
+              <span
+                className={`transition-transform ${conditionOpen ? "rotate-180" : ""}`}
+              >
+                ▾
+              </span>
+            </button>
 
-  {symbolOpen && (
-    <div
-      className="
-        absolute z-50 mt-1 w-full
-        max-h-[96px] overflow-y-auto
-        bg-[#0b1f1f]
-        border border-emerald-500/20
-        rounded-none
+            {conditionOpen && (
+              <div className="absolute z-50 mt-1 w-full bg-[#0b1f1f] border border-white/10 rounded-none">
+                <button
+                  onClick={() => {
+                    setCondition("above");
+                    setConditionOpen(false);
+                  }}
+                  className="
+                    w-full px-3 py-2
+                    text-left text-xs
+                    cursor-pointer
+                    text-white
+                    transition-colors
+                    hover:text-emerald-400
+                  "
+                >
+                  Price Above
+                </button>
 
-        [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-        [&::-webkit-scrollbar-thumb]:rounded-full
-      "
-    >
-      {SYMBOLS.map((s) => {
-        const active = s === symbol;
+                <button
+                  onClick={() => {
+                    setCondition("below");
+                    setConditionOpen(false);
+                  }}
+                  className="
+                    w-full px-3 py-2
+                    text-left text-xs
+                    cursor-pointer
+                    text-white
+                    transition-colors
+                    hover:text-emerald-400
+                  "
+                >
+                  Price Below
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
 
-        return (
-          <button
-            key={s}
-            onClick={() => {
-              setSymbol(s);
-              setSymbolOpen(false);
+        <div>
+          <label className="block text-white/50 mb-1 text-[10px] font-semibold">
+            Target Price
+          </label>
+          <input
+            type="number"
+            placeholder="Target price"
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleCreateAlert();
+              }
             }}
-className="
-  w-full px-3 py-2
-  text-left text-xs
-  cursor-pointer
-  bg-transparent
-  text-white
-  transition-colors
-  hover:text-emerald-400
-"
+            className="w-full h-9 rounded-lg bg-white/5 border border-white/10 px-3 text-white text-xs outline-none"
+          />
+        </div>
 
-          >
-            {s}
-          </button>
-        );
-      })}
-    </div>
-  )}
-</div>
-
+        <button
+          onClick={handleCreateAlert}
+          className="w-full h-9 rounded-lg bg-teal-400/20 border border-teal-400/40 text-teal-300 hover:bg-teal-400/30 transition font-semibold cursor-pointer"
+        >
+          Create Alert
+        </button>
       </div>
-
-      <div>
-        <label className="block text-white/50 mb-1 text-[10px] font-semibold">
-          Condition
-        </label>
-<div ref={conditionRef} className="relative">
-    <button
-    onClick={() => setConditionOpen(v => !v)}
-    className="
-      w-full h-9
-      flex items-center justify-between
-      bg-[#0b1f1f]
-      border border-white/10
-      rounded-none px-3
-      text-white text-xs
-      cursor-pointer
-    "
-  >
-    <span>{condition === "above" ? "Price Above" : "Price Below"}</span>
-    <span className={`transition-transform ${conditionOpen ? "rotate-180" : ""}`}>
-      ▾
-    </span>
-  </button>
-
-  {conditionOpen && (
-    <div className="absolute z-50 mt-1 w-full bg-[#0b1f1f] border border-white/10 rounded-none">
-      <button
-        onClick={() => {
-          setCondition("above");
-          setConditionOpen(false);
-        }}
-className="
-  w-full px-3 py-2
-  text-left text-xs
-  cursor-pointer
-  text-white
-  transition-colors
-  hover:text-emerald-400
-"
-      >
-        Price Above
-      </button>
-
-      <button
-        onClick={() => {
-          setCondition("below");
-          setConditionOpen(false);
-        }}
-className="
-  w-full px-3 py-2
-  text-left text-xs
-  cursor-pointer
-  text-white
-  transition-colors
-  hover:text-emerald-400
-"
-      >
-        Price Below
-      </button>
-    </div>
-  )}
-</div>
-
-      </div>
-
-      <div>
-        <label className="block text-white/50 mb-1 text-[10px] font-semibold">
-          Target Price
-        </label>
-<input
-  type="number"
-  placeholder="Target price"
-  value={target}
-  onChange={(e) => setTarget(e.target.value)}
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      if (!target) {
-        useDashboardNotificationStore.getState().push({
-          type: "error",
-          title: "Invalid Input",
-          description: "Please enter a target price",
-        });
-        return;
-      }
-
-      addAlert({
-        symbol,
-        condition,
-        target: Number(target),
-      });
-
-      useDashboardNotificationStore.getState().push({
-        type: "success",
-        title: "Alert Created",
-        description: `${symbol} ${condition} ${target}`,
-      });
-
-      setTarget("");
-    }
-  }}
-  className="w-full h-9 rounded-lg bg-white/5 border border-white/10 px-3 text-white text-xs outline-none"
-/>
-
-      </div>
-
-      <button
-onClick={() => {
-  if (!target) {
-    useDashboardNotificationStore.getState().push({
-      type: "error",
-      title: "Invalid Input",
-      description: "Please enter a target price",
-    });
-    return;
-  }
-
-  addAlert({
-    symbol,
-    condition,
-    target: Number(target),
-  });
-
-  useDashboardNotificationStore.getState().push({
-    type: "success",
-    title: "Alert Created",
-    description: `${symbol} ${condition} ${target}`,
-  });
-
-  setTarget("");
-}}
-
-        className="w-full h-9 rounded-lg bg-teal-400/20 border border-teal-400/40 text-teal-300 hover:bg-teal-400/30 transition font-semibold cursor-pointer"
-      >
-        Create Alert
-      </button>
-    </div>
+    </>
   );
 }

@@ -269,7 +269,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     title: "Create Alert",
     description: "Set up new price alert",
     category: "alert",
-    defaultSize: { width: 360, height: 260 },
+    defaultSize: { width: 260, height: 260 },
     render: (instanceId: string) => (
       <CreateAlertModule instanceId={instanceId} />
     ),
@@ -280,7 +280,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     title: "Active Alerts",
     description: "Your configured price alerts",
     category: "alert",
-    defaultSize: { width: 360, height: 260 },
+    defaultSize: { width: 260, height: 260 },
     render: (instanceId: string) => (
       <ActiveAlertsModule instanceId={instanceId} />
     ),
