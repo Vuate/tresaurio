@@ -25,6 +25,8 @@ interface StreamSubscription {
   orderBookState: OrderBookState | null; // For incremental updates (Bybit, Coinbase)
   status: ConnectionStatus;
   statusCallbacks: Set<(status: ConnectionStatus) => void>;
+  lastEmitTime: number; // For throttling
+  pendingData: any; // Buffer for throttled data
 }
 
 class WebSocketService {
@@ -54,6 +56,7 @@ class WebSocketService {
   private reconnectDelay = 2000;
   private heartbeatIntervalMs = 20000; // 20 seconds
   private messageTimeoutMs = 30000; // 30 seconds without message = reconnect
+  private orderBookThrottleMs = 500; // Throttle order book updates to max 2/sec (like Binance)
 
   private isBrowser(): boolean {
     return typeof window !== "undefined" && typeof WebSocket !== "undefined";
@@ -91,6 +94,8 @@ class WebSocketService {
         orderBookState: null,
         status: "connecting",
         statusCallbacks: new Set(),
+        lastEmitTime: 0,
+        pendingData: null,
       });
     }
 
@@ -224,7 +229,7 @@ class WebSocketService {
         if (streamType?.includes("depth")) {
           return {
             op: "subscribe",
-            args: [{ channel: "books5", instId: symbol }],
+            args: [{ channel: "books", instId: symbol }], // Full order book (400ms updates)
           };
         }
         if (streamType?.includes("ticker")) {
@@ -236,11 +241,11 @@ class WebSocketService {
         break;
 
       case "bybit":
-        // Bybit: Use orderbook.200 for full book with incremental updates
+        // Bybit: Use orderbook.50 for moderate depth (updates every 20ms but we throttle)
         if (streamType?.includes("depth")) {
           return {
             op: "subscribe",
-            args: [`orderbook.200.${symbolPart.toUpperCase()}`],
+            args: [`orderbook.50.${symbolPart.toUpperCase()}`],
           };
         }
         if (streamType?.includes("ticker")) {
@@ -362,15 +367,29 @@ class WebSocketService {
         return data;
 
       case "okx":
-        if (data.arg?.channel === "books5" || data.arg?.channel?.startsWith("books")) {
+        if (data.arg?.channel?.startsWith("books")) {
           const book = data.data?.[0];
           if (!book) return null;
 
-          console.log(`📊 [OKX] OrderBook: ${book.bids?.length} bids, ${book.asks?.length} asks`);
-          return {
-            bids: book.bids || [],
-            asks: book.asks || [],
-          };
+          // OKX books channel: action can be "snapshot" or "update"
+          // Format: bids/asks are arrays of [price, size, deprecatedField, numOrders]
+          const bids = (book.bids || []).map((b: string[]) => [b[0], b[1]]);
+          const asks = (book.asks || []).map((a: string[]) => [a[0], a[1]]);
+
+          const isSnapshot = data.action === "snapshot";
+
+          if (isSnapshot) {
+            console.log(`📊 [OKX] Snapshot: ${bids.length} bids, ${asks.length} asks`);
+            this.initOrderBookState(subscriptionKey, bids, asks);
+            return { bids, asks };
+          } else {
+            // Apply delta update
+            const result = this.applyOrderBookDelta(subscriptionKey, bids, asks);
+            if (result) {
+              return result;
+            }
+            return null;
+          }
         }
         if (data.arg?.channel === "tickers") {
           const t = data.data?.[0];
@@ -576,13 +595,38 @@ class WebSocketService {
           const normalizedData = this.normalizeMessage(sub.exchange, rawData, subscriptionKey);
 
           if (normalizedData) {
-            sub.callbacks.forEach((callback) => {
-              try {
-                callback(normalizedData);
-              } catch (err) {
-                console.error(`[WebSocket] Callback error:`, err);
+            // Throttle order book updates for non-Binance exchanges
+            const isOrderBook = normalizedData.bids && normalizedData.asks;
+            const shouldThrottle = isOrderBook && sub.exchange !== "binance";
+
+            if (shouldThrottle) {
+              const now = Date.now();
+              const timeSinceLastEmit = now - sub.lastEmitTime;
+
+              // Store latest data
+              sub.pendingData = normalizedData;
+
+              // Only emit if enough time has passed
+              if (timeSinceLastEmit >= this.orderBookThrottleMs) {
+                sub.lastEmitTime = now;
+                sub.callbacks.forEach((callback) => {
+                  try {
+                    callback(normalizedData);
+                  } catch (err) {
+                    console.error(`[WebSocket] Callback error:`, err);
+                  }
+                });
               }
-            });
+            } else {
+              // No throttling needed
+              sub.callbacks.forEach((callback) => {
+                try {
+                  callback(normalizedData);
+                } catch (err) {
+                  console.error(`[WebSocket] Callback error:`, err);
+                }
+              });
+            }
           }
         } catch (err) {
           console.error(`[WebSocket] Parse error:`, err);
