@@ -10,6 +10,8 @@ export default function TopBar() {
   const topBarRef = useRef<HTMLDivElement>(null);
   const toggleAddTool = usePersonalizedDashboardStore((s) => s.toggleAddTool);
   const toggleSidebar = usePersonalizedDashboardStore((s) => s.toggleSidebar);
+  const sidebarOpen = usePersonalizedDashboardStore((s) => s.sidebarOpen);
+  const addToolOpen = usePersonalizedDashboardStore((s) => s.addToolOpen);
   const setTopBarHeight = usePersonalizedDashboardStore((s) => s.setTopBarHeight);
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -34,6 +36,7 @@ export default function TopBar() {
   return (
     <div
       ref={topBarRef} 
+      data-topbar  // 🔥🔥🔥 BU SATIR EKLENDİ 🔥🔥🔥
       onMouseDown={(e) => e.preventDefault()}
       className="fixed top-0 left-0 right-0 z-50 
         h-11 sm:h-12 md:h-14
@@ -77,31 +80,36 @@ export default function TopBar() {
         <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 ml-2 sm:ml-3 md:ml-4 lg:ml-6">
           <button
             onClick={toggleSidebar}
-            className="px-2 sm:px-2.5 md:px-3 lg:px-4 
+            className={`px-2 sm:px-2.5 md:px-3 lg:px-4 
               py-1 sm:py-1 md:py-1.5 
               rounded-lg
-              bg-[#041F20]/90
-              border border-white/10
-              text-teal-300 
+              border
               text-[9px] sm:text-[10px] md:text-xs lg:text-sm 
               font-semibold
-              hover:bg-teal-400/10 transition cursor-pointer
-              whitespace-nowrap"
+              transition cursor-pointer
+              whitespace-nowrap
+              ${sidebarOpen 
+                ? 'bg-teal-400/20 border-teal-400/40 text-teal-300' 
+                : 'bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10'
+              }`}
           >
             Sidebar
           </button>
 
           <button
             onClick={toggleAddTool}
-            className="px-2 sm:px-2.5 md:px-3 lg:px-4 
+            className={`px-2 sm:px-2.5 md:px-3 lg:px-4 
               py-1 sm:py-1 md:py-1.5 
               rounded-lg
-              bg-teal-400/10 border border-teal-400/30
-              text-teal-300 
+              border
               text-[9px] sm:text-[10px] md:text-xs lg:text-sm 
               font-semibold
-              hover:bg-teal-400/20 transition cursor-pointer
-              whitespace-nowrap"
+              transition cursor-pointer
+              whitespace-nowrap
+              ${addToolOpen
+                ? 'bg-teal-400/30 border-teal-400/50 text-teal-200'
+                : 'bg-teal-400/10 border-teal-400/30 text-teal-300 hover:bg-teal-400/20'
+              }`}
           >
             + Add Tool
           </button>
