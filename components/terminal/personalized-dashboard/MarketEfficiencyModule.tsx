@@ -284,7 +284,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
         <div className="flex gap-1">
           <button
             onClick={() => setMarketType("spot")}
-            className={`h-6 px-2 rounded text-[10px] font-medium transition-all whitespace-nowrap ${
+            className={`h-6 px-2 rounded text-[10px] font-medium transition-all whitespace-nowrap cursor-pointer ${
               marketType === "spot"
                 ? "bg-blue-500 text-white"
                 : "bg-white/5 text-white/60 hover:bg-white/10"
@@ -294,7 +294,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
           </button>
           <button
             onClick={() => setMarketType("futures")}
-            className={`h-6 px-2 rounded text-[10px] font-medium transition-all whitespace-nowrap ${
+            className={`h-6 px-2 rounded text-[10px] font-medium transition-all whitespace-nowrap cursor-pointer ${
               marketType === "futures"
                 ? "bg-blue-500 text-white"
                 : "bg-white/5 text-white/60 hover:bg-white/10"
@@ -378,10 +378,11 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
       </div>
 
 {/* 🔥 Sort Options + Add Button - CONTAINER RESPONSIVE */}
-<div className="@container px-2 py-1.5 border-y border-white/10 flex-shrink-0">
-  <div className="grid grid-cols-2 @[280px]:grid-cols-4 gap-1.5">
+<div className="px-2 py-1.5 border-y border-white/10 flex-shrink-0">
+  <div className="grid grid-cols-4 gap-1.5">
     {/* Score Button */}
     <button
+      type="button"
       onClick={() => setSortBy("score")}
       className={`
         py-1 rounded text-[10px] font-medium
@@ -405,6 +406,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
 
     {/* Spread Button */}
     <button
+      type="button"
       onClick={() => setSortBy("spread")}
       className={`
         py-1 rounded text-[10px] font-medium
@@ -428,6 +430,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
 
     {/* Volume Button */}
     <button
+      type="button"
       onClick={() => setSortBy("volume")}
       className={`
         py-1 rounded text-[10px] font-medium
@@ -451,6 +454,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
 
     {/* Add Button */}
     <button
+      type="button"
       onClick={() => setShowAddForm(!showAddForm)}
       disabled={symbols.length >= MAX_SYMBOLS}
       className="py-1 rounded bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center justify-center gap-1 cursor-pointer font-medium text-[10px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"

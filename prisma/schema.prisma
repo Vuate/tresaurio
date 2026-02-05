@@ -24,6 +24,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   apiKeys       ApiKey[]
+  dashboard     UserDashboard?
 }
 
 model Account {
@@ -145,4 +146,17 @@ model PortfolioSnapshot {
   snapshotAt    DateTime @default(now())
 
   @@index([snapshotAt])
+}
+
+// ==================== DASHBOARD MODELS ====================
+
+// User dashboard layout preferences
+model UserDashboard {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  layout    Json     // Modül pozisyonları, boyutları, ayarları
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
