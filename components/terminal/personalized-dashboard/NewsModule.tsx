@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/NewsModule.tsx
 
 import { useState, useRef, useEffect } from "react";
 import { useNews } from "@/lib/personalized-dashboard/useNews";
@@ -94,7 +93,6 @@ export default function NewsModule({ instanceId }: Props) {
 
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
-      {/* Header */}
       <div className="flex items-center justify-between gap-2 px-3 py-2 flex-shrink-0">
         <div className="text-white/60 text-xs flex-1">
           <span className="font-semibold text-white/90">Crypto News</span>
@@ -253,7 +251,6 @@ export default function NewsModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Content */}
       <div
         className="
           flex-1 min-h-0 px-3 pb-3
@@ -345,7 +342,6 @@ export default function NewsModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="flex-shrink-0 px-3 py-2 border-t border-white/10 bg-white/5 text-center">
         <span className="text-[10px] text-white/40">
           Auto-refresh every 2 minutes

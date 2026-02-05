@@ -2,10 +2,10 @@ import type { ModuleInstance } from "./types";
 
 export const defaultModules: ModuleInstance[] = [
   {
-    id: "live-prices-default",
-    type: "live-prices",
-    title: "Live Prices",
-    category: "market-data",
+    id: "market-efficiency-default",
+    type: "market-efficiency",
+    title: "Market Efficiency",
+    category: "market-microstructure",
     x: 1800,
     y: 1025,
     width: 420,

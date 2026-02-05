@@ -1,5 +1,3 @@
-// components/terminal/personalized-dashboard/RSIHeatmapModule.tsx
-
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useKlines, useTicker } from "@/hooks";
 import { calculateRSI } from "@/lib/utils/technicalIndicators";
@@ -163,7 +161,6 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
 
   return (
     <div ref={containerRef} className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
-      {/* Header */}
       <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
         <div className="text-[10px] sm:text-xs text-white/60">
           <span className="font-semibold text-white/90">
@@ -175,7 +172,6 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
         </div>
 
         <div className="flex gap-1.5 sm:gap-2">
-          {/* Exchange Selector */}
           <div ref={exchangeRef} className="relative">
             <button
               onClick={() => setExchangeOpen((v) => !v)}
@@ -251,7 +247,6 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Timeframe Selector */}
       <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
         {(["1h", "4h", "1d"] as const).map((tf) => (
           <button
@@ -279,7 +274,6 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
         ))}
       </div>
 
-      {/* Content - FIXED SCROLL CONTAINER */}
       <div
         className="
           flex-1 min-h-0
@@ -352,7 +346,6 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Legend */}
       <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
         <div className="text-[9px] sm:text-[10px] text-white/60 mb-1.5 sm:mb-2">
           RSI Scale

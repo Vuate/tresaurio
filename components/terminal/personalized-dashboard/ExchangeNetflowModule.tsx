@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/ExchangeNetflowModule.tsx
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -33,7 +32,7 @@ const POPULAR_SYMBOLS = [
   "DOT",
 ];
 
-// 🔥 Fetch onchain netflow data with timeframe support
+//  Fetch onchain netflow data with timeframe support
 const fetchOnchainNetflow = async (
   exchange: string,
   symbol: string,
@@ -200,7 +199,6 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
     };
   }, [symbolDropdownOpen]);
 
-  // 🔒 Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showAddModal) {
       document.body.style.overflow = 'hidden';
@@ -220,7 +218,7 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
     };
   }, [showAddModal]);
 
-  // 🔥 Fetch onchain data for all exchanges with timeframe
+  //  Fetch onchain data for all exchanges with timeframe
   const fetchAllExchanges = useCallback(async () => {
     const exchanges = ["Binance", "OKX", "Bybit"];
 
@@ -292,9 +290,7 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
 
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
-      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title - Can wrap independently */}
         <span className="font-semibold text-white/90 text-xs">
           Exchange Netflow
         </span>
@@ -577,7 +573,6 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
         </div>
       </div>
 
-{/* Total Summary - SCROLL DIŞINDA, SABİT ALTTA */}
 <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
   <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
     Total Net Flow ({timeframe.toUpperCase()})
@@ -597,7 +592,7 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
   </div>
 </div>
 
-      {/* 🔧 Modal - TRULY FULL SCREEN */}
+      {/*  Modal - TRULY FULL SCREEN */}
       {showAddModal && (
         <div 
           className="

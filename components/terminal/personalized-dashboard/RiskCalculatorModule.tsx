@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/RiskCalculatorModule.tsx
 "use client";
 
 import { useState, useMemo } from "react";

@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/PnLOverviewModule.tsx
 "use client";
 
 import { usePnL } from "@/lib/personalized-dashboard/usePnL";
@@ -80,7 +79,6 @@ export default function PnLOverviewModule({ instanceId }: Props) {
 
   return (
     <div className="space-y-3 text-xs">
-      {/* Summary Card */}
       <div className="bg-white/5 border border-white/10 rounded-lg p-2.5 space-y-2 min-w-0">
         <div className="text-white/40 text-[10px] font-semibold uppercase">
           Portfolio Overview
@@ -107,7 +105,6 @@ export default function PnLOverviewModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Total PnL */}
       <Row
         label="Total PnL"
         value={totalUnrealized}
@@ -115,7 +112,6 @@ export default function PnLOverviewModule({ instanceId }: Props) {
         percent={totalPnLPercent}
       />
 
-      {/* Breakdown */}
       <div className="space-y-2">
         <div className="text-white/40 text-[10px] font-semibold uppercase px-1">
           Breakdown
@@ -124,7 +120,6 @@ export default function PnLOverviewModule({ instanceId }: Props) {
         <Row label="Futures PnL" value={futuresUnrealized} />
       </div>
 
-      {/* Investment Details */}
       <div className="space-y-2">
         <div className="text-white/40 text-[10px] font-semibold uppercase px-1">
           Details
@@ -134,7 +129,6 @@ export default function PnLOverviewModule({ instanceId }: Props) {
         <InfoRow label="Futures Margin" value={futuresMargin} />
       </div>
 
-      {/* Future Features */}
       <div className="space-y-2">
         <div className="text-white/40 text-[10px] font-semibold uppercase px-1">
           Coming Soon

@@ -19,7 +19,7 @@ export default function NotificationPopup({
 }: NotificationPopupProps) {
   const [isVisible, setIsVisible] = useState(false);
 
-  // 🔥 KEYBOARD HANDLER (tek bir tane)
+  // KEYBOARD HANDLER 
   useEffect(() => {
     if (!show) return;
     
@@ -36,7 +36,7 @@ export default function NotificationPopup({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [show, onClose]);
 
-  // 🔥 AUTO-CLOSE TIMER
+  // AUTO-CLOSE TIMER
   useEffect(() => {
     if (show) {
       setIsVisible(true);
@@ -80,7 +80,6 @@ export default function NotificationPopup({
 
   return (
     <>
-      {/* BACKDROP */}
       <div
         className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]
           transition-opacity duration-300
@@ -88,7 +87,6 @@ export default function NotificationPopup({
         onClick={handleClose}
       />
 
-      {/* POPUP */}
       <div
         className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]
           transition-all duration-300 ease-out
@@ -101,7 +99,6 @@ export default function NotificationPopup({
             shadow-2xl shadow-black/50 select-none`}
         >
           <div className="flex items-start gap-4">
-            {/* Icon */}
             <div
               className={`${iconColor} text-2xl font-bold mt-0.5 
                 flex-shrink-0 w-8 h-8 rounded-full 
@@ -112,7 +109,6 @@ export default function NotificationPopup({
               {icon}
             </div>
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="text-white font-semibold text-base mb-2">
                 {title}
@@ -122,7 +118,6 @@ export default function NotificationPopup({
               </div>
             </div>
 
-            {/* Close Button */}
             <button
               onClick={handleClose}
               className="text-white/40 hover:text-white/80 transition cursor-pointer
@@ -133,7 +128,6 @@ export default function NotificationPopup({
             </button>
           </div>
 
-          {/* OK Button */}
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleClose}

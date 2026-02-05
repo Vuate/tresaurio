@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/SpotPositionsModule.tsx
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
@@ -49,7 +48,7 @@ const ALL_EXCHANGES = [
   "mexc",
 ];
 
-// 🎯 Custom Hook: Window Size Check
+// Custom Hook: Window Size Check
 function useWindowSizeCheck() {
   const [isTooSmall, setIsTooSmall] = useState(false);
 
@@ -165,7 +164,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     };
   }, [exchangeModalOpen]);
 
-  // 🔒 Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showAddModal || showApiKeyModal) {
       document.body.style.overflow = 'hidden';
@@ -429,7 +427,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
   return (
     <div className={`h-full flex flex-col relative ${showAddModal || showApiKeyModal ? 'overflow-hidden' : ''}`}>
-      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           Spot Positions
@@ -439,7 +436,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Exchange Dropdown */}
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
@@ -516,7 +512,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           )}
         </div>
 
-        {/* Sync/Connect Buttons */}
         {hasApiKey(selectedExchange) ? (
           <div className="flex flex-wrap items-center gap-1.5">
             <button
@@ -600,7 +595,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Error Message - Fixed, no scroll */}
       {syncError && (
         <div className="mx-3 mb-2 p-2 bg-red-500/10 border border-red-500/30 rounded-md text-red-400 text-xs flex items-start gap-2 flex-shrink-0">
           <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
@@ -608,14 +602,12 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Last Sync Info - Fixed, no scroll */}
       {lastSync && (
         <div className="mx-3 mb-2 text-white/40 text-xs flex-shrink-0">
           Last sync: {lastSync.toLocaleTimeString()}
         </div>
       )}
 
-      {/* Portfolio Summary - Fixed, no scroll, fully responsive grid */}
       <div className="px-3 pb-2 flex-shrink-0">
         <div className="grid grid-cols-2 @md:grid-cols-4 gap-1.5">
           <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
@@ -672,7 +664,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Add Position Button - Fixed, no scroll */}
       <div className="px-3 pb-2 flex-shrink-0">
         <button
           onClick={() => setShowAddModal(true)}
@@ -691,7 +682,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         </button>
       </div>
 
-      {/* Positions List - Scrollable */}
       <div
         ref={contentRef}
         className="
@@ -726,7 +716,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                   key={position.id}
                   className="p-2.5 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
                 >
-                  {/* Header */}
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
                     <span className="font-semibold text-white text-xs whitespace-nowrap">
                       {position.pair}
@@ -748,12 +737,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                     </button>
                   </div>
 
-                  {/* Formatted Pair */}
                   <div className="text-white/30 text-[10px] mb-2 truncate">
                     {position.formattedPair}
                   </div>
 
-                  {/* Metrics Grid - Fully responsive */}
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] mb-2">
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
                       <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">Entry</div>
@@ -826,7 +813,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                     </div>
                   </div>
 
-                  {/* Footer */}
                   <div className="text-white/30 text-[9px] pt-1.5 border-t border-white/5 truncate">
                     Entry: {new Date(position.entryDate).toLocaleDateString()}
                   </div>
@@ -843,7 +829,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* 🔧 Add Position Modal - TRULY FULL SCREEN */}
       {showAddModal && (
         <div 
           className="
@@ -864,7 +849,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
             <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Spot Position
@@ -877,7 +861,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </button>
           </div>
 
-          {/* Modal Content */}
           <div
             className="
               flex-1 min-h-0
@@ -897,7 +880,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
-              {/* Exchange */}
               <div>
                 <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
                   Exchange
@@ -966,7 +948,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Base & Quote Assets */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
@@ -998,7 +979,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Entry Price & Quantity */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
@@ -1028,7 +1008,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Total Cost */}
               <div>
                 <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
                   Total Cost
@@ -1038,7 +1017,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Entry Date */}
               <div>
                 <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
                   Entry Date
@@ -1051,7 +1029,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 />
               </div>
 
-              {/* Notes */}
               <div>
                 <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
                   Notes (Optional)
@@ -1067,7 +1044,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </div>
           </div>
 
-          {/* Modal Footer */}
           <div className="p-3 border-t border-white/10 flex-shrink-0">
             <button
               onClick={addPosition}
@@ -1079,7 +1055,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* 🔧 API Key Modal - TRULY FULL SCREEN */}
       {showApiKeyModal && (
         <div 
           className="
@@ -1100,7 +1075,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-{/* Modal Header */}
 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
   <div className="flex items-center gap-2 flex-wrap">
     <Key className="w-4 h-4 text-white shrink-0" />
@@ -1116,7 +1090,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   </button>
 </div>
 
-          {/* Warning - FIXED, NO SCROLL */}
           <div className="p-3 bg-yellow-500/10 border-b border-yellow-500/30 flex items-start gap-2 flex-shrink-0">
             <span className="text-yellow-400 text-lg shrink-0">⚠️</span>
             <div className="text-yellow-400 text-[10px] break-words flex-1">
@@ -1124,7 +1097,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </div>
           </div>
 
-          {/* Modal Content */}
           <div
             className="
               flex-1 min-h-0
@@ -1145,7 +1117,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           >
             <div className="space-y-3">
 
-{/* Exchange */}
 <div>
   <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
     Exchange
@@ -1217,7 +1188,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   </div>
 </div>
 
-              {/* API Key */}
               <div>
                 <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
                   API Key
@@ -1233,7 +1203,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 />
               </div>
 
-              {/* API Secret */}
               <div>
                 <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
                   API Secret
@@ -1249,7 +1218,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 />
               </div>
 
-              {/* Passphrase (for OKX/Coinbase) */}
               {(apiKeyForm.exchange === "okx" || apiKeyForm.exchange === "coinbase") && (
                 <div>
                   <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
@@ -1267,7 +1235,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 </div>
               )}
 
-              {/* Label */}
               <div>
                 <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
                   Label (Optional)
@@ -1285,7 +1252,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </div>
           </div>
 
-          {/* Modal Footer */}
           <div className="p-3 border-t border-white/10 flex-shrink-0">
             <button
               onClick={saveApiKey}
@@ -1299,7 +1265,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Auth Modal */}
       <AuthModal
         open={showAuthModal}
         mode={authMode}

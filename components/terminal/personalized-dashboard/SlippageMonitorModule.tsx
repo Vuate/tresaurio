@@ -1,5 +1,3 @@
-// components/terminal/personalized-dashboard/SlippageMonitorModule.tsx
-
 import { useState, useMemo, useEffect, useRef } from "react";
 import { RefreshCw, AlertTriangle } from "lucide-react";
 import { useOrderBook } from "@/hooks";
@@ -143,7 +141,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col relative">
-      {/* 🎯 Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           Slippage Monitor
@@ -235,7 +232,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Content */}
       <div
         ref={contentRef}
         className="flex-1 min-h-0 px-3 pb-3 overflow-y-auto space-y-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
@@ -317,7 +313,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
 
         {!loading && !error && slippageData && (
           <div className="space-y-2 pt-1">
-            {/* Best Ask/Bid Price */}
             <div className="bg-white/5 rounded-md p-2 border border-white/10">
               <div className="text-[10px] text-white/50 mb-0.5 leading-tight">
                 {orderType === "buy" ? "Best Ask" : "Best Bid"} Price
@@ -331,7 +326,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Estimated Slippage */}
             <div className={`rounded-md p-2 border ${getImpactColor(slippageData.impact)}`}>
               <div className="text-[10px] mb-0.5 opacity-80 leading-tight">
                 Estimated Slippage
@@ -344,7 +338,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Effective Price */}
             <div className="bg-white/5 rounded-md p-2 border border-white/10">
               <div className="text-[10px] text-white/50 mb-0.5 leading-tight">
                 Effective Price
@@ -358,7 +351,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Total Cost */}
             <div className="bg-blue-500/10 rounded-md p-2 border border-blue-500/20">
               <div className="text-[10px] text-blue-400 mb-0.5 leading-tight">
                 Total Cost (incl. slippage)
@@ -375,7 +367,6 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Market Impact */}
             <div className="bg-white/5 rounded-md p-2 border border-white/10">
               <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
                 <span className="text-[10px] text-white/50 leading-tight">Market Impact</span>

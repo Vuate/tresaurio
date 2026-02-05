@@ -6,13 +6,12 @@ import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import type { ModuleInstance } from "@/lib/personalized-dashboard/types";
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
+import { WORLD_WIDTH, WORLD_HEIGHT } from "@/store/personalizedDashboardStore";
 
-export const WORLD_WIDTH = 4000;
-export const WORLD_HEIGHT = 2250;
+
 
 type ResizeDir = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
-// 🎯 Throttle utility
 function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number
@@ -48,14 +47,12 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
   const def = moduleRegistry[module.type];
   const isActive = activeModuleId === module.id;
 
-  // 🎮 ZOOM CONTROLS for this specific module
   const [moduleZoom, setModuleZoom] = useState(100);
 
   const zoomIn = useCallback(() => setModuleZoom((prev) => Math.min(200, prev + 10)), []);
   const zoomOut = useCallback(() => setModuleZoom((prev) => Math.max(50, prev - 10)), []);
   const resetZoom = useCallback(() => setModuleZoom(100), []);
 
-  // 📱 Responsive minimum sizes
   const minSizes = useMemo(() => {
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
     const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
@@ -66,7 +63,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     };
   }, []);
 
-  // ⚡ Throttled update module
   const updateModuleThrottled = useMemo(
     () => throttle((id: string, updates: Partial<ModuleInstance>) => {
       updateModule(id, updates);
@@ -74,7 +70,7 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     [updateModule]
   );
 
-  /* ---------------- DRAG ---------------- */
+  /* DRAG */
   const onDragMouseDown = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -204,9 +200,10 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     window.addEventListener("mouseup", onUp);
     
     animationFrameId = requestAnimationFrame(animate);
-  }, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom, topBarHeight, notesBarHeight, setActiveModule, updateModuleThrottled]);
+  }, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom, topBarHeight, 
+    notesBarHeight, setActiveModule, updateModuleThrottled]);
 
-  /* ---------------- RESIZE ---------------- */
+  /* RESIZE */
   const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
     e.stopPropagation();  
     e.preventDefault();
@@ -270,7 +267,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         newY = startTop + worldDeltaY;
       }
 
-      // 📱 Responsive minimum sizes
       if (newWidth < minSizes.width) {
         newWidth = minSizes.width;
         if (dir.includes("left")) newX = startLeft + startWidth - minSizes.width;
@@ -357,9 +353,9 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
     animationFrameId = requestAnimationFrame(animate);
-  }, [module.id, module.width, module.height, module.x, module.y, panX, panY, zoom, topBarHeight, notesBarHeight, minSizes, setActiveModule, updateModuleThrottled]);
+  }, [module.id, module.width, module.height, module.x, module.y, panX, panY, zoom, topBarHeight, 
+    notesBarHeight, minSizes, setActiveModule, updateModuleThrottled]);
 
-  // 📱 Responsive font size calculation
   const responsiveFontSize = useMemo(() => {
     const combinedZoom = zoom * (moduleZoom / 100);
     const baseFontSize = 12;
@@ -392,7 +388,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         }
       }}
     >
-      {/* HEADER */}
       <div
         onMouseDown={onDragMouseDown}
         className="flex items-center justify-between px-4 py-2
@@ -405,9 +400,7 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
           </div>
         </div>
 
-        {/* 🎮 ZOOM CONTROL + WINDOW CONTROLS */}
         <div className="flex gap-2 items-center">
-          {/* Zoom Control Widget */}
           <div 
             className="flex items-center gap-1"
             onMouseEnter={() => setShowZoomControls(true)}
@@ -449,7 +442,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
             )}
           </div>
 
-          {/* Window Controls */}
           <div className="flex gap-1">
             <button
               onClick={() =>
@@ -479,7 +471,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         </div>
       </div>
 
-      {/* CONTENT */}
       {!module.minimized && (
         <div className="h-[calc(100%-40px)] overflow-hidden">
           <div
@@ -516,7 +507,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         </div>
       )}
 
-      {/* RESIZE HANDLES */}
       {!module.minimized && (
         <>
           <div

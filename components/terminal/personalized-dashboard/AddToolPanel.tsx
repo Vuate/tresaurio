@@ -50,21 +50,17 @@ export default function AddToolPanel() {
     }
   }, [addToolOpen]);
 
-  // 🔥 DIŞARI TIKLAMA - TOPBAR HARİÇ
   useEffect(() => {
     if (!addToolOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
       
-      // 🔥 Panel içindeyse işlem yapma
       if (panelRef.current?.contains(target)) return;
       
-      // 🔥 TopBar içindeyse işlem yapma (buton toggle'ı halledecek)
       const topBar = document.querySelector('[data-topbar]');
       if (topBar?.contains(target)) return;
       
-      // 🔥 Dışarı tıklandı, kapat
       toggleAddTool();
     };
 
@@ -74,7 +70,6 @@ export default function AddToolPanel() {
       }
     };
 
-    // 🔥 Biraz gecikme ekle (TopBar tıklamasıyla çakışmasın)
     const timer = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleKeyDown);
@@ -122,7 +117,6 @@ export default function AddToolPanel() {
       }}
       className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden select-none"
     >
-      {/* HEADER - X BUTONU KALDIRILDI */}
       <div 
         ref={headerRef}
         className="flex items-center justify-between px-3 py-3 border-b border-white/10 select-none bg-[#041F20]/95"
@@ -130,7 +124,6 @@ export default function AddToolPanel() {
         <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">Add Tool</div>
       </div>
 
-      {/* CONTENT */}
       <div
         style={{
           height: `calc(${availableHeight}px - ${headerHeight}px)`,

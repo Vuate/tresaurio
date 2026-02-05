@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/FuturesPositionsModule.tsx
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
@@ -127,7 +126,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
     };
   }, [exchangeDropdownOpen]);
 
-  // 🔒 Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showApiKeyModal) {
       document.body.style.overflow = 'hidden';
@@ -481,9 +479,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
   return (
     <div className={`h-full flex flex-col relative ${showApiKeyModal ? 'overflow-hidden' : ''}`}>
-      {/* 🎯 Fully Responsive Header - LivePrices Pattern */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-2 sm:px-3 py-2 flex-shrink-0">
-        {/* Exchange Dropdown */}
         <div ref={exchangeDropdownRef} className="relative">       
           <button
             onClick={() => setExchangeDropdownOpen((v) => !v)}
@@ -577,7 +573,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           })()}
         </div>
 
-        {/* Action Buttons */}
         {hasApiKey(selectedExchange) ? (
           <div className="flex items-center gap-1.5 flex-wrap shrink-0">
             <button
@@ -628,7 +623,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Sync Error */}
       {syncError && (
         <div className="mx-2 sm:mx-3 mb-2 p-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-[10px] flex items-center gap-2 flex-shrink-0">
           <AlertCircle className="w-3 h-3 shrink-0" />
@@ -636,14 +630,12 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Last Sync */}
       {lastSync && (
         <div className="px-2 sm:px-3 mb-2 text-white/40 text-[10px] flex-shrink-0">
           Last sync: {lastSync.toLocaleTimeString()}
         </div>
       )}
 
-      {/* Main Content - SCROLL CONTAINER */}
       <div
         ref={contentRef}
         className="
@@ -661,7 +653,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           scrollbar-track-transparent
         "
       >
-        {/* Add Position Form (when no positions) */}
         {positions.length === 0 && (
           <div className="space-y-2 mb-4">
             <input
@@ -711,7 +702,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
               className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
             />
 
-            {/* 🎯 Leverage - Alt alta geçebilir responsive pattern */}
             <div>
               <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
                 <label className="text-white/50 text-[10px] font-medium whitespace-nowrap">Leverage</label>
@@ -748,7 +738,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           </div>
         )}
 
-        {/* Positions List */}
         {positions.length > 0 && (
           <>
             {/* Total Net PnL Summary */}
@@ -1084,7 +1073,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Auth Modal */}
       <AuthModal
         open={showAuthModal}
         mode={authMode}

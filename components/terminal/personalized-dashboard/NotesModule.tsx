@@ -14,7 +14,6 @@ export default function NotesModule() {
    } = usePersonalizedDashboardStore();
   const [text, setText] = useState("");
 
-  // 🔥 ERROR POPUP için LOCAL STATE (NotificationPopup - ekranın ortasında)
   const [notification, setNotification] = useState<{
     show: boolean;
     type: "success" | "error" | "info";
@@ -28,7 +27,6 @@ export default function NotesModule() {
   });
 
   const handleSave = () => {
-    // 1️⃣ TEXTAREA BOŞSA - ERROR POPUP (NotificationPopup - ekranın ortasında)
     if (!text.trim()) {
       setNotification({
         show: true,
@@ -39,7 +37,6 @@ export default function NotesModule() {
       return;
     }
 
-    // 2️⃣ NOT KAYDEDILDI - SUCCESS TOAST (DashboardNotifications - sağ üstte)
     addNote(text);
     
     useDashboardNotificationStore.getState().push({
@@ -53,7 +50,6 @@ export default function NotesModule() {
 
   return (
     <>
-      {/* 🔥 ERROR POPUP - PORTAL ile ekranın ortasında */}
       {typeof window !== "undefined" &&
         createPortal(
           <NotificationPopup
@@ -67,12 +63,10 @@ export default function NotesModule() {
         )}
 
       <div className="h-full min-h-0 flex flex-col">
-        {/* HEADER */}
         <h3 className="text-sm font-bold text-teal-400 mb-2 shrink-0">
           Notes
         </h3>
 
-        {/* NOTE LIST */}
         <div
           className="
             flex-1
@@ -103,7 +97,6 @@ export default function NotesModule() {
     key={n.id}
     className="rounded-lg border border-white/10 bg-white/5 p-2 relative group"  // ✅ relative group EKLE
   >
-    {/* ✅ BU BUTONU EKLE (tarih div'inden önce) */}
     <button
       onClick={(e) => {
         e.stopPropagation();
@@ -129,7 +122,6 @@ export default function NotesModule() {
       {new Date(n.createdAt).toLocaleString("tr-TR")}
     </div>
     
-    {/* ✅ n.text'i div içine al */}
     <div className="text-xs text-white/80 break-words whitespace-pre-wrap overflow-hidden">
       {n.text}
     </div>
@@ -137,7 +129,6 @@ export default function NotesModule() {
 ))}
         </div>
 
-        {/* INPUT + SAVE */}
         <div className="mt-2 shrink-0">
           <textarea
             className="

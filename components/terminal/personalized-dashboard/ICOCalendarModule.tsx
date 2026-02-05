@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/ICOCalendarModule.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -20,7 +19,7 @@ interface ICOEvent {
   category?: string;
 }
 
-// 🔥 Fetch recent raises from DeFiLlama
+//  Fetch recent raises from DeFiLlama
 const fetchRecentRaises = async (): Promise<ICOEvent[]> => {
   const results: ICOEvent[] = [];
 
@@ -207,7 +206,6 @@ export default function ICOCalendarModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
-      {/* Header */}
       <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
         <div className="text-[10px] sm:text-xs text-white/60">
           <span className="font-semibold text-white/90">
@@ -219,7 +217,6 @@ export default function ICOCalendarModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Filter Options */}
       <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
         {(["all", "live", "upcoming", "ended"] as const).map((f) => (
           <button
@@ -247,7 +244,6 @@ export default function ICOCalendarModule({ instanceId }: Props) {
         ))}
       </div>
 
-      {/* Content */}
       <div
         className="
           flex-1 min-h-0 space-y-1.5 sm:space-y-2
@@ -344,7 +340,6 @@ export default function ICOCalendarModule({ instanceId }: Props) {
                         </div>
                       )}
 
-                      {/* Progress Bar */}
                       <div className="pt-1 sm:pt-1.5">
                         <div className="h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden">
                           <div
@@ -367,7 +362,6 @@ export default function ICOCalendarModule({ instanceId }: Props) {
                     </div>
                   )}
 
-                  {/* High Raise Warning */}
                   {ico.raised > 100000000 && (
                     <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-1.5 sm:p-2 mt-1 sm:mt-2">
                       <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-blue-400">

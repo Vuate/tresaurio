@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
-import { usePersonalizedDashboardStore, MAX_ZOOM, WORLD_WIDTH, WORLD_HEIGHT, calculateMinZoom } from "@/store/personalizedDashboardStore";
+import { usePersonalizedDashboardStore, MAX_ZOOM, WORLD_WIDTH, WORLD_HEIGHT, calculateMinZoom } 
+from "@/store/personalizedDashboardStore";
 
 import ModuleWindow from "./ModuleWindow";
 import SidebarPanel from "./SidebarPanel";
@@ -23,15 +24,13 @@ const didInitRef = useRef(false);
     setZoom,
     setPan,
     modules,
-    notesOpen,
-    notesHeight,
     topBarHeight,
     notesBarHeight, 
   } = usePersonalizedDashboardStore();
 
 
 
-  /* ---------------- PAN ---------------- */
+  /* PAN */
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
@@ -42,10 +41,9 @@ const onMouseDown = (e: MouseEvent) => {
   if (usePersonalizedDashboardStore.getState().uiBlocked) return;
   if (e.button !== 0) return;
 
-  // 🔥 EKLE: Eğer window sürükleniyorsa pan yapma!
   const target = e.target as HTMLElement;
   if (target.closest('[data-module-window]')) {
-    return; // Window'a tıklandı, pan yapma
+    return; 
   }
 
   isPanningRef.current = true;
@@ -80,11 +78,7 @@ y = Math.min(maxPanY, Math.max(minPanY, y));
 
 setPan(x, y);
 
-
 };
-
-
-
 
     const onMouseUp = () => {
       isPanningRef.current = false;
@@ -102,7 +96,7 @@ setPan(x, y);
     };
   }, [panX, panY, zoom, setPan]);
 
-/* ---------------- ZOOM ---------------- */
+/* ZOOM */
 useEffect(() => {
   const el = containerRef.current;
   if (!el) return;
@@ -111,7 +105,6 @@ useEffect(() => {
   const onWheel = (e: WheelEvent) => {
     const target = e.target as HTMLElement;
 
-    // 🎯 Canvas dışında ise ZOOM YOK
     if (!target.closest("[data-canvas-container]")) {
       return;
     }
@@ -123,7 +116,6 @@ const rect = el.getBoundingClientRect();
 const mouseX = e.clientX - rect.left;
 const mouseY = e.clientY - rect.top;
 
-// 🎯 DİNAMİK minZoom hesaplama (rect.height zaten NotesPanel aware)
 const minZoom = calculateMinZoom(rect.width, rect.height);
 
     const delta = -e.deltaY;
@@ -137,7 +129,6 @@ const minZoom = calculateMinZoom(rect.width, rect.height);
     let newPanX = mouseX - (mouseX - panX) * zoomRatio;
     let newPanY = mouseY - (mouseY - panY) * zoomRatio;
 
-    // 🔒 ZOOM SONRASI PAN CLAMP
     const scaledWorldW = WORLD_WIDTH * newZoom;
     const scaledWorldH = WORLD_HEIGHT * newZoom;
 
@@ -147,7 +138,6 @@ const minZoom = calculateMinZoom(rect.width, rect.height);
     newPanX = Math.min(0, Math.max(minPanX, newPanX));
     newPanY = Math.min(0, Math.max(minPanY, newPanY));
 
-    // 🧲 zoom out yapınca canvas ekranın içindeyse ortala
     if (scaledWorldW < rect.width) {
       newPanX = (rect.width - scaledWorldW) / 2;
     }
@@ -164,7 +154,7 @@ const minZoom = calculateMinZoom(rect.width, rect.height);
   return () => el.removeEventListener("wheel", onWheel);
 }, [zoom, panX, panY, setZoom, setPan, topBarHeight, notesBarHeight]);
 
-  /* ---------------- ESC = FOCUS RESET ---------------- */
+  /* ESC = FOCUS RESET  */
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -176,7 +166,7 @@ const minZoom = calculateMinZoom(rect.width, rect.height);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-/* ---------------- DEFAULT CENTER ---------------- */
+/* DEFAULT CENTER */
 useEffect(() => {
   if (!containerRef.current) return;
 
@@ -197,18 +187,14 @@ useEffect(() => {
 }, []);
 
 
-
-
-
-/* ---------------- NOTES PANEL DEĞIŞINCE ZOOM & PAN CLAMP ---------------- */
+/* ZOOM & PAN CLAMP WHEN THE NOTES PANEL CHANGES */
 useEffect(() => {
   if (!containerRef.current) return;
-  if (!didInitRef.current) return; // 🔥 kritik
+  if (!didInitRef.current) return; 
 
   const rect = containerRef.current.getBoundingClientRect();
   const minZoom = calculateMinZoom(rect.width, rect.height);
 
-  // ❗ SADECE SONRADAN minZoom uygula
   const currentZoom = zoom < minZoom ? minZoom : zoom;
   const zoomChanged = currentZoom !== zoom;
 
@@ -265,8 +251,6 @@ style={{
 
 
 }}
-
-
     >
       {/* SIDEBAR */}
       <SidebarPanel />
@@ -292,9 +276,6 @@ style={{
     backgroundSize: "50px 50px",
   }}
 >
-
-        {/* GRID */}
-
         {modules.map((m) => (
           <ModuleWindow key={m.id} module={m} />
         ))}
@@ -302,6 +283,5 @@ style={{
     </div>
     </div>
   );
-
   
 }

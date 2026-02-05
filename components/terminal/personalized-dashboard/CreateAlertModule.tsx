@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/CreateAlertModule.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -32,7 +31,6 @@ export default function CreateAlertModule({ instanceId }: Props) {
   const symbolRef = useRef<HTMLDivElement>(null);
   const conditionRef = useRef<HTMLDivElement>(null);
 
-  // 🔥 ERROR POPUP için LOCAL STATE (NotificationPopup - ekranın ortasında)
   const [notification, setNotification] = useState<{
     show: boolean;
     type: "success" | "error" | "info";
@@ -73,7 +71,6 @@ export default function CreateAlertModule({ instanceId }: Props) {
   const currentPrice = prices[symbol] || 0;
 
   const handleCreateAlert = () => {
-    // 1️⃣ TARGET BOŞSA - ERROR POPUP (NotificationPopup - ekranın ortasında)
     if (!target) {
       setNotification({
         show: true,
@@ -84,7 +81,6 @@ export default function CreateAlertModule({ instanceId }: Props) {
       return;
     }
 
-    // 2️⃣ ALERT OLUŞTURULDU - SUCCESS TOAST (DashboardNotifications - sağ üstte)
     addAlert({
       symbol,
       condition,
@@ -102,7 +98,6 @@ export default function CreateAlertModule({ instanceId }: Props) {
 
   return (
     <>
-      {/* 🔥 ERROR POPUP - PORTAL ile ekranın ortasında */}
       {typeof window !== "undefined" &&
         createPortal(
           <NotificationPopup

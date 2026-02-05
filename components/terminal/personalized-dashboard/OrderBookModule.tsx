@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/OrderBookModule.tsx
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
@@ -132,7 +131,6 @@ export default function OrderBookModule({
     };
   }, [exchangeOpen]);
 
-  // 🔒 Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showAddModal) {
       document.body.style.overflow = 'hidden';
@@ -335,9 +333,7 @@ export default function OrderBookModule({
 
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
-      {/* 🎯 Fully Responsive Header - SpreadMonitor Style */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title */}
         <span className="font-semibold text-white/90 text-xs">
           Order Book ({marketType === "spot" ? "Spot" : "Futures"})
         </span>
@@ -387,7 +383,6 @@ export default function OrderBookModule({
           </button>
         )}
 
-        {/* Exchange Dropdown */}
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
@@ -466,7 +461,6 @@ export default function OrderBookModule({
 })()}
         </div>
 
-        {/* Add Button */}
         <button
           onClick={() => setShowAddModal(true)}
           className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
@@ -476,7 +470,6 @@ export default function OrderBookModule({
         </button>
       </div>
 
-      {/* Content */}
       <div
         ref={contentRef}
         className="
@@ -495,7 +488,6 @@ export default function OrderBookModule({
           scrollbar-track-transparent
         "
       >
-        {/* Error State */}
         {error && (
           <div className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -509,7 +501,6 @@ export default function OrderBookModule({
           </div>
         )}
 
-        {/* Loading State */}
         {!error && bids.length === 0 && asks.length === 0 && (
           <div className="px-3 py-8 rounded-lg bg-white/5 border border-white/10">
             <div className="flex flex-col items-center justify-center gap-2">
@@ -521,7 +512,6 @@ export default function OrderBookModule({
           </div>
         )}
 
-        {/* Order Book Grid */}
         {bids.length > 0 && asks.length > 0 && (
           <>
             <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
@@ -649,7 +639,6 @@ export default function OrderBookModule({
         )}
       </div>
 
-      {/* 🔧 Modal - Full Screen SpreadMonitor Style */}
       {showAddModal && (
         <div 
           className="
@@ -670,7 +659,6 @@ export default function OrderBookModule({
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
             <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Pair ({marketType === "spot" ? "Spot" : "Futures"})
@@ -683,7 +671,6 @@ export default function OrderBookModule({
             </button>
           </div>
 
-          {/* Modal Content */}
           <div
             className="
               flex-1 min-h-0 overflow-y-auto p-3
@@ -745,7 +732,6 @@ export default function OrderBookModule({
                 </div>
               </div>
 
-              {/* Popular Base Assets */}
               <div>
                 <label className="block text-white/50 mb-2 font-medium text-[10px]">
                   Popular Base Assets
@@ -779,7 +765,6 @@ export default function OrderBookModule({
                 </div>
               </div>
 
-              {/* Popular Quote Assets */}
               <div>
                 <label className="block text-white/50 mb-2 font-medium text-[10px]">
                   Popular Quote Assets

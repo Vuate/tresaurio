@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/WhaleAlertsModule.tsx
 "use client";
 
 import { useEffect, useState, useRef } from "react";
@@ -19,7 +18,7 @@ const TRACKED_SYMBOLS = ["btcusdt", "ethusdt", "solusdt", "bnbusdt"];
 const MIN_TRADE_VALUE = 100000; // $100k minimum for whale alert
 const MAX_ALERTS = 20;
 
-// 🔥 Multi-exchange WebSocket URLs for trade streams
+//  Multi-exchange WebSocket URLs for trade streams
 const getTradeStreamUrl = (exchange: Exchange, symbols: string[]): string => {
   switch (exchange) {
     case "binance":
@@ -88,7 +87,7 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
     };
   }, []);
 
-  // 🔥 WebSocket connection for real-time whale alerts
+  // WebSocket connection for real-time whale alerts
   useEffect(() => {
     if (wsRef.current) {
       wsRef.current.close();
@@ -213,9 +212,7 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* 🎯 Responsive Header - Fixed (No Scroll) */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title & Status */}
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           Whale Alerts
         </span>
@@ -226,12 +223,9 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
           {connected ? "LIVE" : "OFFLINE"}
         </span>
 
-        {/* Spacer */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Controls */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Exchange Selector Dropdown */}
           <div ref={exchangeRef} className="relative">
             <button
               onClick={() => setExchangeOpen((v) => !v)}
@@ -296,7 +290,6 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
             )}
           </div>
 
-          {/* Min Value Selector Dropdown */}
           <div ref={minValueRef} className="relative">
             <button
               onClick={() => setMinValueOpen((v) => !v)}
@@ -363,7 +356,6 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* 🎯 Alerts List - Scrollable */}
       <div
         ref={contentRef}
         className="
@@ -402,7 +394,6 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
                     }
                   `}
                 >
-                  {/* Top Row - Symbol, Action, Time, Exchange */}
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1.5">
                     <span className={`text-xs font-bold whitespace-nowrap ${isIn ? "text-emerald-400" : "text-red-400"}`}>
                       {t.symbol}
@@ -416,7 +407,6 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
                     <span className="text-[10px] text-white/50 whitespace-nowrap">{t.exchange}</span>
                   </div>
 
-                  {/* Bottom Row - Amount & Value */}
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                     <div className="text-xs font-mono text-white break-all">
                       {t.amount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {t.symbol}

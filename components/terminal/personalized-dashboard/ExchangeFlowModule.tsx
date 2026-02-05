@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/ExchangeFlowModule.tsx
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
@@ -26,7 +25,7 @@ const EXCHANGES = [
 
 const SYMBOLS = ["BTCUSDT", "ETHUSDT"];
 
-// 🎯 Custom Hook: Window Size Check
+//  Custom Hook: Window Size Check
 function useWindowSizeCheck() {
   const [isTooSmall, setIsTooSmall] = useState(false);
 
@@ -58,7 +57,7 @@ const fetchWithTimeout = async (url: string, timeout = 5000): Promise<Response> 
   }
 };
 
-// 🔥 Fetch single exchange/symbol with timeout and error handling
+//  Fetch single exchange/symbol with timeout and error handling
 const fetchSingleFlow = async (ex: typeof EXCHANGES[0], symbol: string): Promise<FlowEvent[]> => {
   try {
     let volume24h = 0;
@@ -121,7 +120,7 @@ const fetchSingleFlow = async (ex: typeof EXCHANGES[0], symbol: string): Promise
   return [];
 };
 
-// 🔥 Fetch all flow events in parallel
+//  Fetch all flow events in parallel
 const fetchFlowEvents = async (): Promise<FlowEvent[]> => {
   const promises = [];
 
@@ -273,23 +272,17 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
 
   return (
     <div ref={containerRef} className="h-full flex flex-col">
-      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title */}
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           Exchange Flow (24h)
         </span>
         
-        {/* Separator */}
         <span className="text-white/40 text-xs">•</span>
         
-        {/* LIVE indicator */}
         <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
-        {/* Spacer */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* View Filter Dropdown */}
         <div ref={viewRef} className="relative">
           <button
             onClick={() => setViewOpen((v) => !v)}
@@ -360,7 +353,6 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
           )}
         </div>
 
-        {/* Refresh Button */}
         <button
           onClick={() => fetchData(true)}
           disabled={refreshing}
@@ -377,7 +369,6 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
         </button>
       </div>
 
-{/* Summary Cards - FIXED (No Scroll) - Always 3 columns, content wraps */}
       <div className="px-3 pt-2 pb-3 flex-shrink-0">
         <div className="grid grid-cols-3 gap-2 transition-all duration-300">
           {/* Deposits Card */}

@@ -20,7 +20,6 @@ export default function NotesPanel() {
     topBarHeight,
   } = usePersonalizedDashboardStore();
 
-  // 🔥 RESPONSIVE HEADER HEIGHT - STATE OLARAK
   const [headerHeight, setHeaderHeight] = useState(
     typeof window !== 'undefined' 
       ? (window.innerWidth >= 1536 ? 56 : window.innerWidth >= 1280 ? 52 : 48)
@@ -45,7 +44,6 @@ export default function NotesPanel() {
   const startYRef = useRef(0);
   const startHeightRef = useRef(0);
 
-  // 🔥 HEADER HEIGHT GÜNCELLEME
   useEffect(() => {
     const updateHeaderHeight = () => {
       const newHeight = window.innerWidth >= 1536 ? 56 : window.innerWidth >= 1280 ? 52 : 48;
@@ -56,7 +54,6 @@ export default function NotesPanel() {
     return () => window.removeEventListener("resize", updateHeaderHeight);
   }, []);
 
-  /* 🔥 Yükseklik ölçümü */
   useEffect(() => {
     const measureHeight = () => {
       if (notesPanelRef.current) {
@@ -68,9 +65,11 @@ export default function NotesPanel() {
     measureHeight();
     window.addEventListener("resize", measureHeight);
     return () => window.removeEventListener("resize", measureHeight);
-  }, [notesOpen, notesHeight, headerHeight, setNotesBarHeight]); // headerHeight eklendi
+  }, [notesOpen, notesHeight, headerHeight, setNotesBarHeight]); 
 
-  /* ================= RESIZE LOGIC ================= */
+
+
+/* RESIZE LOGIC */
 useEffect(() => {
   const onMouseMove = (e: MouseEvent) => {
     if (!isResizingRef.current) return;
@@ -81,13 +80,8 @@ useEffect(() => {
     const MIN_TOP_CLEARANCE_RATIO = 0.45;
     const dynamicMinClearance = window.innerHeight * MIN_TOP_CLEARANCE_RATIO;
 
-    // ✅ STORE'DAN AL (DOM query yok!)
-    // topBarHeight zaten component'in üstünde destructure edilmiş
-    
-    // ✅ WorkspaceControls height'ı responsive breakpoint'lerle hesapla
     const mapHeight = window.innerWidth >= 1536 ? 180 : window.innerWidth >= 1280 ? 160 : 140;
     
-    // ✅ Hiç DOM query yok!
     const reservedTopSpace = Math.max(
       topBarHeight + mapHeight + SAFETY_BUFFER,
       dynamicMinClearance
@@ -199,7 +193,7 @@ useEffect(() => {
         {notesOpen && (
           <div 
             className="flex gap-4 xl:gap-5 2xl:gap-6 px-6 xl:px-8 2xl:px-12 pb-4 xl:pb-5 2xl:pb-6 overflow-hidden select-none"
-            style={{ height: `calc(100% - ${headerHeight}px)` }} // 🔥 DİNAMİK
+            style={{ height: `calc(100% - ${headerHeight}px)` }} 
           >
             <div className="flex flex-col w-1/2 gap-2 xl:gap-2.5 2xl:gap-3">
               <textarea
@@ -268,7 +262,6 @@ useEffect(() => {
       bg-white/5 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80
       relative group"  // ✅ EKLE
   >
-    {/* ✅ BU BUTONU EKLE (tarih div'inden önce) */}
     <button
       onClick={(e) => {
         e.stopPropagation();
@@ -293,7 +286,6 @@ useEffect(() => {
       {new Date(n.createdAt).toLocaleString()}
     </div>
     
-    {/* ✅ n.text'i div içine al */}
     <div className="break-words whitespace-pre-wrap overflow-hidden">
       {n.text}
     </div>

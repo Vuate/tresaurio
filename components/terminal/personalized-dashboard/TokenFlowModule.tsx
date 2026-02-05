@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/TokenFlowModule.tsx
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -36,7 +35,7 @@ const POPULAR_TOKENS = [
   "LINK", "UNI", "AAVE", "MKR", "MATIC", "ARB"
 ];
 
-// 🔥 Fetch real bridge flow data from DeFiLlama
+//  Fetch real bridge flow data from DeFiLlama
 const fetchChainFlows = async (token: string, chains: string[]): Promise<FlowData[]> => {
   const results: FlowData[] = [];
 
@@ -208,7 +207,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
     };
   }, [tokenDropdownOpen]);
 
-  // 🔒 Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showAddModal) {
       document.body.style.overflow = 'hidden';
@@ -280,17 +278,13 @@ export default function TokenFlowModule({ instanceId }: Props) {
 
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
-      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title - Can wrap independently */}
         <span className="font-semibold text-white/90 text-xs">
           Token Flow
         </span>
         
-        {/* Separator dot */}
         <span className="text-white/40 text-xs">•</span>
         
-        {/* LIVE indicator - Can wrap independently */}
         {!loading && (
           <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -298,10 +292,8 @@ export default function TokenFlowModule({ instanceId }: Props) {
           </span>
         )}
 
-        {/* Spacer to push following items to the right when on same line */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Token Selector - Can wrap independently */}
         <div ref={tokenDropdownRef} className="relative">
           <button
             onClick={() => setTokenDropdownOpen((v) => !v)}
@@ -386,7 +378,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
           })()}
         </div>
 
-        {/* Add Button - Can wrap independently */}
         <button
           onClick={() => setShowAddModal(true)}
           className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
@@ -396,7 +387,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
         </button>
       </div>
 
-      {/* Selected Tokens Chips */}
       {selectedTokens.length > 1 && (
         <div className="flex flex-wrap gap-1.5 px-3 pb-2 flex-shrink-0">
           {selectedTokens.map((token) => (
@@ -416,7 +406,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Content - FIXED SCROLL CONTAINER */}
       <div
         ref={contentRef}
         className="
@@ -449,14 +438,11 @@ export default function TokenFlowModule({ instanceId }: Props) {
                 key={flow.chain}
                 className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
               >
-                {/* Card Header - Fully Responsive */}
                 <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
-                  {/* Chain Name */}
                   <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
                     {flow.chain}
                   </div>
 
-                  {/* Change Indicator */}
                   <div
                     className={`flex items-center gap-0.5 text-[10px] shrink-0 ${
                       flow.change24h >= 0 ? "text-emerald-400" : "text-red-400"
@@ -472,18 +458,14 @@ export default function TokenFlowModule({ instanceId }: Props) {
                     </span>
                   </div>
 
-                  {/* Spacer */}
                   <div className="flex-1 min-w-[10px]"></div>
 
-                  {/* TVL Badge */}
                   <div className="text-[10px] text-white/60 whitespace-nowrap shrink-0">
                     TVL: ${(flow.tvl / 1000000000).toFixed(2)}B
                   </div>
                 </div>
 
-                {/* Flow Stats - HER ZAMAN GÖRÜNEBİLİR, ALT ALTA DİZİLEBİLİR */}
                 <div className="space-y-1.5 mb-2">
-                  {/* Inflow */}
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
                     <span className="text-emerald-400 whitespace-nowrap">↓ Inflow</span>
                     <span className="text-white font-mono font-medium whitespace-nowrap">
@@ -491,7 +473,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
                     </span>
                   </div>
 
-                  {/* Outflow */}
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
                     <span className="text-red-400 whitespace-nowrap">↑ Outflow</span>
                     <span className="text-white font-mono font-medium whitespace-nowrap">
@@ -501,7 +482,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
 
                   <div className="h-px bg-white/10 my-1" />
 
-                  {/* Net Flow */}
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-sm">
                     <span className="text-white/80 font-medium whitespace-nowrap">Net Flow</span>
                     <span
@@ -514,7 +494,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
                     </span>
                   </div>
 
-                  {/* Volume */}
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
                     <span className="text-white/60 whitespace-nowrap">Volume (24h)</span>
                     <span className="text-white/80 font-mono whitespace-nowrap">
@@ -523,7 +502,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
                   </div>
                 </div>
 
-                {/* Flow Bar */}
                 <div className="flex gap-1 h-2 rounded-full overflow-hidden bg-white/10">
                   <div
                     className="bg-emerald-500 transition-all"
@@ -544,7 +522,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Total Summary - SCROLL DIŞINDA, SABİT ALTTA */}
       <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
         <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
           Total Net Flow (24h)
@@ -562,7 +539,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* 🔧 Modal - TRULY FULL SCREEN */}
       {showAddModal && (
         <div 
           className="
@@ -583,7 +559,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
             <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Token
@@ -596,7 +571,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
             </button>
           </div>
 
-          {/* Modal Content */}
           <div
             className="
               flex-1 min-h-0 overflow-y-auto p-3
@@ -614,7 +588,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
-              {/* Custom Token Input */}
               <div className="space-y-2">
                 <label className="block text-white/50 font-medium text-[10px]">
                   Add Custom Token
@@ -643,7 +616,6 @@ export default function TokenFlowModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Popular Tokens */}
               <div>
                 <label className="block text-white/50 mb-2 font-medium text-[10px]">
                   Popular Tokens

@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/LiquidityAnalysisModule.tsx
 "use client";
 
 import { useEffect, useState, useMemo, useRef } from "react";
@@ -92,7 +91,7 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     };
   }, []);
 
-  // ✅ USE REAL WEBSOCKET DATA with multi-exchange support
+  //  USE REAL WEBSOCKET DATA with multi-exchange support
   const { bids, asks, midPrice, loading, error, status, retry } = useOrderBook({
     symbol,
     marketType,
@@ -101,7 +100,7 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     timeoutMs: 30000,
   });
 
-  // ✅ REAL LIQUIDITY CALCULATION
+  // REAL LIQUIDITY CALCULATION
   const liquidityData = useMemo(() => {
     if (!bids || !asks || bids.length === 0 || asks.length === 0 || midPrice === 0) {
       return null;
@@ -250,7 +249,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
             )}
           </div>
 
-          {/* Market Type Selector */}
           <div ref={marketRef} className="relative">
             <button
               onClick={() => setMarketOpen((v) => !v)}
@@ -312,7 +310,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
             )}
           </div>
 
-          {/* Symbol Selector */}
           <div ref={symbolRef} className="relative">
             <button
               onClick={() => setSymbolOpen((v) => !v)}
@@ -383,7 +380,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Content */}
       <div
         className="
           flex-1 min-h-0 space-y-1.5 sm:space-y-2
@@ -401,7 +397,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
           scrollbar-track-transparent
         "
       >
-        {/* Loading State */}
         {loading && (
           <div className="px-2 sm:px-3 py-6 sm:py-8 rounded-lg bg-white/5 border border-white/10">
             <div className="flex flex-col items-center justify-center gap-2">
@@ -411,7 +406,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
           </div>
         )}
 
-        {/* Error State */}
         {error && !loading && (
           <div className="px-2 sm:px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
             <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-red-300">
@@ -428,7 +422,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
           </div>
         )}
 
-        {/* Liquidity Score Card */}
         {!loading && !error && liquidityData && (
           <>
             <div className="px-2 sm:px-3 py-2 sm:py-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20">
@@ -462,7 +455,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Volume Analysis */}
             <div className="space-y-1.5 sm:space-y-2">
               <div className="text-white/50 text-[9px] sm:text-[10px] font-semibold uppercase px-1">
                 Volume Analysis
@@ -491,7 +483,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Imbalance Bar */}
               <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
                 <div className="flex justify-between items-center mb-1.5 sm:mb-2">
                   <div className="text-white/50 text-[9px] sm:text-[10px]">
@@ -525,7 +516,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Depth Analysis */}
             <div className="space-y-1.5 sm:space-y-2">
               <div className="text-white/50 text-[9px] sm:text-[10px] font-semibold uppercase px-1">
                 Market Depth
@@ -587,7 +577,6 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Analysis Summary */}
             <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
               <div className="flex items-start gap-1.5 sm:gap-2">
                 {liquidityData.rating === "Excellent" ||

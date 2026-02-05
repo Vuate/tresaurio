@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/TokenUnlockModule.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -217,7 +216,6 @@ export default function TokenUnlockModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
-      {/* Header */}
       <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
         <div className="text-[10px] sm:text-xs text-white/60">
           <span className="font-semibold text-white/90">
@@ -229,7 +227,6 @@ export default function TokenUnlockModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Sort Options */}
       <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
         {(["date", "amount", "impact"] as const).map((sort) => (
           <button
@@ -257,7 +254,6 @@ export default function TokenUnlockModule({ instanceId }: Props) {
         ))}
       </div>
 
-      {/* Content */}
       <div
         className="
           flex-1 min-h-0 space-y-1.5 sm:space-y-2
