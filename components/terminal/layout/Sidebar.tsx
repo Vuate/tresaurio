@@ -22,20 +22,20 @@ export default function Sidebar() {
     pathname === path || pathname.startsWith(path + "/");
 
   return (
-    <aside
-      className="
-        group
-        sticky top-[64px]
-        h-[calc(100vh-64px)]
-        w-[48px] xl:w-[52px] 2xl:w-[56px]
-        hover:w-[190px] xl:hover:w-[210px] 2xl:hover:w-[230px]
-        bg-[#0d0f14]
-        border-r border-white/10
-        transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
-        overflow-hidden
-        shrink-0
-      "
-    >
+<aside
+  className="
+    group
+    sticky top-11 md:top-[64px]
+    h-[calc(100vh-44px)] md:h-[calc(100vh-64px)]
+    w-[48px] xl:w-[52px] 2xl:w-[56px]
+    hover:w-[190px] xl:hover:w-[210px] 2xl:hover:w-[230px]
+    bg-[#0d0f14]
+    border-r border-white/10
+    transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+    overflow-hidden
+    shrink-0
+  "
+>
       <div className="flex h-full flex-col gap-1 xl:gap-1.5 2xl:gap-2 p-1.5 xl:p-2 2xl:p-2.5 mt-3 xl:mt-4 2xl:mt-5">
         {/* LOGO */}
 <div className="flex items-center h-8 xl:h-9 2xl:h-10 px-2 xl:px-2.5 2xl:px-3 min-w-[48px] xl:min-w-[52px] 2xl:min-w-[56px]">  {/* ↑ px değerleri artırıldı */}

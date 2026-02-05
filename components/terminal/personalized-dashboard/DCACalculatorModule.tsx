@@ -246,7 +246,8 @@ className="
   className="
     grid
     gap-2
-    [grid-template-columns:repeat(auto-fit,minmax(120px,1fr))]
+      grid-cols-1
+
   "
 >
           <div>

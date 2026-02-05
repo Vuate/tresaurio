@@ -1,20 +1,58 @@
 // components/terminal/personalized-dashboard/SpotActionsModule.tsx
+"use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { usePortfolioStore } from "@/store/portfolioStore";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 interface Props {
   instanceId: string;
 }
 
+const EXCHANGES = [
+  { id: "binance", name: "Binance" },
+  { id: "okx", name: "OKX" },
+  { id: "bybit", name: "Bybit" },
+  { id: "coinbase", name: "Coinbase" },
+];
+
+const QUICK_PRESETS = [
+  { symbol: "BTCUSDT", name: "BTC", suggestedPrice: "45000" },
+  { symbol: "ETHUSDT", name: "ETH", suggestedPrice: "2500" },
+  { symbol: "SOLUSDT", name: "SOL", suggestedPrice: "100" },
+  { symbol: "BNBUSDT", name: "BNB", suggestedPrice: "300" },
+  { symbol: "XRPUSDT", name: "XRP", suggestedPrice: "0.50" },
+  { symbol: "ADAUSDT", name: "ADA", suggestedPrice: "0.35" },
+];
+
 export default function SpotActionsModule({ instanceId }: Props) {
   const { addSpotPosition } = usePortfolioStore();
 
   const [symbol, setSymbol] = useState("BTCUSDT");
-  const [exchange, setExchange] = useState("Binance");
+  const [exchange, setExchange] = useState("binance");
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [action, setAction] = useState<"buy" | "sell">("buy");
+  const [exchangeOpen, setExchangeOpen] = useState(false);
+
+  const exchangeRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Close exchange dropdown on outside click
+  useEffect(() => {
+    if (!exchangeOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exchangeRef.current && !exchangeRef.current.contains(e.target as Node)) {
+        setExchangeOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [exchangeOpen]);
 
   const handleSubmit = () => {
     if (!quantity || !price) {
@@ -53,156 +91,294 @@ export default function SpotActionsModule({ instanceId }: Props) {
     setPrice("");
   };
 
+  const totalCost = quantity && price ? (parseFloat(quantity) * parseFloat(price)).toFixed(2) : "0.00";
+
   return (
-    <div className="h-full flex flex-col bg-[#0a0b0f] rounded-lg border border-white/10">
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <div className="text-xl">💰</div>
-          <h3 className="font-semibold">Spot Actions</h3>
+    <div className="h-full flex flex-col">
+      {/* 🎯 Fully Responsive Header */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
+        {/* Title */}
+        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+          💰 Spot Actions
+        </span>
+
+        {/* Separator */}
+        <span className="text-white/40 text-xs">•</span>
+
+        {/* Action Type Indicator */}
+        <span
+          className={`text-xs font-semibold whitespace-nowrap ${
+            action === "buy" ? "text-emerald-400" : "text-red-400"
+          }`}
+        >
+          {action === "buy" ? "BUY MODE" : "SELL MODE"}
+        </span>
+
+        {/* Spacer */}
+        <div className="flex-1 min-w-[20px]"></div>
+
+        {/* Exchange Dropdown - Dynamic positioning */}
+        <div ref={exchangeRef} className="relative">
+          <button
+            onClick={() => setExchangeOpen((v) => !v)}
+            className="
+              h-7 px-3 rounded-md
+              bg-[#0b1f1f]
+              border border-white/10
+              text-white text-xs
+              flex items-center gap-1.5
+              cursor-pointer
+              hover:bg-white/5
+              transition-all
+              whitespace-nowrap
+            "
+          >
+            <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
+            <span
+              className={`
+                text-white/50 text-[10px]
+                transition-transform duration-200
+                ${exchangeOpen ? "rotate-180" : ""}
+              `}
+            >
+              ▾
+            </span>
+          </button>
+
+          {exchangeOpen && (() => {
+            // 🎯 Butonun pozisyonuna göre dropdown'ın sağda mı solda mı açılacağını belirle
+            const buttonRect = exchangeRef.current?.getBoundingClientRect();
+            const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
+
+            return (
+              <div
+                onWheel={(e) => e.stopPropagation()}
+                className={`
+                  absolute mt-1 z-50
+                  w-[120px]
+                  max-h-[160px]
+                  overflow-y-auto
+                  bg-[#0b1f1f]
+                  border border-emerald-500/20
+                  rounded-md
+                  shadow-lg
+                  animate-in fade-in slide-in-from-top-2 duration-200
+
+                  [&::-webkit-scrollbar]:w-1.5
+                  [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                  [&::-webkit-scrollbar-thumb]:rounded-full
+                  [&::-webkit-scrollbar-track]:bg-transparent
+
+                  ${shouldOpenLeft ? 'right-0' : 'left-0'}
+                `}
+              >
+                {EXCHANGES.map((ex) => (
+                  <button
+                    key={ex.id}
+                    onClick={() => {
+                      setExchange(ex.id);
+                      setExchangeOpen(false);
+                    }}
+                    className="
+                      w-full px-3 py-2
+                      text-left text-xs
+                      bg-transparent cursor-pointer
+                      text-white
+                      transition-colors
+                      hover:bg-emerald-500/10
+                      hover:text-emerald-400
+                    "
+                  >
+                    {ex.name}
+                  </button>
+                ))}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-4 space-y-4">
-        {/* Action Toggle */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setAction("buy")}
-            className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-              action === "buy"
-                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
-          >
-            🟢 BUY
-          </button>
-          <button
-            onClick={() => setAction("sell")}
-            className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-              action === "sell"
-                ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
-          >
-            🔴 SELL
-          </button>
-        </div>
+      {/* Content - Scrollable - FIXED SCROLL */}
+      <div
+        ref={contentRef}
+        className="
+          flex-1 min-h-0 px-3 pb-3
+          overflow-y-auto
 
-        {/* Exchange Selection */}
-        <div>
-          <label className="text-xs text-white/60 mb-1 block">Exchange</label>
-          <select
-            value={exchange}
-            onChange={(e) => setExchange(e.target.value)}
-            className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
-          >
-            <option value="Binance">Binance</option>
-            <option value="OKX">OKX</option>
-            <option value="Bybit">Bybit</option>
-            <option value="Coinbase">Coinbase</option>
-          </select>
-        </div>
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-track]:bg-transparent
+          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
 
-        {/* Symbol Input */}
-        <div>
-          <label className="text-xs text-white/60 mb-1 block">Symbol</label>
-          <input
-            type="text"
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-            placeholder="BTCUSDT"
-            className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
-          />
-        </div>
+          scrollbar-thin
+          scrollbar-thumb-teal-400/40
+          scrollbar-track-transparent
+        "
+      >
+        <div className="space-y-3">
+          {/* Action Toggle - Fully Responsive */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setAction("buy")}
+              className={`
+                py-2.5 rounded-md font-semibold text-xs
+                transition-all duration-150
+                cursor-pointer
+                flex items-center justify-center gap-1.5
+                ${
+                  action === "buy"
+                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                    : "bg-white/10 text-white/60 hover:bg-white/15 border border-white/10"
+                }
+              `}
+            >
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>BUY</span>
+            </button>
+            <button
+              onClick={() => setAction("sell")}
+              className={`
+                py-2.5 rounded-md font-semibold text-xs
+                transition-all duration-150
+                cursor-pointer
+                flex items-center justify-center gap-1.5
+                ${
+                  action === "sell"
+                    ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
+                    : "bg-white/10 text-white/60 hover:bg-white/15 border border-white/10"
+                }
+              `}
+            >
+              <TrendingDown className="w-3.5 h-3.5" />
+              <span>SELL</span>
+            </button>
+          </div>
 
-        {/* Quantity Input */}
-        <div>
-          <label className="text-xs text-white/60 mb-1 block">Quantity</label>
-          <input
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            placeholder="0.5"
-            step="0.001"
-            className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
-          />
-        </div>
+          {/* Symbol Input */}
+          <div>
+            <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+              Symbol
+            </label>
+            <input
+              type="text"
+              value={symbol}
+              onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+              placeholder="BTCUSDT"
+              className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+            />
+          </div>
 
-        {/* Price Input */}
-        <div>
-          <label className="text-xs text-white/60 mb-1 block">
-            Price (USDT)
-          </label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="45000"
-            step="0.01"
-            className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-sm"
-          />
-        </div>
+          {/* 🔥 Quantity & Price - ALWAYS VERTICAL (grid-cols-1) */}
+          <div className="grid grid-cols-1 gap-2">
+            <div>
+              <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+                Quantity
+              </label>
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder="0.5"
+                step="0.001"
+                className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+              />
+            </div>
 
-        {/* Total */}
-        {quantity && price && (
-          <div className="bg-white/5 rounded-lg p-3">
-            <div className="text-xs text-white/60 mb-1">Total Cost</div>
-            <div className="text-xl font-bold text-white">
-              ${(parseFloat(quantity) * parseFloat(price)).toFixed(2)}
+            <div>
+              <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+                Price (USDT)
+              </label>
+              <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="45000"
+                step="0.01"
+                className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+              />
             </div>
           </div>
-        )}
 
-        {/* Submit Button */}
-        <button
-          onClick={handleSubmit}
-          className={`w-full py-3 rounded-lg font-medium transition-all ${
-            action === "buy"
-              ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-              : "bg-red-500 hover:bg-red-600 text-white"
-          }`}
-        >
-          {action === "buy" ? "🟢 Add Buy Position" : "🔴 Add Sell Position"}
-        </button>
+          {/* Total Cost Display */}
+          {quantity && price && (
+            <div className="bg-white/5 border border-white/10 rounded-md p-3">
+              <div className="text-white/50 text-[10px] mb-1 font-medium">Total Cost</div>
+              <div
+                className={`text-xl font-bold break-words ${
+                  action === "buy" ? "text-emerald-400" : "text-red-400"
+                }`}
+              >
+                ${totalCost}
+              </div>
+            </div>
+          )}
 
-        {/* Quick Presets */}
-        <div className="pt-2 border-t border-white/10">
-          <div className="text-xs text-white/60 mb-2">Quick Presets</div>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={() => {
-                setSymbol("BTCUSDT");
-                setPrice("45000");
-              }}
-              className="py-2 px-3 bg-white/5 hover:bg-white/10 rounded text-xs transition-colors"
-            >
-              BTC
-            </button>
-            <button
-              onClick={() => {
-                setSymbol("ETHUSDT");
-                setPrice("2500");
-              }}
-              className="py-2 px-3 bg-white/5 hover:bg-white/10 rounded text-xs transition-colors"
-            >
-              ETH
-            </button>
-            <button
-              onClick={() => {
-                setSymbol("SOLUSDT");
-                setPrice("100");
-              }}
-              className="py-2 px-3 bg-white/5 hover:bg-white/10 rounded text-xs transition-colors"
-            >
-              SOL
-            </button>
+          {/* Submit Button */}
+          <button
+            onClick={handleSubmit}
+            disabled={!quantity || !price}
+            className={`
+              w-full py-2.5 rounded-md font-semibold text-xs
+              transition-all
+              cursor-pointer
+              flex items-center justify-center gap-2
+              disabled:opacity-50 disabled:cursor-not-allowed
+              ${
+                action === "buy"
+                  ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
+                  : "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20"
+              }
+            `}
+          >
+            {action === "buy" ? (
+              <>
+                <TrendingUp className="w-4 h-4" />
+                <span>Add Buy Position</span>
+              </>
+            ) : (
+              <>
+                <TrendingDown className="w-4 h-4" />
+                <span>Add Sell Position</span>
+              </>
+            )}
+          </button>
+
+          {/* 🔥 Quick Presets - 2 COLUMNS (grid-cols-2) - NO OVERFLOW */}
+          <div className="pt-3 border-t border-white/10">
+            <div className="text-white/50 text-[10px] mb-2 font-medium">Quick Presets</div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {QUICK_PRESETS.map((preset) => (
+                <button
+                  key={preset.symbol}
+                  onClick={() => {
+                    setSymbol(preset.symbol);
+                    setPrice(preset.suggestedPrice);
+                  }}
+                  className={`
+                    py-2 px-2 rounded-md text-[10px] font-semibold
+                    border transition-all duration-150
+                    cursor-pointer
+                    whitespace-nowrap
+                    bg-white/10 text-white border-white/10
+                    hover:bg-teal-500/15
+                    hover:border-teal-400/40
+                    hover:text-teal-400
+                    hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                  `}
+                >
+                  {preset.name}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Info */}
-        <div className="text-xs text-white/40 text-center pt-2">
-          This will add a position to your portfolio
+          {/* Info Message */}
+          <div className="text-center pt-2">
+            <div className="text-white/40 text-[10px] break-words">
+              This will add a position to your portfolio
+            </div>
+          </div>
         </div>
       </div>
     </div>

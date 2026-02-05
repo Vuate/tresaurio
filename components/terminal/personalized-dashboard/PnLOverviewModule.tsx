@@ -21,14 +21,12 @@ function Row({
   const positive = value >= 0;
 
   return (
-    <div className="flex justify-between items-center px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-      <span className="text-xs text-white/50">{label}</span>
-      <div className="text-right">
-        <span
-          className={`font-mono text-sm font-semibold ${
-            positive ? "text-emerald-400" : "text-red-400"
-          }`}
-        >
+    <div className="flex flex-wrap items-center gap-2 px-2 py-1.5 rounded-lg bg-white/5 border border-white/10 min-w-0">
+      <span className="text-xs text-white/50 whitespace-nowrap">{label}</span>
+      <div className={`font-mono text-sm font-semibold ml-auto flex flex-wrap items-center gap-1 ${
+          positive ? "text-emerald-400" : "text-red-400"
+        }`}>
+        <span className="whitespace-nowrap">
           {positive ? "+" : ""}$
           {Math.abs(value).toLocaleString(undefined, {
             minimumFractionDigits: 2,
@@ -37,7 +35,7 @@ function Row({
         </span>
         {showPercent && percent !== undefined && (
           <span
-            className={`ml-2 text-xs ${
+            className={`text-xs whitespace-nowrap ${
               positive ? "text-emerald-400/70" : "text-red-400/70"
             }`}
           >
@@ -52,9 +50,9 @@ function Row({
 
 function InfoRow({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex justify-between items-center px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-      <span className="text-xs text-white/50">{label}</span>
-      <span className="font-mono text-sm font-semibold text-white">
+    <div className="flex flex-wrap items-center gap-2 px-2 py-1.5 rounded-lg bg-white/5 border border-white/10 min-w-0">
+      <span className="text-xs text-white/50 whitespace-nowrap">{label}</span>
+      <span className="font-mono text-sm font-semibold text-white whitespace-nowrap ml-auto">
         $
         {value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
@@ -83,13 +81,13 @@ export default function PnLOverviewModule({ instanceId }: Props) {
   return (
     <div className="space-y-3 text-xs">
       {/* Summary Card */}
-      <div className="bg-white/5 border border-white/10 rounded-lg p-3 space-y-2">
+      <div className="bg-white/5 border border-white/10 rounded-lg p-2.5 space-y-2 min-w-0">
         <div className="text-white/40 text-[10px] font-semibold uppercase">
           Portfolio Overview
         </div>
-        <div className="flex justify-between items-baseline">
-          <span className="text-white/50 text-xs">Total Value</span>
-          <span className="text-white text-lg font-bold">
+        <div className="flex flex-wrap items-baseline gap-2">
+          <span className="text-white/50 text-xs whitespace-nowrap">Total Value</span>
+          <span className="text-white text-lg font-bold whitespace-nowrap ml-auto">
             $
             {totalValue.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -97,9 +95,9 @@ export default function PnLOverviewModule({ instanceId }: Props) {
             })}
           </span>
         </div>
-        <div className="flex justify-between items-baseline">
-          <span className="text-white/50 text-xs">Total Invested</span>
-          <span className="text-white/70 text-sm">
+        <div className="flex flex-wrap items-baseline gap-2">
+          <span className="text-white/50 text-xs whitespace-nowrap">Total Invested</span>
+          <span className="text-white/70 text-sm whitespace-nowrap ml-auto">
             $
             {totalInvestment.toLocaleString(undefined, {
               minimumFractionDigits: 2,

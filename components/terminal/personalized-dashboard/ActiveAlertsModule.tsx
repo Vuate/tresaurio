@@ -7,7 +7,6 @@ import { usePriceStore } from "@/store/priceStore";
 import { Bell, BellRing } from "lucide-react";
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
 
-
 interface Props {
   instanceId: string;
 }
@@ -44,9 +43,9 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
           <div
             key={a.id}
             className={`
-              flex items-center justify-between
-              px-3 py-2 rounded-lg
+              p-2.5 rounded-lg
               border transition-colors
+              min-w-0
               ${
                 isTriggered
                   ? "bg-red-500/10 border-red-400/40 animate-pulse"
@@ -54,64 +53,82 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
               }
             `}
           >
-            <div className="space-y-0.5 flex-1">
-              <div className="flex items-center gap-2">
-                {isTriggered ? (
-                  <BellRing className="w-3 h-3 text-red-400" />
-                ) : (
-                  <Bell className="w-3 h-3 text-white/40" />
-                )}
-                <span className="text-sm font-semibold text-white">
-                  {a.symbol.replace("USDT", "")}
-                </span>
-              </div>
+            {/* Header Row - Fully Responsive */}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
+              {/* Alert Icon */}
+              {isTriggered ? (
+                <BellRing className="w-3 h-3 text-red-400 shrink-0" />
+              ) : (
+                <Bell className="w-3 h-3 text-white/40 shrink-0" />
+              )}
 
-              <div className="text-[11px] text-white/50">
+              {/* Symbol */}
+              <span className="text-sm font-semibold text-white whitespace-nowrap shrink-0">
+                {a.symbol.replace("USDT", "")}
+              </span>
+
+              {/* Spacer */}
+              <div className="flex-1 min-w-[10px]"></div>
+
+              {/* Status */}
+<span
+  className={`text-[11px] font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 ${
+    isTriggered ? "text-red-400" : "text-teal-400"
+  }`}
+>
+  {isTriggered ? (
+    <>
+      <BellRing className="w-3 h-3" />
+      <span>Triggered</span>
+    </>
+  ) : (
+    <>
+      <Bell className="w-3 h-3" />
+      <span>Waiting</span>
+    </>
+  )}
+</span>
+
+              {/* Delete Button */}
+              <button
+                onClick={() => {
+                  removeAlert(a.id);
+                  
+                  useDashboardNotificationStore.getState().push({
+                    type: "success",
+                    title: "Alert Removed",
+                    description: `${a.symbol} ${a.condition} $${a.target.toLocaleString()} alert removed`,
+                  });
+                }}
+                className="
+                  h-6 w-6 rounded-md
+                  border border-white/10
+                  bg-white/5
+                  text-white/60
+                  cursor-pointer
+                  hover:bg-red-500/80
+                  hover:text-white
+                  transition
+                  shrink-0
+                "
+                title="Remove alert"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Info Rows - Fully Responsive */}
+            <div className="space-y-0.5">
+              <div className="text-[11px] text-white/50 break-words leading-tight">
                 {a.condition === "above" ? "Above" : "Below"} $
                 {a.target.toLocaleString()}
               </div>
 
               {currentPrice > 0 && (
-                <div className="text-[10px] text-white/40">
+                <div className="text-[10px] text-white/40 break-words leading-tight">
                   Current: ${currentPrice.toLocaleString()}
                 </div>
               )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span
-                className={`text-[11px] font-semibold ${
-                  isTriggered ? "text-red-400" : "text-teal-400"
-                }`}
-              >
-                {isTriggered ? "🔔 Triggered" : "⏱ Waiting"}
-              </span>
-
-<button
-  onClick={() => {
-    removeAlert(a.id);
-    
-    useDashboardNotificationStore.getState().push({
-      type: "success",
-      title: "Alert Removed",
-      description: `${a.symbol} ${a.condition} $${a.target.toLocaleString()} alert removed`,
-    });
-  }}
-  className="
-    h-6 w-6 rounded-md
-    border border-white/10
-    bg-white/5
-    text-white/60
-    cursor-pointer
-    hover:bg-red-500/80
-    hover:text-white
-    transition
-  "
-  title="Remove alert"
->
-  ×
-</button>
-
             </div>
           </div>
         );

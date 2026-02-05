@@ -45,9 +45,9 @@ export default function Movers() {
 
   if (loading) {
     return (
-      <div className="p-6 xl:p-7 2xl:p-8 rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl bg-[#0E121A] border border-white/10 shadow-xl">
-        <h3 className="text-lg xl:text-xl 2xl:text-2xl font-bold mb-4 xl:mb-5 2xl:mb-6">En Çok Hareket Edenler</h3>
-        <p className="text-gray-500 text-sm xl:text-[15px] 2xl:text-base">Yükleniyor...</p>
+      <div className="p-4 sm:p-5 md:p-6 xl:p-7 2xl:p-8 rounded-xl sm:rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl bg-[#0E121A] border border-white/10 shadow-xl">
+        <h3 className="text-base sm:text-lg xl:text-xl 2xl:text-2xl font-bold mb-3 sm:mb-4 xl:mb-5 2xl:mb-6">En Çok Hareket Edenler</h3>
+        <p className="text-gray-500 text-xs sm:text-sm xl:text-[15px] 2xl:text-base">Yükleniyor...</p>
       </div>
     );
   }
@@ -56,8 +56,8 @@ export default function Movers() {
     <div
       className="
         relative 
-        p-6 xl:p-7 2xl:p-8
-        rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
+        p-4 sm:p-5 md:p-6 xl:p-7 2xl:p-8
+        rounded-xl sm:rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
         bg-[#05070A]/95 border border-white/5 
         backdrop-blur-2xl overflow-hidden
         shadow-[0_0_45px_-8px_rgba(0,0,0,0.8)]
@@ -65,8 +65,8 @@ export default function Movers() {
       "
     >
       {/* Glow */}
-      <div className="absolute top-0 right-0 w-40 h-40 xl:w-48 xl:h-48 2xl:w-56 2xl:h-56 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-40 h-40 xl:w-48 xl:h-48 2xl:w-56 2xl:h-56 bg-purple-500/10 blur-3xl rounded-full pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 sm:w-40 sm:h-40 xl:w-48 xl:h-48 2xl:w-56 2xl:h-56 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-32 h-32 sm:w-40 sm:h-40 xl:w-48 xl:h-48 2xl:w-56 2xl:h-56 bg-purple-500/10 blur-3xl rounded-full pointer-events-none" />
 
       {/* Texture */}
       <div className="
@@ -77,17 +77,17 @@ export default function Movers() {
       " />
 
       {/* Title */}
-      <h3 className="text-lg xl:text-xl 2xl:text-2xl font-semibold text-white mb-6 xl:mb-7 2xl:mb-8 relative z-10 flex items-center gap-2.5 xl:gap-3">
-        En Çok Hareket Edenler 
+      <h3 className="text-base sm:text-lg xl:text-xl 2xl:text-2xl font-semibold text-white mb-4 sm:mb-5 md:mb-6 xl:mb-7 2xl:mb-8 relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2.5 xl:gap-3">
+        <span>En Çok Hareket Edenler</span>
         <div className="
-          px-3 xl:px-3.5 2xl:px-4
+          px-2.5 sm:px-3 xl:px-3.5 2xl:px-4
           py-0.5 xl:py-1 2xl:py-1
           rounded-lg xl:rounded-xl 2xl:rounded-xl
           backdrop-blur-xl 
           bg-white/5 
           border border-white/10 
           text-white/90 
-          text-xs xl:text-[13px] 2xl:text-sm
+          text-[10px] sm:text-xs xl:text-[13px] 2xl:text-sm
           font-medium
           shadow-[0_0_15px_rgba(255,255,255,0.15)]
         ">
@@ -95,8 +95,8 @@ export default function Movers() {
         </div>
       </h3>
 
-      {/* GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 xl:gap-9 2xl:gap-10 relative z-10">
+      {/* GRID - Mobilde tek kolon */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-7 md:gap-8 xl:gap-9 2xl:gap-10 relative z-10">
         <Section title="En Çok Artanlar" color="green">
           {gainers.map((c, i) => (
             <Row key={i} coin={c} />
@@ -116,7 +116,7 @@ export default function Movers() {
 function Section({ title, color, children }: any) {
   return (
     <div className="relative z-10">
-      <h4 className={`text-${color}-400 font-bold mb-3 xl:mb-3.5 2xl:mb-4 tracking-wide text-sm xl:text-[15px] 2xl:text-base`}>
+      <h4 className={`text-${color}-400 font-bold mb-2 sm:mb-2.5 md:mb-3 xl:mb-3.5 2xl:mb-4 tracking-wide text-xs sm:text-sm xl:text-[15px] 2xl:text-base`}>
         {title}
       </h4>
       {children}
@@ -131,8 +131,8 @@ function Row({ coin, loser }: any) {
     <div
       className="
         relative flex justify-between items-center 
-        py-3 xl:py-3.5 2xl:py-4
-        px-2.5 xl:px-3 2xl:px-3
+        py-2.5 sm:py-3 xl:py-3.5 2xl:py-4
+        px-2 sm:px-2.5 xl:px-3 2xl:px-3
         border-b border-white/5 
         group transition-all duration-300
         hover:bg-white/[0.035]
@@ -153,14 +153,14 @@ function Row({ coin, loser }: any) {
         "
       />
 
-      <div className="flex items-center gap-3 xl:gap-3.5 2xl:gap-4 relative z-10">
+      <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 xl:gap-3.5 2xl:gap-4 relative z-10">
         <img
           src={coin.image}
           alt={coin.name}
-          className="w-10 h-10 xl:w-11 xl:h-11 2xl:w-12 2xl:h-12 rounded-lg xl:rounded-xl object-cover"
+          className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 xl:w-11 xl:h-11 2xl:w-12 2xl:h-12 rounded-lg xl:rounded-xl object-cover flex-shrink-0"
         />
 
-        <span className="font-medium text-white text-sm xl:text-[15px] 2xl:text-base tracking-wide">
+        <span className="font-medium text-white text-xs sm:text-sm xl:text-[15px] 2xl:text-base tracking-wide">
           {coin.name}
         </span>
       </div>
@@ -169,13 +169,14 @@ function Row({ coin, loser }: any) {
       <span
         className={`
           relative z-10 
-          text-xs xl:text-[13px] 2xl:text-sm
+          text-[10px] sm:text-xs xl:text-[13px] 2xl:text-sm
           font-semibold 
-          px-3 xl:px-3.5 2xl:px-3.5
-          py-1 xl:py-1.5 2xl:py-1.5
+          px-2 sm:px-2.5 md:px-3 xl:px-3.5 2xl:px-3.5
+          py-0.5 sm:py-1 xl:py-1.5 2xl:py-1.5
           rounded-full
           backdrop-blur-xl border shadow-[0_0_10px_rgba(0,0,0,0.3)]
           transition-all duration-300
+          whitespace-nowrap
           ${loser 
             ? "text-red-400 border-red-500/20 bg-gradient-to-r from-red-600/25 to-red-500/10"
             : "text-green-400 border-green-500/20 bg-gradient-to-r from-green-600/25 to-green-500/10"

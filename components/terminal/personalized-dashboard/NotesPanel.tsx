@@ -275,7 +275,6 @@ useEffect(() => {
         removeNote(n.id);
       }}
       className="absolute top-2 right-2 
-        opacity-0 group-hover:opacity-100
         transition-opacity duration-200
         w-5 h-5 xl:w-5.5 xl:h-5.5 2xl:w-6 2xl:h-6
         flex items-center justify-center
@@ -283,7 +282,8 @@ useEffect(() => {
         bg-red-500/20 hover:bg-red-500/30
         text-red-400 hover:text-red-300
         text-xs xl:text-sm 2xl:text-base
-        cursor-pointer"
+        cursor-pointer
+        transition-colors duration-200"
       title="Delete note"
     >
       ✕
