@@ -187,7 +187,7 @@ useEffect(() => {
 }, []);
 
 
-/* ZOOM & PAN CLAMP WHEN THE NOTES PANEL CHANGES */
+/* ZOOM - PAN CLAMP WHEN THE NOTES PANEL CHANGES */
 useEffect(() => {
   if (!containerRef.current) return;
   if (!didInitRef.current) return; 

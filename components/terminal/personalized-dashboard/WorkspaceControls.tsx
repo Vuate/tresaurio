@@ -23,8 +23,6 @@ export default function WorkspaceControls() {
     setZoom,
     setPan,
     modules,
-    notesOpen,
-    notesHeight,
     activeModuleId,
     topBarHeight, 
     notesBarHeight,
@@ -48,7 +46,6 @@ export default function WorkspaceControls() {
   const MAP_SCALE_Y = sizes.mapSize / WORLD_HEIGHT;
 
 
-  /* VIEWPORT */
   useEffect(() => {
     const updateViewport = () => {
       setViewport({
@@ -62,7 +59,6 @@ export default function WorkspaceControls() {
     return () => window.removeEventListener("resize", updateViewport);
   }, [topBarHeight, notesBarHeight]);
 
-  /* DYNAMIC HEADER MEASUREMENT */
   useEffect(() => {
     if (mapOpen && headerRef.current) {
       const rect = headerRef.current.getBoundingClientRect();
@@ -70,7 +66,6 @@ export default function WorkspaceControls() {
     }
   }, [mapOpen]);
 
-  /* ZOOM  */
   const handleZoom = (delta: number) => {
     const minZoom = calculateMinZoom(viewport.w, viewport.h);
     const newZoom = Math.max(minZoom, Math.min(MAX_ZOOM, zoom + delta));
@@ -102,7 +97,6 @@ export default function WorkspaceControls() {
     setZoom(newZoom);
   };
 
-  /* ALIGN ACTIVE  */
   const alignToActiveWindow = () => {
     const active = modules.find(m => m.id === activeModuleId);
     if (!active) return;
@@ -129,7 +123,6 @@ export default function WorkspaceControls() {
     setPan(newPanX, newPanY);
   };
 
-/* MAP CLICK  */
 const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   const rect = e.currentTarget.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -160,7 +153,6 @@ const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   setPan(newPanX, newPanY);
 };
 
-// DYNAMIC SCALE FOR THE ACTUAL MAP AREA
 const actualMapHeight = sizes.mapSize - minimapHeaderHeight;
 const actualMapScaleY = actualMapHeight / WORLD_HEIGHT;
 

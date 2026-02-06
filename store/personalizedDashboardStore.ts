@@ -143,6 +143,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
         modules: [m, ...get().modules],
         activeModuleId: m.id,
       }),
+      
 
     /* Add module at viewport center or specified position */
     addModuleByType: (type, x, y) => {

@@ -2,10 +2,10 @@ import type { ModuleInstance } from "./types";
 
 export const defaultModules: ModuleInstance[] = [
   {
-    id: "market-efficiency-default",
-    type: "market-efficiency",
-    title: "Market Efficiency",
-    category: "market-microstructure",
+    id: "rsi-heatmap-default",
+    type: "rsi-heatmap",
+    title: "RSI Heatmap",
+    category: "analytics",
     x: 1800,
     y: 1025,
     width: 420,
