@@ -3,13 +3,11 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 
-// Şifre gereksinimleri tipi
 interface PasswordRequirement {
   label: string;
   met: boolean;
 }
 
-// Şifre validasyonu
 const validatePassword = (password: string): { valid: boolean; requirements: PasswordRequirement[] } => {
   const requirements: PasswordRequirement[] = [
     { label: "En az 8 karakter", met: password.length >= 8 },
@@ -46,14 +44,12 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     const password = formData.get("password") as string;
     const passwordConfirm = formData.get("passwordConfirm") as string;
 
-    // Şifre eşleşme kontrolü
     if (password !== passwordConfirm) {
       setError("Şifreler eşleşmiyor");
       setLoading(false);
       return;
     }
 
-    // Şifre güvenlik kontrolü
     const { valid, requirements } = validatePassword(password);
     if (!valid) {
       const missing = requirements.filter((r) => !r.met).map((r) => r.label);
@@ -157,7 +153,6 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
             disabled:opacity-60
           "
         />
-        {/* Şifre gereksinimleri */}
         {showRequirements && passwordRequirements.length > 0 && (
           <div className="grid grid-cols-2 gap-1 mt-2">
             {passwordRequirements.map((req, i) => (

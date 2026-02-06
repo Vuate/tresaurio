@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/FundingRateModule.tsx
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -260,7 +259,7 @@ export default function FundingRateModule({ instanceId }: Props) {
     };
   }, [symbolOpen]);
 
-  // 🔒 Modal scroll lock
+  //  Modal scroll lock
   useEffect(() => {
     if (showAddModal) {
       document.body.style.overflow = 'hidden';
@@ -463,7 +462,6 @@ export default function FundingRateModule({ instanceId }: Props) {
           )}
         </div>
 
-        {/* Symbol Dropdown */}
         <div ref={symbolRef} className="relative">
           <button
             onClick={() => setSymbolOpen((v) => !v)}
@@ -535,7 +533,6 @@ export default function FundingRateModule({ instanceId }: Props) {
           )}
         </div>
 
-        {/* Add Button */}
         <button
           onClick={() => setShowAddModal(true)}
           className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
@@ -545,7 +542,6 @@ export default function FundingRateModule({ instanceId }: Props) {
         </button>
       </div>
 
-      {/* Content */}
       <div
         ref={contentRef}
         className="
@@ -638,7 +634,6 @@ export default function FundingRateModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* 🔧 Modal - Full Screen SpreadMonitor Style */}
       {showAddModal && (
         <div 
           className="
@@ -659,7 +654,6 @@ export default function FundingRateModule({ instanceId }: Props) {
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
             <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Symbol
@@ -672,7 +666,6 @@ export default function FundingRateModule({ instanceId }: Props) {
             </button>
           </div>
 
-          {/* Modal Content */}
           <div
             className="
               flex-1 min-h-0 overflow-y-auto p-3
@@ -690,7 +683,6 @@ export default function FundingRateModule({ instanceId }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
-              {/* Custom Input */}
               <div className="space-y-2">
                 <label className="block text-white/50 font-medium text-[10px]">
                   Add Custom Symbol
@@ -716,7 +708,6 @@ export default function FundingRateModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Popular Symbols */}
               <div>
                 <label className="block text-white/50 mb-2 font-medium text-[10px]">
                   Popular Symbols
@@ -754,7 +745,6 @@ export default function FundingRateModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Add Button */}
               <button
                 onClick={() => {
                   const symbol = newSymbol.trim().toUpperCase();

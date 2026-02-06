@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/SpreadMonitorModule.tsx
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -109,13 +108,10 @@ export default function SpreadMonitorModule({
     };
   }, [exchangeOpen]);
 
-  // 🔒 Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showAddModal) {
-      // Ana sayfanın scroll'unu kilitle
       document.body.style.overflow = 'hidden';
       
-      // Component'in kendi scroll'unu da kilitle
       if (contentRef.current) {
         const scrollTop = contentRef.current.scrollTop;
         contentRef.current.style.overflow = 'hidden';
@@ -124,7 +120,6 @@ export default function SpreadMonitorModule({
     }
 
     return () => {
-      // Modal kapanınca geri aç
       document.body.style.overflow = '';
       if (contentRef.current) {
         contentRef.current.style.overflow = '';
@@ -241,23 +236,17 @@ export default function SpreadMonitorModule({
 
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
-      {/* 🎯 Fully Responsive Header - Every element wraps independently */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title - Can wrap independently */}
         <span className="font-semibold text-white/90 text-xs">
           Spread Monitor ({marketType === "spot" ? "Spot" : "Futures"})
         </span>
         
-        {/* Separator dot */}
         <span className="text-white/40 text-xs">•</span>
         
-        {/* LIVE indicator - Can wrap independently */}
         <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
-        {/* Spacer to push following items to the right when on same line */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Exchange Selector - Can wrap independently */}
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
@@ -329,7 +318,6 @@ export default function SpreadMonitorModule({
           )}
         </div>
 
-        {/* Add Button - Can wrap independently */}
         <button
           onClick={() => setShowAddModal(true)}
           className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
@@ -339,7 +327,6 @@ export default function SpreadMonitorModule({
         </button>
       </div>
 
-      {/* Monitor List */}
       <div
         ref={contentRef}
         className="
@@ -374,39 +361,31 @@ export default function SpreadMonitorModule({
                   key={symbol}
                   className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
                 >
-                  {/* Card Header - Fully Responsive */}
                   <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
-                    {/* Status Indicator - Can wrap independently */}
                     <div
                       className={`w-2 h-2 rounded-full shrink-0 ${
                         isNarrow ? "bg-emerald-400" : "bg-yellow-400"
                       }`}
                     />
 
-                    {/* Symbol Name - Can wrap independently */}
                     <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
                       {symbol}
                     </div>
 
-                    {/* Exchange Name - Can wrap independently */}
                     <div className="text-white/40 leading-tight text-[10px] whitespace-nowrap shrink-0">
                       {exchange.toUpperCase()}
                     </div>
 
-                    {/* Separator dot - Can wrap independently */}
                     <div className="text-white/40 leading-tight text-[10px] shrink-0">
                       •
                     </div>
 
-                    {/* Market Type - Can wrap independently */}
                     <div className="text-white/40 leading-tight text-[10px] whitespace-nowrap shrink-0">
                       {marketType === "spot" ? "SPOT" : "FUTURES"}
                     </div>
 
-                    {/* Spacer */}
                     <div className="flex-1 min-w-[10px]"></div>
 
-                    {/* Delete Button - Can wrap independently */}
                     <button
                       onClick={() => removeSymbol(symbol)}
                       className="text-white/40 hover:text-red-400 transition-all cursor-pointer hover:scale-110 shrink-0"
@@ -416,7 +395,6 @@ export default function SpreadMonitorModule({
                   </div>
 
                   <div className="flex flex-wrap items-start gap-x-4 gap-y-2 text-[10px]">
-                    {/* Price Column - Can wrap independently */}
                     <div className="shrink-0">
                       <div className="text-white/50 whitespace-nowrap">Price</div>
                       <div className="text-white font-mono text-xs whitespace-nowrap">
@@ -431,7 +409,6 @@ export default function SpreadMonitorModule({
                       </div>
                     </div>
 
-                    {/* Spread Column - Can wrap independently */}
                     <div className="shrink-0">
                       <div className="text-white/50 whitespace-nowrap">Spread</div>
                       <div className="text-white font-mono text-xs whitespace-nowrap">
@@ -439,7 +416,6 @@ export default function SpreadMonitorModule({
                       </div>
                     </div>
 
-                    {/* Spread % Column - Can wrap independently */}
                     <div className="shrink-0">
                       <div className="text-white/50 whitespace-nowrap">Spread %</div>
                       <div
@@ -478,7 +454,6 @@ export default function SpreadMonitorModule({
         </div>
       </div>
 
-      {/* 🔧 Modal - TRULY FULL SCREEN */}
       {showAddModal && (
         <div 
           className="
@@ -499,7 +474,6 @@ export default function SpreadMonitorModule({
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          {/* Modal Header - Fully responsive pattern */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
             <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Symbol ({marketType === "spot" ? "Spot" : "Futures"})
@@ -512,7 +486,6 @@ export default function SpreadMonitorModule({
             </button>
           </div>
 
-          {/* Modal Content */}
           <div
             className="
               flex-1 min-h-0 overflow-y-auto p-3
@@ -574,7 +547,6 @@ export default function SpreadMonitorModule({
                 </div>
               </div>
 
-              {/* Popular Base Assets */}
               <div>
                 <label className="block text-white/50 mb-2 font-medium text-[10px]">
                   Popular Base Assets
@@ -608,7 +580,6 @@ export default function SpreadMonitorModule({
                 </div>
               </div>
 
-              {/* Popular Quote Assets */}
               <div>
                 <label className="block text-white/50 mb-2 font-medium text-[10px]">
                   Popular Quote Assets

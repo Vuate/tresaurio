@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/SpotActionsModule.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -95,17 +94,13 @@ export default function SpotActionsModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title */}
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           💰 Spot Actions
         </span>
 
-        {/* Separator */}
         <span className="text-white/40 text-xs">•</span>
 
-        {/* Action Type Indicator */}
         <span
           className={`text-xs font-semibold whitespace-nowrap ${
             action === "buy" ? "text-emerald-400" : "text-red-400"
@@ -114,10 +109,8 @@ export default function SpotActionsModule({ instanceId }: Props) {
           {action === "buy" ? "BUY MODE" : "SELL MODE"}
         </span>
 
-        {/* Spacer */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Exchange Dropdown - Dynamic positioning */}
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
@@ -146,7 +139,6 @@ export default function SpotActionsModule({ instanceId }: Props) {
           </button>
 
           {exchangeOpen && (() => {
-            // 🎯 Butonun pozisyonuna göre dropdown'ın sağda mı solda mı açılacağını belirle
             const buttonRect = exchangeRef.current?.getBoundingClientRect();
             const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
 
@@ -198,7 +190,6 @@ export default function SpotActionsModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* Content - Scrollable - FIXED SCROLL */}
       <div
         ref={contentRef}
         className="
@@ -255,7 +246,6 @@ export default function SpotActionsModule({ instanceId }: Props) {
             </button>
           </div>
 
-          {/* Symbol Input */}
           <div>
             <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
               Symbol
@@ -269,7 +259,6 @@ export default function SpotActionsModule({ instanceId }: Props) {
             />
           </div>
 
-          {/* 🔥 Quantity & Price - ALWAYS VERTICAL (grid-cols-1) */}
           <div className="grid grid-cols-1 gap-2">
             <div>
               <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
@@ -300,7 +289,6 @@ export default function SpotActionsModule({ instanceId }: Props) {
             </div>
           </div>
 
-          {/* Total Cost Display */}
           {quantity && price && (
             <div className="bg-white/5 border border-white/10 rounded-md p-3">
               <div className="text-white/50 text-[10px] mb-1 font-medium">Total Cost</div>
@@ -314,7 +302,6 @@ export default function SpotActionsModule({ instanceId }: Props) {
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             onClick={handleSubmit}
             disabled={!quantity || !price}
@@ -344,7 +331,6 @@ export default function SpotActionsModule({ instanceId }: Props) {
             )}
           </button>
 
-          {/* 🔥 Quick Presets - 2 COLUMNS (grid-cols-2) - NO OVERFLOW */}
           <div className="pt-3 border-t border-white/10">
             <div className="text-white/50 text-[10px] mb-2 font-medium">Quick Presets</div>
             <div className="grid grid-cols-2 gap-1.5">

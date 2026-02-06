@@ -92,7 +92,6 @@ export default function CryptoTicker() {
               p-4 xl:p-5 2xl:p-6
             "
           >
-            {/* Icon - Responsive size */}
             <img
               src={coin.image}
               alt={coin.name}
@@ -102,7 +101,6 @@ export default function CryptoTicker() {
               "
             />
 
-            {/* Info */}
             <div className="flex min-w-0 flex-col gap-0.5 xl:gap-1">
               <span className="
                 text-[13px] xl:text-[14px] 2xl:text-[15px]

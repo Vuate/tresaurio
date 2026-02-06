@@ -45,21 +45,17 @@ export default function SidebarPanel() {
     }
   }, [sidebarOpen]);
     
-  // 🔥 DIŞARI TIKLAMA - TOPBAR HARİÇ
   useEffect(() => {
     if (!sidebarOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
       
-      // 🔥 Sidebar içindeyse işlem yapma
       if (sidebarRef.current?.contains(target)) return;
       
-      // 🔥 TopBar içindeyse işlem yapma (buton toggle'ı halledecek)
       const topBar = document.querySelector('[data-topbar]');
       if (topBar?.contains(target)) return;
       
-      // 🔥 Dışarı tıklandı, kapat
       toggleSidebar();
     };
 
@@ -69,7 +65,6 @@ export default function SidebarPanel() {
       }
     };
 
-    // 🔥 Biraz gecikme ekle (TopBar tıklamasıyla çakışmasın)
     const timer = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleKeyDown);
@@ -95,7 +90,6 @@ export default function SidebarPanel() {
       }}
       className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] overflow-hidden bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] cursor-default"
     >
-      {/* HEADER - X BUTONU KALDIRILDI */}
       <div 
         ref={headerRef}
         className="flex items-center justify-between px-4 py-4 border-b border-white/10 bg-[#041F20]/95"
@@ -105,7 +99,6 @@ export default function SidebarPanel() {
         </div>
       </div>
 
-      {/* CONTENT */}
       <div
         style={{
           maxHeight: `calc(${availableHeight}px - ${headerHeight}px)`,
@@ -113,7 +106,6 @@ export default function SidebarPanel() {
         className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
         onWheel={(e) => {e.stopPropagation();}}
       >
-        {/* TOP NAV */}
         <div className="space-y-1">
           <SidebarItem
             title="Personalized Dashboard"

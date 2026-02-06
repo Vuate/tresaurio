@@ -1,4 +1,3 @@
-// lib/encryption.ts
 // AES-256-GCM encryption for API keys
 
 import crypto from "crypto";

@@ -79,12 +79,10 @@ export default function AnalyticsModulesList() {
           key={m.no}
           className="flex items-center gap-5 rounded-xl border border-white/10 bg-white/5 px-6 py-5 transition hover:border-teal-400/40 hover:bg-white/10"
         >
-          {/* NUMARA */}
           <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-teal-400/30 bg-teal-400/10 font-extrabold text-teal-300">
             {m.no}
           </div>
 
-          {/* ICON + TITLE */}
           <div>
             <div className="flex items-center gap-2 font-bold">
               <Icon

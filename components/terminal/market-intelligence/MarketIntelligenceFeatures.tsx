@@ -88,30 +88,25 @@ export default function MarketIntelligenceFeatures() {
         </p>
       </div>
 
-      {/* Features Grid */}
       <div className="features-grid grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {features.map((feature, index) => (
           <div
             key={index}
             className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
           >
-            {/* Icon */}
             <Icon
               icon={feature.icon}
               className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl mb-2 sm:mb-3 lg:mb-4 text-teal-400"
             />
 
-            {/* Title */}
             <h3 className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold mb-2 sm:mb-3 text-teal-400">
               {feature.title}
             </h3>
 
-            {/* Description */}
             <p className="text-xs sm:text-sm lg:text-base text-gray-300 leading-relaxed mb-2.5 sm:mb-3 lg:mb-4">
               {feature.description}
             </p>
 
-            {/* Feature List */}
             <ul className="space-y-1 sm:space-y-1.5 lg:space-y-2">
               {feature.items.map((item, itemIndex) => (
                 <li

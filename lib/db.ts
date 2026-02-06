@@ -1,4 +1,3 @@
-// lib/db.ts
 // Prisma client singleton for Next.js (Prisma 7)
 
 import { PrismaClient } from "@prisma/client";

@@ -1,4 +1,3 @@
-// lib/auth.ts
 // NextAuth.js v5 configuration
 
 import NextAuth from "next-auth";

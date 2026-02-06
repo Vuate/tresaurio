@@ -4,9 +4,7 @@ import { Icon } from "@iconify/react";
 export default function AnalyticsModules() {
   return (
     <section className="section px-6">
-      {/* SADECE CONTAINER FIX */}
       <div className="mx-auto max-w-7xl">
-        {/* HEADER */}
         <div className="mb-12 text-center">
 <span className="inline-flex items-center gap-2 rounded-full border border-purple-400/30 bg-purple-400/10 px-4 py-1 text-sm font-bold text-purple-400">
   <Icon icon="mdi:chart-line-variant" className="text-base" />
@@ -22,7 +20,6 @@ export default function AnalyticsModules() {
           </p>
         </div>
 
-        {/* LIST — AYNEN KALDI */}
         <div className="space-y-4">
           <AnalyticsModulesList />
         </div>

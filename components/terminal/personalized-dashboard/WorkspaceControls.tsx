@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 
-import { usePersonalizedDashboardStore, MAX_ZOOM, WORLD_WIDTH, WORLD_HEIGHT, calculateMinZoom } from "@/store/personalizedDashboardStore";
+import { usePersonalizedDashboardStore, MAX_ZOOM, WORLD_WIDTH, WORLD_HEIGHT, calculateMinZoom } 
+from "@/store/personalizedDashboardStore";
 
 
 const getResponsiveSize = () => {
@@ -22,8 +23,6 @@ export default function WorkspaceControls() {
     setZoom,
     setPan,
     modules,
-    notesOpen,
-    notesHeight,
     activeModuleId,
     topBarHeight, 
     notesBarHeight,
@@ -41,14 +40,12 @@ export default function WorkspaceControls() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const effectiveCanvasHeight = WORLD_HEIGHT;
-  const effectiveCanvasWidth = WORLD_WIDTH;
-
-  const MAP_SCALE_X = sizes.mapSize / effectiveCanvasWidth;
-  const MAP_SCALE_Y = sizes.mapSize / effectiveCanvasHeight;
 
 
-  /* ---------------- VIEWPORT ---------------- */
+  const MAP_SCALE_X = sizes.mapSize / WORLD_WIDTH;
+  const MAP_SCALE_Y = sizes.mapSize / WORLD_HEIGHT;
+
+
   useEffect(() => {
     const updateViewport = () => {
       setViewport({
@@ -62,7 +59,6 @@ export default function WorkspaceControls() {
     return () => window.removeEventListener("resize", updateViewport);
   }, [topBarHeight, notesBarHeight]);
 
-  /* ---------------- DİNAMİK HEADER ÖLÇÜMÜ ---------------- */
   useEffect(() => {
     if (mapOpen && headerRef.current) {
       const rect = headerRef.current.getBoundingClientRect();
@@ -70,7 +66,6 @@ export default function WorkspaceControls() {
     }
   }, [mapOpen]);
 
-  /* ---------------- ZOOM ---------------- */
   const handleZoom = (delta: number) => {
     const minZoom = calculateMinZoom(viewport.w, viewport.h);
     const newZoom = Math.max(minZoom, Math.min(MAX_ZOOM, zoom + delta));
@@ -102,7 +97,6 @@ export default function WorkspaceControls() {
     setZoom(newZoom);
   };
 
-  /* ---------------- ALIGN ACTIVE ---------------- */
   const alignToActiveWindow = () => {
     const active = modules.find(m => m.id === activeModuleId);
     if (!active) return;
@@ -129,7 +123,6 @@ export default function WorkspaceControls() {
     setPan(newPanX, newPanY);
   };
 
-/* ---------------- MAP CLICK ---------------- */
 const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   const rect = e.currentTarget.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -160,7 +153,6 @@ const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   setPan(newPanX, newPanY);
 };
 
-// ACTUAL MAP AREA için dinamik scale
 const actualMapHeight = sizes.mapSize - minimapHeaderHeight;
 const actualMapScaleY = actualMapHeight / WORLD_HEIGHT;
 
@@ -182,7 +174,6 @@ className="fixed right-3 xl:right-4 2xl:right-6 z-50"
       onMouseLeave={() => setMapOpen(false)}
     >
 <div className="flex items-end gap-4 xl:gap-5 2xl:gap-6">
-        {/* MAP */}
 <div
   className="relative rounded-xl border border-white/10 bg-[#031A1C]/95 overflow-hidden transition-all duration-300 ease-out"
   style={{
@@ -211,7 +202,6 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
               ${mapOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
             `}
           >
-            {/* 🔥 HEADER REF */}
             <div 
               ref={headerRef}
               className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 flex items-center px-3"
@@ -230,9 +220,7 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
   }}
   onClick={handleMapClick}
 >
-              {/* MODULES */}
               {modules.map(m => {
-                // DİNAMİK SCALE (header'sız alan için)
                 const moduleMapScaleY = actualMapHeight / WORLD_HEIGHT;
                 
                 return (
@@ -250,15 +238,14 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
                 );
               })}
 
-              {/* VIEWPORT */}
 <div
   className="absolute border-2 border-white bg-white/5 rounded-[2px]"
   style={{
     left: Math.max(0, Math.min(sizes.mapSize - viewportW, viewportX)),
     top: Math.max(
-      0, // Container zaten minimapHeaderHeight'ta başlıyor
+      0, 
       Math.min(
-        actualMapHeight - viewportH, // Maksimum bottom
+        actualMapHeight - viewportH, 
         viewportY
       )
     ),
@@ -270,7 +257,6 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
           </div>
         </div>
 
-        {/* CONTROLS */}
         <div
 className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
           onMouseDown={(e) => e.preventDefault()}

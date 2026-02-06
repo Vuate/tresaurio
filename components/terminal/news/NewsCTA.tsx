@@ -14,18 +14,15 @@ export default function NewsCTA() {
         text-center
       "
     >
-      {/* CTA Title */}
       <h2 className="cta-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-extrabold text-white mb-2 sm:mb-3 lg:mb-4">
         Haberlerle Önceden Hareket Edin
       </h2>
 
-      {/* CTA Description */}
       <p className="cta-description mx-auto mt-2 sm:mt-3 lg:mt-4 xl:mt-5 max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed text-gray-300 px-4 mb-5 sm:mb-6 lg:mb-7 xl:mb-8">
         AI-powered sentiment analysis ile kripto haberlerini takip edin, fiyat
         etkisini ölçün ve piyasa hareketlerini önceden tahmin edin.
       </p>
 
-      {/* CTA Button */}
       <Link
         href="/personalized-dashboard"
         className="

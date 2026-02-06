@@ -11,12 +11,10 @@ export default function TerminalLayout({
       <Navbar />
 
       <div className="flex min-h-[calc(100vh-64px)] pt-11 md:pt-16">
-        {/* 🔒 SIDEBAR – SABİT, SCROLL'A DAHİL DEĞİL */}
         <div className="shrink-0">
           <Sidebar />
         </div>
 
-        {/* 👉 SADECE CONTENT SCROLL EDİLEBİLİR */}
         <div className="flex-1 overflow-x-auto">
           <main className="min-w-full bg-[#0a0b0f] relative">
             {children}

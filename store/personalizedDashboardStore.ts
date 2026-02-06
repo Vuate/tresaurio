@@ -8,163 +8,117 @@ import type {
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
 
+/* WORLD CONSTANTS */
 export const MAX_ZOOM = 3;
 export const WORLD_WIDTH = 4000;
 export const WORLD_HEIGHT = 2250;
 
-// 🎯 Dinamik minZoom hesaplama fonksiyonu
+/* Calculate minimum zoom to fit entire world in viewport */
 export function calculateMinZoom(viewportW: number, viewportH: number): number {
   const minZoomX = viewportW / WORLD_WIDTH;
   const minZoomY = viewportH / WORLD_HEIGHT;
-  return Math.max(minZoomX, minZoomY);  // ✅ DOĞRU - en kısıtlayıcı boyut
+  return Math.max(minZoomX, minZoomY);
 }
 
-/* ================= TYPES ================= */
-
+/* STATE TYPES */
 type State = {
   zoom: number;
   panX: number;
   panY: number;
 
-  /* NOTES */
   notesOpen: boolean;
   notes: NoteItem[];
   notesHeight: number;
 
-    topBarHeight: number;
+  topBarHeight: number;
   notesBarHeight: number;
 
-
-  /* MODULES */
   activeModuleId: ModuleId | null;
   modules: ModuleInstance[];
 
-  /* ADD TOOL */
   addToolOpen: boolean;
-
-  /* SIDEBAR */
   sidebarOpen: boolean;
 
-  /* ALERTS */
   alerts: AlertItem[];
-
-    /* UI LOCK */
   uiBlocked: boolean;
-  
 };
 
 type Actions = {
-  /* VIEW */
   setZoom: (zoom: number) => void;
   setPan: (x: number, y: number) => void;
   resetView: () => void;
 
-  /* NOTES */
   toggleNotes: () => void;
   addNote: (text: string) => void;
   setNotesHeight: (h: number) => void;
 
-    setTopBarHeight: (h: number) => void;
+  setTopBarHeight: (h: number) => void;
   setNotesBarHeight: (h: number) => void;
-  removeNote: (id: string) => void; 
+  removeNote: (id: string) => void;
 
-  /* MODULES */
   setActiveModule: (id: ModuleId | null) => void;
   addModule: (m: ModuleInstance) => void;
   addModuleByType: (type: string, x?: number, y?: number) => void;
   updateModule: (id: ModuleId, patch: Partial<ModuleInstance>) => void;
   removeModule: (id: ModuleId) => void;
 
-  /* ADD TOOL */
   toggleAddTool: () => void;
-
-  /* SIDEBAR */
   toggleSidebar: () => void;
 
-  /* ALERTS */
   addAlert: (a: Omit<AlertItem, "id">) => void;
   toggleAlert: (id: string) => void;
   removeAlert: (id: string) => void;
 
-
-    setUIBlocked: (v: boolean) => void;
-
+  setUIBlocked: (v: boolean) => void;
 };
 
-/* ================= HELPERS ================= */
-
-const clamp = (v: number, min: number, max: number) =>
-  Math.max(min, Math.min(max, v));
-
-
-
-/* ================= STORE ================= */
-
+/* ZUSTAND STORE */
 export const usePersonalizedDashboardStore = create<State & Actions>(
   (set, get) => ({
-
-        removeNote: (id) =>
-      set({
-        notes: get().notes.filter((n) => n.id !== id),
-      }),
-      
-        /* ---------- UI LOCK ---------- */
+    /* INITIAL STATE */
     uiBlocked: false,
-
-    /* ---------- VIEW ---------- */
     zoom: 1,
     panX: 0,
     panY: 0,
 
-    /* ---------- NOTES ---------- */
     notesOpen: true,
     notes: [],
     notesHeight: 260,
 
-        topBarHeight: 0,
+    topBarHeight: 0,
     notesBarHeight: 0,
 
-    /* ---------- MODULES ---------- */
     activeModuleId: null,
     modules: defaultModules,
 
-    /* ---------- ADD TOOL ---------- */
     addToolOpen: false,
-
-    /* ---------- SIDEBAR ---------- */
     sidebarOpen: false,
-
-    /* ---------- ALERTS ---------- */
     alerts: [],
 
-    /* ================= ACTIONS ================= */
-    /* UI LOCK */
+    /* ACTIONS */
     setUIBlocked: (v) => set({ uiBlocked: v }),
-    
-    /* VIEW */
-setZoom: (zoom) => {
-  if (typeof window === 'undefined') {
-    set({ zoom: Math.min(MAX_ZOOM, Math.max(0.1, zoom)) });
-    return;
-  }
-  
-  const { topBarHeight, notesBarHeight } = get();
-  const viewportW = window.innerWidth;
-  const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
-  const minZoom = calculateMinZoom(viewportW, viewportH);
-  
-  set({ zoom: Math.min(MAX_ZOOM, Math.max(minZoom, zoom)) });
-},
+
+    /* Set zoom with min/max bounds based on viewport */
+    setZoom: (zoom) => {
+      if (typeof window === "undefined") {
+        set({ zoom: Math.min(MAX_ZOOM, Math.max(0.1, zoom)) });
+        return;
+      }
+
+      const { topBarHeight, notesBarHeight } = get();
+      const viewportW = window.innerWidth;
+      const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+      const minZoom = calculateMinZoom(viewportW, viewportH);
+
+      set({ zoom: Math.min(MAX_ZOOM, Math.max(minZoom, zoom)) });
+    },
+
     setPan: (panX, panY) => set({ panX, panY }),
-    resetView: () => set({ zoom: 1, panX: -4500, panY: -4500 }),
+    resetView: () => set({ zoom: 1, panX: 0, panY: 0 }),
 
     /* NOTES */
     toggleNotes: () => set({ notesOpen: !get().notesOpen }),
     setNotesHeight: (h) => set({ notesHeight: h }),
-
-        setTopBarHeight: (h) => set({ topBarHeight: h }),
-    setNotesBarHeight: (h) => set({ notesBarHeight: h }),
-    
     addNote: (text) =>
       set({
         notes: [
@@ -172,6 +126,14 @@ setZoom: (zoom) => {
           ...get().notes,
         ],
       }),
+    removeNote: (id) =>
+      set({
+        notes: get().notes.filter((n) => n.id !== id),
+      }),
+
+    /* UI DIMENSIONS */
+    setTopBarHeight: (h) => set({ topBarHeight: h }),
+    setNotesBarHeight: (h) => set({ notesBarHeight: h }),
 
     /* MODULES */
     setActiveModule: (activeModuleId) => set({ activeModuleId }),
@@ -181,42 +143,43 @@ setZoom: (zoom) => {
         modules: [m, ...get().modules],
         activeModuleId: m.id,
       }),
+      
 
-addModuleByType: (type, x, y) => {
-  const def = moduleRegistry[type];
-  if (!def) return;
+    /* Add module at viewport center or specified position */
+    addModuleByType: (type, x, y) => {
+      const def = moduleRegistry[type];
+      if (!def) return;
 
-  const id = crypto.randomUUID();
+      const id = crypto.randomUUID();
 
-  // 🔥 VIEWPORT MERKEZİNİ HESAPLA
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight - get().topBarHeight - get().notesBarHeight;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight =
+        window.innerHeight - get().topBarHeight - get().notesBarHeight;
 
-  // 🔥 VIEWPORT MERKEZİNİN WORLD SPACE KOORDİNATI
-  const worldCenterX = (-get().panX + viewportWidth / 2) / get().zoom;
-  const worldCenterY = (-get().panY + viewportHeight / 2) / get().zoom;
+      // Calculate world coordinates of viewport center
+      const worldCenterX = (-get().panX + viewportWidth / 2) / get().zoom;
+      const worldCenterY = (-get().panY + viewportHeight / 2) / get().zoom;
 
-  // 🔥 MODÜLÜ TAM ORTALAMAK İÇİN OFFSET
-  const moduleX = worldCenterX - def.defaultSize.width / 2;
-  const moduleY = worldCenterY - def.defaultSize.height / 2;
+      const moduleX = worldCenterX - def.defaultSize.width / 2;
+      const moduleY = worldCenterY - def.defaultSize.height / 2;
 
-  set((state) => ({
-    modules: [
-      {
-        id,
-        type: def.type,
-        title: def.title,
-        category: def.category,
-        x: x ?? moduleX,
-        y: y ?? moduleY,
-        width: def.defaultSize.width,
-        height: def.defaultSize.height,
-      },
-      ...state.modules,
-    ],
-    activeModuleId: id,
-  }));
-},
+      set((state) => ({
+        modules: [
+          {
+            id,
+            type: def.type,
+            title: def.title,
+            category: def.category,
+            x: x ?? moduleX,
+            y: y ?? moduleY,
+            width: def.defaultSize.width,
+            height: def.defaultSize.height,
+          },
+          ...state.modules,
+        ],
+        activeModuleId: id,
+      }));
+    },
 
     updateModule: (id, patch) =>
       set({
@@ -232,14 +195,13 @@ addModuleByType: (type, x, y) => {
           get().activeModuleId === id ? null : get().activeModuleId,
       }),
 
-    /* ADD TOOL */
+    /* UI PANELS */
     toggleAddTool: () =>
       set((s) => ({
         addToolOpen: !s.addToolOpen,
         sidebarOpen: false,
       })),
 
-    /* SIDEBAR */
     toggleSidebar: () =>
       set((s) => ({
         sidebarOpen: !s.sidebarOpen,

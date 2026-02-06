@@ -1,8 +1,7 @@
-// components/terminal/personalized-dashboard/RewardCalendarModule.tsx
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Lock, Gift, Sprout, Coins } from "lucide-react"; // 🎯 Icon import
+import { Lock, Gift, Sprout, Coins } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -69,7 +68,7 @@ const DEFAULT_REWARDS: Omit<RewardEvent, "id">[] = [
   },
 ];
 
-// 🔥 Fetch current token prices for value calculation
+//  Fetch current token prices for value calculation
 const fetchTokenPrices = async (tokens: string[]): Promise<Record<string, number>> => {
   const prices: Record<string, number> = {};
 
@@ -172,7 +171,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
     }
   };
 
-  // 🎯 Professional Icon Component
   const getTypeIcon = (type: string) => {
     const iconClass = "w-4 h-4 sm:w-[18px] sm:h-[18px]";
     switch (type) {
@@ -203,7 +201,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
 
   return (
     <div ref={containerRef} className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
-      {/* 🎯 Header */}
       <div className="relative z-50 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
         <div className="text-[10px] sm:text-xs text-white/60 whitespace-nowrap">
           <span className="font-semibold text-white/90">
@@ -219,7 +216,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* 🎯 Filter Tabs */}
       <div className="flex flex-wrap gap-1.5 sm:gap-2 flex-shrink-0">
         {(["all", "staking", "airdrop", "farming"] as const).map((f) => (
           <button
@@ -249,7 +245,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
         ))}
       </div>
 
-      {/* 🎯 Content - 2 COLUMN GRID */}
       <div
         className="
           flex-1 min-h-0
@@ -293,7 +288,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
                   key={reward.id}
                   className="px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
                 >
-                  {/* 🎯 Row 1: Icon + Token */}
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <span className="flex-shrink-0 text-white/60">
                       {getTypeIcon(reward.type)}
@@ -303,7 +297,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
                     </div>
                   </div>
 
-                  {/* 🎯 Row 2: Type Badge */}
                   <div className="mb-2">
                     <span
                       className={`inline-block text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded border font-semibold uppercase leading-tight whitespace-nowrap ${getTypeColor(reward.type)}`}
@@ -312,7 +305,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
                     </span>
                   </div>
 
-                  {/* 🎯 Row 3: Date */}
                   <div className="text-[9px] sm:text-[10px] text-white/60 leading-tight mb-2">
                     {new Date(reward.date).toLocaleDateString("en-US", {
                       month: "short",
@@ -323,7 +315,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
                     </span>
                   </div>
 
-                  {/* 🎯 Row 4: Amount */}
                   <div className="mb-2">
                     <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 leading-tight">Amount</div>
                     <div className="text-sm sm:text-base font-bold text-emerald-400 leading-tight">
@@ -336,7 +327,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
                     )}
                   </div>
 
-                  {/* 🎯 Row 5: APR */}
                   {reward.apr > 0 && (
                     <div className="mb-1.5">
                       <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 leading-tight">APR</div>
@@ -346,7 +336,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
                     </div>
                   )}
 
-                  {/* 🎯 Row 6: Protocol */}
                   {reward.protocol && (
                     <div className="pt-1.5 border-t border-white/5">
                       <div className="text-[9px] sm:text-[10px] text-white/40 leading-tight">
@@ -361,7 +350,6 @@ export default function RewardCalendarModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* 🎯 Footer Stats */}
       <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
         <div className="flex flex-wrap justify-between items-center gap-x-4 gap-y-2">
           <div className="flex-1 min-w-[100px]">

@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/SpotPositionsModule.tsx
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
@@ -52,7 +51,7 @@ const ALL_EXCHANGES = [
   "mexc",
 ];
 
-// 🎯 Custom Hook: Window Size Check
+//  Custom Hook: Window Size Check
 function useWindowSizeCheck() {
   const [isTooSmall, setIsTooSmall] = useState(false);
 
@@ -175,7 +174,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     };
   }, [exchangeModalOpen]);
 
-  // 🔒 Modal açıkken arka plan scroll'unu kilitle
+  //  Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showAddModal || showApiKeyModal) {
       document.body.style.overflow = "hidden";
@@ -471,7 +470,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Exchange Dropdown */}
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
@@ -550,7 +548,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           )}
         </div>
 
-        {/* Sync/Connect Buttons */}
         {hasApiKey(selectedExchange) ? (
           <div className="flex flex-wrap items-center gap-1.5">
             <button
@@ -905,7 +902,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* 🔧 Add Position Modal - TRULY FULL SCREEN */}
       {showAddModal && (
         <div
           className="
@@ -1159,7 +1155,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* 🔧 API Key Modal - TRULY FULL SCREEN */}
+      {/* API Key Modal - TRULY FULL SCREEN */}
       {showApiKeyModal && (
         <div
           className="

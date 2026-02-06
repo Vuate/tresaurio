@@ -1,5 +1,3 @@
-// lib/personalized-dashboard/types.ts
-
 export type ModuleId = string;
 
 export type ModuleCategory =
@@ -8,10 +6,10 @@ export type ModuleCategory =
   | "flow" // Flow (Akış & Transfer)
   | "portfolio" // Trade & Portfolio
   | "alert" // Alerts
-  | "news" // 🔥 YENİ: News & Sentiment
-  | "events" // 🔥 YENİ: Events & Calendar
-  | "analytics" // 🔥 YENİ: Analytics & Metrics
-  | "actions"; // 🔥 YENİ: Trading Actions
+  | "news" //  News & Sentiment
+  | "events" //  Events & Calendar
+  | "analytics" //  Analytics & Metrics
+  | "actions"; //  Trading Actions
 
 export type ModuleType =
   // Existing
@@ -32,7 +30,6 @@ export type ModuleType =
   | "dca-calculator"
   | "all-in-cost"
   | "fee-structure"
-  // 🔥 NEW TOOLS
   | "pnl-analysis" // PnL Analysis Widget
   | "news-feed" // News
   | "token-flow" // Token Flow Analysis

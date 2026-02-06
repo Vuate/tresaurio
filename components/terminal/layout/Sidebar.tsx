@@ -37,12 +37,9 @@ export default function Sidebar() {
   "
 >
       <div className="flex h-full flex-col gap-1 xl:gap-1.5 2xl:gap-2 p-1.5 xl:p-2 2xl:p-2.5 mt-3 xl:mt-4 2xl:mt-5">
-        {/* LOGO */}
 <div className="flex items-center h-8 xl:h-9 2xl:h-10 px-2 xl:px-2.5 2xl:px-3 min-w-[48px] xl:min-w-[52px] 2xl:min-w-[56px]">  {/* ↑ px değerleri artırıldı */}
-  {/* ↑ min-w sidebar genişliği ile aynı oldu */}
   
   <div className="flex items-center justify-center w-5 xl:w-[22px] 2xl:w-6 shrink-0">
-    {/* ↑ Icon container ekledik (NavItem'lardaki gibi) */}
     <img
       src="/treasurio.png"
       className="w-5 h-5 xl:w-[22px] xl:h-[22px] 2xl:w-6 2xl:h-6"
@@ -132,7 +129,7 @@ export default function Sidebar() {
   );
 }
 
-/* ---------------- ITEM ---------------- */
+/* ITEM */
 
 function NavItem({
   href,
@@ -162,17 +159,14 @@ function NavItem({
         }
       `}
     >
-      {/* SOL AKTİF ÇİZGİ */}
       {active && (
         <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2.5px] xl:h-5 xl:w-[3px] 2xl:h-6 2xl:w-1 bg-teal-400 rounded-r" />
       )}
 
-      {/* ICON */}
       <div className="flex items-center justify-center w-5 xl:w-[22px] 2xl:w-6 shrink-0">
         {icon}
       </div>
 
-      {/* TEXT */}
       <span
         className="
           ml-2 xl:ml-2.5 2xl:ml-3
@@ -188,7 +182,7 @@ function NavItem({
   );
 }
 
-/* ---------------- SECTION ---------------- */
+/* SECTION */
 
 function SectionLabel({ label }: { label: string }) {
   return (

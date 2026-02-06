@@ -42,7 +42,6 @@ const features = [
 export default function ReportingFeatures() {
   return (
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
           Öne Çıkan Özellikler
@@ -52,14 +51,12 @@ export default function ReportingFeatures() {
         </p>
       </div>
 
-      {/* Features Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5 xl:gap-6">
         {features.map((feature, index) => (
           <div
             key={index}
             className="bg-[#041F20]/95 border border-white/10 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-5 lg:p-6 xl:p-7 2xl:p-8 text-center transition-all duration-300 hover:border-teal-400 hover:-translate-y-1"
           >
-            {/* Icon */}
             <div className="mb-3 sm:mb-4 lg:mb-5 flex justify-center">
               <Icon
                 icon={feature.icon}
@@ -67,10 +64,8 @@ export default function ReportingFeatures() {
               />
             </div>
             
-            {/* Title */}
             <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3">{feature.title}</h3>
 
-            {/* Description */}
             <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
               {feature.description}
             </p>

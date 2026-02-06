@@ -6,13 +6,12 @@ import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import type { ModuleInstance } from "@/lib/personalized-dashboard/types";
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
+import { WORLD_WIDTH, WORLD_HEIGHT } from "@/store/personalizedDashboardStore";
 
-export const WORLD_WIDTH = 4000;
-export const WORLD_HEIGHT = 2250;
+
 
 type ResizeDir = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
-// 🎯 Throttle utility
 function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number
@@ -30,7 +29,6 @@ function throttle<T extends (...args: any[]) => any>(
 export default function ModuleWindow({ module }: { module: ModuleInstance }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isDraggingWindow, setIsDraggingWindow] = useState(false);
-  const [showZoomControls, setShowZoomControls] = useState(false);
 
   const { 
     updateModule, 
@@ -48,14 +46,12 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
   const def = moduleRegistry[module.type];
   const isActive = activeModuleId === module.id;
 
-  // 🎮 ZOOM CONTROLS for this specific module
   const [moduleZoom, setModuleZoom] = useState(100);
 
   const zoomIn = useCallback(() => setModuleZoom((prev) => Math.min(200, prev + 10)), []);
   const zoomOut = useCallback(() => setModuleZoom((prev) => Math.max(50, prev - 10)), []);
   const resetZoom = useCallback(() => setModuleZoom(100), []);
 
-  // 📱 Responsive minimum sizes
   const minSizes = useMemo(() => {
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
     const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
@@ -66,7 +62,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     };
   }, []);
 
-  // ⚡ Throttled update module
   const updateModuleThrottled = useMemo(
     () => throttle((id: string, updates: Partial<ModuleInstance>) => {
       updateModule(id, updates);
@@ -74,7 +69,7 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     [updateModule]
   );
 
-  /* ---------------- DRAG ---------------- */
+  /* DRAG */
   const onDragMouseDown = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -119,7 +114,7 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
 
       const worldDeltaX = (mouseDeltaX - totalPanDeltaX) / zoom;
       const worldDeltaY = (mouseDeltaY - totalPanDeltaY) / zoom;
-
+                        
       let desiredX = startModuleX + worldDeltaX;
       let desiredY = startModuleY + worldDeltaY;
 
@@ -127,8 +122,8 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
       const mouseNearLeftEdge = currentMouseX < EDGE_THRESHOLD;
       const mouseNearRightEdge = currentMouseX > vw - EDGE_THRESHOLD;
       const mouseNearTopEdge = currentMouseY < topBarHeight + EDGE_THRESHOLD;
-      const mouseNearBottomEdge = currentMouseY > window.innerHeight - notesBarHeight - EDGE_THRESHOLD; 
-
+const viewportHeight = window.innerHeight - topBarHeight - notesBarHeight;
+const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE_THRESHOLD;
       const hitLeftWorldEdge = desiredX <= 0;
       const hitRightWorldEdge = desiredX >= WORLD_WIDTH - module.width;
       const hitTopWorldEdge = desiredY <= 0;
@@ -165,6 +160,8 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         
         store.setPan(clampedPanX, clampedPanY);
       }
+
+
 
       const totalPanDeltaXNow = store.panX - startPanX;
       const totalPanDeltaYNow = store.panY - startPanY;
@@ -204,9 +201,10 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     window.addEventListener("mouseup", onUp);
     
     animationFrameId = requestAnimationFrame(animate);
-  }, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom, topBarHeight, notesBarHeight, setActiveModule, updateModuleThrottled]);
+  }, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom, topBarHeight, 
+    notesBarHeight, setActiveModule, updateModuleThrottled]);
 
-  /* ---------------- RESIZE ---------------- */
+  /* RESIZE */
   const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
     e.stopPropagation();  
     e.preventDefault();
@@ -270,7 +268,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         newY = startTop + worldDeltaY;
       }
 
-      // 📱 Responsive minimum sizes
       if (newWidth < minSizes.width) {
         newWidth = minSizes.width;
         if (dir.includes("left")) newX = startLeft + startWidth - minSizes.width;
@@ -289,8 +286,8 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
       const mouseNearLeftEdge = currentMouseX < EDGE_THRESHOLD;
       const mouseNearRightEdge = currentMouseX > vw - EDGE_THRESHOLD;
       const mouseNearTopEdge = currentMouseY < topBarHeight + EDGE_THRESHOLD;
-      const mouseNearBottomEdge = currentMouseY > window.innerHeight - notesBarHeight - EDGE_THRESHOLD;
-
+const viewportHeight = window.innerHeight - topBarHeight - notesBarHeight;
+const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE_THRESHOLD;
       const hitLeftWorldEdge = dir.includes("left") && newX === 0;
       const hitRightWorldEdge = dir.includes("right") && (newX + newWidth) === WORLD_WIDTH;
       const hitTopWorldEdge = dir.includes("top") && newY === 0;
@@ -328,6 +325,8 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         store.setPan(clampedPanX, clampedPanY);
       }
 
+
+
       updateModuleThrottled(module.id, {
         x: newX,
         y: newY,
@@ -357,9 +356,9 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
     animationFrameId = requestAnimationFrame(animate);
-  }, [module.id, module.width, module.height, module.x, module.y, panX, panY, zoom, topBarHeight, notesBarHeight, minSizes, setActiveModule, updateModuleThrottled]);
+  }, [module.id, module.width, module.height, module.x, module.y, panX, panY, zoom, topBarHeight, 
+    notesBarHeight, minSizes, setActiveModule, updateModuleThrottled]);
 
-  // 📱 Responsive font size calculation
   const responsiveFontSize = useMemo(() => {
     const combinedZoom = zoom * (moduleZoom / 100);
     const baseFontSize = 12;
@@ -392,7 +391,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         }
       }}
     >
-      {/* HEADER */}
       <div
         onMouseDown={onDragMouseDown}
         className="flex items-center justify-between px-4 py-2
@@ -405,51 +403,34 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
           </div>
         </div>
 
-        {/* 🎮 ZOOM CONTROL + WINDOW CONTROLS */}
-        <div className="flex gap-2 items-center">
-          {/* Zoom Control Widget */}
-          <div 
-            className="flex items-center gap-1"
-            onMouseEnter={() => setShowZoomControls(true)}
-            onMouseLeave={() => setShowZoomControls(false)}
-          >
-            {showZoomControls ? (
-              <div className="flex items-center gap-1 bg-[#0b1f1f] border border-white/10 rounded-md px-2 py-1">
-                <button
-                  onClick={zoomOut}
-                  className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer"
-                  title="Zoom Out"
-                >
-                  <ZoomOut className="w-3 h-3 text-white/60 hover:text-white" />
-                </button>
-                <span className="text-white/60 font-mono text-[9px] min-w-[2rem] text-center">
-                  {moduleZoom}%
-                </span>
-                <button
-                  onClick={zoomIn}
-                  className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer"
-                  title="Zoom In"
-                >
-                  <ZoomIn className="w-3 h-3 text-white/60 hover:text-white" />
-                </button>
-                <button
-                  onClick={resetZoom}
-                  className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer ml-1 border-l border-white/10 pl-1.5"
-                  title="Reset Zoom"
-                >
-                  <RotateCcw className="w-3 h-3 text-white/60 hover:text-white" />
-                </button>
-              </div>
-            ) : (
-              <div className="bg-[#0b1f1f] border border-white/10 rounded-md px-2 py-1">
-                <span className="text-white/40 font-mono text-[9px]">
-                  {moduleZoom}%
-                </span>
-              </div>
-            )}
-          </div>
+<div className="flex gap-2 items-center">
+  <div className="flex items-center gap-1 bg-[#0b1f1f] border border-white/10 rounded-md px-2 py-1">
+    <button
+      onClick={zoomOut}
+      className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer"
+      title="Zoom Out"
+    >
+      <ZoomOut className="w-3 h-3 text-white/60 hover:text-white" />
+    </button>
+    <span className="text-white/60 font-mono text-[9px] min-w-[2rem] text-center">
+      {moduleZoom}%
+    </span>
+    <button
+      onClick={zoomIn}
+      className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer"
+      title="Zoom In"
+    >
+      <ZoomIn className="w-3 h-3 text-white/60 hover:text-white" />
+    </button>
+    <button
+      onClick={resetZoom}
+      className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer ml-1 border-l border-white/10 pl-1.5"
+      title="Reset Zoom"
+    >
+      <RotateCcw className="w-3 h-3 text-white/60 hover:text-white" />
+    </button>
+  </div>
 
-          {/* Window Controls */}
           <div className="flex gap-1">
             <button
               onClick={() =>
@@ -479,7 +460,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         </div>
       </div>
 
-      {/* CONTENT */}
       {!module.minimized && (
         <div className="h-[calc(100%-40px)] overflow-hidden">
           <div
@@ -516,7 +496,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
         </div>
       )}
 
-      {/* RESIZE HANDLES */}
       {!module.minimized && (
         <>
           <div

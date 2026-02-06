@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/ETFFlowsModule.tsx
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
@@ -28,7 +27,7 @@ const ETF_INFO: Record<string, { name: string; holdings: number }> = {
   HODL: { name: "VanEck Bitcoin Trust", holdings: 12000 },
 };
 
-// 🔥 Fetch ETF flow data based on BTC price
+//  Fetch ETF flow data based on BTC price
 const fetchETFFlows = async (): Promise<ETFData[]> => {
   const results: ETFData[] = [];
 
@@ -167,17 +166,13 @@ export default function ETFFlowsModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col relative">
-      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title - Can wrap independently */}
         <span className="font-semibold text-white/90 text-xs">
           BTC ETF Flows
         </span>
         
-        {/* Separator dot */}
         <span className="text-white/40 text-xs">•</span>
         
-        {/* LIVE indicator - Can wrap independently */}
         {loadingCount === 0 && (
           <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -185,10 +180,8 @@ export default function ETFFlowsModule({ instanceId }: Props) {
           </span>
         )}
 
-        {/* Spacer to push following items to the right when on same line */}
         <div className="flex-1 min-w-[20px]"></div>
 
-{/* Sort Buttons - Inline, wrap olabilir */}
 <div className="flex flex-wrap gap-1.5">
   {(["flow", "aum", "change"] as const).map((sort) => (
     <button
@@ -218,7 +211,6 @@ export default function ETFFlowsModule({ instanceId }: Props) {
 </div>
       </div>
 
-      {/* Content - FIXED SCROLL CONTAINER */}
       <div
         ref={contentRef}
         className="
@@ -247,24 +239,19 @@ export default function ETFFlowsModule({ instanceId }: Props) {
                 key={etf.id}
                 className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
               >
-                {/* Card Header - Fully Responsive */}
                 <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
-                  {/* Status Indicator */}
                   <div
                     className={`w-2 h-2 rounded-full shrink-0 ${
                       etf.loading ? "bg-yellow-400 animate-pulse" : "bg-emerald-400"
                     }`}
                   />
 
-                  {/* ETF Ticker */}
                   <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
                     {etf.ticker}
                   </div>
 
-                  {/* Spacer */}
                   <div className="flex-1 min-w-[10px]"></div>
 
-                  {/* Change Badge */}
                   <div
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded shrink-0 ${
                       etf.change24h >= 0
@@ -277,14 +264,11 @@ export default function ETFFlowsModule({ instanceId }: Props) {
                   </div>
                 </div>
 
-                {/* ETF Name - Can wrap */}
                 <div className="text-[10px] text-white/60 mb-2 break-words">
                   {etf.name}
                 </div>
 
-                {/* ETF Stats - HER ZAMAN GÖRÜNEBİLİR, ALT ALTA DİZİLEBİLİR */}
                 <div className="space-y-1.5 mb-2">
-                  {/* Flow - tek satırda sığmazsa wrap olur */}
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
                     <span className="text-white/60 whitespace-nowrap">Flow (24h)</span>
                     <span
@@ -303,7 +287,6 @@ export default function ETFFlowsModule({ instanceId }: Props) {
                     </span>
                   </div>
 
-                  {/* AUM - tek satırda sığmazsa wrap olur */}
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
                     <span className="text-white/60 whitespace-nowrap">AUM</span>
                     <span className="text-white font-mono font-medium whitespace-nowrap">
@@ -316,7 +299,6 @@ export default function ETFFlowsModule({ instanceId }: Props) {
                   </div>
                 </div>
 
-                {/* Flow Bar */}
                 {!etf.loading && (
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div
@@ -335,7 +317,6 @@ export default function ETFFlowsModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Total Summary - SCROLL DIŞINDA, SABİT ALTTA */}
       <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
         <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
           Net Flow (24h)

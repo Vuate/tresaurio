@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/ExchangeComparisonModule.tsx
 "use client";
 
 import { useEffect, useState, useRef } from "react";
@@ -15,7 +14,7 @@ interface Props {
 
 const SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT"];
 
-// 🔥 Fetch prices from all exchanges
+//  Fetch prices from all exchanges
 const fetchAllPrices = async (symbol: string): Promise<ExchangePrice[]> => {
   const results: ExchangePrice[] = [];
   const upperSymbol = symbol.toUpperCase();
@@ -158,9 +157,7 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* 🎯 Responsive Header - Fixed (No Scroll) */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title & Status */}
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           Price Comparison
         </span>
@@ -169,10 +166,8 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
         
         <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
-        {/* Spacer */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Symbol Selector Dropdown */}
         <div ref={symbolRef} className="relative">
           <button
             onClick={() => setSymbolOpen((v) => !v)}
@@ -238,7 +233,6 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
         </div>
       </div>
 
-{/* 🎯 Exchange List - Scrollable */}
       <div
         ref={contentRef}
         className="
@@ -283,7 +277,6 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
                     }
                   `}
                 >
-                  {/* Top Row - Exchange Name & Indicator */}
                   <div className="flex items-center gap-2 mb-1.5">
                     <span
                       className={`
@@ -296,7 +289,6 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
                     </span>
                   </div>
 
-                  {/* Bottom Row - Price & Diff */}
                   <div className="space-y-1">
                     <div className="font-semibold text-white font-mono text-sm break-all">
                       ${item.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -312,7 +304,6 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* 🎯 Spread Summary - Fixed Footer (No Scroll) */}
       {data.length >= 2 && (
         <div className="px-3 pb-3 pt-2 border-t border-white/10 flex-shrink-0 space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2 px-2">

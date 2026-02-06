@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/LastOrdersModule.tsx
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -95,7 +94,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
-      {/* Header */}
 <div className="relative z-50 flex flex-wrap items-center gap-x-2 gap-y-1.5 flex-shrink-0">
   <div className="text-[10px] sm:text-xs text-white/60 flex items-center gap-1.5 sm:gap-2">
     <span className="font-semibold text-white/90">
@@ -129,7 +127,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
   </div>
 </div>
 
-      {/* Settings Panel */}
       {showSettings && (
         <div className="bg-white/5 border border-white/10 rounded-lg p-2 sm:p-2.5 space-y-2 sm:space-y-2.5 flex-shrink-0">
           {/* Market Type Dropdown */}
@@ -244,7 +241,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
             })()}
           </div>
 
-          {/* Range Slider */}
           <div>
             <label className="block text-white/60 mb-1 text-[10px] sm:text-xs font-medium">
               Show: {settings.limit} orders
@@ -264,7 +260,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Content */}
       <div
         className="
           flex-1 min-h-0 space-y-1.5 sm:space-y-2
@@ -282,7 +277,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
           scrollbar-track-transparent
         "
       >
-        {/* Error State */}
         {error && (
           <div className="text-center py-6 sm:py-8">
             <div className="text-red-400 mb-2 text-xl sm:text-2xl">⚠️</div>
@@ -296,7 +290,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
           </div>
         )}
 
-        {/* Empty State */}
         {!error && orders.length === 0 && !loading && (
           <div className="text-center py-6 sm:py-8 text-white/40">
             <div className="text-2xl sm:text-4xl mb-1 sm:mb-2">📭</div>
@@ -307,7 +300,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
           </div>
         )}
 
-        {/* Orders List */}
         {!error && orders.length > 0 && (
           <>
             {orders.map((order) => (
@@ -315,7 +307,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
                 key={order.id}
                 className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
               >
-                {/* Header */}
                 <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1 mb-1.5 sm:mb-2">
                   <div className="flex flex-wrap items-center gap-1.5 min-w-0">
                     <span className="font-medium text-white text-[10px] sm:text-xs whitespace-nowrap">
@@ -335,7 +326,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
                   </span>
                 </div>
 
-                {/* Details Grid - RESPONSIVE */}
                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-1.5 text-[10px] sm:text-[11px]">
                   <div className="flex flex-wrap items-center gap-1 min-w-0">
                     <span className="text-white/60 whitespace-nowrap">Price:</span>
@@ -363,7 +353,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
                   </div>
                 </div>
 
-                {/* PnL (if exists) */}
                 {order.pnl !== undefined && (
                   <div className="mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 border-t border-white/10">
                     <div className="flex flex-wrap items-center gap-1 text-[10px] sm:text-[11px]">
@@ -389,7 +378,6 @@ export default function LastOrdersModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Footer */}
       <div className="flex-shrink-0 text-center">
         <span className="text-[9px] sm:text-[10px] text-white/40">
           Order history from last 7 days

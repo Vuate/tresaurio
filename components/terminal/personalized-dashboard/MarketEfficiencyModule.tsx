@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/MarketEfficiencyModule.tsx
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { RefreshCw, AlertTriangle, Plus, X } from "lucide-react";
@@ -262,25 +261,19 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col relative">
-      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 px-2 py-1.5 flex-shrink-0">
-        {/* Title */}
         <span className="font-semibold text-white/90 text-[10px] whitespace-nowrap">
           Market Efficiency
         </span>
 
-        {/* Separator */}
         <span className="text-white/40 text-[10px]">•</span>
 
-        {/* Status */}
         <span className="text-emerald-400 text-[10px] whitespace-nowrap">
           LIVE
         </span>
 
-        {/* Spacer */}
         <div className="flex-1 min-w-[10px]"></div>
 
-        {/* Market Type Toggle */}
         <div className="flex gap-1">
           <button
             onClick={() => setMarketType("spot")}
@@ -304,82 +297,87 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
           </button>
         </div>
 
-        {/* Exchange Dropdown */}
-        <div ref={exchangeRef} className="relative">
+<div ref={exchangeRef} className="relative">
+  <button
+    onClick={() => setExchangeOpen((v) => !v)}
+    className="
+      h-6 px-2 rounded
+      bg-[#0b1f1f]
+      border border-white/10
+      text-white text-[10px]
+      flex items-center gap-1
+      cursor-pointer
+      hover:bg-white/5
+      transition-all
+      whitespace-nowrap
+    "
+  >
+    <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
+    <span
+      className={`
+        text-white/50 text-[9px]
+        transition-transform duration-200
+        ${exchangeOpen ? "rotate-180" : ""}
+      `}
+    >
+      ▾
+    </span>
+  </button>
+
+  {exchangeOpen && (() => {
+    const buttonRect = exchangeRef.current?.getBoundingClientRect();
+    const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
+
+    return (
+      <div
+        onWheel={(e) => e.stopPropagation()}
+        className={`
+          absolute mt-1 z-50
+          w-[100px]
+          max-h-[140px]
+          overflow-y-auto
+          bg-[#0b1f1f]
+          border border-emerald-500/20
+          rounded
+          shadow-lg
+          animate-in fade-in slide-in-from-top-2 duration-200
+
+          [&::-webkit-scrollbar]:w-1
+          [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-track]:bg-transparent
+
+          ${shouldOpenLeft ? 'right-0' : 'left-0'}
+        `}
+      >
+        {EXCHANGES.map((ex) => (
           <button
-            onClick={() => setExchangeOpen((v) => !v)}
+            key={ex.id}
+            onClick={() => {
+              setExchange(ex.id as Exchange);
+              setExchangeOpen(false);
+            }}
             className="
-              h-6 px-2 rounded
-              bg-[#0b1f1f]
-              border border-white/10
-              text-white text-[10px]
-              flex items-center gap-1
-              cursor-pointer
-              hover:bg-white/5
-              transition-all
-              whitespace-nowrap
+              w-full px-2 py-1.5
+              text-left text-[10px]
+              bg-transparent cursor-pointer
+              text-white
+              transition-colors
+              hover:bg-emerald-500/10
+              hover:text-emerald-400
             "
           >
-            <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
-            <span
-              className={`
-                text-white/50 text-[9px]
-                transition-transform duration-200
-                ${exchangeOpen ? "rotate-180" : ""}
-              `}
-            >
-              ▾
-            </span>
+            {ex.name}
           </button>
-
-          {exchangeOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute right-0 mt-1 z-50
-                w-[100px]
-                max-h-[140px]
-                overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
-
-                [&::-webkit-scrollbar]:w-1
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-transparent
-              "
-            >
-              {EXCHANGES.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => {
-                    setExchange(ex.id as Exchange);
-                    setExchangeOpen(false);
-                  }}
-                  className="
-                    w-full px-2 py-1.5
-                    text-left text-[10px]
-                    bg-transparent cursor-pointer
-                    text-white
-                    transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
-                  "
-                >
-                  {ex.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        ))}
+      </div>
+    );
+  })()}
+</div>
       </div>
 
-{/* 🔥 Sort Options + Add Button - CONTAINER RESPONSIVE */}
 <div className="px-2 py-1.5 border-y border-white/10 flex-shrink-0">
-  <div className="grid grid-cols-4 gap-1.5">
+  <div className="grid grid-cols-2 gap-1.5">
     {/* Score Button */}
     <button
       type="button"
@@ -404,7 +402,6 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
       Score
     </button>
 
-    {/* Spread Button */}
     <button
       type="button"
       onClick={() => setSortBy("spread")}
@@ -428,7 +425,6 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
       Spread
     </button>
 
-    {/* Volume Button */}
     <button
       type="button"
       onClick={() => setSortBy("volume")}
@@ -452,7 +448,6 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
       Volume
     </button>
 
-    {/* Add Button */}
     <button
       type="button"
       onClick={() => setShowAddForm(!showAddForm)}
@@ -465,7 +460,6 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
   </div>
 </div>
 
-      {/* Add Symbol Form */}
       {showAddForm && (
         <div className="px-2 py-1.5 border-b border-white/10 bg-white/5 flex-shrink-0">
           <div className="flex items-center gap-1.5 mb-1.5">
@@ -496,7 +490,6 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* Content */}
       <div
         ref={contentRef}
         className="

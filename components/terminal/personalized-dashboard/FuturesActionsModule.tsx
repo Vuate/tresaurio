@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/FuturesActionsModule.tsx
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
@@ -167,7 +166,6 @@ export default function FuturesActionsModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* 🎯 Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           ⚡ Futures Actions
@@ -319,7 +317,6 @@ export default function FuturesActionsModule({ instanceId }: Props) {
             </button>
           </div>
 
-          {/* Symbol Input */}
           <div>
             <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
               Symbol
@@ -402,7 +399,6 @@ export default function FuturesActionsModule({ instanceId }: Props) {
             </div>
           )}
 
-          {/* Submit Button */}
           <button
             onClick={handleSubmit}
             disabled={!quantity || !price}
@@ -432,7 +428,6 @@ export default function FuturesActionsModule({ instanceId }: Props) {
             )}
           </button>
 
-          {/* Quick Symbol Presets - 2 COLUMNS, compact text */}
           <div className="pt-3 border-t border-white/10">
             <div className="text-white/50 text-[10px] mb-2 font-medium">Quick Presets</div>
             <div className="grid grid-cols-2 gap-1.5">
@@ -464,7 +459,6 @@ export default function FuturesActionsModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* 🔥 Leverage Section - FIXED AT BOTTOM */}
       <div className="flex-shrink-0 p-2.5 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-t border-yellow-500/20">
         <div className="flex items-start gap-1.5 mb-2">
           <AlertCircle className="w-3 h-3 text-yellow-400 shrink-0 mt-0.5" />
@@ -497,7 +491,6 @@ export default function FuturesActionsModule({ instanceId }: Props) {
           className="w-full accent-blue-500 mb-2"
         />
 
-        {/* Quick Leverage Presets - 3 columns, compact */}
         <div>
           <div className="text-white/50 text-[10px] mb-1.5 font-medium">Quick</div>
           <div className="grid grid-cols-3 gap-1">

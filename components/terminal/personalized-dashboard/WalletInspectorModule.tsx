@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/WalletInspectorModule.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -32,7 +31,7 @@ const CHAINS = [
   { id: "solana" as Chain, name: "Solana", short: "SOL", explorer: "Solscan" },
 ];
 
-// 🔥 Validate address based on chain
+// Validate address based on chain
 const validateAddress = (address: string, chain: Chain): boolean => {
   switch (chain) {
     case "ethereum":
@@ -50,7 +49,7 @@ const validateAddress = (address: string, chain: Chain): boolean => {
   }
 };
 
-// 🔥 Fetch wallet data via server-side API (avoids CORS issues)
+//  Fetch wallet data via server-side API (avoids CORS issues)
 const fetchWalletData = async (address: string, chain: Chain): Promise<WalletData> => {
   // Validate address based on chain
   if (!validateAddress(address, chain)) {
@@ -189,26 +188,20 @@ export default function WalletInspectorModule({ instanceId }: Props) {
 
   return (
     <div className="h-full flex flex-col relative">
-      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title - Can wrap independently */}
         <span className="font-semibold text-white/90 text-xs">
           Wallet Inspector
         </span>
         
-        {/* Separator dot */}
         <span className="text-white/40 text-xs">•</span>
         
-        {/* LIVE indicator - Can wrap independently */}
         <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-emerald-400">LIVE</span>
         </span>
 
-        {/* Spacer to push following items to the right when on same line */}
         <div className="flex-1 min-w-[20px]"></div>
 
-{/* Chain Selector - Can wrap independently */}
 <div ref={chainDropdownRef} className="relative">
   <button
     onClick={() => setChainDropdownOpen((v) => !v)}
@@ -237,7 +230,6 @@ export default function WalletInspectorModule({ instanceId }: Props) {
   </button>
 
   {chainDropdownOpen && (() => {
-    // Butonun pozisyonuna göre dropdown'ın sağda mı solda mı açılacağını belirle
     const buttonRect = chainDropdownRef.current?.getBoundingClientRect();
     const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
 
@@ -290,7 +282,6 @@ export default function WalletInspectorModule({ instanceId }: Props) {
 </div>
       </div>
 
-      {/* Input Section */}
       <div className="flex flex-col gap-2 px-3 pb-2 flex-shrink-0">
         <input
           type="text"
@@ -315,7 +306,6 @@ export default function WalletInspectorModule({ instanceId }: Props) {
         </button>
       </div>
 
-      {/* Content - FIXED SCROLL CONTAINER */}
       <div
         ref={contentRef}
         className="
@@ -347,7 +337,6 @@ export default function WalletInspectorModule({ instanceId }: Props) {
           </div>
         ) : (
           <div className="space-y-2">
-            {/* Address Card */}
             <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
               <div className="text-[10px] text-white/60 mb-1">Address</div>
               <div className="text-xs font-mono text-white break-all leading-relaxed">
@@ -355,7 +344,6 @@ export default function WalletInspectorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Total Value Card */}
             <div className="px-3 py-2 rounded-md bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20">
               <div className="text-[10px] text-white/60 mb-1">Total Value</div>
               <div className="text-xl sm:text-2xl font-bold text-white font-mono break-words">
@@ -366,7 +354,6 @@ export default function WalletInspectorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Native Balance Card */}
             <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
               <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1">
                 <span className="text-xs text-white/60 whitespace-nowrap">
@@ -378,7 +365,6 @@ export default function WalletInspectorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            {/* Token Holdings */}
             {walletData.tokens.length > 0 && (
               <div>
                 <div className="text-xs font-semibold text-white/90 mb-1.5 px-1">
@@ -407,7 +393,6 @@ export default function WalletInspectorModule({ instanceId }: Props) {
               </div>
             )}
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-2">
               <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
                 <div className="text-[10px] text-white/60 mb-1">NFTs</div>

@@ -1,4 +1,3 @@
-// lib/email.ts
 // Email service using Resend
 
 import { Resend } from "resend";

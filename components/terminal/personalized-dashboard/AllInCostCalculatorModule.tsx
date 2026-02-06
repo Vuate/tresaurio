@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/AllInCostCalculatorModule.tsx
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
@@ -111,7 +110,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
     }
   }, [tokens, tokensStorageKey]);
 
-  // Token dropdown outside click
   useEffect(() => {
     if (!tokenOpen) return;
 
@@ -127,7 +125,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
     };
   }, [tokenOpen]);
 
-  // Exchange dropdown outside click
   useEffect(() => {
     if (!exchangeOpen) return;
 
@@ -146,7 +143,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
     };
   }, [exchangeOpen]);
 
-  // VIP Level dropdown outside click
   useEffect(() => {
     if (!vipOpen) return;
 
@@ -162,7 +158,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
     };
   }, [vipOpen]);
 
-  // Leverage dropdown outside click
   useEffect(() => {
     if (!leverageOpen) return;
 
@@ -181,7 +176,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
     };
   }, [leverageOpen]);
 
-  // 🔒 Modal scroll lock
   useEffect(() => {
     if (showAddModal) {
       document.body.style.overflow = "hidden";
@@ -354,17 +348,13 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
         showAddModal ? "overflow-hidden" : ""
       }`}
     >
-      {/* 🎯 Responsive Header - SpreadMonitor Style */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title */}
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           All-In Cost Calculator
         </span>
 
-        {/* Spacer */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Token Dropdown */}
         <div ref={tokenRef} className="relative">
           <button
             onClick={() => setTokenOpen((v) => !v)}
@@ -439,7 +429,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
           )}
         </div>
 
-        {/* Exchange Dropdown */}
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
@@ -511,7 +500,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
           )}
         </div>
 
-        {/* Add Button */}
         <button
           onClick={() => setShowAddModal(true)}
           className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
@@ -532,7 +520,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Content */}
       <div
         ref={contentRef}
         className="
@@ -973,7 +960,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
         </div>
       </div>
 
-      {/* 🔧 Modal - Full Screen SpreadMonitor Style */}
       {showAddModal && (
         <div
           className="
@@ -994,7 +980,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          {/* Modal Header */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
             <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Token
@@ -1007,7 +992,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             </button>
           </div>
 
-          {/* Modal Content */}
           <div
             className="
               flex-1 min-h-0 overflow-y-auto p-3
@@ -1025,7 +1009,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
-              {/* Custom Input */}
               <div>
                 <label className="block text-white/50 mb-1 text-[10px]">
                   Symbol (e.g., BTCUSDT)
@@ -1051,7 +1034,6 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
                 />
               </div>
 
-              {/* Popular Tokens */}
               <div>
                 <label className="block text-white/50 mb-2 text-[10px]">
                   Popular Tokens

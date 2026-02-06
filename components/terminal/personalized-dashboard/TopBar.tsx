@@ -18,7 +18,6 @@ export default function TopBar() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
-  /* Yükseklik ölçümü */
   useEffect(() => {
     const measureHeight = () => {
       if (topBarRef.current) {
@@ -36,7 +35,7 @@ export default function TopBar() {
   return (
     <div
       ref={topBarRef} 
-      data-topbar  // 🔥🔥🔥 BU SATIR EKLENDİ 🔥🔥🔥
+      data-topbar 
       onMouseDown={(e) => e.preventDefault()}
       className="fixed top-0 left-0 right-0 z-50 
         h-11 sm:h-12 md:h-14
@@ -45,9 +44,7 @@ export default function TopBar() {
         bg-[#031A1C]/95 backdrop-blur
         border-b border-white/10 select-none"
     >
-      {/* SOL TARAF */}
       <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
-        {/* BACK BUTTON */}
         <button
           onClick={() => router.back()}
           className="flex items-center justify-center
@@ -116,12 +113,10 @@ export default function TopBar() {
         </div>
       </div>
 
-      {/* SAĞ TARAF */}
       <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-shrink-0">
         {status === "loading" ? (
           <div className="w-6 h-6 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 rounded-full bg-white/10 animate-pulse" />
         ) : session?.user ? (
-          /* Giriş yapmış kullanıcı */
           <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3">
             <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
               {session.user.image ? (
@@ -148,13 +143,12 @@ export default function TopBar() {
                 text-white/60 
                 text-[9px] sm:text-[10px] md:text-xs lg:text-sm
                 hover:bg-white/10 hover:text-white/80 transition
-                whitespace-nowrap"
+                whitespace-nowrap cursor-pointer"
             >
               Çıkış
             </button>
           </div>
         ) : (
-          /* Giriş yapmamış kullanıcı - "Terminale Giriş" butonu */
           <button
             onClick={() => {
               setAuthMode("login");
@@ -190,7 +184,6 @@ export default function TopBar() {
         )}
       </div>
 
-      {/* Auth Modal */}
       <AuthModal
         open={showAuthModal}
         mode={authMode}

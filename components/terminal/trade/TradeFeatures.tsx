@@ -3,7 +3,6 @@ import { Icon } from "@iconify/react";
 export default function TradeFeatures() {
   return (
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
           Ana Özellikler
@@ -13,7 +12,6 @@ export default function TradeFeatures() {
         </p>
       </div>
 
-      {/* Features Grid */}
       <div className="features-grid grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
         {/* CARD 1 */}
         <div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur transition hover:border-teal-400/40 hover:bg-white/[0.05]">

@@ -114,7 +114,6 @@ export default function Navbar() {
           <button onClick={() => router.push("/pricing")}>PRICING</button>
         </div>
 
-        {/* Auth Section */}
         <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 xl:gap-3.5 2xl:gap-4 flex-shrink-0">
           {isLoggedIn ? (
             <UserMenu />

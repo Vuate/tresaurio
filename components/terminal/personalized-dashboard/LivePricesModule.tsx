@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/LivePricesModule.tsx
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -131,13 +130,10 @@ export default function LivePricesModule({
     };
   }, [exchangeOpen]);
 
-  // 🔒 Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showAddModal) {
-      // Ana sayfanın scroll'unu kilitle
       document.body.style.overflow = 'hidden';
       
-      // Component'in kendi scroll'unu da kilitle
       if (contentRef.current) {
         const scrollTop = contentRef.current.scrollTop;
         contentRef.current.style.overflow = 'hidden';
@@ -146,7 +142,6 @@ export default function LivePricesModule({
     }
 
     return () => {
-      // Modal kapanınca geri aç
       document.body.style.overflow = '';
       if (contentRef.current) {
         contentRef.current.style.overflow = '';
@@ -264,23 +259,17 @@ export default function LivePricesModule({
 
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
-      {/* 🎯 Fully Responsive Header - Every element wraps independently */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title - Can wrap independently */}
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           Live Prices ({marketType === "spot" ? "Spot" : "Futures"})
         </span>
         
-        {/* Separator dot */}
         <span className="text-white/40 text-xs">•</span>
         
-        {/* LIVE indicator - Can wrap independently */}
         <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
-        {/* Spacer to push following items to the right when on same line */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Exchange Selector - Can wrap independently */}
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
@@ -352,7 +341,6 @@ export default function LivePricesModule({
           )}
         </div>
 
-        {/* Add Button - Can wrap independently */}
         <button
           onClick={() => setShowAddModal(true)}
           className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
@@ -362,7 +350,6 @@ export default function LivePricesModule({
         </button>
       </div>
 
-      {/* Watchlist */}
       <div
         ref={contentRef}
         className="
@@ -397,7 +384,6 @@ export default function LivePricesModule({
                   key={symbol}
                   className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
                 >
-                  {/* Trend Icon - Can wrap independently */}
                   <div
                     className={`font-semibold shrink-0 ${
                       isPositive ? "text-emerald-400" : "text-red-400"
@@ -410,30 +396,24 @@ export default function LivePricesModule({
                     )}
                   </div>
 
-                  {/* Symbol Name - Can wrap independently */}
                   <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
                     {symbol}
                   </div>
 
-                  {/* Exchange Name - Can wrap independently */}
                   <div className="text-white/40 leading-tight text-[10px] whitespace-nowrap shrink-0">
                     {exchange.toUpperCase()}
                   </div>
 
-                  {/* Separator dot - Can wrap independently */}
                   <div className="text-white/40 leading-tight text-[10px] shrink-0">
                     •
                   </div>
 
-                  {/* Market Type - Can wrap independently */}
                   <div className="text-white/40 leading-tight text-[10px] whitespace-nowrap shrink-0">
                     {marketType === "spot" ? "SPOT" : "FUTURES"}
                   </div>
 
-                  {/* Spacer - pushes price to right when on same line */}
                   <div className="flex-1 min-w-[10px]"></div>
 
-                  {/* Price - Can wrap independently */}
                   <div className="text-white font-mono leading-tight text-xs whitespace-nowrap shrink-0">
                     {price > 0 ? (
                       `$${price.toLocaleString(undefined, {
@@ -445,7 +425,6 @@ export default function LivePricesModule({
                     )}
                   </div>
 
-                  {/* Change Percentage - Can wrap independently */}
                   {price > 0 && (
                     <div
                       className={`font-semibold leading-tight text-[10px] whitespace-nowrap shrink-0 ${
@@ -457,7 +436,6 @@ export default function LivePricesModule({
                     </div>
                   )}
 
-                  {/* Delete Button - Can wrap independently */}
                   <button
                     onClick={() => removeSymbol(symbol)}
                     className="
@@ -478,7 +456,6 @@ export default function LivePricesModule({
         </div>
       </div>
 
-      {/* 🔧 Modal - TRULY FULL SCREEN */}
       {showAddModal && (
         <div 
           className="
@@ -499,7 +476,6 @@ export default function LivePricesModule({
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          {/* Modal Header - Fully responsive pattern */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
             <span className="text-white font-semibold text-xs whitespace-nowrap">
               Add Symbol ({marketType === "spot" ? "Spot" : "Futures"})
@@ -512,7 +488,6 @@ export default function LivePricesModule({
             </button>
           </div>
 
-          {/* Modal Content */}
           <div
             className="
               flex-1 min-h-0 overflow-y-auto p-3
@@ -530,7 +505,6 @@ export default function LivePricesModule({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
-              {/* Custom Pair Input */}
               <div className="space-y-2">
                 <label className="block text-white/50 font-medium text-[10px]">
                   Add Custom Pair
@@ -574,7 +548,6 @@ export default function LivePricesModule({
                 </div>
               </div>
 
-              {/* Popular Base Assets */}
               <div>
                 <label className="block text-white/50 mb-2 font-medium text-[10px]">
                   Popular Base Assets
@@ -608,7 +581,6 @@ export default function LivePricesModule({
                 </div>
               </div>
 
-              {/* Popular Quote Assets */}
               <div>
                 <label className="block text-white/50 mb-2 font-medium text-[10px]">
                   Popular Quote Assets

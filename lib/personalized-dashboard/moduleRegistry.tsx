@@ -1,4 +1,3 @@
-// lib/personalized-dashboard/moduleRegistry.tsx
 
 import type { ModuleCategory } from "./types";
 import type { ReactNode } from "react";

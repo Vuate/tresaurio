@@ -1,4 +1,3 @@
-// components/terminal/personalized-dashboard/ActiveAlertsModule.tsx
 "use client";
 
 import { useEffect } from "react";
