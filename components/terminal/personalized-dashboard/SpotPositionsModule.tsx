@@ -27,7 +27,10 @@ interface SpotBalance {
   usdValue?: number;
 }
 
-const EXCHANGE_FORMATS: Record<string, (base: string, quote: string) => string> = {
+const EXCHANGE_FORMATS: Record<
+  string,
+  (base: string, quote: string) => string
+> = {
   binance: (base, quote) => `${base}${quote}`,
   okx: (base, quote) => `${base}-${quote}`,
   bybit: (base, quote) => `${base}${quote}`,
@@ -67,7 +70,8 @@ function useWindowSizeCheck() {
 }
 
 export default function SpotPositionsModule({ instanceId }: Props) {
-  const { spotPositions, addSpotPosition, removeSpotPosition } = usePortfolioStore();
+  const { spotPositions, addSpotPosition, removeSpotPosition } =
+    usePortfolioStore();
   const prices = usePriceStore((s) => s.prices);
   const { data: session } = useSession();
 
@@ -130,7 +134,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     (exchange: string) => {
       return apiKeys.some((k) => k.exchange === exchange && k.isActive);
     },
-    [apiKeys]
+    [apiKeys],
   );
 
   // Close exchange dropdown on outside click
@@ -138,7 +142,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     if (!exchangeOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (exchangeRef.current && !exchangeRef.current.contains(e.target as Node)) {
+      if (
+        exchangeRef.current &&
+        !exchangeRef.current.contains(e.target as Node)
+      ) {
         setExchangeOpen(false);
       }
     };
@@ -154,7 +161,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     if (!exchangeModalOpen) return;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (exchangeModalRef.current && !exchangeModalRef.current.contains(e.target as Node)) {
+      if (
+        exchangeModalRef.current &&
+        !exchangeModalRef.current.contains(e.target as Node)
+      ) {
         setExchangeModalOpen(false);
       }
     };
@@ -168,19 +178,19 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   // 🔒 Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
     if (showAddModal || showApiKeyModal) {
-      document.body.style.overflow = 'hidden';
-      
+      document.body.style.overflow = "hidden";
+
       if (contentRef.current) {
         const scrollTop = contentRef.current.scrollTop;
-        contentRef.current.style.overflow = 'hidden';
+        contentRef.current.style.overflow = "hidden";
         contentRef.current.scrollTop = scrollTop;
       }
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
       if (contentRef.current) {
-        contentRef.current.style.overflow = '';
+        contentRef.current.style.overflow = "";
       }
     };
   }, [showAddModal, showApiKeyModal]);
@@ -195,7 +205,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     setSyncError(null);
 
     try {
-      const response = await fetch(`/api/exchange/account?exchange=${selectedExchange}`);
+      const response = await fetch(
+        `/api/exchange/account?exchange=${selectedExchange}`,
+      );
       const data = await response.json();
 
       if (!data.success) {
@@ -210,11 +222,14 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           const symbol = `${balance.asset}USDT`;
           try {
             const priceRes = await fetch(
-              `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
+              `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`,
             );
             if (priceRes.ok) {
               const priceData = await priceRes.json();
-              return { asset: balance.asset, price: parseFloat(priceData.price) };
+              return {
+                asset: balance.asset,
+                price: parseFloat(priceData.price),
+              };
             }
           } catch {
             // Ignore price fetch errors
@@ -223,14 +238,17 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         });
 
       const pricesData = await Promise.all(pricePromises);
-      const priceMap = Object.fromEntries(pricesData.map((p) => [p.asset, p.price]));
+      const priceMap = Object.fromEntries(
+        pricesData.map((p) => [p.asset, p.price]),
+      );
 
       balances
         .filter((b) => b.total > 0 && b.asset !== "USDT" && b.asset !== "USDC")
         .forEach((balance) => {
           const price = priceMap[balance.asset] || 0;
           const existingPosition = spotPositions.find(
-            (p) => p.exchange === selectedExchange && p.baseAsset === balance.asset
+            (p) =>
+              p.exchange === selectedExchange && p.baseAsset === balance.asset,
           );
 
           if (!existingPosition && price > 0) {
@@ -337,19 +355,30 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   };
 
   const portfolio = useMemo(() => {
-    const totalInvestment = spotPositions.reduce((sum, p) => sum + p.totalCost, 0);
+    const totalInvestment = spotPositions.reduce(
+      (sum, p) => sum + p.totalCost,
+      0,
+    );
     const currentValue = spotPositions.reduce((sum, p) => {
       const currentPrice = prices[p.symbol] || p.currentPrice;
       return sum + p.quantity * currentPrice;
     }, 0);
     const totalPnL = currentValue - totalInvestment;
-    const totalPnLPercent = totalInvestment > 0 ? (totalPnL / totalInvestment) * 100 : 0;
+    const totalPnLPercent =
+      totalInvestment > 0 ? (totalPnL / totalInvestment) * 100 : 0;
     return { totalInvestment, currentValue, totalPnL, totalPnLPercent };
   }, [spotPositions, prices]);
 
   const addPosition = () => {
-    const { exchange, baseAsset, quoteAsset, entryPrice, quantity, entryDate, notes } =
-      formData;
+    const {
+      exchange,
+      baseAsset,
+      quoteAsset,
+      entryPrice,
+      quantity,
+      entryDate,
+      notes,
+    } = formData;
 
     if (!exchange || !baseAsset || !quoteAsset || !entryPrice || !quantity) {
       alert("Please fill all required fields");
@@ -366,7 +395,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       return;
     }
 
-    const formattedPair = EXCHANGE_FORMATS[exchange]?.(base, quote) || `${base}${quote}`;
+    const formattedPair =
+      EXCHANGE_FORMATS[exchange]?.(base, quote) || `${base}${quote}`;
 
     addSpotPosition({
       exchange,
@@ -428,7 +458,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   }
 
   return (
-    <div className={`h-full flex flex-col relative ${showAddModal || showApiKeyModal ? 'overflow-hidden' : ''}`}>
+    <div
+      className={`h-full flex flex-col relative ${showAddModal || showApiKeyModal ? "overflow-hidden" : ""}`}
+    >
       {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
@@ -509,7 +541,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                   "
                 >
                   <span>{ex.toUpperCase()}</span>
-                  {hasApiKey(ex) && <span className="text-emerald-400 text-[10px]">✓</span>}
+                  {hasApiKey(ex) && (
+                    <span className="text-emerald-400 text-[10px]">✓</span>
+                  )}
                 </button>
               ))}
             </div>
@@ -534,7 +568,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 whitespace-nowrap
               "
             >
-              <RefreshCw className={`w-3 h-3 ${syncing ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`w-3 h-3 ${syncing ? "animate-spin" : ""}`}
+              />
               <span>{syncing ? "Syncing..." : "Sync"}</span>
             </button>
             <button
@@ -623,7 +659,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               Investment
             </div>
             <div className="text-white font-semibold text-xs break-words leading-tight">
-              ${portfolio.totalInvestment.toLocaleString(undefined, {
+              $
+              {portfolio.totalInvestment.toLocaleString(undefined, {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               })}
@@ -634,7 +671,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               Value
             </div>
             <div className="text-white font-semibold text-xs break-words leading-tight">
-              ${portfolio.currentValue.toLocaleString(undefined, {
+              $
+              {portfolio.currentValue.toLocaleString(undefined, {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               })}
@@ -649,8 +687,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 portfolio.totalPnL >= 0 ? "text-emerald-400" : "text-red-400"
               }`}
             >
-              {portfolio.totalPnL >= 0 ? "+" : ""}
-              ${Math.abs(portfolio.totalPnL).toLocaleString(undefined, {
+              {portfolio.totalPnL >= 0 ? "+" : ""}$
+              {Math.abs(portfolio.totalPnL).toLocaleString(undefined, {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               })}
@@ -662,7 +700,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </div>
             <div
               className={`font-semibold text-xs break-words leading-tight ${
-                portfolio.totalPnLPercent >= 0 ? "text-emerald-400" : "text-red-400"
+                portfolio.totalPnLPercent >= 0
+                  ? "text-emerald-400"
+                  : "text-red-400"
               }`}
             >
               {portfolio.totalPnLPercent >= 0 ? "+" : ""}
@@ -719,8 +759,13 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         ) : (
           <div className="space-y-2">
             {spotPositions.map((position) => {
-              const { currentValue, pnl, pnlPercent, currentPrice, priceChange } =
-                calculatePnL(position);
+              const {
+                currentValue,
+                pnl,
+                pnlPercent,
+                currentPrice,
+                priceChange,
+              } = calculatePnL(position);
               return (
                 <div
                   key={position.id}
@@ -756,16 +801,21 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                   {/* Metrics Grid - Fully responsive */}
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] mb-2">
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">Entry</div>
+                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                        Entry
+                      </div>
                       <div className="text-white font-semibold break-words leading-tight truncate">
                         ${position.entryPrice.toLocaleString()}
                       </div>
                     </div>
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">Current</div>
+                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                        Current
+                      </div>
                       <div className="text-white font-semibold flex items-start gap-1 flex-wrap leading-tight">
                         <span className="break-words truncate">
-                          ${currentPrice.toLocaleString(undefined, {
+                          $
+                          {currentPrice.toLocaleString(undefined, {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 6,
                           })}
@@ -773,7 +823,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                         {priceChange !== 0 && (
                           <span
                             className={`text-[8px] shrink-0 ${
-                              priceChange > 0 ? "text-emerald-400" : "text-red-400"
+                              priceChange > 0
+                                ? "text-emerald-400"
+                                : "text-red-400"
                             }`}
                           >
                             {priceChange > 0 ? "↑" : "↓"}
@@ -782,7 +834,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                       </div>
                     </div>
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">Qty</div>
+                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                        Qty
+                      </div>
                       <div className="text-white font-semibold break-words leading-tight truncate">
                         {position.quantity.toLocaleString(undefined, {
                           minimumFractionDigits: 4,
@@ -791,25 +845,33 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                       </div>
                     </div>
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">Cost</div>
+                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                        Cost
+                      </div>
                       <div className="text-white font-semibold break-words leading-tight truncate">
-                        ${position.totalCost.toLocaleString(undefined, {
+                        $
+                        {position.totalCost.toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })}
                       </div>
                     </div>
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">Value</div>
+                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                        Value
+                      </div>
                       <div className="text-white font-semibold break-words leading-tight truncate">
-                        ${currentValue.toLocaleString(undefined, {
+                        $
+                        {currentValue.toLocaleString(undefined, {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
                         })}
                       </div>
                     </div>
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0 overflow-hidden">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">P&L</div>
+                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                        P&L
+                      </div>
                       <div
                         className={`font-semibold break-words leading-tight ${
                           pnl >= 0 ? "text-emerald-400" : "text-red-400"
@@ -845,7 +907,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
       {/* 🔧 Add Position Modal - TRULY FULL SCREEN */}
       {showAddModal && (
-        <div 
+        <div
           className="
             fixed inset-0
             bg-[#0a0e1a] z-[100]
@@ -903,9 +965,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                   Exchange
                 </label>
                 <div ref={exchangeModalRef} className="relative">
-<button
-  onClick={() => setExchangeModalOpen((v) => !v)}
-  className="
+                  <button
+                    onClick={() => setExchangeModalOpen((v) => !v)}
+                    className="
     w-full h-9
     flex items-center justify-between
     bg-white/5
@@ -916,17 +978,23 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     hover:bg-white/8
     transition-colors
   "
->
-  <span>{formData.exchange ? formData.exchange.toUpperCase() : "Select Exchange"}</span>
-  <span className={`text-white/50 transition-transform ${exchangeModalOpen ? "rotate-180" : ""}`}>
-    ▾
-  </span>
-</button>
+                  >
+                    <span>
+                      {formData.exchange
+                        ? formData.exchange.toUpperCase()
+                        : "Select Exchange"}
+                    </span>
+                    <span
+                      className={`text-white/50 transition-transform ${exchangeModalOpen ? "rotate-180" : ""}`}
+                    >
+                      ▾
+                    </span>
+                  </button>
 
-{exchangeModalOpen && (
-  <div
-    onWheel={(e) => e.stopPropagation()}
-    className="
+                  {exchangeModalOpen && (
+                    <div
+                      onWheel={(e) => e.stopPropagation()}
+                      className="
       absolute z-50 mt-1 w-full
       max-h-[120px] overflow-y-auto
       bg-[#0a0e1a]
@@ -939,15 +1007,15 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
-  >
-    {ALL_EXCHANGES.map((ex) => (
-      <button
-        key={ex}
-        onClick={() => {
-          setFormData({ ...formData, exchange: ex });
-          setExchangeModalOpen(false);
-        }}
-        className="
+                    >
+                      {ALL_EXCHANGES.map((ex) => (
+                        <button
+                          key={ex}
+                          onClick={() => {
+                            setFormData({ ...formData, exchange: ex });
+                            setExchangeModalOpen(false);
+                          }}
+                          className="
           w-full px-3 py-2
           text-left text-xs
           cursor-pointer
@@ -957,12 +1025,12 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           hover:bg-white/10
           hover:text-white
         "
-      >
-        {ex.toUpperCase()}
-      </button>
-    ))}
-  </div>
-)}
+                        >
+                          {ex.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -976,7 +1044,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                     type="text"
                     value={formData.baseAsset}
                     onChange={(e) =>
-                      setFormData({ ...formData, baseAsset: e.target.value.toUpperCase() })
+                      setFormData({
+                        ...formData,
+                        baseAsset: e.target.value.toUpperCase(),
+                      })
                     }
                     placeholder="BTC"
                     className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
@@ -990,7 +1061,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                     type="text"
                     value={formData.quoteAsset}
                     onChange={(e) =>
-                      setFormData({ ...formData, quoteAsset: e.target.value.toUpperCase() })
+                      setFormData({
+                        ...formData,
+                        quoteAsset: e.target.value.toUpperCase(),
+                      })
                     }
                     placeholder="USDT"
                     className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
@@ -1021,7 +1095,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                   <input
                     type="number"
                     value={formData.quantity}
-                    onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, quantity: e.target.value })
+                    }
                     placeholder="0.00"
                     className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
                   />
@@ -1046,7 +1122,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 <input
                   type="date"
                   value={formData.entryDate}
-                  onChange={(e) => setFormData({ ...formData, entryDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, entryDate: e.target.value })
+                  }
                   className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
                 />
               </div>
@@ -1059,7 +1137,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 <input
                   type="text"
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                   placeholder="Any notes..."
                   className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
                 />
@@ -1081,7 +1161,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
       {/* 🔧 API Key Modal - TRULY FULL SCREEN */}
       {showApiKeyModal && (
-        <div 
+        <div
           className="
             fixed inset-0
             bg-[#0a0e1a] z-[100]
@@ -1100,27 +1180,28 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-{/* Modal Header */}
-<div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-  <div className="flex items-center gap-2 flex-wrap">
-    <Key className="w-4 h-4 text-white shrink-0" />
-    <span className="text-white font-semibold text-xs">
-      Connect Exchange API
-    </span>
-  </div>
-  <button
-    onClick={() => setShowApiKeyModal(false)}
-    className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto shrink-0"
-  >
-    ×
-  </button>
-</div>
+          {/* Modal Header */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Key className="w-4 h-4 text-white shrink-0" />
+              <span className="text-white font-semibold text-xs">
+                Connect Exchange API
+              </span>
+            </div>
+            <button
+              onClick={() => setShowApiKeyModal(false)}
+              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto shrink-0"
+            >
+              ×
+            </button>
+          </div>
 
           {/* Warning - FIXED, NO SCROLL */}
           <div className="p-3 bg-yellow-500/10 border-b border-yellow-500/30 flex items-start gap-2 flex-shrink-0">
             <span className="text-yellow-400 text-lg shrink-0">⚠️</span>
             <div className="text-yellow-400 text-[10px] break-words flex-1">
-              Only use READ-ONLY API keys! Never share keys with withdrawal permissions.
+              Only use READ-ONLY API keys! Never share keys with withdrawal
+              permissions.
             </div>
           </div>
 
@@ -1144,19 +1225,18 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
-
-{/* Exchange */}
-<div>
-  <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
-    Exchange
-  </label>
-  <div className="relative">
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        setExchangeModalOpen((v) => !v);
-      }}
-      className="
+              {/* Exchange */}
+              <div>
+                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                  Exchange
+                </label>
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExchangeModalOpen((v) => !v);
+                    }}
+                    className="
         w-full h-9
         flex items-center justify-between
         bg-white/5
@@ -1167,17 +1247,23 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         hover:bg-white/8
         transition-colors
       "
-    >
-      <span>{apiKeyForm.exchange ? apiKeyForm.exchange.toUpperCase() : "Select Exchange"}</span>
-      <span className={`text-white/50 transition-transform ${exchangeModalOpen ? "rotate-180" : ""}`}>
-        ▾
-      </span>
-    </button>
+                  >
+                    <span>
+                      {apiKeyForm.exchange
+                        ? apiKeyForm.exchange.toUpperCase()
+                        : "Select Exchange"}
+                    </span>
+                    <span
+                      className={`text-white/50 transition-transform ${exchangeModalOpen ? "rotate-180" : ""}`}
+                    >
+                      ▾
+                    </span>
+                  </button>
 
-    {exchangeModalOpen && (
-      <div
-        onWheel={(e) => e.stopPropagation()}
-        className="
+                  {exchangeModalOpen && (
+                    <div
+                      onWheel={(e) => e.stopPropagation()}
+                      className="
           absolute z-50 mt-1 w-full
           max-h-[120px] overflow-y-auto
           bg-[#0a0e1a]
@@ -1190,15 +1276,15 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           [&::-webkit-scrollbar-thumb]:rounded-full
           [&::-webkit-scrollbar-track]:bg-transparent
         "
-      >
-        {SUPPORTED_EXCHANGES.map((ex) => (
-          <button
-            key={ex}
-            onClick={() => {
-              setApiKeyForm({ ...apiKeyForm, exchange: ex });
-              setExchangeModalOpen(false);
-            }}
-            className="
+                    >
+                      {SUPPORTED_EXCHANGES.map((ex) => (
+                        <button
+                          key={ex}
+                          onClick={() => {
+                            setApiKeyForm({ ...apiKeyForm, exchange: ex });
+                            setExchangeModalOpen(false);
+                          }}
+                          className="
               w-full px-3 py-2
               text-left text-xs
               cursor-pointer
@@ -1208,14 +1294,14 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               hover:bg-white/10
               hover:text-white
             "
-          >
-            {ex.toUpperCase()}
-          </button>
-        ))}
-      </div>
-    )}
-  </div>
-</div>
+                        >
+                          {ex.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* API Key */}
               <div>
@@ -1250,7 +1336,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               </div>
 
               {/* Passphrase (for OKX/Coinbase) */}
-              {(apiKeyForm.exchange === "okx" || apiKeyForm.exchange === "coinbase") && (
+              {(apiKeyForm.exchange === "okx" ||
+                apiKeyForm.exchange === "coinbase") && (
                 <div>
                   <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
                     Passphrase
@@ -1259,7 +1346,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                     type="password"
                     value={apiKeyForm.passphrase}
                     onChange={(e) =>
-                      setApiKeyForm({ ...apiKeyForm, passphrase: e.target.value })
+                      setApiKeyForm({
+                        ...apiKeyForm,
+                        passphrase: e.target.value,
+                      })
                     }
                     placeholder="Enter your passphrase"
                     className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
