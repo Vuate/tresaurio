@@ -460,6 +460,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     <div
       className={`h-full flex flex-col relative ${showAddModal || showApiKeyModal ? "overflow-hidden" : ""}`}
     >
+      {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           Spot Positions
