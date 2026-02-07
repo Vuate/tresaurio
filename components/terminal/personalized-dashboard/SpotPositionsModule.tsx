@@ -117,6 +117,42 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     fetchApiKeys();
   }, []);
 
+  // Fetch current prices for spot positions
+  useEffect(() => {
+    if (spotPositions.length === 0) return;
+
+    const fetchSpotPrice = async (symbol: string): Promise<number | null> => {
+      try {
+        const res = await fetch(
+          `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          return data.price ? parseFloat(data.price) : null;
+        }
+      } catch (err) {
+        console.error(`Failed to fetch spot price for ${symbol}:`, err);
+      }
+      return null;
+    };
+
+    const fetchAllPrices = async () => {
+      const symbols = [...new Set(spotPositions.map((p) => p.symbol))];
+
+      for (const symbol of symbols) {
+        const price = await fetchSpotPrice(symbol);
+        if (price) {
+          usePriceStore.getState().updatePrice(symbol, price);
+        }
+      }
+    };
+
+    fetchAllPrices();
+    const interval = setInterval(fetchAllPrices, 5000);
+
+    return () => clearInterval(interval);
+  }, [spotPositions]);
+
   const fetchApiKeys = async () => {
     try {
       const response = await fetch("/api/exchange/keys");
@@ -429,7 +465,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     const currentValue = position.quantity * currentPrice;
     const pnl = currentValue - position.totalCost;
     const pnlPercent = (pnl / position.totalCost) * 100;
-    const priceChange = currentPrice - position.currentPrice;
+    const priceChange = currentPrice - position.entryPrice;
     return { currentValue, pnl, pnlPercent, currentPrice, priceChange };
   };
 

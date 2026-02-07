@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useLastOrders } from "@/lib/personalized-dashboard/useLastOrders";
+import { useLastOrders } from "@/hooks/useLastOrders";
 import { RefreshCw, Settings } from "lucide-react";
 
 interface Props {
