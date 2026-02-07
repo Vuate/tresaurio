@@ -1,6 +1,6 @@
 "use client";
 
-import { usePnL } from "@/lib/personalized-dashboard/usePnL";
+import { usePnL } from "@/hooks/usePnL";
 
 interface Props {
   instanceId: string;
