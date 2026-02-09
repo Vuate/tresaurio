@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate exchange
-    const validExchanges = ["binance", "okx", "bybit", "coinbase"];
+    const validExchanges = ["binance", "binance-tr", "okx", "bybit", "coinbase"];
     if (!validExchanges.includes(body.exchange)) {
       return NextResponse.json(
         { success: false, error: `Invalid exchange. Must be one of: ${validExchanges.join(", ")}` },

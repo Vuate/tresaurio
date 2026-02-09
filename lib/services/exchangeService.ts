@@ -44,6 +44,12 @@ export interface OrderResult {
 // Binance Implementation
 // ============================================
 
+async function getBinanceServerTime(): Promise<number> {
+  const response = await fetch("https://api.binance.com/api/v3/time");
+  const data = await response.json();
+  return data.serverTime;
+}
+
 async function binanceRequest(
   endpoint: string,
   method: "GET" | "POST" | "DELETE",
@@ -51,7 +57,7 @@ async function binanceRequest(
   credentials: { apiKey: string; apiSecret: string },
   baseUrl: string = "https://api.binance.com"
 ): Promise<unknown> {
-  const timestamp = Date.now();
+  const timestamp = await getBinanceServerTime();
   const queryParams = new URLSearchParams({
     ...Object.fromEntries(
       Object.entries(params).map(([k, v]) => [k, String(v)])
@@ -311,6 +317,88 @@ async function getBybitSpotBalances(
 }
 
 // ============================================
+// Binance TR Implementation
+// ============================================
+
+async function getBinanceTrServerTime(): Promise<number> {
+  const response = await fetch("https://www.binance.tr/open/v1/common/time");
+  const data = await response.json();
+  return data.timestamp;
+}
+
+async function binanceTrRequest(
+  endpoint: string,
+  method: "GET" | "POST",
+  params: Record<string, string | number> = {},
+  credentials: { apiKey: string; apiSecret: string }
+): Promise<unknown> {
+  const timestamp = await getBinanceTrServerTime();
+  const queryParams = new URLSearchParams({
+    ...Object.fromEntries(
+      Object.entries(params).map(([k, v]) => [k, String(v)])
+    ),
+    timestamp: String(timestamp),
+  });
+
+  const signature = crypto
+    .createHmac("sha256", credentials.apiSecret)
+    .update(queryParams.toString())
+    .digest("hex");
+
+  queryParams.append("signature", signature);
+
+  const url = `https://www.binance.tr${endpoint}?${queryParams.toString()}`;
+
+  const response = await fetch(url, {
+    method,
+    headers: {
+      "X-MBX-APIKEY": credentials.apiKey,
+    },
+  });
+
+  const responseText = await response.text();
+  console.log("[BinanceTR] Response status:", response.status);
+  console.log("[BinanceTR] Response body:", responseText.substring(0, 500));
+
+  if (!responseText) {
+    throw new Error("Binance TR API Error: Empty response - exchange may be blocking requests");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    throw new Error(`Binance TR API Error: Invalid JSON response - ${responseText.substring(0, 200)}`);
+  }
+
+  if (data.code !== 0) {
+    throw new Error(`Binance TR API Error: ${data.msg || "Unknown error"}`);
+  }
+
+  return data.data;
+}
+
+async function getBinanceTrSpotBalances(
+  credentials: { apiKey: string; apiSecret: string }
+): Promise<SpotBalance[]> {
+  const data = (await binanceTrRequest(
+    "/open/v1/account/spot",
+    "GET",
+    {},
+    credentials
+  )) as { accountAssets: { asset: string; free: string; locked: string }[] };
+
+  return data.accountAssets
+    .filter((b) => parseFloat(b.free) > 0 || parseFloat(b.locked) > 0)
+    .map((b) => ({
+      asset: b.asset,
+      free: parseFloat(b.free),
+      locked: parseFloat(b.locked),
+      total: parseFloat(b.free) + parseFloat(b.locked),
+    }));
+}
+
+// ============================================
 // Unified Public Interface
 // ============================================
 
@@ -330,6 +418,8 @@ export async function getSpotBalances(
   switch (exchange) {
     case "binance":
       return getBinanceSpotBalances(credentials);
+    case "binance-tr":
+      return getBinanceTrSpotBalances(credentials);
     case "okx":
       return getOKXSpotBalances(credentials);
     case "bybit":
@@ -358,6 +448,9 @@ export async function getFuturesPositions(
   switch (exchange) {
     case "binance":
       return getBinanceFuturesPositions(credentials);
+    case "binance-tr":
+      // Binance TR does not support futures
+      throw new Error("Binance TR does not support futures trading");
     case "okx":
       // TODO: Implement OKX futures
       throw new Error("OKX futures not implemented yet");
