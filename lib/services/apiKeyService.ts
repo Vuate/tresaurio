@@ -4,7 +4,13 @@
 import prisma from "@/lib/db";
 import { encrypt, decrypt } from "@/lib/encryption";
 
-export type Exchange = "binance" | "binance-tr" | "okx" | "bybit" | "coinbase";
+export type Exchange =
+  | "binance"
+  | "binance-tr"
+  | "okx"
+  | "bybit"
+  | "coinbase"
+  | "hyperliquid";
 export type Permission = "spot" | "futures" | "withdraw";
 
 export interface ApiKeyInput {
@@ -68,7 +74,10 @@ export async function saveApiKey(input: ApiKeyInput): Promise<ApiKeyOutput> {
 /**
  * Get all API keys for a user (without secrets)
  */
-export async function getApiKeys(userId: string, exchange?: Exchange): Promise<ApiKeyOutput[]> {
+export async function getApiKeys(
+  userId: string,
+  exchange?: Exchange,
+): Promise<ApiKeyOutput[]> {
   const where = exchange
     ? { userId, exchange, isActive: true }
     : { userId, isActive: true };
@@ -98,7 +107,7 @@ export async function getApiKeys(userId: string, exchange?: Exchange): Promise<A
 export async function getDecryptedApiKey(
   userId: string,
   exchange: Exchange,
-  label?: string
+  label?: string,
 ): Promise<DecryptedApiKey | null> {
   const where = label
     ? { userId, exchange, label, isActive: true }
@@ -149,7 +158,11 @@ export async function deactivateApiKey(id: string): Promise<void> {
 /**
  * Test API key by making a simple request to the exchange
  */
-export async function testApiKey(userId: string, exchange: Exchange, label?: string): Promise<boolean> {
+export async function testApiKey(
+  userId: string,
+  exchange: Exchange,
+  label?: string,
+): Promise<boolean> {
   try {
     const credentials = await getDecryptedApiKey(userId, exchange, label);
     if (!credentials) return false;
