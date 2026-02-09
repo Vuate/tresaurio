@@ -54,15 +54,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate required fields
-    if (!body.exchange || !body.apiKey || !body.apiSecret) {
+    if (!body.exchange || !body.apiKey) {
       return NextResponse.json(
-        { success: false, error: "Missing required fields: exchange, apiKey, apiSecret" },
+        { success: false, error: "Missing required fields: exchange, apiKey" },
+        { status: 400 }
+      );
+    }
+    if (body.exchange !== "hyperliquid" && !body.apiSecret) {
+      return NextResponse.json(
+        { success: false, error: "API Secret is required for this exchange" },
         { status: 400 }
       );
     }
 
     // Validate exchange
-    const validExchanges = ["binance", "binance-tr", "okx", "bybit", "coinbase"];
+    const validExchanges = ["binance", "binance-tr", "okx", "bybit", "coinbase", "hyperliquid"];
     if (!validExchanges.includes(body.exchange)) {
       return NextResponse.json(
         { success: false, error: `Invalid exchange. Must be one of: ${validExchanges.join(", ")}` },

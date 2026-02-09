@@ -55,12 +55,12 @@ async function binanceRequest(
   method: "GET" | "POST" | "DELETE",
   params: Record<string, string | number> = {},
   credentials: { apiKey: string; apiSecret: string },
-  baseUrl: string = "https://api.binance.com"
+  baseUrl: string = "https://api.binance.com",
 ): Promise<unknown> {
   const timestamp = await getBinanceServerTime();
   const queryParams = new URLSearchParams({
     ...Object.fromEntries(
-      Object.entries(params).map(([k, v]) => [k, String(v)])
+      Object.entries(params).map(([k, v]) => [k, String(v)]),
     ),
     timestamp: String(timestamp),
   });
@@ -86,14 +86,18 @@ async function binanceRequest(
   console.log("[Binance] Response body:", responseText.substring(0, 500));
 
   if (!responseText) {
-    throw new Error("Binance API Error: Empty response - exchange may be blocking requests");
+    throw new Error(
+      "Binance API Error: Empty response - exchange may be blocking requests",
+    );
   }
 
   let data;
   try {
     data = JSON.parse(responseText);
   } catch {
-    throw new Error(`Binance API Error: Invalid JSON response - ${responseText.substring(0, 200)}`);
+    throw new Error(
+      `Binance API Error: Invalid JSON response - ${responseText.substring(0, 200)}`,
+    );
   }
 
   if (!response.ok) {
@@ -103,14 +107,15 @@ async function binanceRequest(
   return data;
 }
 
-async function getBinanceSpotBalances(
-  credentials: { apiKey: string; apiSecret: string }
-): Promise<SpotBalance[]> {
+async function getBinanceSpotBalances(credentials: {
+  apiKey: string;
+  apiSecret: string;
+}): Promise<SpotBalance[]> {
   const data = (await binanceRequest(
     "/api/v3/account",
     "GET",
     {},
-    credentials
+    credentials,
   )) as { balances: { asset: string; free: string; locked: string }[] };
 
   return data.balances
@@ -123,15 +128,16 @@ async function getBinanceSpotBalances(
     }));
 }
 
-async function getBinanceFuturesPositions(
-  credentials: { apiKey: string; apiSecret: string }
-): Promise<FuturesPosition[]> {
+async function getBinanceFuturesPositions(credentials: {
+  apiKey: string;
+  apiSecret: string;
+}): Promise<FuturesPosition[]> {
   const data = (await binanceRequest(
     "/fapi/v2/positionRisk",
     "GET",
     {},
     credentials,
-    "https://fapi.binance.com"
+    "https://fapi.binance.com",
   )) as {
     symbol: string;
     positionAmt: string;
@@ -147,7 +153,8 @@ async function getBinanceFuturesPositions(
     .filter((p) => parseFloat(p.positionAmt) !== 0)
     .map((p) => ({
       symbol: p.symbol,
-      side: parseFloat(p.positionAmt) > 0 ? ("long" as const) : ("short" as const),
+      side:
+        parseFloat(p.positionAmt) > 0 ? ("long" as const) : ("short" as const),
       size: Math.abs(parseFloat(p.positionAmt)),
       entryPrice: parseFloat(p.entryPrice),
       markPrice: parseFloat(p.markPrice),
@@ -166,7 +173,7 @@ async function okxRequest(
   endpoint: string,
   method: "GET" | "POST",
   body: Record<string, unknown> | null = null,
-  credentials: { apiKey: string; apiSecret: string; passphrase?: string }
+  credentials: { apiKey: string; apiSecret: string; passphrase?: string },
 ): Promise<unknown> {
   const timestamp = new Date().toISOString();
   const bodyStr = body ? JSON.stringify(body) : "";
@@ -194,14 +201,18 @@ async function okxRequest(
   console.log("[OKX] Response body:", responseText.substring(0, 500));
 
   if (!responseText) {
-    throw new Error("OKX API Error: Empty response - exchange may be blocking requests");
+    throw new Error(
+      "OKX API Error: Empty response - exchange may be blocking requests",
+    );
   }
 
   let data;
   try {
     data = JSON.parse(responseText);
   } catch {
-    throw new Error(`OKX API Error: Invalid JSON response - ${responseText.substring(0, 200)}`);
+    throw new Error(
+      `OKX API Error: Invalid JSON response - ${responseText.substring(0, 200)}`,
+    );
   }
 
   if (data.code !== "0") {
@@ -211,14 +222,16 @@ async function okxRequest(
   return data.data;
 }
 
-async function getOKXSpotBalances(
-  credentials: { apiKey: string; apiSecret: string; passphrase?: string }
-): Promise<SpotBalance[]> {
+async function getOKXSpotBalances(credentials: {
+  apiKey: string;
+  apiSecret: string;
+  passphrase?: string;
+}): Promise<SpotBalance[]> {
   const data = (await okxRequest(
     "/api/v5/account/balance",
     "GET",
     null,
-    credentials
+    credentials,
   )) as { details: { ccy: string; availBal: string; frozenBal: string }[] }[];
 
   if (!data || !data[0]) return [];
@@ -241,7 +254,7 @@ async function bybitRequest(
   endpoint: string,
   method: "GET" | "POST",
   params: Record<string, string | number> = {},
-  credentials: { apiKey: string; apiSecret: string }
+  credentials: { apiKey: string; apiSecret: string },
 ): Promise<unknown> {
   const timestamp = String(Date.now());
   const recvWindow = "5000";
@@ -253,7 +266,8 @@ async function bybitRequest(
     .join("&");
 
   // Bybit V5 signature: timestamp + api_key + recv_window + queryString
-  const signPayload = timestamp + credentials.apiKey + recvWindow + sortedParams;
+  const signPayload =
+    timestamp + credentials.apiKey + recvWindow + sortedParams;
   const signature = crypto
     .createHmac("sha256", credentials.apiSecret)
     .update(signPayload)
@@ -277,14 +291,18 @@ async function bybitRequest(
   console.log("[Bybit] Response body:", responseText.substring(0, 500));
 
   if (!responseText) {
-    throw new Error("Bybit API Error: Empty response - exchange may be blocking requests");
+    throw new Error(
+      "Bybit API Error: Empty response - exchange may be blocking requests",
+    );
   }
 
   let data;
   try {
     data = JSON.parse(responseText);
   } catch {
-    throw new Error(`Bybit API Error: Invalid JSON response - ${responseText.substring(0, 200)}`);
+    throw new Error(
+      `Bybit API Error: Invalid JSON response - ${responseText.substring(0, 200)}`,
+    );
   }
 
   if (data.retCode !== 0) {
@@ -294,15 +312,18 @@ async function bybitRequest(
   return data.result;
 }
 
-async function getBybitSpotBalances(
-  credentials: { apiKey: string; apiSecret: string }
-): Promise<SpotBalance[]> {
+async function getBybitSpotBalances(credentials: {
+  apiKey: string;
+  apiSecret: string;
+}): Promise<SpotBalance[]> {
   const data = (await bybitRequest(
     "/v5/account/wallet-balance",
     "GET",
     { accountType: "UNIFIED" },
-    credentials
-  )) as { list: { coin: { coin: string; walletBalance: string; locked: string }[] }[] };
+    credentials,
+  )) as {
+    list: { coin: { coin: string; walletBalance: string; locked: string }[] }[];
+  };
 
   if (!data.list || !data.list[0]) return [];
 
@@ -330,12 +351,12 @@ async function binanceTrRequest(
   endpoint: string,
   method: "GET" | "POST",
   params: Record<string, string | number> = {},
-  credentials: { apiKey: string; apiSecret: string }
+  credentials: { apiKey: string; apiSecret: string },
 ): Promise<unknown> {
   const timestamp = await getBinanceTrServerTime();
   const queryParams = new URLSearchParams({
     ...Object.fromEntries(
-      Object.entries(params).map(([k, v]) => [k, String(v)])
+      Object.entries(params).map(([k, v]) => [k, String(v)]),
     ),
     timestamp: String(timestamp),
   });
@@ -361,14 +382,18 @@ async function binanceTrRequest(
   console.log("[BinanceTR] Response body:", responseText.substring(0, 500));
 
   if (!responseText) {
-    throw new Error("Binance TR API Error: Empty response - exchange may be blocking requests");
+    throw new Error(
+      "Binance TR API Error: Empty response - exchange may be blocking requests",
+    );
   }
 
   let data;
   try {
     data = JSON.parse(responseText);
   } catch {
-    throw new Error(`Binance TR API Error: Invalid JSON response - ${responseText.substring(0, 200)}`);
+    throw new Error(
+      `Binance TR API Error: Invalid JSON response - ${responseText.substring(0, 200)}`,
+    );
   }
 
   if (data.code !== 0) {
@@ -378,14 +403,15 @@ async function binanceTrRequest(
   return data.data;
 }
 
-async function getBinanceTrSpotBalances(
-  credentials: { apiKey: string; apiSecret: string }
-): Promise<SpotBalance[]> {
+async function getBinanceTrSpotBalances(credentials: {
+  apiKey: string;
+  apiSecret: string;
+}): Promise<SpotBalance[]> {
   const data = (await binanceTrRequest(
     "/open/v1/account/spot",
     "GET",
     {},
-    credentials
+    credentials,
   )) as { accountAssets: { asset: string; free: string; locked: string }[] };
 
   return data.accountAssets
@@ -399,6 +425,52 @@ async function getBinanceTrSpotBalances(
 }
 
 // ============================================
+// Hyperliquid Implementation (DEX - No Auth)
+// ============================================
+
+async function getHyperliquidSpotBalances(
+  walletAddress: string,
+): Promise<SpotBalance[]> {
+  const response = await fetch("https://api.hyperliquid.xyz/info", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "spotClearinghouseState",
+      user: walletAddress,
+    }),
+  });
+  const responseText = await response.text();
+  console.log("[Hyperliquid] Response status:", response.status);
+
+  if (!responseText) {
+    throw new Error("Hyperliquid API Error: Empty response");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    throw new Error(
+      `Hyperliquid API Error: Invalid JSON - ${responseText.substring(0, 200)}`,
+    );
+  }
+
+  if (!data.balances) return [];
+
+  return data.balances
+    .filter(
+      (b: { coin: string; total: string; hold: string }) =>
+        parseFloat(b.total) > 0,
+    )
+    .map((b: { coin: string; total: string; hold: string }) => ({
+      asset: b.coin,
+      free: parseFloat(b.total) - parseFloat(b.hold),
+      locked: parseFloat(b.hold),
+      total: parseFloat(b.total),
+    }));
+}
+
+// ============================================
 // Unified Public Interface
 // ============================================
 
@@ -408,7 +480,7 @@ async function getBinanceTrSpotBalances(
 export async function getSpotBalances(
   userId: string,
   exchange: Exchange,
-  label?: string
+  label?: string,
 ): Promise<SpotBalance[]> {
   const credentials = await getDecryptedApiKey(userId, exchange, label);
   if (!credentials) {
@@ -424,6 +496,8 @@ export async function getSpotBalances(
       return getOKXSpotBalances(credentials);
     case "bybit":
       return getBybitSpotBalances(credentials);
+    case "hyperliquid":
+      return getHyperliquidSpotBalances(credentials.apiKey);
     case "coinbase":
       // TODO: Implement Coinbase
       throw new Error("Coinbase not implemented yet");
@@ -438,7 +512,7 @@ export async function getSpotBalances(
 export async function getFuturesPositions(
   userId: string,
   exchange: Exchange,
-  label?: string
+  label?: string,
 ): Promise<FuturesPosition[]> {
   const credentials = await getDecryptedApiKey(userId, exchange, label);
   if (!credentials) {
@@ -454,6 +528,8 @@ export async function getFuturesPositions(
     case "okx":
       // TODO: Implement OKX futures
       throw new Error("OKX futures not implemented yet");
+    case "hyperliquid":
+      throw new Error("Hyperliquid futures not implemented yet");
     case "bybit":
       // TODO: Implement Bybit futures
       throw new Error("Bybit futures not implemented yet");
@@ -465,7 +541,10 @@ export async function getFuturesPositions(
 /**
  * Check if exchange has valid API key configured
  */
-export async function hasApiKey(userId: string, exchange: Exchange): Promise<boolean> {
+export async function hasApiKey(
+  userId: string,
+  exchange: Exchange,
+): Promise<boolean> {
   const credentials = await getDecryptedApiKey(userId, exchange);
   return credentials !== null;
 }
