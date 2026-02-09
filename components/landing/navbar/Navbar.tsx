@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import AuthModal from "@/components/auth/AuthModal";
 import UserMenu from "@/components/auth/UserMenu";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [hideNavbar, setHideNavbar] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const { data: session, status } = useSession();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
@@ -30,13 +33,34 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
+
   const glassBase = `
-    relative overflow-hidden rounded-xl lg:rounded-2xl
-    px-2 sm:px-2.5 md:px-3 lg:px-4 xl:px-5 2xl:px-6 
-    py-1 sm:py-1.5 md:py-2 lg:py-2.5 xl:py-2.75 2xl:py-3 
-    text-white
+    relative overflow-hidden rounded-lg
+    px-5 md:px-6 lg:px-7
+    py-2 md:py-2.5
+    text-white font-medium
     backdrop-blur-xl transition-all duration-300
     cursor-pointer
+    text-sm
 
     before:content-[''] before:absolute before:inset-0
     before:bg-gradient-to-br before:from-white/10 before:to-transparent
@@ -53,68 +77,64 @@ export default function Navbar() {
   return (
     <>
       <nav
+        ref={mobileMenuRef}
         className={`
-          fixed top-0 left-0 z-50
+          fixed top-0 left-0 z-[100]
           w-full 
-          h-11 sm:h-12 md:h-14 lg:h-16 xl:h-18 2xl:h-20
-          px-2 sm:px-2.5 md:px-3 lg:px-4 xl:px-6 2xl:px-8
+          h-16 md:h-20
+          px-4 sm:px-6 md:px-8 lg:px-12
           flex items-center justify-between
           transition-transform duration-300
           ${hideNavbar ? "-translate-y-full" : "translate-y-0"}
           bg-[#031A1C]/80 backdrop-blur-2xl
         `}
       >
-        {/* Logo */}
         <div
-          className="flex items-center gap-1 sm:gap-1.5 md:gap-2 lg:gap-2.5 xl:gap-2.75 2xl:gap-3 cursor-pointer flex-shrink-0"
+          className="flex items-center gap-2.5 cursor-pointer flex-shrink-0 z-10"
           onClick={() => router.push("/")}
         >
           <img
             src="/treasurio.png"
             alt="Treasurio Logo"
-            className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 2xl:w-16 2xl:h-16 object-contain"
+            className="w-10 h-10 md:w-11 md:h-11 lg:w-12 lg:h-12 object-contain"
           />
-          <span className="text-white font-semibold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl leading-none whitespace-nowrap">
+          <span className="text-white font-bold text-xl md:text-2xl lg:text-2xl leading-none whitespace-nowrap tracking-tight">
             Treasurio
           </span>
         </div>
 
-{/* Menü */}
-<div
-  className="
-    flex-1 flex items-center 
-    gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 xl:gap-6 2xl:gap-10 
-    ml-4 sm:ml-6 md:ml-3 lg:ml-4 xl:ml-8 2xl:ml-16 
-    text-gray-300 
-    text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs xl:text-[13px] 2xl:text-sm
-    [&>button]:inline-flex [&>button]:items-center [&>button]:justify-center
-    [&>button]:px-0.5 sm:[&>button]:px-1 [&>button]:font-medium
-    [&>button]:transition [&>button]:duration-150 [&>button]:ease-out
-    [&>button]:cursor-pointer [&>button]:transform
-    [&>button:hover]:text-teal-300
-    [&>button:hover]:opacity-90
-    [&>button:hover]:-translate-y-0.5
-    [&>button]:whitespace-nowrap
-    [&>button]:leading-none
-  "
->
-          <button onClick={() => router.push("/terminal/home")}>
+        <div className="hidden md:flex flex-1 items-center gap-4 lg:gap-6 xl:gap-8 ml-8 lg:ml-12 text-gray-300 text-sm">
+          <button 
+            onClick={() => router.push("/terminal/home")}
+            className="font-medium transition duration-150 hover:text-teal-300 hover:-translate-y-0.5 transform cursor-pointer"
+          >
             TERMINAL
           </button>
 
           <button
             disabled
-            title="Coming Soon"
-            className="opacity-40 cursor-not-allowed pointer-events-none"
+            title="Yakında Gelecek"
+            className="opacity-40 cursor-not-allowed font-medium"
           >
-            LEARN
+            LEARN ( Coming Soon )
           </button>
 
-          <button onClick={() => router.push("/download")}>API</button>
-          <button onClick={() => router.push("/pricing")}>PRICING</button>
+          <button 
+            onClick={() => router.push("/download")}
+            className="font-medium transition duration-150 hover:text-teal-300 hover:-translate-y-0.5 transform cursor-pointer"
+          >
+            API
+          </button>
+          
+          <button 
+            onClick={() => router.push("/pricing")}
+            className="font-medium transition duration-150 hover:text-teal-300 hover:-translate-y-0.5 transform cursor-pointer"
+          >
+            PRICING
+          </button>
         </div>
 
-        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 xl:gap-3.5 2xl:gap-4 flex-shrink-0">
+        <div className="hidden md:flex items-center gap-3 flex-shrink-0">
           {isLoggedIn ? (
             <UserMenu />
           ) : (
@@ -126,7 +146,7 @@ export default function Navbar() {
                 }}
                 className={
                   glassBase +
-                  " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200 text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs xl:text-[13px] 2xl:text-sm"
+                  " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200"
                 }
               >
                 LOG IN
@@ -139,7 +159,7 @@ export default function Navbar() {
                 }}
                 className={
                   glassBase +
-                  " border border-white/40 bg-white/5 hover:text-teal-200 text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs xl:text-[13px] 2xl:text-sm"
+                  " border border-white/40 bg-white/5 hover:text-teal-200"
                 }
               >
                 SIGN UP
@@ -147,6 +167,92 @@ export default function Navbar() {
             </>
           )}
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden z-10 text-white p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 w-full bg-[#031A1C] backdrop-blur-2xl border-t border-white/10 z-[100]">
+            <div className="flex flex-col p-6 gap-4">
+              {/* Mobile Navigation */}
+              <div className="flex flex-col gap-3 pb-4 border-b border-white/10">
+                <button
+                  onClick={() => {
+                    router.push("/terminal/home");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-left text-gray-300 font-medium py-2 hover:text-teal-300 transition cursor-pointer"
+                >
+                  TERMINAL
+                </button>
+
+                <button
+                  disabled
+                  className="text-left text-gray-300/40 font-medium py-2 cursor-not-allowed"
+                >
+                  LEARN ( Coming Soon )
+                </button>
+
+                <button
+                  onClick={() => {
+                    router.push("/download");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-left text-gray-300 font-medium py-2 hover:text-teal-300 transition cursor-pointer"
+                >
+                  API
+                </button>
+
+                <button
+                  onClick={() => {
+                    router.push("/pricing");
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-left text-gray-300 font-medium py-2 hover:text-teal-300 transition cursor-pointer"
+                >
+                  PRICING
+                </button>
+              </div>
+
+              {/* Mobile Auth Buttons / User Menu */}
+              <div className="flex flex-col gap-3 pt-2">
+                {isLoggedIn ? (
+                  <UserMenu variant="mobile" />
+                ) : (
+                  <>
+                    <Button
+                      onClick={() => {
+                        setAuthMode("login");
+                        setAuthOpen(true);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full border border-teal-400/30 bg-teal-900/40 hover:bg-teal-900/60 text-white py-3 rounded-lg transition-all cursor-pointer"
+                    >
+                      LOG IN
+                    </Button>
+
+                    <Button
+                      onClick={() => {
+                        setAuthMode("signup");
+                        setAuthOpen(true);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full border border-teal-400/30 bg-teal-900/40 hover:bg-teal-900/60 text-white py-3 rounded-lg transition-all cursor-pointer"
+                    >
+                      SIGN UP
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       <AuthModal

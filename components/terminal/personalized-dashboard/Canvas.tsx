@@ -30,7 +30,6 @@ const didInitRef = useRef(false);
 
 
 
-  /* PAN */
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
@@ -96,7 +95,6 @@ setPan(x, y);
     };
   }, [panX, panY, zoom, setPan]);
 
-/* ZOOM */
 useEffect(() => {
   const el = containerRef.current;
   if (!el) return;
@@ -154,7 +152,6 @@ const minZoom = calculateMinZoom(rect.width, rect.height);
   return () => el.removeEventListener("wheel", onWheel);
 }, [zoom, panX, panY, setZoom, setPan, topBarHeight, notesBarHeight]);
 
-  /* ESC = FOCUS RESET  */
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -166,7 +163,6 @@ const minZoom = calculateMinZoom(rect.width, rect.height);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-/* DEFAULT CENTER */
 useEffect(() => {
   if (!containerRef.current) return;
 

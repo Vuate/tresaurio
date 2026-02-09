@@ -2,18 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  LayoutDashboard,
-  LineChart,
-  Newspaper,
-  Layers,
-  Wallet,
-  Activity,
-  Sliders,
-  FileText,
-  Lock,
-} from "lucide-react";
+import { Icon } from "@iconify/react";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -22,63 +11,62 @@ export default function Sidebar() {
     pathname === path || pathname.startsWith(path + "/");
 
   return (
-<aside
-  className="
-    group
-    sticky top-11 md:top-[64px]
-    h-[calc(100vh-44px)] md:h-[calc(100vh-64px)]
-    w-[48px] xl:w-[52px] 2xl:w-[56px]
-    hover:w-[190px] xl:hover:w-[210px] 2xl:hover:w-[230px]
-    bg-[#0d0f14]
-    border-r border-white/10
-    transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
-    overflow-hidden
-    shrink-0
-  "
->
+    <aside
+      className="
+        group
+        sticky top-11 md:top-[64px]
+        h-[calc(100vh-44px)] md:h-[calc(100vh-64px)]
+        w-[48px] xl:w-[52px] 2xl:w-[56px]
+        hover:w-[190px] xl:hover:w-[210px] 2xl:hover:w-[230px]
+        bg-[#0d0f14]
+        border-r border-white/10
+        transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
+        overflow-hidden
+        shrink-0
+      "
+    >
       <div className="flex h-full flex-col gap-1 xl:gap-1.5 2xl:gap-2 p-1.5 xl:p-2 2xl:p-2.5 mt-3 xl:mt-4 2xl:mt-5">
-<div className="flex items-center h-8 xl:h-9 2xl:h-10 px-2 xl:px-2.5 2xl:px-3 min-w-[48px] xl:min-w-[52px] 2xl:min-w-[56px]">  {/* ↑ px değerleri artırıldı */}
-  
-  <div className="flex items-center justify-center w-5 xl:w-[22px] 2xl:w-6 shrink-0">
-    <img
-      src="/treasurio.png"
-      className="w-5 h-5 xl:w-[22px] xl:h-[22px] 2xl:w-6 2xl:h-6"
-      alt="Treasurio"
-    />
-  </div>
-  
-  <span
-    className="
-      ml-2 xl:ml-2.5 2xl:ml-3
-      text-sm xl:text-[15px] 2xl:text-base font-bold
-      bg-gradient-to-br from-teal-300 to-blue-400
-      text-transparent bg-clip-text
-      opacity-0 group-hover:opacity-100
-      transition-opacity duration-300
-      whitespace-nowrap
-    "
-  >
-    Treasurio
-  </span>
-</div>
+        <div className="flex items-center h-8 xl:h-9 2xl:h-10 px-2 xl:px-2.5 2xl:px-3 min-w-[48px] xl:min-w-[52px] 2xl:min-w-[56px]">
+          <div className="flex items-center justify-center w-5 xl:w-[22px] 2xl:w-6 shrink-0">
+            <img
+              src="/treasurio.png"
+              className="w-5 h-5 xl:w-[22px] xl:h-[22px] 2xl:w-6 2xl:h-6"
+              alt="Treasurio"
+            />
+          </div>
+
+          <span
+            className="
+              ml-2 xl:ml-2.5 2xl:ml-3
+              text-sm xl:text-[15px] 2xl:text-base font-bold
+              bg-gradient-to-br from-teal-300 to-blue-400
+              text-transparent bg-clip-text
+              opacity-0 group-hover:opacity-100
+              transition-opacity duration-300
+              whitespace-nowrap
+            "
+          >
+            Treasurio
+          </span>
+        </div>
 
         <NavItem
           href="/personalized-dashboard"
-          icon={<LayoutDashboard className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="mdi:view-dashboard-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Personalized Dashboard"
           active={isActive("/personalized-dashboard")}
         />
 
         <NavItem
           href="/terminal/home"
-          icon={<Home className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="mdi:home-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Home"
           active={isActive("/terminal/home")}
         />
 
         <NavItem
           href="/terminal/trade"
-          icon={<LineChart className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="mdi:briefcase-variant-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Trade & Portfolio"
           active={isActive("/terminal/trade")}
         />
@@ -87,19 +75,19 @@ export default function Sidebar() {
 
         <NavItem
           href="/terminal/news"
-          icon={<Newspaper className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="mdi:newspaper-variant-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="News"
           active={isActive("/terminal/news")}
         />
         <NavItem
           href="/terminal/staking"
-          icon={<Layers className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="material-symbols:savings-rounded" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Staking"
           active={isActive("/terminal/staking")}
         />
         <NavItem
           href="/terminal/wallet"
-          icon={<Wallet className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="lucide:wallet" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Wallet Tracker"
           active={isActive("/terminal/wallet")}
         />
@@ -108,19 +96,19 @@ export default function Sidebar() {
 
         <NavItem
           href="/terminal/market-intelligence"
-          icon={<Activity className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="mdi:chart-box-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Market Microstructure"
           active={isActive("/terminal/market-intelligence")}
         />
         <NavItem
           href="/terminal/transfer"
-          icon={<Lock className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="mdi:lock-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Transfer"
           active={isActive("/terminal/transfer")}
         />
         <NavItem
           href="/terminal/reporting"
-          icon={<FileText className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          icon={<Icon icon="mdi:file-chart-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Reporting"
           active={isActive("/terminal/reporting")}
         />
