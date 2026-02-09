@@ -6,7 +6,7 @@
 // TYPE DEFINITIONS
 // ============================================================================
 
-export type Exchange = "binance" | "okx" | "bybit" | "coinbase";
+export type Exchange = "binance" | "binance-tr" | "okx" | "bybit" | "coinbase";
 export type MarketType = "spot" | "futures";
 export type DataProvider = "coingecko" | "defillama" | "etherscan" | "cryptoquant";
 
@@ -196,6 +196,47 @@ export const EXCHANGE_CONFIG: Record<Exchange, ExchangeConfig> = {
         requiresAuth: false,
         rateWeight: 1,
         description: "Open interest statistics",
+      },
+    },
+  },
+
+  "binance-tr": {
+    name: "Binance TR",
+    id: "binance-tr",
+    enabled: true,
+    rest: {
+      spot: "https://www.binance.tr",
+      futures: "",
+    },
+    websocket: {
+      spot: "",
+      futures: "",
+    },
+    rateLimit: {
+      requestsPerMinute: 1200,
+      requestsPerSecond: 20,
+      burstLimit: 50,
+      retryAfterMs: 60000,
+    },
+    cache: {
+      ticker: 3000,
+      depth: 1000,
+      funding: 5000,
+      klines: 60000,
+      account: 5000,
+      positions: 3000,
+      trades: 1000,
+      default: 5000,
+    },
+    timeout: 10000,
+    endpoints: {
+      spotAccount: {
+        path: "/open/v1/account/spot",
+        method: "GET",
+        cacheTTL: 5000,
+        requiresAuth: true,
+        rateWeight: 10,
+        description: "Account spot balances",
       },
     },
   },

@@ -36,10 +36,11 @@ const EXCHANGE_FORMATS: Record<
   coinbase: (base, quote) => `${base}-${quote}`,
 };
 
-const SUPPORTED_EXCHANGES = ["binance", "okx", "bybit", "coinbase"];
+const SUPPORTED_EXCHANGES = ["binance", "binance-tr", "okx", "bybit", "coinbase"];
 
 const ALL_EXCHANGES = [
   "binance",
+  "binance-tr",
   "okx",
   "bybit",
   "coinbase",
