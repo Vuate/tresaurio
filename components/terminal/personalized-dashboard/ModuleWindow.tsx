@@ -69,7 +69,6 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     [updateModule]
   );
 
-  /* DRAG */
   const onDragMouseDown = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -204,7 +203,6 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
   }, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom, topBarHeight, 
     notesBarHeight, setActiveModule, updateModuleThrottled]);
 
-  /* RESIZE */
   const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
     e.stopPropagation();  
     e.preventDefault();

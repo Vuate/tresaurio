@@ -5,6 +5,7 @@ import MarketIntelligenceComparison from "@/components/terminal/market-intellige
 import MarketIntelligenceHowItWorks from "@/components/terminal/market-intelligence/MarketIntelligenceHowItWorks";
 import MarketIntelligenceCTA from "@/components/terminal/market-intelligence/MarketIntelligenceCTA";
 
+
 export default function MarketIntelligencePage() {
   return (
     <div className="min-h-screen bg-[#031A1C] text-white">

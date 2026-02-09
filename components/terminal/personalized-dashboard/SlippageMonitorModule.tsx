@@ -175,7 +175,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
         <div className="flex gap-1.5">
           <button
             onClick={() => setMarketType("spot")}
-            className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
+            className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap cursor-pointer  ${
               marketType === "spot"
                 ? "bg-blue-500 text-white"
                 : "bg-white/5 text-white/60 hover:bg-white/10"
@@ -185,7 +185,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
           </button>
           <button
             onClick={() => setMarketType("futures")}
-            className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
+            className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap cursor-pointer  ${
               marketType === "futures"
                 ? "bg-blue-500 text-white"
                 : "bg-white/5 text-white/60 hover:bg-white/10"
@@ -252,7 +252,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
           <div className="flex gap-2">
             <button
               onClick={() => setOrderType("buy")}
-              className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer  ${
                 orderType === "buy"
                   ? "bg-emerald-500 text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10"
@@ -262,7 +262,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
             </button>
             <button
               onClick={() => setOrderType("sell")}
-              className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer  ${
                 orderType === "sell"
                   ? "bg-red-500 text-white"
                   : "bg-white/5 text-white/60 hover:bg-white/10"

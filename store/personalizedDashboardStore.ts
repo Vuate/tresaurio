@@ -8,19 +8,16 @@ import type {
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
 
-/* WORLD CONSTANTS */
 export const MAX_ZOOM = 3;
 export const WORLD_WIDTH = 4000;
 export const WORLD_HEIGHT = 2250;
 
-/* Calculate minimum zoom to fit entire world in viewport */
 export function calculateMinZoom(viewportW: number, viewportH: number): number {
   const minZoomX = viewportW / WORLD_WIDTH;
   const minZoomY = viewportH / WORLD_HEIGHT;
   return Math.max(minZoomX, minZoomY);
 }
 
-/* STATE TYPES */
 type State = {
   zoom: number;
   panX: number;
@@ -72,10 +69,8 @@ type Actions = {
   setUIBlocked: (v: boolean) => void;
 };
 
-/* ZUSTAND STORE */
 export const usePersonalizedDashboardStore = create<State & Actions>(
   (set, get) => ({
-    /* INITIAL STATE */
     uiBlocked: false,
     zoom: 1,
     panX: 0,
@@ -95,10 +90,8 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
     sidebarOpen: false,
     alerts: [],
 
-    /* ACTIONS */
     setUIBlocked: (v) => set({ uiBlocked: v }),
 
-    /* Set zoom with min/max bounds based on viewport */
     setZoom: (zoom) => {
       if (typeof window === "undefined") {
         set({ zoom: Math.min(MAX_ZOOM, Math.max(0.1, zoom)) });
@@ -116,7 +109,6 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
     setPan: (panX, panY) => set({ panX, panY }),
     resetView: () => set({ zoom: 1, panX: 0, panY: 0 }),
 
-    /* NOTES */
     toggleNotes: () => set({ notesOpen: !get().notesOpen }),
     setNotesHeight: (h) => set({ notesHeight: h }),
     addNote: (text) =>
@@ -131,11 +123,9 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
         notes: get().notes.filter((n) => n.id !== id),
       }),
 
-    /* UI DIMENSIONS */
     setTopBarHeight: (h) => set({ topBarHeight: h }),
     setNotesBarHeight: (h) => set({ notesBarHeight: h }),
 
-    /* MODULES */
     setActiveModule: (activeModuleId) => set({ activeModuleId }),
 
     addModule: (m) =>
@@ -145,7 +135,6 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
       }),
       
 
-    /* Add module at viewport center or specified position */
     addModuleByType: (type, x, y) => {
       const def = moduleRegistry[type];
       if (!def) return;
@@ -156,7 +145,6 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
       const viewportHeight =
         window.innerHeight - get().topBarHeight - get().notesBarHeight;
 
-      // Calculate world coordinates of viewport center
       const worldCenterX = (-get().panX + viewportWidth / 2) / get().zoom;
       const worldCenterY = (-get().panY + viewportHeight / 2) / get().zoom;
 
@@ -195,7 +183,6 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
           get().activeModuleId === id ? null : get().activeModuleId,
       }),
 
-    /* UI PANELS */
     toggleAddTool: () =>
       set((s) => ({
         addToolOpen: !s.addToolOpen,
@@ -208,7 +195,6 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
         addToolOpen: false,
       })),
 
-    /* ALERTS */
     addAlert: (a) =>
       set({
         alerts: [
