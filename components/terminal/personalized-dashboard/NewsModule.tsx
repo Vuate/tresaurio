@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from "react";
-import { useNews } from "@/lib/personalized-dashboard/useNews";
+import { useNews } from "@/hooks/useNews";
 
 interface Props {
   instanceId: string;

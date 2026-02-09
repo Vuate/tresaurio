@@ -4,7 +4,7 @@
 import prisma from "@/lib/db";
 import { encrypt, decrypt } from "@/lib/encryption";
 
-export type Exchange = "binance" | "okx" | "bybit" | "coinbase";
+export type Exchange = "binance" | "binance-tr" | "okx" | "bybit" | "coinbase";
 export type Permission = "spot" | "futures" | "withdraw";
 
 export interface ApiKeyInput {
