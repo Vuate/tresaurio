@@ -17,48 +17,15 @@ interface NewsSettings {
   limit: number;
 }
 
-// CryptoPanic API response types
-interface CryptoPanicNewsItem {
-  id: number;
-  title: string;
-  url: string;
-  source: {
-    title: string;
-  };
-  published_at: string;
-  kind: string; // "news", "media", "blog"
-  currencies?: Array<{
-    code: string;
-    title: string;
-  }>;
-  votes?: {
-    positive: number;
-    negative: number;
-    important: number;
-    liked: number;
-    disliked: number;
-    lol: number;
-    toxic: number;
-    saved: number;
-  };
-}
-
-interface CryptoPanicResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: CryptoPanicNewsItem[];
-}
-
-// Category mapping to CryptoPanic filters
+// CryptoCompare category mapping
 const CATEGORY_FILTERS: Record<string, string> = {
   all: "",
-  bitcoin: "currencies=BTC",
-  ethereum: "currencies=ETH",
+  bitcoin: "BTC",
+  ethereum: "ETH",
   altcoins: "",
-  defi: "filter=rising", // Use rising filter for DeFi-related news
+  defi: "",
   nft: "",
-  regulation: "filter=important", // Important news often covers regulation
+  regulation: "Regulation",
 };
 
 export function useNews(instanceId: string) {
@@ -93,61 +60,60 @@ export function useNews(instanceId: string) {
     }
   }, [settings, storageKey]);
 
-  const determineSentiment = (votes?: CryptoPanicNewsItem["votes"]): NewsItem["sentiment"] => {
-    if (!votes) return "neutral";
-
-    const positiveScore = votes.positive + votes.liked;
-    const negativeScore = votes.negative + votes.disliked + votes.toxic;
-
-    if (positiveScore > negativeScore * 1.5) return "positive";
-    if (negativeScore > positiveScore * 1.5) return "negative";
-    return "neutral";
-  };
-
   const fetchNews = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // ✅ USE CRYPTOPANIC FREE API (no auth required)
-      const categoryFilter = CATEGORY_FILTERS[settings.category] || "";
-      const baseUrl = "https://cryptopanic.com/api/v1/posts/";
       const params = new URLSearchParams({
-        public: "true", // Free tier
-        kind: "news", // Only news articles
-        ...(categoryFilter && { filter: categoryFilter }),
+        lang: "EN",
+        limit: settings.limit.toString(),
       });
 
-      const url = `${baseUrl}?${params.toString()}`;
+      // Add category filter
+      const categoryFilter = CATEGORY_FILTERS[settings.category];
+      if (categoryFilter) {
+        params.append("categories", categoryFilter);
+      }
 
+      const url = `https://min-api.cryptocompare.com/data/v2/news/?${params.toString()}`;
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(`CryptoPanic API error: ${response.status}`);
+        throw new Error(`CryptoCompare API error: ${response.status}`);
       }
 
-      const data: CryptoPanicResponse = await response.json();
+      const data = await response.json();
 
-      // Transform CryptoPanic data to our NewsItem format
-      const transformedNews: NewsItem[] = data.results
-        .slice(0, settings.limit)
-        .map((item) => ({
-          id: item.id.toString(),
+      if (data.Type !== 100 || !data.Data) {
+        throw new Error("Invalid response from CryptoCompare");
+      }
+
+      const transformedNews: NewsItem[] = data.Data.map(
+        (item: {
+          id: string;
+          title: string;
+          body: string;
+          url: string;
+          source: string;
+          published_on: number;
+          categories: string;
+        }) => ({
+          id: item.id,
           title: item.title,
-          description: item.currencies?.map((c) => c.title).join(", ") || "",
+          description: item.body?.substring(0, 150) || "",
           url: item.url,
-          source: item.source.title,
-          publishedAt: item.published_at,
-          sentiment: determineSentiment(item.votes),
-          category: item.currencies?.[0]?.code.toLowerCase() || "crypto",
-        }));
+          source: item.source,
+          publishedAt: new Date(item.published_on * 1000).toISOString(),
+          sentiment: "neutral" as const,
+          category: item.categories?.split("|")[0]?.toLowerCase() || "crypto",
+        })
+      );
 
       setNews(transformedNews);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch news");
       console.error("News fetch error:", err);
-
-      // Fallback to empty array on error
       setNews([]);
     } finally {
       setLoading(false);
