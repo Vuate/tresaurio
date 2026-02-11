@@ -470,6 +470,65 @@ async function getHyperliquidSpotBalances(
     }));
 }
 
+async function getHyperliquidFuturesPositions(
+  walletAddress: string,
+): Promise<FuturesPosition[]> {
+  const response = await fetch("https://api.hyperliquid.xyz/info", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "clearinghouseState",
+      user: walletAddress,
+    }),
+  });
+
+  const responseText = await response.text();
+  console.log("[Hyperliquid Futures] Response status:", response.status);
+
+  if (!responseText) {
+    throw new Error("Hyperliquid API Error: Empty response");
+  }
+
+  let data;
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    throw new Error(
+      `Hyperliquid API Error: Invalid JSON - ${responseText.substring(0, 200)}`,
+    );
+  }
+
+  if (!data.assetPositions) return [];
+
+  return data.assetPositions
+    .filter(
+      (p: { position: { szi: string } }) => parseFloat(p.position.szi) !== 0,
+    )
+    .map(
+      (p: {
+        position: {
+          coin: string;
+          szi: string;
+          entryPx: string;
+          positionValue: string;
+          leverage: { type: string; value: number };
+          unrealizedPnl: string;
+          liquidationPx: string | null;
+        };
+      }) => ({
+        symbol: p.position.coin,
+        side: parseFloat(p.position.szi) > 0 ? ("long" as const) : ("short" as const),
+        size: Math.abs(parseFloat(p.position.szi)),
+        entryPrice: parseFloat(p.position.entryPx),
+        markPrice: parseFloat(p.position.positionValue) / Math.abs(parseFloat(p.position.szi)),
+        leverage: p.position.leverage.value,
+        unrealizedPnl: parseFloat(p.position.unrealizedPnl),
+        marginType: p.position.leverage.type === "cross" ? ("cross" as const) : ("isolated" as const),
+        liquidationPrice: p.position.liquidationPx ? parseFloat(p.position.liquidationPx) : 0,
+      }),
+    );
+}
+
 // ============================================
 // Unified Public Interface
 // ============================================
@@ -529,7 +588,7 @@ export async function getFuturesPositions(
       // TODO: Implement OKX futures
       throw new Error("OKX futures not implemented yet");
     case "hyperliquid":
-      throw new Error("Hyperliquid futures not implemented yet");
+      return getHyperliquidFuturesPositions(credentials.apiKey);
     case "bybit":
       // TODO: Implement Bybit futures
       throw new Error("Bybit futures not implemented yet");
