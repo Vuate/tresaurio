@@ -18,6 +18,7 @@ export default function NotesPanel() {
     setNotesBarHeight,
       removeNote, 
     topBarHeight,
+        userMenuOpen,
   } = usePersonalizedDashboardStore();
 
   const [headerHeight, setHeaderHeight] = useState(
@@ -114,6 +115,12 @@ useEffect(() => {
   };
 }, [setNotesHeight, topBarHeight]);
 
+  useEffect(() => {
+    if (userMenuOpen && notesOpen) {
+      toggleNotes();
+    }
+  }, [userMenuOpen]);
+
   const handleSave = () => {
     if (!text.trim()) {
       setNotification({
@@ -196,33 +203,37 @@ useEffect(() => {
             style={{ height: `calc(100% - ${headerHeight}px)` }} 
           >
             <div className="flex flex-col w-1/2 gap-2 xl:gap-2.5 2xl:gap-3">
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSave();
-                  }
-                }}
-                placeholder="Write your trading notes…"
-                className="flex-1 resize-none rounded-lg
-                  bg-black/30 border border-white/10
-                  p-3 xl:p-3.5 2xl:p-4 text-xs xl:text-[13px] 2xl:text-sm text-white
-                  focus:outline-none focus:border-teal-400
-                  
-                        [&::-webkit-scrollbar]:w-2
-      [&::-webkit-scrollbar-track]:bg-transparent
-      [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-      [&::-webkit-scrollbar-thumb]:rounded-full
-      [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-      
-      scrollbar-thin
-      scrollbar-thumb-teal-400/40
-      scrollbar-track-transparent
-      "
-                  
-              />
+              <div className="flex-1 rounded-lg overflow-hidden border border-white/10 bg-black/30">
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSave();
+                    }
+                  }}
+                  placeholder="Write your trading notes…"
+                  className="w-full h-full resize-none
+                    bg-transparent
+                    p-3 xl:p-3.5 2xl:p-4 
+                    pr-4 xl:pr-5 2xl:pr-6
+                    text-xs xl:text-[13px] 2xl:text-sm text-white
+                    focus:outline-none
+                    
+                    [&::-webkit-scrollbar]:w-2
+                    [&::-webkit-scrollbar-track]:bg-transparent
+                    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                    [&::-webkit-scrollbar-thumb]:cursor-pointer
+                    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+                    
+                    scrollbar-thin
+                    scrollbar-thumb-teal-400/40
+                    scrollbar-track-transparent
+                  "
+                />
+              </div>
 
               <button
                 onClick={handleSave}
@@ -235,62 +246,64 @@ useEffect(() => {
               </button>
             </div>
 
-            <div className="
-              flex-1 
-              overflow-y-auto 
-              space-y-2 xl:space-y-2.5 2xl:space-y-3
-              pr-2
+            <div className="flex-1 rounded-lg overflow-hidden">
+              <div className="h-full
+                overflow-y-auto 
+                space-y-2 xl:space-y-2.5 2xl:space-y-3
+                pr-3 xl:pr-4 2xl:pr-5
 
-              [&::-webkit-scrollbar]:w-2
-              [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-              [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+                [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:bg-transparent
+                [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:cursor-pointer
+                [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
 
-              scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
-            ">
-              {notes.length === 0 && (
-                <div className="text-xs xl:text-[13px] 2xl:text-sm text-white/40">No notes yet</div>
-              )}
+                scrollbar-thin
+                scrollbar-thumb-teal-400/40
+                scrollbar-track-transparent
+              ">
+                {notes.length === 0 && (
+                  <div className="text-xs xl:text-[13px] 2xl:text-sm text-white/40">No notes yet</div>
+                )}
 
-{notes.map((n) => (
-  <div
-    key={n.id}
-    className="rounded-lg border border-white/10
-      bg-white/5 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80
-      relative group"  // ✅ EKLE
-  >
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        removeNote(n.id);
-      }}
-      className="absolute top-2 right-2 
-        transition-opacity duration-200
-        w-5 h-5 xl:w-5.5 xl:h-5.5 2xl:w-6 2xl:h-6
-        flex items-center justify-center
-        rounded
-        bg-red-500/20 hover:bg-red-500/30
-        text-red-400 hover:text-red-300
-        text-xs xl:text-sm 2xl:text-base
-        cursor-pointer
-        transition-colors duration-200"
-      title="Delete note"
-    >
-      ✕
-    </button>
+                {notes.map((n) => (
+                  <div
+                    key={n.id}
+                    className="rounded-lg border border-white/10
+                      bg-white/5 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80
+                      relative group"
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeNote(n.id);
+                      }}
+                      className="absolute top-2 right-2 
+                        transition-opacity duration-200
+                        w-5 h-5 xl:w-5.5 xl:h-5.5 2xl:w-6 2xl:h-6
+                        flex items-center justify-center
+                        rounded
+                        bg-red-500/20 hover:bg-red-500/30
+                        text-red-400 hover:text-red-300
+                        text-xs xl:text-sm 2xl:text-base
+                        cursor-pointer
+                        transition-colors duration-200"
+                      title="Delete note"
+                    >
+                      ✕
+                    </button>
 
-    <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-white/40 mb-1 xl:mb-1.5 2xl:mb-2">
-      {new Date(n.createdAt).toLocaleString()}
-    </div>
-    
-    <div className="break-words whitespace-pre-wrap overflow-hidden">
-      {n.text}
-    </div>
-  </div>
-))}
+                    <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-white/40 mb-1 xl:mb-1.5 2xl:mb-2">
+                      {new Date(n.createdAt).toLocaleString()}
+                    </div>
+                    
+                    <div className="break-words whitespace-pre-wrap overflow-hidden">
+                      {n.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}

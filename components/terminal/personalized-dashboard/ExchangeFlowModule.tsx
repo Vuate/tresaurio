@@ -312,45 +312,58 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
             </span>
           </button>
 
-          {viewOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute left-0 mt-1 z-50
-                w-[140px]
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded-md
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
-              "
-            >
-              {[
-                { value: "all", label: "All Flows" },
-                { value: "deposit", label: "Deposits" },
-                { value: "withdraw", label: "Withdrawals" },
-              ].map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => {
-                    setView(option.value as typeof view);
-                    setViewOpen(false);
-                  }}
-                  className="
-                    w-full px-3 py-2
-                    text-left text-xs
-                    bg-transparent cursor-pointer
-                    text-white
-                    transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
-                  "
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
+{viewOpen && (() => {
+  const buttonRect = viewRef.current?.getBoundingClientRect();
+  
+  const isRightSide = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
+
+  return (
+    <div
+      onWheel={(e) => e.stopPropagation()}
+      style={{
+        position: 'absolute',
+        marginTop: '0.25rem',
+        zIndex: 50,
+        width: '140px',
+        ...(isRightSide ? { right: 0 } : { left: 0 })
+      }}
+      className="
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-md
+        shadow-lg
+        animate-in fade-in slide-in-from-top-2 duration-200
+      "
+    >
+      {[
+        { value: "all", label: "All Flows" },
+        { value: "deposit", label: "Deposits" },
+        { value: "withdraw", label: "Withdrawals" },
+      ].map((option) => (
+        <button
+          key={option.value}
+          onClick={() => {
+            setView(option.value as typeof view);
+            setViewOpen(false);
+          }}
+          className="
+            w-full px-3 py-2
+            text-left text-xs
+            bg-transparent cursor-pointer
+            text-white
+            transition-colors
+            hover:bg-emerald-500/10
+            hover:text-emerald-400
+          "
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
+})()}
+
+
         </div>
 
         <button

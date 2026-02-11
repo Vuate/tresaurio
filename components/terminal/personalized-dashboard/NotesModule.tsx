@@ -92,41 +92,47 @@ export default function NotesModule() {
             </div>
           )}
 
-{notes.map((n) => (
-  <div
-    key={n.id}
-    className="rounded-lg border border-white/10 bg-white/5 p-2 relative group"  // ✅ relative group EKLE
-  >
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        removeNote(n.id);
-      }}
-      className="absolute top-1.5 right-1.5
-        transition-opacity duration-200
-        w-4 h-4
-        flex items-center justify-center
-        rounded
-        bg-red-500/20 hover:bg-red-500/30
-        text-red-400 hover:text-red-300
-        text-[10px]
-        cursor-pointer
-            transition-colors duration-200
-        "
-      title="Delete note"
-    >
-      ✕
-    </button>
+          {notes.map((n) => (
+            <div
+              key={n.id}
+              className="rounded-lg border border-white/10 bg-white/5 p-2 pr-8 relative overflow-hidden"
+            >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeNote(n.id);
+                }}
+                className="absolute top-1.5 right-1.5
+                  w-5 h-5
+                  flex items-center justify-center
+                  rounded
+                  bg-red-500/20 hover:bg-red-500/30
+                  text-red-400 hover:text-red-300
+                  text-[10px]
+                  cursor-pointer
+                  transition-colors duration-200
+                  flex-shrink-0
+                  z-10
+                "
+                title="Delete note"
+              >
+                ✕
+              </button>
 
-    <div className="mb-1 text-[10px] text-white/40">
-      {new Date(n.createdAt).toLocaleString("tr-TR")}
-    </div>
-    
-    <div className="text-xs text-white/80 break-words whitespace-pre-wrap overflow-hidden">
-      {n.text}
-    </div>
-  </div>
-))}
+              <div className="flex flex-col gap-0.5 min-w-0 pr-1">
+                <div className="text-[10px] text-white/40 truncate">
+                  {new Date(n.createdAt).toLocaleDateString("tr-TR")}
+                </div>
+                <div className="text-[10px] text-white/40 truncate">
+                  {new Date(n.createdAt).toLocaleTimeString("tr-TR")}
+                </div>
+              </div>
+              
+              <div className="mt-1.5 text-xs text-white/80 break-words whitespace-pre-wrap overflow-hidden">
+                {n.text}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="mt-2 shrink-0">

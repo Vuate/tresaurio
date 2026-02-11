@@ -467,20 +467,20 @@ export default function FuturesActionsModule({ instanceId }: Props) {
           </span>
         </div>
 
-        <div className="flex items-center justify-between gap-2 mb-2">
-          <label className="text-white/70 text-[10px] font-semibold whitespace-nowrap">
-            Leverage
-          </label>
-          <input
-            type="number"
-            min="1"
-            max="125"
-            value={leverageInput}
-            onChange={(e) => handleLeverageInputChange(e.target.value)}
-            onBlur={handleLeverageInputBlur}
-            className="w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white text-xs outline-none text-right focus:border-blue-500/50 transition-colors shrink-0"
-          />
-        </div>
+<div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+  <label className="text-white/70 text-[10px] font-semibold">
+    Leverage
+  </label>
+  <input
+    type="number"
+    min="1"
+    max="125"
+    value={leverageInput}
+    onChange={(e) => handleLeverageInputChange(e.target.value)}
+    onBlur={handleLeverageInputBlur}
+    className="w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white text-xs outline-none text-right focus:border-blue-500/50 transition-colors shrink-0"
+  />
+</div>
 
         <input
           type="range"

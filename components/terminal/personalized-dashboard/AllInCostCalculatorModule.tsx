@@ -385,26 +385,26 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             </span>
           </button>
 
-          {tokenOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute left-0 mt-1 z-50
-                w-[180px]
-                max-h-[200px]
-                overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded-md
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
+{tokenOpen && (
+  <div
+    onWheel={(e) => e.stopPropagation()}
+    className="
+      absolute left-0 mt-1 z-50
+      w-[180px]
+      max-h-[200px]
+      overflow-y-auto
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded
+      shadow-lg
+      animate-in fade-in slide-in-from-top-2 duration-200
 
-                [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-transparent
-              "
-            >
+      [&::-webkit-scrollbar]:w-1.5
+      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-transparent
+    "
+  >
               {tokens.map((t) => (
                 <button
                   key={t.symbol}
@@ -456,26 +456,26 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             </span>
           </button>
 
-          {exchangeOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute left-0 mt-1 z-50
-                w-[120px]
-                max-h-[160px]
-                overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded-md
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
+{exchangeOpen && (
+  <div
+    onWheel={(e) => e.stopPropagation()}
+    className="
+      absolute left-0 mt-1 z-50
+      w-[120px]
+      max-h-[160px]
+      overflow-y-auto
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded
+      shadow-lg
+      animate-in fade-in slide-in-from-top-2 duration-200
 
-                [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-transparent
-              "
-            >
+      [&::-webkit-scrollbar]:w-1.5
+      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-transparent
+    "
+  >
               {EXCHANGES.map((ex) => (
                 <button
                   key={ex.id}
@@ -589,25 +589,26 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
                 </span>
               </button>
 
-              {vipOpen && (
-                <div
-                  onWheel={(e) => e.stopPropagation()}
-                  className="
-                    absolute left-0 right-0 mt-1 z-50
-                    max-h-[200px]
-                    overflow-y-auto
-                    bg-[#0b1f1f]
-                    border border-emerald-500/20
-                    rounded-md
-                    shadow-lg
-                    animate-in fade-in slide-in-from-top-2 duration-200
+{vipOpen && (
+  <div
+    onWheel={(e) => e.stopPropagation()}
+    className="
+      absolute left-0 right-0 mt-1 z-50
+      max-h-[200px]
+      overflow-y-auto
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded
+      shadow-lg
+      animate-in fade-in slide-in-from-top-2 duration-200
 
-                    [&::-webkit-scrollbar]:w-1.5
-                    [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                    [&::-webkit-scrollbar-thumb]:rounded-full
-                    [&::-webkit-scrollbar-track]:bg-transparent
-                  "
-                >
+      [&::-webkit-scrollbar]:w-1.5
+      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-transparent
+    "
+  >
+                
                   {Object.keys(exchangeFees[exchange].vip).map((level) => {
                     const fees =
                       exchangeFees[exchange].vip[
@@ -724,25 +725,25 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
                 </span>
               </button>
 
-              {leverageOpen && (
-                <div
-                  onWheel={(e) => e.stopPropagation()}
-                  className="
-                    absolute left-0 right-0 mt-1 z-50
-                    max-h-[200px]
-                    overflow-y-auto
-                    bg-[#0b1f1f]
-                    border border-emerald-500/20
-                    rounded-md
-                    shadow-lg
-                    animate-in fade-in slide-in-from-top-2 duration-200
+{leverageOpen && (
+  <div
+    onWheel={(e) => e.stopPropagation()}
+    className="
+      absolute left-0 right-0 mt-1 z-50
+      max-h-[200px]
+      overflow-y-auto
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded
+      shadow-lg
+      animate-in fade-in slide-in-from-top-2 duration-200
 
-                    [&::-webkit-scrollbar]:w-1.5
-                    [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                    [&::-webkit-scrollbar-thumb]:rounded-full
-                    [&::-webkit-scrollbar-track]:bg-transparent
-                  "
-                >
+      [&::-webkit-scrollbar]:w-1.5
+      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-transparent
+    "
+  >
                   {[1, 2, 3, 5, 10, 20, 50, 100, 125].map((lev) => (
                     <button
                       key={lev}

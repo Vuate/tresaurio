@@ -370,27 +370,20 @@ export default function FundingRateModule({ instanceId }: Props) {
 
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
-      {/* 🎯 Responsive Header - SpreadMonitor Style */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        {/* Title */}
         <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
           Funding Rate
         </span>
-        
-        {/* Separator */}
         <span className="text-white/40 text-xs">•</span>
         
-        {/* Status */}
         {connected ? (
           <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
         ) : loading ? (
           <span className="text-yellow-400 text-xs whitespace-nowrap animate-pulse">CONNECTING</span>
         ) : null}
 
-        {/* Spacer */}
         <div className="flex-1 min-w-[20px]"></div>
 
-        {/* Exchange Dropdown */}
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
@@ -418,48 +411,77 @@ export default function FundingRateModule({ instanceId }: Props) {
             </span>
           </button>
 
-          {exchangeOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute left-0 mt-1 z-50
-                w-[120px]
-                max-h-[160px]
-                overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded-md
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
+{exchangeOpen && (() => {
+  const buttonRect = exchangeRef.current?.getBoundingClientRect();
+  const dropdownWidth = 120;
+  
+  const wouldOverflowRight = buttonRect 
+    ? (buttonRect.left + dropdownWidth) > window.innerWidth 
+    : false;
+  
+  const wouldOverflowLeft = buttonRect
+    ? buttonRect.right < dropdownWidth
+    : false;
+  
+  let openFromRight = false;
+  
+  if (wouldOverflowRight && !wouldOverflowLeft) {
+    openFromRight = true;
+  } else if (!wouldOverflowRight && wouldOverflowLeft) {
+    openFromRight = false;
+  } else {
+    openFromRight = buttonRect ? buttonRect.left > (window.innerWidth / 2) : false;
+  }
 
-                [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-transparent
-              "
-            >
-              {EXCHANGES.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => {
-                    setExchange(ex.id as Exchange);
-                    setExchangeOpen(false);
-                  }}
-                  className="
-                    w-full px-3 py-2
-                    text-left text-xs
-                    bg-transparent cursor-pointer
-                    text-white
-                    transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
-                  "
-                >
-                  {ex.name}
-                </button>
-              ))}
-            </div>
-          )}
+  return (
+    <div
+      onWheel={(e) => e.stopPropagation()}
+      style={{
+        position: 'absolute',
+        marginTop: '0.25rem',
+        zIndex: 50,
+        width: '120px',
+        maxHeight: '160px',
+        ...(openFromRight ? { right: 0 } : { left: 0 })
+      }}
+      className="
+        overflow-y-auto
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-md
+        shadow-lg
+        animate-in fade-in slide-in-from-top-2 duration-200
+
+        [&::-webkit-scrollbar]:w-1.5
+        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-transparent
+      "
+    >
+      {EXCHANGES.map((ex) => (
+        <button
+          key={ex.id}
+          onClick={() => {
+            setExchange(ex.id as Exchange);
+            setExchangeOpen(false);
+          }}
+          className="
+            w-full px-3 py-2
+            text-left text-xs
+            bg-transparent cursor-pointer
+            text-white
+            transition-colors
+            hover:bg-emerald-500/10
+            hover:text-emerald-400
+          "
+        >
+          {ex.name}
+        </button>
+      ))}
+    </div>
+  );
+})()}
+
         </div>
 
         <div ref={symbolRef} className="relative">
@@ -489,48 +511,76 @@ export default function FundingRateModule({ instanceId }: Props) {
             </span>
           </button>
 
-          {symbolOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute left-0 mt-1 z-50
-                w-[140px]
-                max-h-[200px]
-                overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded-md
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
+{symbolOpen && (() => {
+  const buttonRect = symbolRef.current?.getBoundingClientRect();
+  const dropdownWidth = 140;
+  
+  const wouldOverflowRight = buttonRect 
+    ? (buttonRect.left + dropdownWidth) > window.innerWidth 
+    : false;
+  
+  const wouldOverflowLeft = buttonRect
+    ? buttonRect.right < dropdownWidth
+    : false;
+  
+  let openFromRight = false;
+  
+  if (wouldOverflowRight && !wouldOverflowLeft) {
+    openFromRight = true;
+  } else if (!wouldOverflowRight && wouldOverflowLeft) {
+    openFromRight = false;
+  } else {
+    openFromRight = buttonRect ? buttonRect.left > (window.innerWidth / 2) : false;
+  }
 
-                [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-transparent
-              "
-            >
-              {symbols.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => {
-                    setSelectedSymbol(s);
-                    setSymbolOpen(false);
-                  }}
-                  className="
-                    w-full px-3 py-2
-                    text-left text-xs
-                    bg-transparent cursor-pointer
-                    text-white
-                    transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
-                  "
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          )}
+  return (
+    <div
+      onWheel={(e) => e.stopPropagation()}
+      style={{
+        position: 'absolute',
+        marginTop: '0.25rem',
+        zIndex: 50,
+        width: '140px',
+        maxHeight: '200px',
+        ...(openFromRight ? { right: 0 } : { left: 0 })
+      }}
+      className="
+        overflow-y-auto
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-md
+        shadow-lg
+        animate-in fade-in slide-in-from-top-2 duration-200
+
+        [&::-webkit-scrollbar]:w-1.5
+        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-transparent
+      "
+    >
+      {symbols.map((s) => (
+        <button
+          key={s}
+          onClick={() => {
+            setSelectedSymbol(s);
+            setSymbolOpen(false);
+          }}
+          className="
+            w-full px-3 py-2
+            text-left text-xs
+            bg-transparent cursor-pointer
+            text-white
+            transition-colors
+            hover:bg-emerald-500/10
+            hover:text-emerald-400
+          "
+        >
+          {s}
+        </button>
+      ))}
+    </div>
+  );
+})()}
         </div>
 
         <button

@@ -124,15 +124,15 @@ export default function AddToolPanel() {
         <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">Add Tool</div>
       </div>
 
-      <div
-        style={{
-          height: `calc(${availableHeight}px - ${headerHeight}px)`,
-        }}
-        className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
-        onWheel={(e) => {
-          e.stopPropagation();
-        }}
-      >
+<div
+  style={{
+    height: `calc(${availableHeight}px - ${headerHeight}px)`,
+  }}
+  className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
+  onWheel={(e) => {
+    e.stopPropagation();
+  }}
+>
         {Object.entries(grouped).map(([category, mods]) => (
           <div key={category}>
             <div className="px-1 py-1 text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/40 font-bold">

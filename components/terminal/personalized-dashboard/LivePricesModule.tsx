@@ -97,6 +97,7 @@ export default function LivePricesModule({
   const [showAddModal, setShowAddModal] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [exchangeOpen, setExchangeOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<'left' | 'right'>('right');
   const exchangeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -272,7 +273,25 @@ export default function LivePricesModule({
 
         <div ref={exchangeRef} className="relative">
           <button
-            onClick={() => setExchangeOpen((v) => !v)}
+onClick={(e) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const windowWidth = window.innerWidth;
+  const dropdownWidth = 120;
+  
+  // Sağda yeterli alan var mı kontrol et
+  const spaceOnRight = windowWidth - rect.right;
+  
+  // Eğer sağda dropdown için yeterli alan VARSA
+  // sol taraftan aç (çünkü widget solda demektir)
+  if (spaceOnRight >= dropdownWidth) {
+    setDropdownPosition('left');
+  } else {
+    // Sağda yeterli alan yoksa sağdan aç (widget sağda demektir)
+    setDropdownPosition('right');
+  }
+  
+  setExchangeOpen((v) => !v);
+}}
             className="
               h-7 px-3 rounded-md
               bg-[#0b1f1f]
@@ -300,8 +319,8 @@ export default function LivePricesModule({
           {exchangeOpen && (
             <div
               onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute right-0 mt-1 z-50
+              className={`
+                absolute ${dropdownPosition === 'right' ? 'right-0' : 'left-0'} mt-1 z-50
                 w-[120px]
                 max-h-[160px]
                 overflow-y-auto
@@ -315,7 +334,7 @@ export default function LivePricesModule({
                 [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
                 [&::-webkit-scrollbar-thumb]:rounded-full
                 [&::-webkit-scrollbar-track]:bg-transparent
-              "
+              `}
             >
               {EXCHANGES.map((ex) => (
                 <button

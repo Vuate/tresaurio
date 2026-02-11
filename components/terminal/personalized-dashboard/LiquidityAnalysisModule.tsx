@@ -179,204 +179,226 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
 
         <div className="flex gap-1.5 sm:gap-2 flex-wrap justify-end">
           {/* Exchange Selector */}
-          <div ref={exchangeRef} className="relative">
-            <button
-              onClick={() => setExchangeOpen((v) => !v)}
-              className="
-                h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-                bg-[#0b1f1f]
-                border border-white/10
-                text-[10px] sm:text-xs text-white
-                flex items-center gap-1.5 sm:gap-2
-                cursor-pointer
-                hover:bg-white/5
-                transition-colors
-              "
-            >
-              <span>
-                {EXCHANGES.find((e) => e.id === exchange)?.name}
-              </span>
-              <span
-                className={`
-                  text-white/50
-                  transition-transform duration-200
-                  ${exchangeOpen ? "rotate-180" : ""}
-                `}
-              >
-                ▾
-              </span>
-            </button>
+<div ref={exchangeRef} className="relative">
+  <button
+    onClick={() => setExchangeOpen((v) => !v)}
+    className="
+      h-7 sm:h-8 px-2 sm:px-3 rounded-lg
+      bg-[#0b1f1f]
+      border border-white/10
+      text-[10px] sm:text-xs text-white
+      flex items-center gap-1.5 sm:gap-2
+      cursor-pointer
+      hover:bg-white/5
+      transition-colors
+    "
+  >
+    <span>
+      {EXCHANGES.find((e) => e.id === exchange)?.name}
+    </span>
+    <span
+      className={`
+        text-white/50
+        transition-transform duration-200
+        ${exchangeOpen ? "rotate-180" : ""}
+      `}
+    >
+      ▾
+    </span>
+  </button>
 
-            {exchangeOpen && (
-              <div
-                onWheel={(e) => e.stopPropagation()}
-                className="
-                  absolute left-0 mt-1 z-[999]
-                  w-[120px] sm:w-[140px]
-                  max-h-[200px] sm:max-h-[88px]
-                  overflow-y-auto
-                  bg-[#0b1f1f]
-                  border border-emerald-500/20
-                  rounded-lg
-                  shadow-xl
+  {exchangeOpen && (() => {
+    const buttonRect = exchangeRef.current?.getBoundingClientRect();
+    const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
 
-                  [&::-webkit-scrollbar]:w-1.5
-                  [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                  [&::-webkit-scrollbar-thumb]:rounded-full
-                  [&::-webkit-scrollbar-track]:bg-transparent
-                "
-              >
-                {EXCHANGES.map((ex) => (
-                  <button
-                    key={ex.id}
-                    onClick={() => {
-                      setExchange(ex.id as Exchange);
-                      setExchangeOpen(false);
-                    }}
-                    className="
-                      w-full px-2.5 sm:px-3 py-1.5 sm:py-2
-                      text-left text-[10px] sm:text-xs
-                      bg-transparent cursor-pointer
-                      text-white
-                      transition-colors
-                      hover:text-emerald-400
-                    "
-                  >
-                    {ex.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+    return (
+      <div
+        onWheel={(e) => e.stopPropagation()}
+        className={`
+          absolute mt-1 z-[999]
+          w-[120px] sm:w-[140px]
+          max-h-[200px] sm:max-h-[88px]
+          overflow-y-auto
+          bg-[#0b1f1f]
+          border border-emerald-500/20
+          rounded-lg
+          shadow-xl
 
-          <div ref={marketRef} className="relative">
-            <button
-              onClick={() => setMarketOpen((v) => !v)}
-              className="
-                h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-                bg-[#0b1f1f]
-                border border-white/10
-                text-[10px] sm:text-xs text-white
-                flex items-center gap-1.5 sm:gap-2
-                cursor-pointer
-                hover:bg-white/5
-                transition-colors
-              "
-            >
-              <span>{MARKET_TYPES.find((m) => m.id === marketType)?.name}</span>
-              <span
-                className={`
-                  text-white/50
-                  transition-transform duration-200
-                  ${marketOpen ? "rotate-180" : ""}
-                `}
-              >
-                ▾
-              </span>
-            </button>
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-track]:bg-transparent
 
-            {marketOpen && (
-              <div
-                onWheel={(e) => e.stopPropagation()}
-                className="
-                  absolute left-0 mt-1 z-[999]
-                  w-[100px] sm:w-[120px]
-                  bg-[#0b1f1f]
-                  border border-emerald-500/20
-                  rounded-lg
-                  shadow-xl
-                "
-              >
-                {MARKET_TYPES.map((mt) => (
-                  <button
-                    key={mt.id}
-                    onClick={() => {
-                      setMarketType(mt.id);
-                      setMarketOpen(false);
-                    }}
-                    className="
-                      w-full px-2.5 sm:px-3 py-1.5 sm:py-2
-                      text-left text-[10px] sm:text-xs
-                      bg-transparent cursor-pointer
-                      text-white
-                      transition-colors
-                      hover:text-emerald-400
-                    "
-                  >
-                    {mt.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          ${shouldOpenLeft ? 'right-0' : 'left-0'}
+        `}
+      >
+        {EXCHANGES.map((ex) => (
+          <button
+            key={ex.id}
+            onClick={() => {
+              setExchange(ex.id as Exchange);
+              setExchangeOpen(false);
+            }}
+            className="
+              w-full px-2.5 sm:px-3 py-1.5 sm:py-2
+              text-left text-[10px] sm:text-xs
+              bg-transparent cursor-pointer
+              text-white
+              transition-colors
+              hover:text-emerald-400
+            "
+          >
+            {ex.name}
+          </button>
+        ))}
+      </div>
+    );
+  })()}
+</div>
 
-          <div ref={symbolRef} className="relative">
-            <button
-              onClick={() => setSymbolOpen((v) => !v)}
-              className="
-                h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-                bg-[#0b1f1f]
-                border border-white/10
-                text-[10px] sm:text-xs text-white
-                flex items-center gap-1.5 sm:gap-2
-                cursor-pointer
-                hover:bg-white/5
-                transition-colors
-              "
-            >
-              <span>{symbol}</span>
-              <span
-                className={`
-                  text-white/50
-                  transition-transform duration-200
-                  ${symbolOpen ? "rotate-180" : ""}
-                `}
-              >
-                ▾
-              </span>
-            </button>
+<div ref={marketRef} className="relative">
+  <button
+    onClick={() => setMarketOpen((v) => !v)}
+    className="
+      h-7 sm:h-8 px-2 sm:px-3 rounded-lg
+      bg-[#0b1f1f]
+      border border-white/10
+      text-[10px] sm:text-xs text-white
+      flex items-center gap-1.5 sm:gap-2
+      cursor-pointer
+      hover:bg-white/5
+      transition-colors
+    "
+  >
+    <span>{MARKET_TYPES.find((m) => m.id === marketType)?.name}</span>
+    <span
+      className={`
+        text-white/50
+        transition-transform duration-200
+        ${marketOpen ? "rotate-180" : ""}
+      `}
+    >
+      ▾
+    </span>
+  </button>
 
-            {symbolOpen && (
-              <div
-                onWheel={(e) => e.stopPropagation()}
-                className="
-                  absolute left-0 mt-1 z-[999]
-                  w-[120px] sm:w-[140px]
-                  max-h-[200px]
-                  overflow-y-auto
-                  bg-[#0b1f1f]
-                  border border-emerald-500/20
-                  rounded-lg
-                  shadow-xl
+  {marketOpen && (() => {
+    const buttonRect = marketRef.current?.getBoundingClientRect();
+    const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
 
-                  [&::-webkit-scrollbar]:w-1.5
-                  [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                  [&::-webkit-scrollbar-thumb]:rounded-full
-                  [&::-webkit-scrollbar-track]:bg-transparent
-                "
-              >
-                {POPULAR_SYMBOLS.map((sym) => (
-                  <button
-                    key={sym}
-                    onClick={() => {
-                      setSymbol(sym);
-                      setSymbolOpen(false);
-                    }}
-                    className="
-                      w-full px-2.5 sm:px-3 py-1.5 sm:py-2
-                      text-left text-[10px] sm:text-xs
-                      bg-transparent cursor-pointer
-                      text-white
-                      transition-colors
-                      hover:text-emerald-400
-                    "
-                  >
-                    {sym}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+    return (
+      <div
+        onWheel={(e) => e.stopPropagation()}
+        className={`
+          absolute mt-1 z-[999]
+          w-[100px] sm:w-[120px]
+          bg-[#0b1f1f]
+          border border-emerald-500/20
+          rounded-lg
+          shadow-xl
+
+          ${shouldOpenLeft ? 'right-0' : 'left-0'}
+        `}
+      >
+        {MARKET_TYPES.map((mt) => (
+          <button
+            key={mt.id}
+            onClick={() => {
+              setMarketType(mt.id);
+              setMarketOpen(false);
+            }}
+            className="
+              w-full px-2.5 sm:px-3 py-1.5 sm:py-2
+              text-left text-[10px] sm:text-xs
+              bg-transparent cursor-pointer
+              text-white
+              transition-colors
+              hover:text-emerald-400
+            "
+          >
+            {mt.name}
+          </button>
+        ))}
+      </div>
+    );
+  })()}
+</div>
+
+<div ref={symbolRef} className="relative">
+  <button
+    onClick={() => setSymbolOpen((v) => !v)}
+    className="
+      h-7 sm:h-8 px-2 sm:px-3 rounded-lg
+      bg-[#0b1f1f]
+      border border-white/10
+      text-[10px] sm:text-xs text-white
+      flex items-center gap-1.5 sm:gap-2
+      cursor-pointer
+      hover:bg-white/5
+      transition-colors
+    "
+  >
+    <span>{symbol}</span>
+    <span
+      className={`
+        text-white/50
+        transition-transform duration-200
+        ${symbolOpen ? "rotate-180" : ""}
+      `}
+    >
+      ▾
+    </span>
+  </button>
+
+  {symbolOpen && (() => {
+    const buttonRect = symbolRef.current?.getBoundingClientRect();
+    const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
+
+    return (
+      <div
+        onWheel={(e) => e.stopPropagation()}
+        className={`
+          absolute mt-1 z-[999]
+          w-[120px] sm:w-[140px]
+          max-h-[200px]
+          overflow-y-auto
+          bg-[#0b1f1f]
+          border border-emerald-500/20
+          rounded-lg
+          shadow-xl
+
+          [&::-webkit-scrollbar]:w-1.5
+          [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+          [&::-webkit-scrollbar-thumb]:rounded-full
+          [&::-webkit-scrollbar-track]:bg-transparent
+
+          ${shouldOpenLeft ? 'right-0' : 'left-0'}
+        `}
+      >
+        {POPULAR_SYMBOLS.map((sym) => (
+          <button
+            key={sym}
+            onClick={() => {
+              setSymbol(sym);
+              setSymbolOpen(false);
+            }}
+            className="
+              w-full px-2.5 sm:px-3 py-1.5 sm:py-2
+              text-left text-[10px] sm:text-xs
+              bg-transparent cursor-pointer
+              text-white
+              transition-colors
+              hover:text-emerald-400
+            "
+          >
+            {sym}
+          </button>
+        ))}
+      </div>
+    );
+  })()}
+</div>
+
         </div>
       </div>
 
@@ -460,21 +482,21 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
                 Volume Analysis
               </div>
 
-              <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
-                <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-white/50 text-[9px] sm:text-[10px]">Bid Volume</div>
-                  <div className="text-emerald-400 font-semibold font-mono text-[10px] sm:text-xs">
-                    ${(liquidityData.bidVolume / 1000000).toFixed(2)}M
-                  </div>
-                </div>
+<div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+  <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10 overflow-hidden">
+    <div className="text-white/50 text-[9px] sm:text-[10px] mb-1">Bid Volume</div>
+    <div className="text-emerald-400 font-semibold font-mono text-[10px] sm:text-xs break-all">
+      ${(liquidityData.bidVolume / 1000000).toFixed(2)}M
+    </div>
+  </div>
 
-                <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-white/50 text-[9px] sm:text-[10px]">Ask Volume</div>
-                  <div className="text-red-400 font-semibold font-mono text-[10px] sm:text-xs">
-                    ${(liquidityData.askVolume / 1000000).toFixed(2)}M
-                  </div>
-                </div>
-              </div>
+  <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10 overflow-hidden">
+    <div className="text-white/50 text-[9px] sm:text-[10px] mb-1">Ask Volume</div>
+    <div className="text-red-400 font-semibold font-mono text-[10px] sm:text-xs break-all">
+      ${(liquidityData.askVolume / 1000000).toFixed(2)}M
+    </div>
+  </div>
+</div>
 
               <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
                 <div className="text-white/50 text-[9px] sm:text-[10px]">Total Volume</div>

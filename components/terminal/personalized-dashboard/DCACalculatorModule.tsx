@@ -221,19 +221,19 @@ className="
 
       </div>
 
-      <div className="bg-white/5 border border-white/10 rounded p-2">
-        <div className="flex justify-between items-center">
-          <span className="text-white/50 text-[10px]">
-            Current Price (Live)
-          </span>
-          <div className="flex items-center gap-2">
-            <span className="text-white font-semibold">
-              ${currentPrice.toLocaleString()}
-            </span>
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          </div>
-        </div>
-      </div>
+<div className="bg-white/5 border border-white/10 rounded p-2">
+  <div className="flex flex-wrap justify-between items-center gap-2">
+    <span className="text-white/50 text-[10px]">
+      Current Price (Live)
+    </span>
+    <div className="flex items-center gap-2">
+      <span className="text-white font-semibold break-all">
+        ${currentPrice.toLocaleString()}
+      </span>
+      <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+    </div>
+  </div>
+</div>
 
       <div className="bg-white/5 border border-white/10 rounded p-3 space-y-2">
         <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
@@ -313,38 +313,40 @@ className="
 </button>
           </div>
 
-          {trades.map((trade, idx) => (
-            <div
-              key={trade.id}
-              className="bg-white/5 border border-white/10 rounded p-2 flex items-center justify-between"
-            >
-              <div className="flex-1">
-                <span className="text-white/30 text-[10px]">#{idx + 1}</span>
-                <div className="text-white/70">
-                  {trade.quantity} @ ${trade.price.toLocaleString()}
-                </div>
-                <div className="text-white/40 text-[10px]">
-                  = ${(trade.quantity * trade.price).toLocaleString()}
-                </div>
-              </div>
+{trades.map((trade, idx) => (
+  <div
+    key={trade.id}
+    className="bg-white/5 border border-white/10 rounded p-2 flex items-center justify-between gap-2 overflow-hidden"
+  >
+    <div className="flex-1 min-w-0">
+      <span className="text-white/30 text-[10px]">#{idx + 1}</span>
+      <div className="text-white/70 truncate">
+        {trade.quantity} @ ${trade.price.toLocaleString()}
+      </div>
+      <div className="text-white/40 text-[10px] truncate">
+        = ${(trade.quantity * trade.price).toLocaleString()}
+      </div>
+    </div>
+    
+    <button
+      onClick={() => removeTrade(trade.id)}
+      className="
+        text-white/40
+        cursor-pointer
+        transition-all
+        p-1
+        hover:text-red-400
+        hover:scale-110
+        hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.6)]
+        shrink-0
+      "
+    >
+      <X className="w-3 h-3" />
+    </button>
+  </div>
+))}
 
-<button
-  onClick={() => removeTrade(trade.id)}
-  className="
-    text-white/40
-    cursor-pointer
-    transition-all
-    p-1
-    hover:text-red-400
-    hover:scale-110
-    hover:drop-shadow-[0_0_6px_rgba(248,113,113,0.6)]
-  "
->
-  <X className="w-3 h-3" />
-</button>
 
-            </div>
-          ))}
         </div>
       )}
 
@@ -450,9 +452,9 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between">
+    <div className="flex flex-wrap justify-between items-start gap-2">
       <span className="text-white/50">{label}</span>
-      <span>{children}</span>
+      <span className="text-right break-all">{children}</span>
     </div>
   );
 }

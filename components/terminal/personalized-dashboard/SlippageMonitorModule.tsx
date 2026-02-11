@@ -210,25 +210,57 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
             </span>
           </button>
 
-          {exchangeOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="absolute right-0 mt-1 z-50 w-[120px] max-h-[160px] overflow-y-auto bg-[#0b1f1f] border border-emerald-500/20 rounded-md shadow-lg animate-in fade-in slide-in-from-top-2 duration-200 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-emerald-500/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
-            >
-              {EXCHANGES.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => {
-                    setExchange(ex.id as Exchange);
-                    setExchangeOpen(false);
-                  }}
-                  className="w-full px-3 py-2 text-left text-xs bg-transparent cursor-pointer text-white transition-colors hover:bg-emerald-500/10 hover:text-emerald-400"
-                >
-                  {ex.name}
-                </button>
-              ))}
-            </div>
-          )}
+{exchangeOpen && (() => {
+  const buttonRect = exchangeRef.current?.getBoundingClientRect();
+  
+  // Button ekranın SAĞ yarısında mı?
+  const isButtonOnRight = buttonRect 
+    ? buttonRect.left > (window.innerWidth / 2)
+    : false;
+
+  return (
+    <div
+      onWheel={(e) => e.stopPropagation()}
+      style={{
+        position: 'absolute',
+        marginTop: '0.25rem',
+        zIndex: 50,
+        width: '120px',
+        maxHeight: '160px',
+        // Eğer button SAĞDAYSA → SAĞDAN aç (right: 0)
+        // Eğer button SOLDAYSA → SOLDAN aç (left: 0)
+        ...(isButtonOnRight ? { right: 0 } : { left: 0 })
+      }}
+      className="
+        overflow-y-auto
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-md
+        shadow-lg
+        animate-in fade-in slide-in-from-top-2 duration-200
+        
+        [&::-webkit-scrollbar]:w-1.5
+        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-transparent
+      "
+    >
+      {EXCHANGES.map((ex) => (
+        <button
+          key={ex.id}
+          onClick={() => {
+            setExchange(ex.id as Exchange);
+            setExchangeOpen(false);
+          }}
+          className="w-full px-3 py-2 text-left text-xs bg-transparent cursor-pointer text-white transition-colors hover:bg-emerald-500/10 hover:text-emerald-400"
+        >
+          {ex.name}
+        </button>
+      ))}
+    </div>
+  );
+})()}
+
         </div>
       </div>
 

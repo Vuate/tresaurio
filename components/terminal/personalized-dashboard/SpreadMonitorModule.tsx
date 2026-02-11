@@ -236,96 +236,104 @@ export default function SpreadMonitorModule({
 
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs">
-          Spread Monitor ({marketType === "spot" ? "Spot" : "Futures"})
-        </span>
-        
-        <span className="text-white/40 text-xs">•</span>
-        
-        <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
+  <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
+    <span className="font-semibold text-white/90 text-xs">
+      Spread Monitor ({marketType === "spot" ? "Spot" : "Futures"})
+    </span>
+    
+    <span className="text-white/40 text-xs">•</span>
+    
+    <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
-        <div className="flex-1 min-w-[20px]"></div>
+    <div className="flex-1 min-w-[20px]"></div>
 
-        <div ref={exchangeRef} className="relative">
-          <button
-            onClick={() => setExchangeOpen((v) => !v)}
-            className="
-              h-7 px-3 rounded-md
-              bg-[#0b1f1f]
-              border border-white/10
-              text-white text-xs
-              flex items-center gap-1.5
-              cursor-pointer
-              hover:bg-white/5
-              transition-all
-              whitespace-nowrap
-            "
-          >
-            <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
-            <span
-              className={`
-                text-white/50 text-[10px]
-                transition-transform duration-200
-                ${exchangeOpen ? "rotate-180" : ""}
-              `}
-            >
-              ▾
-            </span>
-          </button>
-
-          {exchangeOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute right-0 mt-1 z-50
-                w-[120px]
-                max-h-[160px]
-                overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded-md
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
-
-                [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-transparent
-              "
-            >
-              {EXCHANGES.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => {
-                    setExchange(ex.id);
-                    setExchangeOpen(false);
-                  }}
-                  className="
-                    w-full px-3 py-2
-                    text-left text-xs
-                    bg-transparent cursor-pointer
-                    text-white
-                    transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
-                  "
-                >
-                  {ex.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+    <div ref={exchangeRef} className="relative">
+      <button
+        onClick={() => setExchangeOpen((v) => !v)}
+        className="
+          h-7 px-3 rounded-md
+          bg-[#0b1f1f]
+          border border-white/10
+          text-white text-xs
+          flex items-center gap-1.5
+          cursor-pointer
+          hover:bg-white/5
+          transition-all
+          whitespace-nowrap
+        "
+      >
+        <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
+        <span
+          className={`
+            text-white/50 text-[10px]
+            transition-transform duration-200
+            ${exchangeOpen ? "rotate-180" : ""}
+          `}
         >
-          <Plus className="w-3 h-3" />
-          Add
-        </button>
-      </div>
+          ▾
+        </span>
+      </button>
+
+      {exchangeOpen && (() => {
+        const buttonRect = exchangeRef.current?.getBoundingClientRect();
+        const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
+
+        return (
+          <div
+            onWheel={(e) => e.stopPropagation()}
+            className={`
+              absolute mt-1 z-50
+              w-[120px]
+              max-h-[160px]
+              overflow-y-auto
+              bg-[#0b1f1f]
+              border border-emerald-500/20
+              rounded-md
+              shadow-lg
+              animate-in fade-in slide-in-from-top-2 duration-200
+
+              [&::-webkit-scrollbar]:w-1.5
+              [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              [&::-webkit-scrollbar-track]:bg-transparent
+
+              ${shouldOpenLeft ? 'right-0' : 'left-0'}
+            `}
+          >
+            {EXCHANGES.map((ex) => (
+              <button
+                key={ex.id}
+                onClick={() => {
+                  setExchange(ex.id);
+                  setExchangeOpen(false);
+                }}
+                className="
+                  w-full px-3 py-2
+                  text-left text-xs
+                  bg-transparent cursor-pointer
+                  text-white
+                  transition-colors
+                  hover:bg-emerald-500/10
+                  hover:text-emerald-400
+                "
+              >
+                {ex.name}
+              </button>
+            ))}
+          </div>
+        );
+      })()}
+    </div>
+
+    <button
+      onClick={() => setShowAddModal(true)}
+      className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+    >
+      <Plus className="w-3 h-3" />
+      Add
+    </button>
+  </div>
+
 
       <div
         ref={contentRef}

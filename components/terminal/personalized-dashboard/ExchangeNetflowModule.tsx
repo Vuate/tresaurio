@@ -337,74 +337,84 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
             </span>
           </button>
 
-          {symbolDropdownOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute left-0 mt-1 z-50
-                w-[120px]
-                max-h-[160px]
-                overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded-md
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
+{symbolDropdownOpen && (() => {
+  const buttonRect = symbolDropdownRef.current?.getBoundingClientRect();
+  const isRightSide = buttonRect ? buttonRect.right > window.innerWidth / 2 : false;
 
-                [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-transparent
+  return (
+    <div
+      onWheel={(e) => e.stopPropagation()}
+      style={{
+        position: 'absolute',
+        marginTop: '0.25rem',
+        zIndex: 50,
+        width: '120px',
+        maxHeight: '160px',
+        ...(isRightSide ? { right: 0 } : { left: 0 })
+      }}
+      className="
+        overflow-y-auto
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-md
+        shadow-lg
+        animate-in fade-in slide-in-from-top-2 duration-200
+
+        [&::-webkit-scrollbar]:w-1.5
+        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-transparent
+      "
+    >
+      {symbols.map((sym) => (
+        <div
+          key={sym}
+          className="
+            flex items-center justify-between
+            px-3 py-2
+            text-xs
+            hover:bg-emerald-500/10
+            transition-colors
+            group
+          "
+        >
+          <button
+            onClick={() => {
+              setSelectedSymbol(sym);
+              setSymbolDropdownOpen(false);
+            }}
+            className="
+              flex-1 text-left
+              text-white
+              hover:text-emerald-400
+              cursor-pointer
+            "
+          >
+            {sym}
+          </button>
+          {symbols.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                removeSymbol(sym);
+              }}
+              className="
+                text-white/40
+                hover:text-red-400
+                transition-colors
+                cursor-pointer
+                opacity-0
+                group-hover:opacity-100
               "
             >
-              {symbols.map((sym) => (
-                <div
-                  key={sym}
-                  className="
-                    flex items-center justify-between
-                    px-3 py-2
-                    text-xs
-                    hover:bg-emerald-500/10
-                    transition-colors
-                    group
-                  "
-                >
-                  <button
-                    onClick={() => {
-                      setSelectedSymbol(sym);
-                      setSymbolDropdownOpen(false);
-                    }}
-                    className="
-                      flex-1 text-left
-                      text-white
-                      hover:text-emerald-400
-                      cursor-pointer
-                    "
-                  >
-                    {sym}
-                  </button>
-                  {symbols.length > 1 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeSymbol(sym);
-                      }}
-                      className="
-                        text-white/40
-                        hover:text-red-400
-                        transition-colors
-                        cursor-pointer
-                        opacity-0
-                        group-hover:opacity-100
-                      "
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+              <X className="w-3 h-3" />
+            </button>
           )}
+        </div>
+      ))}
+    </div>
+  );
+})()}
         </div>
 
         {/* Add Button - Can wrap independently */}
@@ -497,59 +507,59 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
                 </div>
               </div>
 
-              {/* Flow Stats - HER ZAMAN GÖRÜNEBİLİR, ALT ALTA DİZİLEBİLİR */}
-              <div className="space-y-1.5 mb-2">
-                {/* Inflow - tek satırda sığmazsa wrap olur */}
-                <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
-                  <span className="text-emerald-400 whitespace-nowrap">↓ Inflow</span>
-                  <span className="text-white font-mono whitespace-nowrap">
-                    {d.loading ? (
-                      <span className="text-white/40">Loading...</span>
-                    ) : (
-                      `$${d.inflow > 1000000
-                        ? (d.inflow / 1000000).toFixed(2) + "M"
-                        : (d.inflow / 1000).toFixed(1) + "K"}`
-                    )}
-                  </span>
-                </div>
 
-                {/* Outflow - tek satırda sığmazsa wrap olur */}
-                <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
-                  <span className="text-red-400 whitespace-nowrap">↑ Outflow</span>
-                  <span className="text-white font-mono whitespace-nowrap">
-                    {d.loading ? (
-                      <span className="text-white/40">Loading...</span>
-                    ) : (
-                      `$${d.outflow > 1000000
-                        ? (d.outflow / 1000000).toFixed(2) + "M"
-                        : (d.outflow / 1000).toFixed(1) + "K"}`
-                    )}
-                  </span>
-                </div>
+<div className="space-y-1.5 mb-2 overflow-hidden">
+  {/* Inflow */}
+  <div className="flex justify-between items-center gap-2 text-xs">
+    <span className="text-emerald-400 shrink-0">↓ Inflow</span>
+    <span className="text-white font-mono text-right truncate">
+      {d.loading ? (
+        <span className="text-white/40">Loading...</span>
+      ) : (
+        `$${d.inflow > 1000000
+          ? (d.inflow / 1000000).toFixed(2) + "M"
+          : (d.inflow / 1000).toFixed(1) + "K"}`
+      )}
+    </span>
+  </div>
 
-                <div className="h-px bg-white/10 my-1" />
+  {/* Outflow */}
+  <div className="flex justify-between items-center gap-2 text-xs">
+    <span className="text-red-400 shrink-0">↑ Outflow</span>
+    <span className="text-white font-mono text-right truncate">
+      {d.loading ? (
+        <span className="text-white/40">Loading...</span>
+      ) : (
+        `$${d.outflow > 1000000
+          ? (d.outflow / 1000000).toFixed(2) + "M"
+          : (d.outflow / 1000).toFixed(1) + "K"}`
+      )}
+    </span>
+  </div>
 
-                {/* Net Flow - tek satırda sığmazsa wrap olur */}
-                <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-sm">
-                  <span className="text-white/80 font-medium whitespace-nowrap">Net Flow</span>
-                  <span
-                    className={`font-bold font-mono whitespace-nowrap ${
-                      d.net >= 0 ? "text-emerald-400" : "text-red-400"
-                    }`}
-                  >
-                    {d.loading ? (
-                      <span className="text-white/40 text-xs">Loading...</span>
-                    ) : (
-                      <>
-                        {d.net >= 0 ? "+" : "-"}$
-                        {Math.abs(d.net) > 1000000
-                          ? (Math.abs(d.net) / 1000000).toFixed(2) + "M"
-                          : (Math.abs(d.net) / 1000).toFixed(1) + "K"}
-                      </>
-                    )}
-                  </span>
-                </div>
-              </div>
+  <div className="h-px bg-white/10 my-1" />
+
+  {/* Net Flow */}
+  <div className="flex justify-between items-center gap-2 text-sm">
+    <span className="text-white/80 font-medium shrink-0">Net Flow</span>
+    <span
+      className={`font-bold font-mono text-right truncate ${
+        d.net >= 0 ? "text-emerald-400" : "text-red-400"
+      }`}
+    >
+      {d.loading ? (
+        <span className="text-white/40 text-xs">Loading...</span>
+      ) : (
+        <>
+          {d.net >= 0 ? "+" : "-"}$
+          {Math.abs(d.net) > 1000000
+            ? (Math.abs(d.net) / 1000000).toFixed(2) + "M"
+            : (Math.abs(d.net) / 1000).toFixed(1) + "K"}
+        </>
+      )}
+    </span>
+  </div>
+</div>
 
               {/* Flow Bar */}
               {!d.loading && (d.inflow + d.outflow) > 0 && (

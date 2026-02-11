@@ -254,7 +254,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
               onChange={(e) =>
                 updateSettings({ limit: parseInt(e.target.value) })
               }
-              className="w-full accent-blue-500"
+              className="w-full accent-blue-500 cursor-pointer"
             />
           </div>
         </div>

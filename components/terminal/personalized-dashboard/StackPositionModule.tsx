@@ -134,7 +134,7 @@ export default function StackPositionModule({ instanceId }: Props) {
                 key={stack.id}
                 className="rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors overflow-hidden"
               >
-             <button
+                <button
                   onClick={() => {
                     const newSet = new Set(expandedIds);
                     if (isExpanded) {
@@ -149,7 +149,7 @@ export default function StackPositionModule({ instanceId }: Props) {
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-1.5 min-w-0 flex-1">
                       <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/60 shrink-0" />
-                      <div className="font-semibold text-white text-xs sm:text-sm leading-tight">
+                      <div className="font-semibold text-white text-xs sm:text-sm leading-tight truncate">
                         {stack.name}
                       </div>
                     </div>
@@ -160,12 +160,12 @@ export default function StackPositionModule({ instanceId }: Props) {
                     />
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="text-[9px] sm:text-[10px] text-white/60 leading-tight">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2">
+                    <span className="text-[9px] sm:text-[10px] text-white/60 leading-tight whitespace-nowrap">
                       {stack.category}
                     </span>
                     <span
-                      className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded border font-semibold whitespace-nowrap flex items-center gap-0.5 ${
+                      className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded border font-semibold whitespace-nowrap flex items-center gap-0.5 flex-shrink-0 ${
                         stack.change24h >= 0
                           ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
                           : "text-red-400 bg-red-500/10 border-red-500/20"
@@ -173,23 +173,23 @@ export default function StackPositionModule({ instanceId }: Props) {
                     >
                       {stack.change24h >= 0 ? (
                         <>
-                          <TrendingUp className="w-2.5 h-2.5" />
-                          +{stack.change24h.toFixed(1)}%
+                          <TrendingUp className="w-2.5 h-2.5 flex-shrink-0" />
+                          <span className="whitespace-nowrap">+{stack.change24h.toFixed(1)}%</span>
                         </>
                       ) : (
                         <>
-                          <TrendingDown className="w-2.5 h-2.5" />
-                          {stack.change24h.toFixed(1)}%
+                          <TrendingDown className="w-2.5 h-2.5 flex-shrink-0" />
+                          <span className="whitespace-nowrap">{stack.change24h.toFixed(1)}%</span>
                         </>
                       )}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <span className="text-sm sm:text-base font-bold text-white leading-tight">
+                  <div className="flex items-center justify-between gap-2 mb-1.5 min-w-0">
+                    <span className="text-sm sm:text-base font-bold text-white leading-tight truncate">
                       ${stack.totalValue.toLocaleString()}
                     </span>
-                    <span className="text-xs sm:text-sm text-blue-400 font-semibold whitespace-nowrap">
+                    <span className="text-xs sm:text-sm text-blue-400 font-semibold whitespace-nowrap flex-shrink-0">
                       {stack.allocation}%
                     </span>
                   </div>

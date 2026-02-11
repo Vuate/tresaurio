@@ -667,7 +667,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setSide("long")}
-                className={`py-2 rounded-lg text-xs transition font-semibold ${
+                className={`py-2 rounded-lg text-xs transition font-semibold cursor-pointer ${
                   side === "long"
                     ? "bg-emerald-500 text-white"
                     : "bg-white/5 text-white/50 hover:bg-white/10"
@@ -677,7 +677,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
               </button>
               <button
                 onClick={() => setSide("short")}
-                className={`py-2 rounded-lg text-xs transition font-semibold ${
+                className={`py-2 rounded-lg text-xs transition font-semibold cursor-pointer ${
                   side === "short"
                     ? "bg-red-500 text-white"
                     : "bg-white/5 text-white/50 hover:bg-white/10"
@@ -722,7 +722,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                 max="125"
                 value={leverage}
                 onChange={(e) => handleLeverageSliderChange(parseInt(e.target.value))}
-                className="w-full accent-blue-500"
+                className="w-full accent-blue-500 cursor-pointer"
               />
             </div>
 

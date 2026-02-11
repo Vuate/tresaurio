@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
+
 import {
   User,
   Settings,
@@ -22,12 +24,15 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+    const setUserMenuOpen = usePersonalizedDashboardStore((s) => s.setUserMenuOpen);
+
 
   // Close menu on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false);
+        setUserMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -37,7 +42,10 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
   // Close on escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        setUserMenuOpen(false);
+      }
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
@@ -158,7 +166,11 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
     <div ref={menuRef} className="relative">
       {/* Avatar Button - Responsive */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          const newState = !open;
+          setOpen(newState);
+          setUserMenuOpen(newState);
+        }}
         className={`
           flex items-center 
           ${compact 
@@ -280,7 +292,11 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
             {menuItems.map((item, i) => (
               <button
                 key={i}
-                onClick={item.onClick}
+                onClick={() => {
+                  item.onClick();
+                  setOpen(false);
+                  setUserMenuOpen(false);
+                }}
                 className={`
                   w-full flex items-center text-gray-300 
                   hover:bg-white/5 hover:text-white 
@@ -319,6 +335,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
               onClick={() => {
                 signOut({ callbackUrl: "/" });
                 setOpen(false);
+                setUserMenuOpen(false);
               }}
               className={`
                 w-full flex items-center text-red-400 

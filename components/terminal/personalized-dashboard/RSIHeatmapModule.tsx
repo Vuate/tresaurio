@@ -184,7 +184,7 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
                 cursor-pointer
                 hover:bg-white/5
                 transition-colors
-              "
+            "
             >
               <span>
                 {EXCHANGES.find((e) => e.id === exchange)?.name}
@@ -200,27 +200,21 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
               </span>
             </button>
 
-            {exchangeOpen && (
-              <div
-                onWheel={(e) => e.stopPropagation()}
-                className="
-                  absolute right-0 mt-1 z-[999]
-                  w-[120px] sm:w-[140px]
-                  max-h-[200px] sm:max-h-[88px]
-                  overflow-y-auto
-                  bg-[#0b1f1f]
-                  border border-emerald-500/20
-                  rounded-lg
-                  shadow-xl
-                  origin-top-right
-                  animate-in fade-in slide-in-from-top-2 duration-200
+{exchangeOpen && (
+  <div
+    onWheel={(e) => e.stopPropagation()}
+    className="
+      absolute right-0 mt-1 z-[999]
+      w-[120px] sm:w-[140px]
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded-lg
+      shadow-xl
+      origin-top-right
+      animate-in fade-in slide-in-from-top-2 duration-200
+    "
+>
 
-                  [&::-webkit-scrollbar]:w-1.5
-                  [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                  [&::-webkit-scrollbar-thumb]:rounded-full
-                  [&::-webkit-scrollbar-track]:bg-transparent
-                "
-              >
                 {EXCHANGES.map((ex) => (
                   <button
                     key={ex.id}
@@ -346,24 +340,8 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
         </div>
       </div>
 
-      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
-        <div className="text-[9px] sm:text-[10px] text-white/60 mb-1.5 sm:mb-2">
-          RSI Scale
-        </div>
-        <div className="flex gap-0.5 sm:gap-1 mb-1">
-          <div className="flex-1 h-1.5 sm:h-2 bg-green-500 rounded" />
-          <div className="flex-1 h-1.5 sm:h-2 bg-emerald-500 rounded" />
-          <div className="flex-1 h-1.5 sm:h-2 bg-yellow-500 rounded" />
-          <div className="flex-1 h-1.5 sm:h-2 bg-orange-500 rounded" />
-          <div className="flex-1 h-1.5 sm:h-2 bg-red-500 rounded" />
-        </div>
-        <div className="flex justify-between text-[9px] sm:text-[10px] text-white/40">
-          <span>0</span>
-          <span>30</span>
-          <span>70</span>
-          <span>100</span>
-        </div>
-      </div>
+
+
     </div>
   );
 }
