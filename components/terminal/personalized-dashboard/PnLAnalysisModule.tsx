@@ -53,27 +53,27 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
         ))}
       </div>
 
-            <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 rounded-lg p-2.5 sm:p-3 border border-emerald-500/20">
-              <div className="text-[10px] sm:text-xs text-white/60 mb-1">Total PnL</div>
-              <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
-                <div
-                  className={`text-2xl sm:text-3xl font-bold ${
-                    pnl.totalUnrealized >= 0 ? "text-emerald-400" : "text-red-400"
-                  }`}
-                >
-                  {pnl.totalUnrealized >= 0 ? "+" : ""}$
-                  {pnl.totalUnrealized.toFixed(2)}
-                </div>
-                <div
-                  className={`text-base sm:text-lg ${
-                    pnl.totalPnLPercent >= 0 ? "text-emerald-400" : "text-red-400"
-                  }`}
-                >
-                  ({pnl.totalPnLPercent >= 0 ? "+" : ""}
-                  {pnl.totalPnLPercent.toFixed(2)}%)
-                </div>
-              </div>
-            </div>
+      <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 rounded-lg p-2.5 sm:p-3 border border-emerald-500/20 overflow-hidden">
+        <div className="text-[10px] sm:text-xs text-white/60 mb-1">Total PnL</div>
+        <div className="flex flex-col gap-1 min-w-0">
+          <div
+            className={`text-2xl sm:text-3xl font-bold truncate ${
+              pnl.totalUnrealized >= 0 ? "text-emerald-400" : "text-red-400"
+            }`}
+          >
+            {pnl.totalUnrealized >= 0 ? "+" : ""}$
+            {pnl.totalUnrealized.toFixed(2)}
+          </div>
+          <div
+            className={`text-base sm:text-lg truncate ${
+              pnl.totalPnLPercent >= 0 ? "text-emerald-400" : "text-red-400"
+            }`}
+          >
+            ({pnl.totalPnLPercent >= 0 ? "+" : ""}
+            {pnl.totalPnLPercent.toFixed(2)}%)
+          </div>
+        </div>
+      </div>
             
       <div
         className="
@@ -103,24 +103,22 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
           </div>
         ) : (
           <>
-
-
             {/* Breakdown */}
             <div className="space-y-1.5 sm:space-y-2">
               <div className="text-[10px] sm:text-xs font-medium text-white/80 px-1">
                 Breakdown
               </div>
-              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-white/60 whitespace-nowrap text-[10px] sm:text-xs">Realized</span>
-                  <span className="text-emerald-400 font-medium ml-auto whitespace-nowrap text-[10px] sm:text-xs">
+              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="text-white/60 text-[10px] sm:text-xs truncate">Realized</span>
+                  <span className="text-emerald-400 font-medium text-[10px] sm:text-xs truncate">
                     +${pnl.realized.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-white/60 whitespace-nowrap text-[10px] sm:text-xs">Unrealized</span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="text-white/60 text-[10px] sm:text-xs truncate">Unrealized</span>
                   <span
-                    className={`font-medium ml-auto whitespace-nowrap text-[10px] sm:text-xs ${
+                    className={`font-medium text-[10px] sm:text-xs truncate ${
                       pnl.totalUnrealized >= 0 ? "text-emerald-400" : "text-red-400"
                     }`}
                   >
@@ -129,10 +127,10 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
                   </span>
                 </div>
                 <div className="h-px bg-white/10 my-1 sm:my-1.5" />
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-white/80 font-medium whitespace-nowrap text-[10px] sm:text-xs">Today's PnL</span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="text-white/80 font-medium text-[10px] sm:text-xs truncate">Today's PnL</span>
                   <span
-                    className={`font-bold ml-auto whitespace-nowrap text-[10px] sm:text-xs ${
+                    className={`font-bold text-[10px] sm:text-xs truncate ${
                       pnl.todayPnL >= 0 ? "text-emerald-400" : "text-red-400"
                     }`}
                   >
@@ -147,15 +145,15 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
               <div className="text-[10px] sm:text-xs font-medium text-white/80 px-1">
                 By Market
               </div>
-              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-400" />
-                    <span className="text-white/60 text-[10px] sm:text-xs">Spot</span>
+              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-400 flex-shrink-0" />
+                    <span className="text-white/60 text-[10px] sm:text-xs truncate">Spot</span>
                   </div>
-                  <div className="text-right ml-auto min-w-0">
+                  <div className="pl-3.5 sm:pl-4 space-y-0.5">
                     <div
-                      className={`font-medium whitespace-nowrap text-[10px] sm:text-xs ${
+                      className={`font-medium text-[10px] sm:text-xs truncate ${
                         pnl.spotUnrealized >= 0
                           ? "text-emerald-400"
                           : "text-red-400"
@@ -164,7 +162,7 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
                       {pnl.spotUnrealized >= 0 ? "+" : ""}$
                       {pnl.spotUnrealized.toFixed(2)}
                     </div>
-                    <div className="text-[9px] sm:text-[10px] text-white/40">
+                    <div className="text-[9px] sm:text-[10px] text-white/40 truncate">
                       ${pnl.spotValue.toFixed(2)} value
                     </div>
                   </div>
@@ -172,14 +170,14 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
 
                 <div className="h-px bg-white/10" />
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple-400" />
-                    <span className="text-white/60 text-[10px] sm:text-xs">Futures</span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple-400 flex-shrink-0" />
+                    <span className="text-white/60 text-[10px] sm:text-xs truncate">Futures</span>
                   </div>
-                  <div className="text-right ml-auto min-w-0">
+                  <div className="pl-3.5 sm:pl-4 space-y-0.5">
                     <div
-                      className={`font-medium whitespace-nowrap text-[10px] sm:text-xs ${
+                      className={`font-medium text-[10px] sm:text-xs truncate ${
                         pnl.futuresUnrealized >= 0
                           ? "text-emerald-400"
                           : "text-red-400"
@@ -188,7 +186,7 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
                       {pnl.futuresUnrealized >= 0 ? "+" : ""}$
                       {pnl.futuresUnrealized.toFixed(2)}
                     </div>
-                    <div className="text-[9px] sm:text-[10px] text-white/40">
+                    <div className="text-[9px] sm:text-[10px] text-white/40 truncate">
                       ${pnl.futuresMargin.toFixed(2)} margin
                     </div>
                   </div>
@@ -201,24 +199,24 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
               <div className="text-[10px] sm:text-xs font-medium text-white/80 px-1">
                 Portfolio Overview
               </div>
-              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-white/60 whitespace-nowrap text-[10px] sm:text-xs">Total Investment</span>
-                  <span className="text-white font-medium ml-auto whitespace-nowrap text-[10px] sm:text-xs">
+              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="text-white/60 text-[10px] sm:text-xs truncate">Total Investment</span>
+                  <span className="text-white font-medium text-[10px] sm:text-xs truncate">
                     ${pnl.totalInvestment.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-white/60 whitespace-nowrap text-[10px] sm:text-xs">Current Value</span>
-                  <span className="text-white font-medium ml-auto whitespace-nowrap text-[10px] sm:text-xs">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="text-white/60 text-[10px] sm:text-xs truncate">Current Value</span>
+                  <span className="text-white font-medium text-[10px] sm:text-xs truncate">
                     ${pnl.totalValue.toFixed(2)}
                   </span>
                 </div>
                 <div className="h-px bg-white/10 my-1 sm:my-1.5" />
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-white/80 font-medium whitespace-nowrap text-[10px] sm:text-xs">Net PnL</span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="text-white/80 font-medium text-[10px] sm:text-xs truncate">Net PnL</span>
                   <span
-                    className={`font-bold text-base sm:text-lg ml-auto whitespace-nowrap ${
+                    className={`font-bold text-base sm:text-lg truncate ${
                       pnl.totalUnrealized >= 0 ? "text-emerald-400" : "text-red-400"
                     }`}
                   >

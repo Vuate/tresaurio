@@ -537,52 +537,60 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             </span>
           </button>
 
-          {exchangeOpen && (
-            <div
-              onWheel={(e) => e.stopPropagation()}
-              className="
-                absolute right-0 mt-1 z-50
-                w-[120px]
-                max-h-[160px]
-                overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
-                rounded-md
-                shadow-lg
-                animate-in fade-in slide-in-from-top-2 duration-200
+{exchangeOpen && (() => {
+  const buttonRect = exchangeRef.current?.getBoundingClientRect();
+  const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
 
-                [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-transparent
-              "
-            >
-              {SUPPORTED_EXCHANGES.map((ex) => (
-                <button
-                  key={ex}
-                  onClick={() => {
-                    setSelectedExchange(ex);
-                    setExchangeOpen(false);
-                  }}
-                  className="
-                    w-full px-3 py-2
-                    text-left text-xs
-                    bg-transparent cursor-pointer
-                    text-white
-                    transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
-                    flex items-center justify-between
-                  "
-                >
-                  <span>{ex.toUpperCase()}</span>
-                  {hasApiKey(ex) && (
-                    <span className="text-emerald-400 text-[10px]">✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
+  return (
+    <div
+      onWheel={(e) => e.stopPropagation()}
+      className={`
+        absolute mt-1 z-50
+        w-[120px]
+        max-h-[160px]
+        overflow-y-auto
+        bg-[#0b1f1f]
+        border border-emerald-500/20
+        rounded-md
+        shadow-lg
+        animate-in fade-in slide-in-from-top-2 duration-200
+
+        [&::-webkit-scrollbar]:w-1.5
+        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-track]:bg-transparent
+
+        ${shouldOpenLeft ? 'right-0' : 'left-0'}
+      `}
+    >
+      {SUPPORTED_EXCHANGES.map((ex) => (
+        <button
+          key={ex}
+          onClick={() => {
+            setSelectedExchange(ex);
+            setExchangeOpen(false);
+          }}
+          className="
+            w-full px-3 py-2
+            text-left text-xs
+            bg-transparent cursor-pointer
+            text-white
+            transition-colors
+            hover:bg-emerald-500/10
+            hover:text-emerald-400
+            flex items-center justify-between
+          "
+        >
+          <span>{ex.toUpperCase()}</span>
+          {hasApiKey(ex) && (
+            <span className="text-emerald-400 text-[10px]">✓</span>
           )}
+        </button>
+      ))}
+    </div>
+  );
+})()}
+
         </div>
 
         {hasApiKey(selectedExchange) ? (
@@ -1064,7 +1072,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                       ))}
                     </div>
                   )}
+
+                  
                 </div>
+
               </div>
 
               {/* Base & Quote Assets */}

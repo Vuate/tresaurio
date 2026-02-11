@@ -35,6 +35,7 @@ type State = {
 
   addToolOpen: boolean;
   sidebarOpen: boolean;
+  userMenuOpen: boolean;
 
   alerts: AlertItem[];
   uiBlocked: boolean;
@@ -61,6 +62,7 @@ type Actions = {
 
   toggleAddTool: () => void;
   toggleSidebar: () => void;
+  setUserMenuOpen: (open: boolean) => void;
 
   addAlert: (a: Omit<AlertItem, "id">) => void;
   toggleAlert: (id: string) => void;
@@ -88,6 +90,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
 
     addToolOpen: false,
     sidebarOpen: false,
+    userMenuOpen: false,
     alerts: [],
 
     setUIBlocked: (v) => set({ uiBlocked: v }),
@@ -109,7 +112,8 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
     setPan: (panX, panY) => set({ panX, panY }),
     resetView: () => set({ zoom: 1, panX: 0, panY: 0 }),
 
-    toggleNotes: () => set({ notesOpen: !get().notesOpen }),
+    toggleNotes: () => set({       notesOpen: !get().notesOpen,
+      userMenuOpen: false }),
     setNotesHeight: (h) => set({ notesHeight: h }),
     addNote: (text) =>
       set({
@@ -194,6 +198,13 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
         sidebarOpen: !s.sidebarOpen,
         addToolOpen: false,
       })),
+
+
+    setUserMenuOpen: (userMenuOpen) => set({ 
+      userMenuOpen,
+      notesOpen: userMenuOpen ? false : get().notesOpen 
+    }),
+
 
     addAlert: (a) =>
       set({

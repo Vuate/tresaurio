@@ -23,7 +23,6 @@ interface Props {
 
 export default function CreateAlertModule({ instanceId }: Props) {
   const addAlert = useAlertStore((s) => s.addAlert);
-  const prices = usePriceStore((s) => s.prices);
 
   const [symbolOpen, setSymbolOpen] = useState(false);
   const [conditionOpen, setConditionOpen] = useState(false);
@@ -67,8 +66,6 @@ export default function CreateAlertModule({ instanceId }: Props) {
   const [symbol, setSymbol] = useState("BTCUSDT");
   const [condition, setCondition] = useState<"above" | "below">("above");
   const [target, setTarget] = useState("");
-
-  const currentPrice = prices[symbol] || 0;
 
   const handleCreateAlert = () => {
     if (!target) {
@@ -115,20 +112,6 @@ export default function CreateAlertModule({ instanceId }: Props) {
           <Bell className="w-4 h-4" />
           <span>Create Price Alert</span>
         </div>
-
-        {currentPrice > 0 && (
-          <div className="bg-white/5 border border-white/10 rounded p-2">
-            <div className="flex justify-between items-center">
-              <span className="text-white/50 text-[10px]">Current Price</span>
-              <div className="flex items-center gap-2">
-                <span className="text-white font-semibold">
-                  ${currentPrice.toLocaleString()}
-                </span>
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
-            </div>
-          </div>
-        )}
 
         <div>
           <label className="block text-white/50 mb-1 text-[10px] font-semibold">

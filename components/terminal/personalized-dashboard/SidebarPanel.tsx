@@ -99,13 +99,13 @@ export default function SidebarPanel() {
         </div>
       </div>
 
-      <div
-        style={{
-          maxHeight: `calc(${availableHeight}px - ${headerHeight}px)`,
-        }}
-        className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
-        onWheel={(e) => {e.stopPropagation();}}
-      >
+<div
+  style={{
+    maxHeight: `calc(${availableHeight}px - ${headerHeight}px)`,
+  }}
+  className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
+  onWheel={(e) => {e.stopPropagation();}}
+>
         <div className="space-y-1">
           <SidebarItem
             title="Personalized Dashboard"
