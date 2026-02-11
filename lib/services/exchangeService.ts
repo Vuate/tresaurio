@@ -510,6 +510,7 @@ async function getHyperliquidFuturesPositions(
           coin: string;
           szi: string;
           entryPx: string;
+          positionValue: string;
           leverage: { type: string; value: number };
           unrealizedPnl: string;
           liquidationPx: string | null;
@@ -519,7 +520,7 @@ async function getHyperliquidFuturesPositions(
         side: parseFloat(p.position.szi) > 0 ? ("long" as const) : ("short" as const),
         size: Math.abs(parseFloat(p.position.szi)),
         entryPrice: parseFloat(p.position.entryPx),
-        markPrice: 0,
+        markPrice: parseFloat(p.position.positionValue) / Math.abs(parseFloat(p.position.szi)),
         leverage: p.position.leverage.value,
         unrealizedPnl: parseFloat(p.position.unrealizedPnl),
         marginType: p.position.leverage.type === "cross" ? ("cross" as const) : ("isolated" as const),

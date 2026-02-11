@@ -255,6 +255,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             symbol: pos.symbol,
             side: pos.side,
             entryPrice: pos.entryPrice,
+            markPrice: pos.markPrice,
             size: pos.size,
             leverage: pos.leverage,
           });
@@ -743,7 +744,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             {/* Total Net PnL Summary */}
             {(() => {
               const totalNetPnL = positions.reduce((sum, pos) => {
-                const currentPrice = prices[pos.symbol] || pos.entryPrice;
+                const currentPrice = prices[pos.symbol] || pos.markPrice || pos.entryPrice;
                 const pnl =
                   pos.side === "long"
                     ? (currentPrice - pos.entryPrice) * pos.size
@@ -778,7 +779,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
             <div className="space-y-2">
               {positions.map((pos) => {
-                const currentPrice = prices[pos.symbol] || pos.entryPrice;
+                const currentPrice = prices[pos.symbol] || pos.markPrice || pos.entryPrice;
                 const pnl =
                   pos.side === "long"
                     ? (currentPrice - pos.entryPrice) * pos.size

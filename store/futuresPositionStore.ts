@@ -6,6 +6,7 @@ export type FuturesPosition = {
   symbol: string;
   side: "long" | "short";
   entryPrice: number;
+  markPrice?: number;
   size: number;
   leverage: number;
 };
