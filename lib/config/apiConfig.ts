@@ -6,9 +6,19 @@
 // TYPE DEFINITIONS
 // ============================================================================
 
-export type Exchange = "binance" | "binance-tr" | "okx" | "bybit" | "coinbase";
+export type Exchange =
+  | "binance"
+  | "binance-tr"
+  | "okx"
+  | "bybit"
+  | "coinbase"
+  | "hyperliquid";
 export type MarketType = "spot" | "futures";
-export type DataProvider = "coingecko" | "defillama" | "etherscan" | "cryptoquant";
+export type DataProvider =
+  | "coingecko"
+  | "defillama"
+  | "etherscan"
+  | "cryptoquant";
 
 export interface RateLimitConfig {
   requestsPerMinute: number;
@@ -96,14 +106,14 @@ export const EXCHANGE_CONFIG: Record<Exchange, ExchangeConfig> = {
       retryAfterMs: 60000,
     },
     cache: {
-      ticker: 3000,      // 3 seconds
-      depth: 1000,       // 1 second
-      funding: 5000,     // 5 seconds
-      klines: 60000,     // 1 minute
-      account: 5000,     // 5 seconds
-      positions: 3000,   // 3 seconds
-      trades: 1000,      // 1 second
-      default: 5000,     // 5 seconds
+      ticker: 3000, // 3 seconds
+      depth: 1000, // 1 second
+      funding: 5000, // 5 seconds
+      klines: 60000, // 1 minute
+      account: 5000, // 5 seconds
+      positions: 3000, // 3 seconds
+      trades: 1000, // 1 second
+      default: 5000, // 5 seconds
     },
     timeout: 10000,
     endpoints: {
@@ -475,6 +485,46 @@ export const EXCHANGE_CONFIG: Record<Exchange, ExchangeConfig> = {
       },
     },
   },
+  hyperliquid: {
+    name: "Hyperliquid",
+    id: "hyperliquid",
+    enabled: true,
+    rest: {
+      spot: "https://api.hyperliquid.xyz",
+      futures: "https://api.hyperliquid.xyz",
+    },
+    websocket: {
+      spot: "",
+      futures: "",
+    },
+    rateLimit: {
+      requestsPerMinute: 1200,
+      requestsPerSecond: 20,
+      burstLimit: 50,
+      retryAfterMs: 60000,
+    },
+    cache: {
+      ticker: 3000,
+      depth: 1000,
+      funding: 5000,
+      klines: 60000,
+      account: 5000,
+      positions: 3000,
+      trades: 1000,
+      default: 5000,
+    },
+    timeout: 10000,
+    endpoints: {
+      spotBalance: {
+        path: "/info",
+        method: "POST",
+        cacheTTL: 5000,
+        requiresAuth: false,
+        rateWeight: 1,
+        description: "Spot balance via wallet address",
+      },
+    },
+  },
 };
 
 // ============================================================================
@@ -773,7 +823,7 @@ export function buildExchangeUrl(
   exchange: Exchange,
   marketType: MarketType,
   endpointKey: string,
-  params?: Record<string, string | number>
+  params?: Record<string, string | number>,
 ): string {
   const config = EXCHANGE_CONFIG[exchange];
   const endpoint = config.endpoints[endpointKey];
@@ -812,7 +862,7 @@ export function buildExchangeUrl(
 export function buildProviderUrl(
   provider: DataProvider,
   endpointKey: string,
-  params?: Record<string, string | number>
+  params?: Record<string, string | number>,
 ): string {
   const config = DATA_PROVIDER_CONFIG[provider];
   const endpoint = config.endpoints[endpointKey];
@@ -847,7 +897,10 @@ export function buildProviderUrl(
 /**
  * Get WebSocket URL for an exchange
  */
-export function getWebSocketUrl(exchange: Exchange, marketType: MarketType): string {
+export function getWebSocketUrl(
+  exchange: Exchange,
+  marketType: MarketType,
+): string {
   return EXCHANGE_CONFIG[exchange].websocket[marketType];
 }
 
@@ -857,7 +910,7 @@ export function getWebSocketUrl(exchange: Exchange, marketType: MarketType): str
 export function getCacheKey(
   source: Exchange | DataProvider,
   endpoint: string,
-  params?: Record<string, string | number>
+  params?: Record<string, string | number>,
 ): string {
   const paramStr = params ? JSON.stringify(params) : "";
   return `${source}:${endpoint}:${paramStr}`;
@@ -868,7 +921,7 @@ export function getCacheKey(
  */
 export function getCacheTTL(
   source: Exchange | DataProvider,
-  endpointKey: string
+  endpointKey: string,
 ): number {
   if (source in EXCHANGE_CONFIG) {
     const config = EXCHANGE_CONFIG[source as Exchange];
@@ -889,7 +942,7 @@ export function getCacheTTL(
 export function isCacheValid(
   cachedAt: number,
   source: Exchange | DataProvider,
-  endpointKey: string
+  endpointKey: string,
 ): boolean {
   const ttl = getCacheTTL(source, endpointKey);
   return Date.now() - cachedAt < ttl;
@@ -926,7 +979,7 @@ export function getTimeout(source: Exchange | DataProvider): number {
  */
 export function requiresAuth(
   source: Exchange | DataProvider,
-  endpointKey: string
+  endpointKey: string,
 ): boolean {
   if (source in EXCHANGE_CONFIG) {
     const config = EXCHANGE_CONFIG[source as Exchange];
@@ -945,9 +998,13 @@ export function requiresAuth(
 export function formatSymbol(
   symbol: string,
   exchange: Exchange,
-  marketType: MarketType = "spot"
+  marketType: MarketType = "spot",
 ): string {
-  const upper = symbol.toUpperCase().replace(/-SWAP$/, "").replace(/-PERP$/, "").replace(/-/g, "");
+  const upper = symbol
+    .toUpperCase()
+    .replace(/-SWAP$/, "")
+    .replace(/-PERP$/, "")
+    .replace(/-/g, "");
 
   switch (exchange) {
     case "binance":
@@ -972,7 +1029,7 @@ export function formatSymbol(
  */
 export function getEnabledExchanges(): Exchange[] {
   return (Object.keys(EXCHANGE_CONFIG) as Exchange[]).filter(
-    (key) => EXCHANGE_CONFIG[key].enabled
+    (key) => EXCHANGE_CONFIG[key].enabled,
   );
 }
 
@@ -981,7 +1038,7 @@ export function getEnabledExchanges(): Exchange[] {
  */
 export function getEnabledProviders(): DataProvider[] {
   return (Object.keys(DATA_PROVIDER_CONFIG) as DataProvider[]).filter(
-    (key) => DATA_PROVIDER_CONFIG[key].enabled
+    (key) => DATA_PROVIDER_CONFIG[key].enabled,
   );
 }
 
@@ -1004,14 +1061,14 @@ class ApiCache {
     source: Exchange | DataProvider,
     endpoint: string,
     params: Record<string, string | number> | undefined,
-    data: T
+    data: T,
   ): void {
     const key = getCacheKey(source, endpoint, params);
 
     // Evict oldest entries if at max size
     if (this.cache.size >= this.maxSize) {
       const oldest = [...this.cache.entries()].sort(
-        (a, b) => a[1].cachedAt - b[1].cachedAt
+        (a, b) => a[1].cachedAt - b[1].cachedAt,
       )[0];
       if (oldest) this.cache.delete(oldest[0]);
     }
@@ -1027,7 +1084,7 @@ class ApiCache {
   get<T>(
     source: Exchange | DataProvider,
     endpoint: string,
-    params?: Record<string, string | number>
+    params?: Record<string, string | number>,
   ): T | null {
     const key = getCacheKey(source, endpoint, params);
     const entry = this.cache.get(key) as CacheEntry<T> | undefined;
@@ -1045,7 +1102,7 @@ class ApiCache {
   invalidate(
     source: Exchange | DataProvider,
     endpoint: string,
-    params?: Record<string, string | number>
+    params?: Record<string, string | number>,
   ): void {
     const key = getCacheKey(source, endpoint, params);
     this.cache.delete(key);
@@ -1064,7 +1121,11 @@ class ApiCache {
     }
   }
 
-  getStats(): { size: number; maxSize: number; sources: Record<string, number> } {
+  getStats(): {
+    size: number;
+    maxSize: number;
+    sources: Record<string, number>;
+  } {
     const sources: Record<string, number> = {};
 
     for (const entry of this.cache.values()) {
@@ -1143,7 +1204,10 @@ class RateLimiter {
     return {
       requestsInWindow: recentRequests.length,
       limit: config.requestsPerMinute,
-      remainingRequests: Math.max(0, config.requestsPerMinute - recentRequests.length),
+      remainingRequests: Math.max(
+        0,
+        config.requestsPerMinute - recentRequests.length,
+      ),
     };
   }
 }

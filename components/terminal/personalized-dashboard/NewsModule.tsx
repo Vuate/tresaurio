@@ -289,12 +289,13 @@ export default function NewsModule({ instanceId }: Props) {
           {!error && news.length > 0 && (
             <>
               {news.map((item) => (
-                <a>
+                <a
                   key={item.id}
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all group"
+                >
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-[10px] text-white/60 font-medium truncate">
                       {item.source}

@@ -36,7 +36,7 @@ const EXCHANGE_FORMATS: Record<
   coinbase: (base, quote) => `${base}-${quote}`,
 };
 
-const SUPPORTED_EXCHANGES = ["binance", "binance-tr", "okx", "bybit", "coinbase"];
+const SUPPORTED_EXCHANGES = ["binance", "binance-tr", "okx", "bybit", "coinbase","hyperliquid"];
 
 const ALL_EXCHANGES = [
   "binance",
@@ -50,6 +50,7 @@ const ALL_EXCHANGES = [
   "huobi",
   "bitfinex",
   "mexc",
+  "hyperliquid",
 ];
 
 //  Custom Hook: Window Size Check
@@ -317,9 +318,13 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   };
 
   const saveApiKey = async () => {
-    if (!apiKeyForm.apiKey || !apiKeyForm.apiSecret) {
-      alert("API Key and Secret are required");
-      return;
+    if(!apiKeyForm.apiKey) {
+    alert("API Key / Wallet Adress is required");
+    return;  
+    }
+    if (apiKeyForm.exchange !== "hyperliquid" && !apiKeyForm.apiSecret) {
+    alert("API Secret is required");
+    return;  
     }
 
     if (
@@ -339,7 +344,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         body: JSON.stringify({
           exchange: apiKeyForm.exchange,
           apiKey: apiKeyForm.apiKey,
-          apiSecret: apiKeyForm.apiSecret,
+          apiSecret: apiKeyForm.apiSecret || "none",
           passphrase: apiKeyForm.passphrase || undefined,
           label: apiKeyForm.label || undefined,
           permissions: ["spot"],
