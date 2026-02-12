@@ -45,7 +45,8 @@ export type ModuleType =
   | "etf-flows" // ETF Flows
   | "rsi-heatmap" // RSI Heatmap
   | "token-unlock" // Token Unlock & Vesting
-  | "ico-calendar"; // ICO Calendar
+  | "ico-calendar" // ICO Calendar
+  | "chart"; // Grafik
 
 export type ModuleInstance = {
   id: ModuleId;

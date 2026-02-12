@@ -36,6 +36,7 @@ import ETFFlowsModule from "@/components/terminal/personalized-dashboard/ETFFlow
 import StackPositionModule from "@/components/terminal/personalized-dashboard/StackPositionModule";
 import WalletInspectorModule from "@/components/terminal/personalized-dashboard/WalletInspectorModule";
 import TokenFlowModule from "@/components/terminal/personalized-dashboard/TokenFlowModule";
+import ChartModule from "@/components/terminal/personalized-dashboard/ChartModule";
 
 export type ModuleDefinition = {
   type: string;
@@ -445,5 +446,15 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
     category: "flow",
     defaultSize: { width: 380, height: 650 },
     render: (instanceId: string) => <TokenFlowModule instanceId={instanceId} />,
+  },
+
+  /* ---------------- CHART (Grafik) ---------------- */
+  chart: {
+    type: "chart",
+    title: "Grafik",
+    description: "Candlestick chart with technical indicators",
+    category: "market-data",
+    defaultSize: { width: 600, height: 450 },
+    render: (instanceId: string) => <ChartModule instanceId={instanceId} />,
   },
 };
