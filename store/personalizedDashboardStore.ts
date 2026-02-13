@@ -80,7 +80,7 @@ type Actions = {
   removeAlert: (id: string) => void;
 
   setUIBlocked: (v: boolean) => void;
-  resetDashboard: () => void;
+  resetDashboard: () => Promise<void>;
 
   // DB sync
   _hydrated: boolean;
@@ -145,7 +145,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
 
 
     setUIBlocked: (v) => set({ uiBlocked: v }),
-        resetDashboard: () => {
+        resetDashboard: async () => {
     const { topBarHeight, notesBarHeight } = get();
     const viewportW = window.innerWidth;
     const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
@@ -153,7 +153,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
     const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
     const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
       set({
-        modules: defaultModules,
+        modules: [],
         lockedModules: new Set(),
         notes: [],
         alerts: [],
@@ -162,6 +162,21 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
         panY: centerPanY,
         activeModuleId: null,
       });
+      // DB'yi de temizle
+      try {
+        await fetch("/api/dashboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            modules: [],
+            notes: [],
+            alerts: [],
+            zoom: minZoom,
+            panX: centerPanX,
+            panY: centerPanY,
+          }),
+        });
+      } catch {}
     },
     _hydrated: false,
     setHydrated: (v) => set({ _hydrated: v }),
