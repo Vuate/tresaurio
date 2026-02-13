@@ -1,0 +1,61 @@
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+
+// GET — Tek şablonun layout'unu getir
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    const template = await prisma.dashboardTemplate.findFirst({
+      where: { id, userId: session.user.id },
+    });
+
+    if (!template) {
+      return NextResponse.json({ error: "Sablon bulunamadi" }, { status: 404 });
+    }
+
+    return NextResponse.json({ template });
+  } catch (error) {
+    console.error("Template GET error:", error);
+    return NextResponse.json({ error: "Bir hata olustu" }, { status: 500 });
+  }
+}
+
+// DELETE — Şablonu sil
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+
+    const template = await prisma.dashboardTemplate.findFirst({
+      where: { id, userId: session.user.id },
+    });
+
+    if (!template) {
+      return NextResponse.json({ error: "Sablon bulunamadi" }, { status: 404 });
+    }
+
+    await prisma.dashboardTemplate.delete({ where: { id } });
+
+    return NextResponse.json({ message: "Sablon silindi" });
+  } catch (error) {
+    console.error("Template DELETE error:", error);
+    return NextResponse.json({ error: "Bir hata olustu" }, { status: 500 });
+  }
+}
