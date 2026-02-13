@@ -310,68 +310,77 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
       }),
 
     // DB sync — load (only if localStorage is empty, DB takes over)
-    loadFromDB: async () => {
-      try {
-        // Wait for persist hydration to complete
-        const waitForHydration = () =>
-          new Promise<void>((resolve) => {
-            const check = () => {
-              if (get()._hydrated) return resolve();
-              setTimeout(check, 50);
-            };
-            check();
-          });
-        await waitForHydration();
+loadFromDB: async () => {
+  try {
+    // Wait for persist hydration to complete
+    const waitForHydration = () =>
+      new Promise<void>((resolve) => {
+        const check = () => {
+          if (get()._hydrated) return resolve();
+          setTimeout(check, 50);
+        };
+        check();
+      });
+    await waitForHydration();
 
-        // If localStorage already has modules (not default), skip DB load
-        const currentModules = get().modules;
-        const hasLocalData =
-          currentModules.length > 0 &&
-          JSON.stringify(currentModules) !== JSON.stringify(defaultModules);
+    // If localStorage already has modules (not default), skip DB load
+    const currentModules = get().modules;
+    const hasLocalData =
+      currentModules.length > 0 &&
+      JSON.stringify(currentModules) !== JSON.stringify(defaultModules);
 
-        if (hasLocalData) {
-          console.log("[Dashboard] Using localStorage data");
-          return;
-        }
+    if (hasLocalData) {
+      console.log("[Dashboard] Using localStorage data");
+      return;
+    }
 
-        // No local data → try DB
-        const res = await fetch("/api/dashboard");
-        if (!res.ok) return;
-        const { layout } = await res.json();
-        if (!layout) return;
+    // No local data → try DB
+    const res = await fetch("/api/dashboard");
+    if (!res.ok) return;
+    const { layout } = await res.json();
+    if (!layout) return;
 
-        const { modules, notes, alerts, zoom, panX, panY } = layout;
-        if (modules && modules.length > 0) {
-          set({
-            modules,
-            ...(notes && { notes }),
-            ...(alerts && { alerts }),
-            ...(typeof zoom === "number" && { zoom }),
-            ...(typeof panX === "number" && { panX }),
-            ...(typeof panY === "number" && { panY }),
-          });
-          console.log("[Dashboard] Loaded from DB");
-        }
-      } catch (err) {
-        console.error("[Dashboard] DB load failed:", err);
-      }
-    },
+    const { modules, notes, alerts, zoom, panX, panY, lockedModules } = layout;
+    if (modules && modules.length > 0) {
+      set({
+        modules,
+        ...(notes && { notes }),
+        ...(alerts && { alerts }),
+        ...(typeof zoom === "number" && { zoom }),
+        ...(typeof panX === "number" && { panX }),
+        ...(typeof panY === "number" && { panY }),
+        ...(lockedModules && { lockedModules: new Set(lockedModules) }),
+      });
+      console.log("[Dashboard] Loaded from DB");
+    }
+  } catch (err) {
+    console.error("[Dashboard] DB load failed:", err);
+  }
+},
 
     // DB sync — save
-    saveToDB: async () => {
-      try {
-        const { modules, notes, alerts, zoom, panX, panY } = get();
-        await fetch("/api/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            layout: { modules, notes, alerts, zoom, panX, panY },
-          }),
-        });
-      } catch (err) {
-        console.error("[Dashboard] DB save failed:", err);
-      }
-    },
+saveToDB: async () => {
+  try {
+    const { modules, notes, alerts, zoom, panX, panY, lockedModules } = get();
+    await fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        layout: { 
+          modules, 
+          notes, 
+          alerts, 
+          zoom, 
+          panX, 
+          panY,
+          lockedModules: Array.from(lockedModules)
+        },
+      }),
+    });
+  } catch (err) {
+    console.error("[Dashboard] DB save failed:", err);
+  }
+},
 
     // Templates
     fetchTemplates: async () => {
@@ -480,15 +489,33 @@ loadTemplate: async (id: string) => {
         localStorage.removeItem(name);
       },
     },
-    onRehydrateStorage: () => {
-      return (state, error) => {
-        if (error) {
-          console.error("[Dashboard] localStorage hydration failed:", error);
-        }
-        // Mark hydration as complete
-        state?.setHydrated(true);
-      };
-    },
+onRehydrateStorage: () => {
+  return (state, error) => {
+    if (error) {
+      console.error("[Dashboard] localStorage hydration failed:", error);
+    }
+    
+    // Mark hydration as complete
+    state?.setHydrated(true);
+    
+    // Reset zoom and pan to min values after hydration
+    if (state && typeof window !== "undefined") {
+      const topBarHeight = state.topBarHeight || 0;
+      const notesBarHeight = state.notesBarHeight || 0;
+      const viewportW = window.innerWidth;
+      const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+      const minZoom = calculateMinZoom(viewportW, viewportH);
+      const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
+      const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+      
+      state.zoom = minZoom;
+      state.panX = centerPanX;
+      state.panY = centerPanY;
+    }
+  };
+},
+
+
   },
   )
 );

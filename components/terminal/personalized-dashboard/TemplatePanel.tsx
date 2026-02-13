@@ -184,11 +184,11 @@ export default function TemplatePanel() {
   // Not logged in
   if (!session?.user) {
     return (
-      <div
-        ref={panelRef}
-        style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
-        className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden select-none"
-      >
+<div
+  ref={panelRef}
+  style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
+  className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden select-none"
+>
         <div ref={headerRef} className="px-3 py-3 border-b border-white/10 bg-[#041F20]/95">
           <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">
             Templates
@@ -202,11 +202,11 @@ export default function TemplatePanel() {
   }
 
   return (
-    <div
-      ref={panelRef}
-      style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
-      className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden select-none"
-    >
+<div
+  ref={panelRef}
+  style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
+  className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] overflow-hidden select-none"
+>
       {/* Header */}
       <div ref={headerRef} className="px-3 py-3 border-b border-white/10 bg-[#041F20]/95">
         <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">
@@ -249,19 +249,19 @@ export default function TemplatePanel() {
             </button>
           </div>
           {/* Overwrite warning */}
-          {confirmOverwrite && (
-            <div className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/20">
-              <span className="text-[10px] text-amber-300">
-                Template with this name already exists.
-              </span>
-              <button
-                onClick={handleCancelConfirm}
-                className="text-[10px] text-white/40 hover:text-white/70 transition cursor-pointer ml-2"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
+{confirmOverwrite && (
+  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2 py-1.5 rounded-lg bg-red-400/15 border border-red-400/30">
+    <span className="text-[10px] sm:text-[11px] text-red-300">
+      Template with this name already exists.
+    </span>
+    <button
+      onClick={handleCancelConfirm}
+      className="text-[10px] sm:text-[11px] text-white/40 hover:text-white/70 transition cursor-pointer ml-0 sm:ml-2"
+    >
+      Cancel
+    </button>
+  </div>
+)}
           {/* Empty dashboard warning */}
           {!hasModules && (
             <div className="text-[10px] text-white/30 px-1">
@@ -313,50 +313,51 @@ export default function TemplatePanel() {
                   </div>
 
                   {/* Load confirmation */}
-                  {confirmLoadId === t.id && (
-                    <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-amber-400/10 border border-amber-400/20">
-                      <span className="text-[10px] text-amber-300">
-                        This will replace your current dashboard. Continue?
-                      </span>
-                      <div className="flex gap-1 ml-2">
-                        <button
-                          onClick={() => handleLoad(t.id)}
-                          className="px-2 py-1 rounded text-[10px] font-semibold text-teal-300 bg-teal-400/15 border border-teal-400/30 hover:bg-teal-400/25 transition cursor-pointer"
-                        >
-                          Yes
-                        </button>
-                        <button
-                          onClick={handleCancelConfirm}
-                          className="px-2 py-1 rounded text-[10px] font-semibold text-white/40 hover:text-white/70 transition cursor-pointer"
-                        >
-                          No
-                        </button>
-                      </div>
-                    </div>
-                  )}
+{confirmLoadId === t.id && (
+  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-red-400/15 border border-red-400/30">
+    <span className="text-[10px] sm:text-[11px] text-red-300">
+      This will replace your current dashboard. Continue?
+    </span>
+    <div className="flex gap-1.5 sm:gap-1 ml-0 sm:ml-2 w-full sm:w-auto">
+      <button
+        onClick={() => handleLoad(t.id)}
+        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer whitespace-nowrap"
+      >
+        Yes
+      </button>
+      <button
+        onClick={handleCancelConfirm}
+        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer whitespace-nowrap"
+      >
+        No
+      </button>
+    </div>
+  </div>
+)}
 
                   {/* Delete confirmation */}
-                  {confirmDeleteId === t.id && (
-                    <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-red-400/10 border border-red-400/20">
-                      <span className="text-[10px] text-red-300">
-                        Delete this template permanently?
-                      </span>
-                      <div className="flex gap-1 ml-2">
-                        <button
-                          onClick={() => handleDelete(t.id)}
-                          className="px-2 py-1 rounded text-[10px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer"
-                        >
-                          Yes
-                        </button>
-                        <button
-                          onClick={handleCancelConfirm}
-                          className="px-2 py-1 rounded text-[10px] font-semibold text-white/40 hover:text-white/70 transition cursor-pointer"
-                        >
-                          No
-                        </button>
-                      </div>
-                    </div>
-                  )}
+{confirmDeleteId === t.id && (
+  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-red-400/15 border border-red-400/30">
+    <span className="text-[10px] sm:text-[11px] text-red-300">
+      Delete this template permanently?
+    </span>
+    <div className="flex gap-1.5 sm:gap-1 ml-0 sm:ml-2 w-full sm:w-auto">
+      <button
+        onClick={() => handleDelete(t.id)}
+        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer whitespace-nowrap"
+      >
+        Yes
+      </button>
+      <button
+        onClick={handleCancelConfirm}
+        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer whitespace-nowrap"
+      >
+        No
+      </button>
+    </div>
+  </div>
+)}
+
                 </div>
               ))}
             </div>
