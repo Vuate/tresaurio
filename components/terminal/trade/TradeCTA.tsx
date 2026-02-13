@@ -15,12 +15,12 @@ export default function TradeCTA() {
       "
     >
       <h2 className="cta-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-extrabold text-white">
-        Portföyünüzü Profesyonel Şekilde Yönetin
+        Manage Your Portfolio Professionally
       </h2>
 
       <p className="cta-description mx-auto mt-2 sm:mt-3 lg:mt-4 xl:mt-5 max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed text-gray-300 px-4">
-        Tüm spot ve futures pozisyonlarınızı tek bir panoda görüntüleyin, PnL
-        takibi yapın ve risk yönetimi ile portföyünüzü optimize edin.
+        View all your spot and futures positions on a single dashboard, track PnL,
+        and optimize your portfolio with risk management.
       </p>
 
       <Link
@@ -41,7 +41,7 @@ export default function TradeCTA() {
           hover:shadow-[0_12px_32px_rgba(25,216,208,0.4)]
         "
       >
-        <span>Kişiselleştirilmiş Pano&apos;ya Git</span>
+        <span>Go to Personalized Dashboard</span>
         <span className="text-base sm:text-lg lg:text-xl xl:text-2xl">→</span>
       </Link>
     </div>

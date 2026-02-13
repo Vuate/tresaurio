@@ -127,7 +127,7 @@ export default function LivePrices() {
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 sm:mb-6 xl:mb-7 2xl:mb-8 gap-2 sm:gap-0">
         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-2 sm:gap-4 xl:gap-5 2xl:gap-6">
           <h2 className="text-lg sm:text-xl md:text-2xl xl:text-[28px] 2xl:text-3xl font-extrabold text-white leading-none">
-            Canlı Piyasa Fiyatları
+         Live Market Prices
           </h2>
 
           <span className="flex items-center gap-1.5 sm:gap-2 text-green-400 font-semibold text-xs sm:text-sm sm:pb-[2px]">
@@ -150,7 +150,7 @@ export default function LivePrices() {
         <div className="hidden lg:grid grid-cols-[200px_minmax(100px,1fr)_160px_100px] xl:grid-cols-[220px_minmax(120px,1fr)_180px_110px] 2xl:grid-cols-[240px_minmax(140px,1fr)_200px_120px] px-4 xl:px-5 2xl:px-6 py-2.5 xl:py-3 bg-white/[0.02] text-[11px] xl:text-xs 2xl:text-xs text-gray-400 uppercase tracking-wider">
           <span>Coin</span>
           <span>Trend</span>
-          <span className="text-right">Fiyat</span>
+          <span className="text-right">Price</span>
           <span className="text-right">24h %</span>
         </div>
 

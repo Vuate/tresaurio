@@ -10,10 +10,10 @@ interface PasswordRequirement {
 
 const validatePassword = (password: string): { valid: boolean; requirements: PasswordRequirement[] } => {
   const requirements: PasswordRequirement[] = [
-    { label: "En az 8 karakter", met: password.length >= 8 },
-    { label: "Büyük harf (A-Z)", met: /[A-Z]/.test(password) },
-    { label: "Küçük harf (a-z)", met: /[a-z]/.test(password) },
-    { label: "Rakam (0-9)", met: /[0-9]/.test(password) },
+    { label: "At least 8 characters", met: password.length >= 8 },
+    { label: "Uppercase letter (A-Z)", met: /[A-Z]/.test(password) },
+    { label: "Lowercase letter (a-z)", met: /[a-z]/.test(password) },
+    { label: "Number (0-9)", met: /[0-9]/.test(password) },
   ];
 
   const valid = requirements.every((r) => r.met);
@@ -45,7 +45,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     const passwordConfirm = formData.get("passwordConfirm") as string;
 
     if (password !== passwordConfirm) {
-      setError("Şifreler eşleşmiyor");
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
@@ -53,7 +53,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     const { valid, requirements } = validatePassword(password);
     if (!valid) {
       const missing = requirements.filter((r) => !r.met).map((r) => r.label);
-      setError("Eksik: " + missing.join(", "));
+      setError("Missing: " + missing.join(", "));
       setLoading(false);
       return;
     }
@@ -69,7 +69,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Kayıt başarısız");
+        setError(data.error || "Registration failed");
         setLoading(false);
         return;
       }
@@ -82,7 +82,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       });
 
       if (signInResult?.error) {
-        setError("Kayıt başarılı ama giriş yapılamadı. Lütfen manuel giriş yapın.");
+        setError("Registration successful but login failed. Please log in manually.");
         setLoading(false);
         return;
       }
@@ -90,7 +90,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       // Refresh the page to update session
       window.location.reload();
     } catch {
-      setError("Kayıt başarısız");
+      setError("Registration failed");
     } finally {
       setLoading(false);
     }
@@ -109,10 +109,10 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           type="email"
           name="email"
           autoComplete="email"
-          placeholder="E-posta"
+          placeholder="Email"
           required
           disabled={loading}
-          aria-label="E-posta"
+          aria-label="Email"
           className="
             w-full 
             rounded-lg xl:rounded-lg 2xl:rounded-xl
@@ -133,11 +133,11 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           type="password"
           name="password"
           autoComplete="new-password"
-          placeholder="Parola"
+          placeholder="Password"
           required
           disabled={loading}
           onChange={handlePasswordChange}
-          aria-label="Parola"
+          aria-label="Password"
           className="
             w-full
             rounded-lg xl:rounded-lg 2xl:rounded-xl
@@ -189,10 +189,10 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           type="password"
           name="passwordConfirm"
           autoComplete="new-password"
-          placeholder="Parola tekrar"
+          placeholder="Password (again)"
           required
           disabled={loading}
-          aria-label="Parola tekrar"
+          aria-label="Password (again)"
           className="
             w-full 
             rounded-lg xl:rounded-lg 2xl:rounded-xl
@@ -217,7 +217,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           name="agreement"
           required
           disabled={loading}
-          aria-label="Kullanım koşulları ve gizlilik politikası"
+          aria-label="Terms of service and privacy policy"
           className="
             mt-0.5 rounded border-white/20 bg-white/5
             text-white focus:ring-0 focus:ring-offset-0
@@ -226,14 +226,15 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           "
         />
         <span>
+          I accept the{" "}
           <a href="#" className="hover:text-white transition">
-            Kullanım koşullarını
+            terms of service
           </a>{" "}
-          ve{" "}
+          and{" "}
           <a href="#" className="hover:text-white transition">
-            gizlilik politikasını
-          </a>{" "}
-          kabul ediyorum.
+            privacy policy
+          </a>
+          .
         </span>
       </label>
 
@@ -260,7 +261,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
         "
       >
-        {loading ? "Hesap oluşturuluyor..." : "Kayıt Ol"}
+        {loading ? "Creating account..." : "Sign Up"}
       </button>
 
       {/* Divider */}
@@ -270,7 +271,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
         </div>
         <div className="relative flex justify-center">
           <span className="bg-[#0d0f14] px-3 text-[11px] xl:text-[11.5px] 2xl:text-xs text-gray-500">
-            veya
+            or
           </span>
         </div>
       </div>
@@ -313,7 +314,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          <span>Google ile devam et</span>
+          <span>Continue with Google</span>
         </button>
 
         <button
@@ -340,7 +341,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           >
             <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
           </svg>
-          <span>Apple ile devam et</span>
+          <span>Continue with Apple</span>
         </button>
       </div>
     </form>

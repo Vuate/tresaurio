@@ -3,19 +3,19 @@ const steps = [
     number: "1",
     title: "News Aggregation",
     description:
-      "50+ haber kaynağından ve social media'dan haberleri otomatik toplarız. Real-time feed sürekli güncellenir ve tekrar eden haberler filtrelenir.",
+      "We automatically collect news from 50+ news sources and social media. Real-time feed is continuously updated and duplicate news is filtered out.",
   },
   {
     number: "2",
     title: "AI Analysis",
     description:
-      "Her haber AI ile analiz edilir. Sentiment scoring, token mention detection ve impact prediction yapılır. Bullish/Bearish classification otomatik gerçekleşir.",
+      "Each news article is analyzed with AI. Sentiment scoring, token mention detection, and impact prediction are performed. Bullish/Bearish classification happens automatically.",
   },
   {
     number: "3",
     title: "Price Correlation",
     description:
-      "Haber ile fiyat değişimi ilişkilendirilir. Pre/post news price tracking yapılır ve impact magnitude hesaplanır. High-impact news'ler için alert gönderilir.",
+      "News is correlated with price changes. Pre/post news price tracking is performed and impact magnitude is calculated. Alerts are sent for high-impact news.",
   },
 ];
 
@@ -24,10 +24,10 @@ export default function NewsHowItWorks() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Nasıl Çalışır?
+          How It Works?
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Haber İstihbaratı'ı kullanmaya başlamak için 3 adım
+          3 steps to start using News Intelligence
         </p>
       </div>
 

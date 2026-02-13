@@ -7,7 +7,7 @@ export default function WalletHero() {
       <Head>
         <meta
           name="description"
-          content="Whale hareketlerini ve smart money akışlarını gerçek zamanlı takip edin. Büyük transferleri, exchange in/out flow'larını ve piyasa manipülasyon sinyallerini yakalayın."
+          content="Track whale movements and smart money flows in real-time. Capture large transfers, exchange in/out flows, and market manipulation signals."
         />
       </Head>
 
@@ -17,26 +17,26 @@ export default function WalletHero() {
         </div>
 
         <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-2 sm:mb-3 lg:mb-4 text-teal-400">
-          Piyasa Cüzdan Takipçisi
+          Market Wallet Tracker
         </h1>
 
         <p className="text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl text-gray-300 max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl mx-auto mb-4 sm:mb-5 lg:mb-6 leading-relaxed px-4">
-          Whale hareketlerini ve smart money akışlarını gerçek zamanlı takip edin. Büyük transferleri, 
-          exchange in/out flow'larını ve piyasa manipülasyon sinyallerini yakalayın.
+          Track whale movements and smart money flows in real-time. Capture large transfers, 
+          exchange in/out flows, and market manipulation signals.
         </p>
 
         <div className="flex gap-2 sm:gap-2.5 lg:gap-3 justify-center flex-wrap px-4">
           <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
-            Anlık Takip
+            Real-Time Tracking
           </span>
           <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
-            Balina Uyarıları
+            Whale Alerts
           </span>
           <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
-            Akıllı Para Analizi
+            Smart Money Analysis
           </span>
           <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
-            16 Örüntü Tespiti
+            16 Pattern Detection
           </span>
         </div>
       </div>

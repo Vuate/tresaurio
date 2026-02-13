@@ -22,6 +22,8 @@ type State = {
   zoom: number;
   panX: number;
   panY: number;
+  
+lockedModules: Set<ModuleId>;
 
   notesOpen: boolean;
   notes: NoteItem[];
@@ -45,6 +47,9 @@ type Actions = {
   setZoom: (zoom: number) => void;
   setPan: (x: number, y: number) => void;
   resetView: () => void;
+
+  toggleModuleLock: (id: ModuleId) => void; 
+  isModuleLocked: (id: ModuleId) => boolean; 
 
   toggleNotes: () => void;
   addNote: (text: string) => void;
@@ -73,6 +78,7 @@ type Actions = {
 
 export const usePersonalizedDashboardStore = create<State & Actions>(
   (set, get) => ({
+    lockedModules: new Set(),
     uiBlocked: false,
     zoom: 1,
     panX: 0,
@@ -92,6 +98,19 @@ export const usePersonalizedDashboardStore = create<State & Actions>(
     sidebarOpen: false,
     userMenuOpen: false,
     alerts: [],
+
+        toggleModuleLock: (id) => {
+      const locked = new Set(get().lockedModules);
+      if (locked.has(id)) {
+        locked.delete(id);
+      } else {
+        locked.add(id);
+      }
+      set({ lockedModules: locked });
+    },
+
+        isModuleLocked: (id) => get().lockedModules.has(id),
+
 
     setUIBlocked: (v) => set({ uiBlocked: v }),
 

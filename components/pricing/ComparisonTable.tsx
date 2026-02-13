@@ -33,14 +33,11 @@ export default function ComparisonTable() {
   return (
     <section className="w-full pt-8 xl:pt-10 2xl:pt-12 pb-20 xl:pb-24 2xl:pb-28 bg-[#031A1C] text-white">
       <div className="w-full px-0">
-        {/* TITLE */}
         <h2 className="text-3xl xl:text-4xl 2xl:text-5xl font-bold text-center mb-8 xl:mb-10 2xl:mb-12">
-          Özellikleri <span className="text-teal-400">kıyasla</span>
+           Compare <span className="text-teal-400">features</span>
         </h2>
 
-        {/* TABLE WRAPPER */}
         <div className="w-full bg-[#041F20] border-t border-white/10">
-          {/* STICKY HEADER */}
           <div
             className="
               sticky
@@ -60,16 +57,15 @@ export default function ComparisonTable() {
                 font-semibold
               "
             >
-              <div>Özellik</div>
+              <div>Feature</div>
               <div className="text-center">Trader</div>
               <div className="text-center">Pro Trader</div>
               <div className="text-center">Enterprise</div>
               <div className="text-center">Add-on</div>
-              <div className="text-center">Açıklama</div>
+              <div className="text-center">Description</div>
             </div>
           </div>
 
-          {/* ROWS */}
           <div>
             {visibleRows.map((row, i) => (
               <div
@@ -128,7 +124,7 @@ export default function ComparisonTable() {
               cursor-pointer
             "
           >
-            {open ? "Daha az göster" : "Tüm özellikleri göster"}
+            {open ? "Show less" : "Show all features"}
 
             {open ? (
               <ChevronUp className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />

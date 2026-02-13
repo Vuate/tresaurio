@@ -139,7 +139,7 @@ export default function AuthModal({
               }
             `}
           >
-            Giriş Yap
+                   Log In
           </button>
 
           <button
@@ -156,7 +156,7 @@ export default function AuthModal({
               }
             `}
           >
-            Kayıt Ol
+      Sign Up  
           </button>
         </div>
 
@@ -171,15 +171,15 @@ export default function AuthModal({
         <div className="mt-3.5 xl:mt-3.75 2xl:mt-4 text-center">
           <p className="text-[11px] xl:text-[11.5px] 2xl:text-xs text-gray-500">
             {mode === "login"
-              ? "Hesabınız yok mu? "
-              : "Zaten hesabınız var mı? "}
+             ? "Don't have an account? "
+              : "Already have an account? "}
             <button
               onClick={() =>
                 onChange(mode === "login" ? "signup" : "login")
               }
               className="text-white hover:underline cursor-pointer"
             >
-              {mode === "login" ? "Kayıt olun" : "Giriş yapın"}
+         {mode === "login" ? "Sign up" : "Log in"}
             </button>
           </p>
         </div>

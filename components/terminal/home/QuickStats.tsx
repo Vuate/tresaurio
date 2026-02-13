@@ -46,10 +46,10 @@ export default function QuickStats() {
 
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-4 xl:gap-4.5 2xl:gap-5 mb-10 xl:mb-11 2xl:mb-12 mt-3 xl:mt-4">
-      <StatCard label="Toplam Piyasa Değeri" value={`$${formatNumber(marketCap)}`} />
-      <StatCard label="24h İşlem Hacmi" value={`$${formatNumber(volume)}`} />
-      <StatCard label="BTC Dominansı" value={`${btcDominance.toFixed(2)}%`} />
-      <StatCard label="Aktif Kripto Sayısı" value={activeCoins} />
+      <StatCard label="Total Market Cap" value={`$${formatNumber(marketCap)}`} />
+      <StatCard label="24h Trading Volume" value={`$${formatNumber(volume)}`} />
+      <StatCard label="BTC Dominance" value={`${btcDominance.toFixed(2)}%`} />
+      <StatCard label="Active Cryptocurrencies" value={activeCoins} />
     </section>
   );
 }

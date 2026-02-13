@@ -15,12 +15,11 @@ export default function WalletCTA() {
       "
     >
       <h2 className="cta-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-extrabold text-white mb-2 sm:mb-3 lg:mb-4">
-        Smart Money'i Takip Edin
+        Track Smart Money
       </h2>
 
       <p className="cta-description mx-auto mt-2 sm:mt-3 lg:mt-4 xl:mt-5 max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed text-gray-300 px-4 mb-5 sm:mb-6 lg:mb-7 xl:mb-8">
-        Whale hareketlerini gerçek zamanlı izleyin, smart money pattern'lerini
-        tespit edin ve piyasada bir adım önde olun.
+        Monitor whale movements in real-time, identify smart money patterns, and stay one step ahead in the market.
       </p>
 
       <Link
@@ -40,7 +39,7 @@ export default function WalletCTA() {
           hover:shadow-[0_12px_32px_rgba(25,216,208,0.4)]
         "
       >
-        <span>Personalized Pano&apos;a Git</span>
+        <span>Go to Personalized Dashboard</span>
         <span className="text-base sm:text-lg lg:text-xl xl:text-2xl">→</span>
       </Link>
     </div>

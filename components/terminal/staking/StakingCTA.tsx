@@ -15,12 +15,12 @@ export default function StakingCTA() {
       "
     >
       <h2 className="cta-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-extrabold text-white mb-2 sm:mb-3 lg:mb-4">
-        Staking Gelirinizi Maksimize Edin
+        Maximize Your Staking Income
       </h2>
 
       <p className="cta-description mx-auto mt-2 sm:mt-3 lg:mt-4 xl:mt-5 max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed text-gray-300 px-4 mb-5 sm:mb-6 lg:mb-7 xl:mb-8">
-        Tüm staking pozisyonlarınızı tek bir pano'da yönetin, gerçek zamanlı ROI
-        hesaplamaları yapın ve en karlı fırsatları keşfedin.
+        Manage all your staking positions on a single dashboard, perform real-time ROI
+        calculations, and discover the most profitable opportunities.
       </p>
 
       <Link
@@ -40,7 +40,7 @@ export default function StakingCTA() {
           hover:shadow-[0_12px_32px_rgba(25,216,208,0.4)]
         "
       >
-        <span>Personalized Pano&apos;a Git</span>
+        <span>Go to Personalized Dashboard</span>
         <span className="text-base sm:text-lg lg:text-xl xl:text-2xl">→</span>
       </Link>
     </div>

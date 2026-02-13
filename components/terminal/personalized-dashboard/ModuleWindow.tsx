@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback, useMemo } from "react";
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { Lock, Unlock } from "lucide-react";
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import type { ModuleInstance } from "@/lib/personalized-dashboard/types";
@@ -41,7 +42,11 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     panY,
     topBarHeight,
     notesBarHeight,  
+    toggleModuleLock,
+    lockedModules,
   } = usePersonalizedDashboardStore();
+
+    const isLocked = lockedModules.has(module.id);
 
   const def = moduleRegistry[module.type];
   const isActive = activeModuleId === module.id;
@@ -70,6 +75,7 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
   );
 
   const onDragMouseDown = useCallback((e: React.MouseEvent) => {
+      if (isLocked) return;
     e.stopPropagation();
     e.preventDefault();
 
@@ -201,9 +207,10 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
     
     animationFrameId = requestAnimationFrame(animate);
   }, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom, topBarHeight, 
-    notesBarHeight, setActiveModule, updateModuleThrottled]);
+    notesBarHeight, setActiveModule, updateModuleThrottled, isLocked ]);
 
   const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
+    if (isLocked) return;
     e.stopPropagation();  
     e.preventDefault();
 
@@ -355,7 +362,7 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
     window.addEventListener("mouseup", onUp);
     animationFrameId = requestAnimationFrame(animate);
   }, [module.id, module.width, module.height, module.x, module.y, panX, panY, zoom, topBarHeight, 
-    notesBarHeight, minSizes, setActiveModule, updateModuleThrottled]);
+    notesBarHeight, minSizes, setActiveModule, updateModuleThrottled, isLocked]);
 
   const responsiveFontSize = useMemo(() => {
     const combinedZoom = zoom * (moduleZoom / 100);
@@ -368,9 +375,14 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
     <div
       ref={ref}
       data-module-window 
-      className={`absolute rounded-2xl border bg-[#041F20]/95 backdrop-blur
+      className={`absolute rounded-2xl border backdrop-blur
         select-none overflow-hidden
-        ${isActive ? "border-teal-400" : "border-white/10"}`}
+        ${isLocked 
+          ? "border-amber-500/30 bg-[#041F20]/98" 
+          : isActive 
+            ? "border-teal-400 bg-[#041F20]/95"
+            : "border-white/10 bg-[#041F20]/95"
+        }`}
       style={{
         left: module.x,
         top: module.y,
@@ -391,8 +403,8 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
     >
       <div
         onMouseDown={onDragMouseDown}
-        className="flex items-center justify-between px-4 py-2
-          border-b border-white/10 cursor-move"
+        className={`flex items-center justify-between px-4 py-2
+          border-b border-white/10 ${isLocked ? "cursor-default" : "cursor-move"}`}
       >
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.35)]" />
@@ -402,6 +414,24 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
         </div>
 
 <div className="flex gap-2 items-center">
+    <button
+    onClick={(e) => {
+      e.stopPropagation();
+      toggleModuleLock(module.id);
+    }}
+    className={`h-6 w-6 rounded-md border transition-all cursor-pointer flex items-center justify-center
+      ${isLocked 
+        ? "bg-amber-500/20 border-amber-500/50 text-amber-400" 
+        : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
+      }`}
+    title={isLocked ? "Unlock Module" : "Lock Module"}
+  >
+    {isLocked ? (
+      <Lock className="w-3 h-3" />
+    ) : (
+      <Unlock className="w-3 h-3" />
+    )}
+  </button>
   <div className="flex items-center gap-1 bg-[#0b1f1f] border border-white/10 rounded-md px-2 py-1">
     <button
       onClick={zoomOut}
@@ -494,7 +524,7 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
         </div>
       )}
 
-      {!module.minimized && (
+      {!module.minimized && !isLocked && (
         <>
           <div
             onMouseDown={(e) => onResizeMouseDown(e, "top-left")}

@@ -3,19 +3,19 @@ const steps = [
     number: "1",
     title: "Blockchain Monitoring",
     description:
-      "Treasurio, blockchain'i sürekli tarar ve büyük transferleri otomatik tespit eder. Whale wallet'lar, exchange hot wallet'lar ve known addresses izlenir.",
+      "Treasurio continuously scans the blockchain and automatically detects large transfers. Whale wallets, exchange hot wallets, and known addresses are monitored.",
   },
   {
     number: "2",
     title: "Pattern Detection",
     description:
-      "AI destekli algoritma, 16 farklı smart money pattern'ini otomatik tespit eder. Accumulation, distribution, pump setup gibi kritik sinyalleri yakalar.",
+      "AI-powered algorithm automatically detects 16 different smart money patterns. It captures critical signals such as accumulation, distribution, and pump setups.",
   },
   {
     number: "3",
     title: "Alert & Analysis",
     description:
-      "Kritik hareketler için anında alert alırsınız. Detaylı analiz araçları ile whale davranışlarını inceler ve trading stratejinizi optimize edersiniz.",
+      "You receive instant alerts for critical movements. You analyze whale behavior with detailed analysis tools and optimize your trading strategy.",
   },
 ];
 
@@ -24,10 +24,10 @@ export default function WalletHowItWorks() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Nasıl Çalışır?
+          How It Works?
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Wallet tracking'i kullanmaya başlamak için 3 adım
+          3 steps to start using wallet tracking
         </p>
       </div>
 

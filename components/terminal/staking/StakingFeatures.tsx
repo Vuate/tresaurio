@@ -3,33 +3,33 @@ import { Icon } from "@iconify/react";
 const features = [
   {
     icon: "material-symbols:monitoring-rounded",
-    title: "Gerçek Zamanlı Takip",
+    title: "Real-Time Tracking",
     description:
-      "Tüm stake pozisyonlarınızı anlık olarak izleyin. Stake edilen miktar, kazanılan rewards ve güncel değeri tek bir ekranda görüntüleyin.",
+      "Monitor all your staking positions in real-time. View staked amount, earned rewards, and current value on a single screen.",
     items: [
-      "Anlık stake değeri ve güncel fiyat",
-      "Kazanılan reward miktarı (günlük/haftalık/aylık)",
-      "Toplam değer (stake + rewards)",
-      "Multi-platform görünüm",
+      "Live stake value and current price",
+      "Earned reward amount (daily/weekly/monthly)",
+      "Total value (stake + rewards)",
+      "Multi-platform view",
     ],
   },
   {
     icon: "material-symbols:percent-rounded",
-    title: "APR/APY Karşılaştırma",
+    title: "APR/APY Comparison",
     description:
-      "Farklı platformlardaki staking oranlarını karşılaştırın ve en karlı seçeneği bulun.",
+      "Compare staking rates across different platforms and find the most profitable option.",
     items: [
-      "Platform bazlı APR comparison",
-      "Lock period vs APR analizi",
+      "Platform-based APR comparison",
+      "Lock period vs APR analysis",
       "Campaign boost tracking",
       "Historical APR trends",
     ],
   },
   {
     icon: "material-symbols:calculate-rounded",
-    title: "ROI Hesaplaması",
+    title: "ROI Calculation",
     description:
-      "Staking yatırımlarınızın gerçek getirisini hesaplayın. APR kazancı ve fiyat değişimini birlikte analiz edin.",
+      "Calculate the real return on your staking investments. Analyze APR earnings and price changes together.",
     items: [
       "Total return (APR + price appreciation)",
       "Entry price vs current price",
@@ -39,9 +39,9 @@ const features = [
   },
   {
     icon: "material-symbols:account-balance-rounded",
-    title: "TradFi Karşılaştırma",
+    title: "TradFi Comparison",
     description:
-      "Crypto staking getirilerinizi geleneksel finans ürünleri ile karşılaştırın.",
+      "Compare your crypto staking returns with traditional finance products.",
     items: [
       "Savings account comparison",
       "Government bonds comparison",
@@ -53,7 +53,7 @@ const features = [
     icon: "material-symbols:calendar-clock-rounded",
     title: "Reward Calendar",
     description:
-      "Reward dağıtım takvimini görüntüleyin ve gelecek kazançlarınızı projeksiyon yapın.",
+      "View the reward distribution calendar and project your future earnings.",
     items: [
       "Daily reward distribution schedule",
       "Compound interest projections",
@@ -63,9 +63,9 @@ const features = [
   },
   {
     icon: "material-symbols:stacked-line-chart-rounded",
-    title: "Multi-Asset Pano",
+    title: "Multi-Asset Dashboard",
     description:
-      "Birden fazla coin'de staking yapıyorsanız, tümünü tek bir pano'da yönetin.",
+      "If you're staking multiple coins, manage them all on a single dashboard.",
     items: [
       "Portfolio diversification view",
       "Cross-asset performance comparison",
@@ -80,10 +80,10 @@ export default function StakingFeatures() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Ana Özellikler
+          Key Features
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Tüm staking pozisyonlarınızı tek bir yerden yönetin ve optimize edin
+          Manage and optimize all your staking positions from one place
         </p>
       </div>
 

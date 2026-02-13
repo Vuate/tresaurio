@@ -5,7 +5,7 @@ const features = [
     icon: "mdi:briefcase-transfer-outline",
     title: "Real-time Transfer Feed",
     description:
-      "Büyük transferleri anlık olarak görün. Whale hareketleri, exchange in/out flow ve önemli wallet aktivitelerini canlı feed'de takip edin.",
+      "View large transfers instantly. Track whale movements, exchange in/out flow, and significant wallet activities in a live feed.",
     items: [
       "Whale transfer alerts (>$1M)",
       "Exchange inflow/outflow tracking",
@@ -17,7 +17,7 @@ const features = [
     icon: "grommet-icons:money", 
     title: "Smart Money Patterns",
     description:
-      "16 farklı smart money pattern'ini otomatik tespit edin ve piyasa manipülasyon sinyallerini yakalayın.",
+      "Automatically detect 16 different smart money patterns and capture market manipulation signals.",
     items: [
       "Accumulation detection",
       "Distribution pattern recognition",
@@ -29,7 +29,7 @@ const features = [
     icon: "lucide:wallet",
     title: "Wallet Inspector",
     description:
-      "Herhangi bir wallet'ı detaylı inceleyin. Balance, transaction history, unrealized PnL ve smart money score görüntüleyin.",
+      "Inspect any wallet in detail. View balance, transaction history, unrealized PnL, and smart money score.",
     items: [
       "Wallet balance breakdown",
       "Historical transaction analysis",
@@ -41,7 +41,7 @@ const features = [
     icon: "ri:swap-line",
     title: "Exchange Net Flow",
     description:
-      "Exchange'lere giren ve çıkan coin miktarını izleyin. Net flow pozitif mi negatif mi anlık takip edin.",
+      "Monitor the amount of coins entering and exiting exchanges. Track whether net flow is positive or negative in real-time.",
     items: [
       "Per-exchange inflow/outflow",
       "Net flow calculation (+ / -)",
@@ -53,7 +53,7 @@ const features = [
     icon: "material-symbols:swap-horiz-rounded",
     title: "Token Flow Analysis",
     description:
-      "Token bazlı akış analizleri yapın. Hangi token'larda accumulation, hangilerinde distribution var görün.",
+      "Perform token-based flow analysis. See which tokens show accumulation and which show distribution.",
     items: [
       "Per-token flow tracking",
       "Top accumulating tokens",
@@ -65,7 +65,7 @@ const features = [
     icon: "healthicons:alert-outline",
     title: "Alert System",
     description:
-      "Kritik whale hareketleri için otomatik alert alın. Custom threshold'lar belirleyin ve önemli hiçbir hareketi kaçırmayın.",
+      "Receive automatic alerts for critical whale movements. Set custom thresholds and never miss an important move.",
     items: [
       "Custom alert thresholds",
       "Whale movement notifications",
@@ -80,10 +80,10 @@ export default function WalletFeatures() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Ana Özellikler
+          Key Features
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Kripto piyasasındaki büyük oyuncuların hareketlerini anlık takip edin
+          Track the movements of major players in the crypto market in real-time
         </p>
       </div>
 

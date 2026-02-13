@@ -11,14 +11,14 @@ export async function POST(request: NextRequest) {
     // Validation
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Email ve şifre gerekli" },
+        { error: "Email and password are required" },
         { status: 400 }
       );
     }
 
     if (password.length < 8) {
       return NextResponse.json(
-        { error: "Şifre en az 8 karakter olmalı" },
+        { error: "Password must be at least 8 characters" },
         { status: 400 }
       );
     }
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "Bu email zaten kayıtlı" },
+        { error: "This email is already registered" },
         { status: 400 }
       );
     }
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Hesap oluşturuldu. Giriş yapabilirsiniz.",
+        message: "Account created. You can now log in.",
         requiresVerification: false,
         user: {
           id: user.id,
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Signup error:", error);
     return NextResponse.json(
-      { error: "Bir hata oluştu" },
+      { error: "An error occurred" },
       { status: 500 }
     );
   }
