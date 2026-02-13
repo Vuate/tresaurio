@@ -11,10 +11,10 @@ export default function MarketIntelligenceCostBreakdown() {
       {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          All-in Cost Örneği
+          All-in Cost Example
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          $100,000 BTC trade için maliyet breakdown
+          Cost breakdown for a $100,000 BTC trade
         </p>
       </div>
 

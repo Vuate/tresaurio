@@ -5,10 +5,10 @@ export default function TradeFeatures() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Ana Özellikler
+          Key Features
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Tüm işlem ve portföy yönetimi araçlarınız tek bir yerde
+          All your trading and portfolio management tools in one place
         </p>
       </div>
 
@@ -18,11 +18,11 @@ export default function TradeFeatures() {
             <Icon icon="mdi:briefcase-variant-outline" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Spot Pozisyonları
+            Spot Positions
           </h3>
           <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Tüm spot holdinglerınızı görüntüleyin. Giriş fiyatları, güncel değer ve
-            unrealized PnL&apos;i anlık takip edin.
+            View all your spot holdings. Track entry prices, current value, and
+            unrealized PnL in real-time.
           </p>
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
@@ -30,10 +30,10 @@ export default function TradeFeatures() {
             [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Çoklu borsa desteği</li>
-            <li>Anlık fiyat güncelleme</li>
-            <li>Unrealized PnL hesaplama</li>
-            <li>Portföy dağılımı görünümü</li>
+            <li>Multi-exchange support</li>
+            <li>Real-time price updates</li>
+            <li>Unrealized PnL calculation</li>
+            <li>Portfolio allocation view</li>
           </ul>
         </div>
 
@@ -42,11 +42,11 @@ export default function TradeFeatures() {
             <Icon icon="mdi:flash-outline" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Futures Pozisyonları
+            Futures Positions
           </h3>
           <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Açık futures pozisyonlarınızı izleyin. Kaldıraç, margin ve tasfiye
-            seviyelerini görün.
+            Monitor your open futures positions. View leverage, margin, and
+            liquidation levels.
           </p>
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
@@ -54,10 +54,10 @@ export default function TradeFeatures() {
             [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Long/Short pozisyon takibi</li>
-            <li>Kaldıraç ve margin görünümü</li>
-            <li>Tasfiye fiyatı hesaplama</li>
-            <li>Funding rate etkisi</li>
+            <li>Long/Short position tracking</li>
+            <li>Leverage and margin view</li>
+            <li>Liquidation price calculation</li>
+            <li>Funding rate impact</li>
           </ul>
         </div>
 
@@ -66,11 +66,11 @@ export default function TradeFeatures() {
             <Icon icon="mdi:cash-multiple" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            PnL Analizi
+            PnL Analysis
           </h3>
           <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Realized ve unrealized PnL&apos;inizi detaylı görün. Coin bazlı, borsa bazlı veya
-            toplam getiri analizi yapın.
+            View your realized and unrealized PnL in detail. Analyze by coin, exchange, or
+            total portfolio returns.
           </p>
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
@@ -80,8 +80,8 @@ export default function TradeFeatures() {
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
             <li>Realized PnL breakdown</li>
             <li>Unrealized PnL tracking</li>
-            <li>Coin bazlı performans</li>
-            <li>Tarihsel getiri grafiği</li>
+            <li>Coin-based performance</li>
+            <li>Historical return charts</li>
           </ul>
         </div>
 
@@ -90,11 +90,11 @@ export default function TradeFeatures() {
             <Icon icon="mdi:target-account" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            DCA Hesaplama
+            DCA Calculation
           </h3>
           <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Farklı zamanlarda yaptığınız alımları birleştirerek ortalama giriş
-            fiyatınızı hesaplayın.
+         Combine purchases made at different times to calculate your average
+            entry price.
           </p>
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
@@ -102,10 +102,10 @@ export default function TradeFeatures() {
             [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Otomatik DCA hesaplama</li>
-            <li>Manuel alım ekleme</li>
-            <li>Ortalama fiyat görünümü</li>
-            <li>Break-even analizi</li>
+            <li>Automatic DCA calculation</li>
+            <li>Manual purchase entry</li>
+            <li>Average price view</li>
+            <li>Break-even analysis</li>
           </ul>
         </div>
 
@@ -114,11 +114,11 @@ export default function TradeFeatures() {
             <Icon icon="mdi:shield-alert-outline" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Risk Yönetimi
+            Risk Management
           </h3>
           <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Portföy risk seviyenizi ölçün. Stop-loss önerileri alın ve pozisyon
-            boyutu optimizasyonu yapın. 
+            Measure your portfolio risk level. Get stop-loss recommendations and
+            optimize position sizing. 
           </p>
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
@@ -126,10 +126,10 @@ export default function TradeFeatures() {
             [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Risk seviyesi skorlama</li>
-            <li>Stop-loss önerileri</li>
-            <li>Position sizing hesaplama</li>
-            <li>Çeşitlendirme analizi</li>
+            <li>Risk level scoring</li>
+            <li>Stop-loss recommendations</li>
+            <li>Position sizing calculation</li>
+            <li>Diversification analysis</li>
           </ul>
         </div>
 
@@ -138,11 +138,11 @@ export default function TradeFeatures() {
             <Icon icon="mdi:chart-line-variant" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Performans İstatistikleri
+            Performance Statistics
           </h3>
           <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Geçmiş işlem performansınızı analiz edin. Win rate, ortalama getiri ve
-            en karlı coin&apos;leri görün.
+            Analyze your historical trading performance. View win rate, average returns, and
+            most profitable coins.
           </p>
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
@@ -150,10 +150,10 @@ export default function TradeFeatures() {
             [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Win / Loss oranı</li>
-            <li>Ortalama kazanç / kayıp</li>
-            <li>En karlı / zararlı işlemler</li>
-            <li>Aylık performans raporu</li>
+            <li>Win / Loss ratio</li>
+            <li>Average gain / loss</li>
+            <li>Most profitable / losing trades</li>
+            <li>Monthly performance report</li>
           </ul>
         </div>
       </div>

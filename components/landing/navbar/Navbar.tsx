@@ -113,7 +113,7 @@ export default function Navbar() {
 
           <button
             disabled
-            title="Yakında Gelecek"
+            title="Coming Soon"
             className="opacity-40 cursor-not-allowed font-medium"
           >
             LEARN ( Coming Soon )

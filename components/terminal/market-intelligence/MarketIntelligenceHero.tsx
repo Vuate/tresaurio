@@ -7,7 +7,7 @@ export default function MarketIntelligenceHero() {
       <Head>
         <meta
           name="description"
-          content="Gerçek trading maliyetini hesaplayın. Fee, spread, slippage ve funding'i tek bir all-in cost'ta toplayın. Exchange'leri karşılaştırıp en ucuz seçeneği bulun."
+          content="Calculate your real trading costs. Combine fee, spread, slippage, and funding into a single all-in cost. Compare exchanges and find the cheapest option."
         />
       </Head>
 
@@ -22,22 +22,22 @@ export default function MarketIntelligenceHero() {
         </h1>
 
         <p className="text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl text-gray-300 max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl mx-auto mb-4 sm:mb-5 lg:mb-6 leading-relaxed px-4">
-          Gerçek trading maliyetini hesaplayın. Fee, spread, slippage ve funding'i tek bir all-in cost'ta toplayın. 
-          Exchange'leri karşılaştırıp en ucuz seçeneği bulun.
+          Calculate your real trading costs. Combine fee, spread, slippage, and funding into a single all-in cost. 
+          Compare exchanges and find the cheapest option.
         </p>
 
         <div className="flex gap-2 sm:gap-2.5 lg:gap-3 justify-center flex-wrap px-4">
           <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
-            Toplam Maliyet Hesaplayıcı
+            Total Cost Calculator
           </span>
           <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
-            Borsa Karşılaştırma
+            Exchange Comparison
           </span>
           <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
-            Piyasa Verimliliği
+            Market Efficiency
           </span>
           <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
-            İşlem Kalitesi
+            Execution Quality
           </span>
         </div>
       </div>

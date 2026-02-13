@@ -23,6 +23,8 @@ type State = {
   zoom: number;
   panX: number;
   panY: number;
+  
+lockedModules: Set<ModuleId>;
 
   notesOpen: boolean;
   notes: NoteItem[];
@@ -51,6 +53,9 @@ type Actions = {
   setPan: (x: number, y: number) => void;
   resetView: () => void;
 
+  toggleModuleLock: (id: ModuleId) => void; 
+  isModuleLocked: (id: ModuleId) => boolean; 
+
   toggleNotes: () => void;
   addNote: (text: string) => void;
   setNotesHeight: (h: number) => void;
@@ -75,6 +80,7 @@ type Actions = {
   removeAlert: (id: string) => void;
 
   setUIBlocked: (v: boolean) => void;
+  resetDashboard: () => void;
 
   // DB sync
   _hydrated: boolean;
@@ -87,6 +93,7 @@ type Actions = {
   saveTemplate: (name: string) => Promise<void>;
   loadTemplate: (id: string) => Promise<void>;
   deleteTemplate: (id: string) => Promise<void>;
+  closeAllPanels: () => void;
 };
 
 // Debounce helper for DB saves
@@ -101,6 +108,7 @@ function debouncedSaveToDB() {
 export const usePersonalizedDashboardStore = create<State & Actions>()(
   persist(
   (set, get) => ({
+    lockedModules: new Set(),
     uiBlocked: false,
     zoom: 1,
     panX: 0,
@@ -123,7 +131,38 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
     alerts: [],
     templates: [],
 
+        toggleModuleLock: (id) => {
+      const locked = new Set(get().lockedModules);
+      if (locked.has(id)) {
+        locked.delete(id);
+      } else {
+        locked.add(id);
+      }
+      set({ lockedModules: locked });
+    },
+
+        isModuleLocked: (id) => get().lockedModules.has(id),
+
+
     setUIBlocked: (v) => set({ uiBlocked: v }),
+        resetDashboard: () => {
+    const { topBarHeight, notesBarHeight } = get();
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+    const minZoom = calculateMinZoom(viewportW, viewportH);
+    const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
+    const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+      set({
+        modules: defaultModules,
+        lockedModules: new Set(),
+        notes: [],
+        alerts: [],
+        zoom: minZoom,
+        panX: centerPanX,
+        panY: centerPanY,
+        activeModuleId: null,
+      });
+    },
     _hydrated: false,
     setHydrated: (v) => set({ _hydrated: v }),
 
@@ -223,12 +262,14 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
       set((s) => ({
         addToolOpen: !s.addToolOpen,
         sidebarOpen: false,
+        templatesOpen: false, 
       })),
 
     toggleSidebar: () =>
       set((s) => ({
         sidebarOpen: !s.sidebarOpen,
         addToolOpen: false,
+        templatesOpen: false, 
       })),
 
     toggleTemplates: () =>
@@ -269,68 +310,77 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
       }),
 
     // DB sync — load (only if localStorage is empty, DB takes over)
-    loadFromDB: async () => {
-      try {
-        // Wait for persist hydration to complete
-        const waitForHydration = () =>
-          new Promise<void>((resolve) => {
-            const check = () => {
-              if (get()._hydrated) return resolve();
-              setTimeout(check, 50);
-            };
-            check();
-          });
-        await waitForHydration();
+loadFromDB: async () => {
+  try {
+    // Wait for persist hydration to complete
+    const waitForHydration = () =>
+      new Promise<void>((resolve) => {
+        const check = () => {
+          if (get()._hydrated) return resolve();
+          setTimeout(check, 50);
+        };
+        check();
+      });
+    await waitForHydration();
 
-        // If localStorage already has modules (not default), skip DB load
-        const currentModules = get().modules;
-        const hasLocalData =
-          currentModules.length > 0 &&
-          JSON.stringify(currentModules) !== JSON.stringify(defaultModules);
+    // If localStorage already has modules (not default), skip DB load
+    const currentModules = get().modules;
+    const hasLocalData =
+      currentModules.length > 0 &&
+      JSON.stringify(currentModules) !== JSON.stringify(defaultModules);
 
-        if (hasLocalData) {
-          console.log("[Dashboard] Using localStorage data");
-          return;
-        }
+    if (hasLocalData) {
+      console.log("[Dashboard] Using localStorage data");
+      return;
+    }
 
-        // No local data → try DB
-        const res = await fetch("/api/dashboard");
-        if (!res.ok) return;
-        const { layout } = await res.json();
-        if (!layout) return;
+    // No local data → try DB
+    const res = await fetch("/api/dashboard");
+    if (!res.ok) return;
+    const { layout } = await res.json();
+    if (!layout) return;
 
-        const { modules, notes, alerts, zoom, panX, panY } = layout;
-        if (modules && modules.length > 0) {
-          set({
-            modules,
-            ...(notes && { notes }),
-            ...(alerts && { alerts }),
-            ...(typeof zoom === "number" && { zoom }),
-            ...(typeof panX === "number" && { panX }),
-            ...(typeof panY === "number" && { panY }),
-          });
-          console.log("[Dashboard] Loaded from DB");
-        }
-      } catch (err) {
-        console.error("[Dashboard] DB load failed:", err);
-      }
-    },
+    const { modules, notes, alerts, zoom, panX, panY, lockedModules } = layout;
+    if (modules && modules.length > 0) {
+      set({
+        modules,
+        ...(notes && { notes }),
+        ...(alerts && { alerts }),
+        ...(typeof zoom === "number" && { zoom }),
+        ...(typeof panX === "number" && { panX }),
+        ...(typeof panY === "number" && { panY }),
+        ...(lockedModules && { lockedModules: new Set(lockedModules) }),
+      });
+      console.log("[Dashboard] Loaded from DB");
+    }
+  } catch (err) {
+    console.error("[Dashboard] DB load failed:", err);
+  }
+},
 
     // DB sync — save
-    saveToDB: async () => {
-      try {
-        const { modules, notes, alerts, zoom, panX, panY } = get();
-        await fetch("/api/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            layout: { modules, notes, alerts, zoom, panX, panY },
-          }),
-        });
-      } catch (err) {
-        console.error("[Dashboard] DB save failed:", err);
-      }
-    },
+saveToDB: async () => {
+  try {
+    const { modules, notes, alerts, zoom, panX, panY, lockedModules } = get();
+    await fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        layout: { 
+          modules, 
+          notes, 
+          alerts, 
+          zoom, 
+          panX, 
+          panY,
+          lockedModules: Array.from(lockedModules)
+        },
+      }),
+    });
+  } catch (err) {
+    console.error("[Dashboard] DB save failed:", err);
+  }
+},
 
     // Templates
     fetchTemplates: async () => {
@@ -346,13 +396,13 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
 
     saveTemplate: async (name: string) => {
       try {
-        const { modules, zoom, panX, panY } = get();
+        const { modules, zoom, panX, panY, lockedModules } = get();
         const res = await fetch("/api/dashboard/templates", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name,
-            layout: { modules, zoom, panX, panY },
+            layout: { modules, zoom, panX, panY, lockedModules: Array.from(lockedModules) },
           }),
         });
         if (!res.ok) return;
@@ -363,24 +413,33 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
       }
     },
 
-    loadTemplate: async (id: string) => {
-      try {
-        const res = await fetch(`/api/dashboard/templates/${id}`);
-        if (!res.ok) return;
-        const { template } = await res.json();
-        if (!template?.layout) return;
+loadTemplate: async (id: string) => {
+  try {
+    const res = await fetch(`/api/dashboard/templates/${id}`);
+    if (!res.ok) return;
+    const { template } = await res.json();
+    if (!template?.layout) return;
 
-        const { modules, zoom, panX, panY } = template.layout;
-        set({
-          ...(modules && { modules }),
-          ...(typeof zoom === "number" && { zoom }),
-          ...(typeof panX === "number" && { panX }),
-          ...(typeof panY === "number" && { panY }),
-        });
-      } catch (err) {
-        console.error("[Dashboard] Load template failed:", err);
-      }
-    },
+    const { modules, lockedModules } = template.layout;
+
+    const { topBarHeight, notesBarHeight } = get();
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+    const minZoom = calculateMinZoom(viewportW, viewportH);
+
+     const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
+    const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+    set({
+      ...(modules && { modules }),
+        lockedModules: lockedModules ? new Set(lockedModules) : new Set(),
+      zoom: minZoom,
+      panX: centerPanX,
+      panY: centerPanY,
+    });
+  } catch (err) {
+    console.error("[Dashboard] Load template failed:", err);
+  }
+},
 
     deleteTemplate: async (id: string) => {
       try {
@@ -393,6 +452,14 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
         console.error("[Dashboard] Delete template failed:", err);
       }
     },
+
+    closeAllPanels: () =>
+  set({
+    sidebarOpen: false,
+    addToolOpen: false,
+    templatesOpen: false,
+  }),
+
   }),
   {
     name: "dashboard-layout",
@@ -403,16 +470,52 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
       zoom: state.zoom,
       panX: state.panX,
       panY: state.panY,
+        lockedModules: Array.from(state.lockedModules),
     }),
-    onRehydrateStorage: () => {
-      return (state, error) => {
-        if (error) {
-          console.error("[Dashboard] localStorage hydration failed:", error);
+        storage: {
+      getItem: (name) => {
+        const str = localStorage.getItem(name);
+        if (!str) return null;
+        const parsed = JSON.parse(str);
+        if (parsed?.state?.lockedModules) {
+          parsed.state.lockedModules = new Set(parsed.state.lockedModules);
         }
-        // Mark hydration as complete
-        state?.setHydrated(true);
-      };
+        return parsed;
+      },
+      setItem: (name, value) => {
+        localStorage.setItem(name, JSON.stringify(value));
+      },
+      removeItem: (name) => {
+        localStorage.removeItem(name);
+      },
     },
+onRehydrateStorage: () => {
+  return (state, error) => {
+    if (error) {
+      console.error("[Dashboard] localStorage hydration failed:", error);
+    }
+    
+    // Mark hydration as complete
+    state?.setHydrated(true);
+    
+    // Reset zoom and pan to min values after hydration
+    if (state && typeof window !== "undefined") {
+      const topBarHeight = state.topBarHeight || 0;
+      const notesBarHeight = state.notesBarHeight || 0;
+      const viewportW = window.innerWidth;
+      const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+      const minZoom = calculateMinZoom(viewportW, viewportH);
+      const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
+      const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+      
+      state.zoom = minZoom;
+      state.panX = centerPanX;
+      state.panY = centerPanY;
+    }
+  };
+},
+
+
   },
   )
 );

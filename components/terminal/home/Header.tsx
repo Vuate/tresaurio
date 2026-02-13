@@ -14,7 +14,7 @@ export default function Header() {
     const update = () => {
       const now = new Date();
       setTime(
-        now.toLocaleString("tr-TR", {
+        now.toLocaleString("en-EN", {
           year: "numeric",
           month: "long",
           day: "numeric",
@@ -47,7 +47,7 @@ export default function Header() {
 </h1>
 
           <p className="text-gray-400 text-xs xl:text-sm 2xl:text-[15px] translate-y-[118px] xl:translate-y-[126px] 2xl:translate-y-[134px]">
-            Kurumsal Piyasa Derinliği • Likidite • Risk • Veri Analitiği
+           Institutional Market Depth • Liquidity • Risk • Data Analytics
           </p>
 
           <div className="w-40 xl:w-44 2xl:w-48 h-[2.5px] xl:h-[3px] bg-gradient-to-r from-cyan-400/40 to-purple-500/40 rounded-full translate-y-[118px] xl:translate-y-[126px] 2xl:translate-y-[134px]"></div>

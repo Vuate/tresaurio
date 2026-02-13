@@ -13,7 +13,7 @@ export default function ReportingHero() {
       <Head>
         <meta
           name="description"
-          content="39 modül, 8 kategori ile profesyonel crypto raporları oluşturun. Otomatik data toplama, AI-powered insight'lar ve özelleştirilebilir template'ler."
+          content="Create professional crypto reports with 39 modules across 8 categories. Automated data collection, AI-powered insights, and customizable templates."
         />
       </Head>
 
@@ -23,12 +23,12 @@ export default function ReportingHero() {
         </div>
 
         <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-2 sm:mb-3 lg:mb-4 text-teal-400">
-          Raporlama Motoru
+          Reporting Engine
         </h1>
 
         <p className="text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl text-gray-300 max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl mx-auto mb-6 sm:mb-7 lg:mb-8 xl:mb-10 leading-relaxed px-4">
-          39 modül, 8 kategori ile profesyonel crypto raporları oluşturun. Otomatik data toplama, 
-          AI-powered insight'lar ve özelleştirilebilir template'ler.
+          Create professional crypto reports with 39 modules across 8 categories. Automated data collection, 
+          AI-powered insights, and customizable templates.
         </p>
 
         <div className="flex flex-col md:flex-row gap-6 sm:gap-8 lg:gap-10 xl:gap-12 justify-center">

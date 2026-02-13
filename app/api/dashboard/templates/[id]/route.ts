@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-// GET — Tek şablonun layout'unu getir
+// GET — Fetch single template layout
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -20,17 +20,17 @@ export async function GET(
     });
 
     if (!template) {
-      return NextResponse.json({ error: "Sablon bulunamadi" }, { status: 404 });
+      return NextResponse.json({ error: "Template not found" }, { status: 404 });
     }
 
     return NextResponse.json({ template });
   } catch (error) {
     console.error("Template GET error:", error);
-    return NextResponse.json({ error: "Bir hata olustu" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }
 
-// DELETE — Şablonu sil
+// DELETE — Delete template
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -48,14 +48,14 @@ export async function DELETE(
     });
 
     if (!template) {
-      return NextResponse.json({ error: "Sablon bulunamadi" }, { status: 404 });
+      return NextResponse.json({ error: "Template not found" }, { status: 404 });
     }
 
     await prisma.dashboardTemplate.delete({ where: { id } });
 
-    return NextResponse.json({ message: "Sablon silindi" });
+    return NextResponse.json({ message: "Template deleted" });
   } catch (error) {
     console.error("Template DELETE error:", error);
-    return NextResponse.json({ error: "Bir hata olustu" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }

@@ -451,7 +451,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
   /* ---------------- CHART (Grafik) ---------------- */
   chart: {
     type: "chart",
-    title: "Grafik",
+    title: "Chart",
     description: "Candlestick chart with technical indicators",
     category: "market-data",
     defaultSize: { width: 600, height: 450 },

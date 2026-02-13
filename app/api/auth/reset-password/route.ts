@@ -10,14 +10,14 @@ export async function POST(request: NextRequest) {
 
     if (!token || !password) {
       return NextResponse.json(
-        { error: "Token ve şifre gerekli" },
+        { error: "Token and password are required" },
         { status: 400 }
       );
     }
 
     if (password.length < 8) {
       return NextResponse.json(
-        { error: "Şifre en az 8 karakter olmalı" },
+        { error: "Password must be at least 8 characters" },
         { status: 400 }
       );
     }
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     if (!resetToken || !resetToken.identifier.startsWith("reset:")) {
       return NextResponse.json(
-        { error: "Geçersiz veya süresi dolmuş link" },
+        { error: "Invalid or expired link" },
         { status: 400 }
       );
     }
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         where: { token },
       });
       return NextResponse.json(
-        { error: "Şifre sıfırlama linkinin süresi dolmuş" },
+        { error: "Password reset link has expired" },
         { status: 400 }
       );
     }
@@ -63,12 +63,12 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      message: "Şifreniz başarıyla güncellendi",
+      message: "Your password has been successfully updated",
     });
   } catch (error) {
     console.error("Reset password error:", error);
     return NextResponse.json(
-      { error: "Bir hata oluştu" },
+      { error: "An error occurred" },
       { status: 500 }
     );
   }

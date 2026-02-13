@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-// GET — Kullanıcının tüm şablonlarını getir
+// GET — Fetch all user templates
 export async function GET() {
   try {
     const session = await auth();
@@ -24,11 +24,11 @@ export async function GET() {
     return NextResponse.json({ templates });
   } catch (error) {
     console.error("Templates GET error:", error);
-    return NextResponse.json({ error: "Bir hata olustu" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }
 
-// POST — Yeni şablon kaydet
+// POST — Save new template
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     if (!name || !layout) {
       return NextResponse.json(
-        { error: "name ve layout gerekli" },
+        { error: "name and layout are required" },
         { status: 400 }
       );
     }
@@ -60,6 +60,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ template });
   } catch (error) {
     console.error("Templates POST error:", error);
-    return NextResponse.json({ error: "Bir hata olustu" }, { status: 500 });
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }

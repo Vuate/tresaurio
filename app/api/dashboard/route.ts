@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-// GET - Kullanıcının dashboard layout'unu getir
+// GET - Get user's dashboard layout
 export async function GET() {
   try {
     const session = await auth();
@@ -20,7 +20,7 @@ export async function GET() {
     });
 
     if (!dashboard) {
-      // Kullanıcının henüz kaydedilmiş layout'u yok
+      // User doesn't have a saved layout yet
       return NextResponse.json({ layout: null });
     }
 
@@ -28,13 +28,13 @@ export async function GET() {
   } catch (error) {
     console.error("Dashboard GET error:", error);
     return NextResponse.json(
-      { error: "Bir hata oluştu" },
+      { error: "An error occurred" },
       { status: 500 }
     );
   }
 }
 
-// POST - Kullanıcının dashboard layout'unu kaydet
+// POST - Save user's dashboard layout
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -51,12 +51,12 @@ export async function POST(request: NextRequest) {
 
     if (!layout) {
       return NextResponse.json(
-        { error: "Layout gerekli" },
+        { error: "Layout is required" },
         { status: 400 }
       );
     }
 
-    // Upsert - varsa güncelle, yoksa oluştur
+    // Upsert - update if exists, create if not
     const dashboard = await prisma.userDashboard.upsert({
       where: { userId: session.user.id },
       update: { layout },
@@ -67,13 +67,13 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      message: "Dashboard kaydedildi",
+      message: "Dashboard saved",
       layout: dashboard.layout,
     });
   } catch (error) {
     console.error("Dashboard POST error:", error);
     return NextResponse.json(
-      { error: "Bir hata oluştu" },
+      { error: "An error occurred" },
       { status: 500 }
     );
   }

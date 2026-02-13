@@ -3,9 +3,9 @@ import { Icon } from "@iconify/react";
 const features = [
   {
     icon: "material-symbols:psychology-rounded",
-    title: "Yapay Zeka Duygu Analizi",
+    title: "AI Sentiment Analysis",
     description:
-      "Her haberi AI ile analiz ederek bullish/bearish/neutral sentiment puanı belirleyin. Toplam market sentiment'i anlık takip edin.",
+      "Analyze each news article with AI to determine bullish/bearish/neutral sentiment scores. Track overall market sentiment in real-time.",
     items: [
       "Automatic sentiment scoring (0-100)",
       "Bullish/Bearish/Neutral classification",
@@ -15,9 +15,9 @@ const features = [
   },
   {
     icon: "material-symbols:show-chart-rounded",
-    title: "Fiyat Etkisi Takibi",
+    title: "Price Impact Tracking",
     description:
-      "Haberlerin fiyat üzerindeki etkisini ölçün. Haber sonrası 5dk, 15dk, 1h fiyat değişimlerini otomatik hesaplayın.",
+      "Measure the impact of news on price. Automatically calculate price changes 5min, 15min, 1hr after news releases.",
     items: [
       "Pre/Post news price comparison",
       "Impact magnitude calculation",
@@ -27,9 +27,9 @@ const features = [
   },
   {
     icon: "lucide:layers",
-    title: "Çoklu Kaynak Toplama",
+    title: "Multi-Source Aggregation",
     description:
-      "CoinDesk, CoinTelegraph, Bloomberg Crypto, Twitter, Reddit ve 50+ kaynaktan haberleri tek bir feed'de toplayın.",
+      "Aggregate news from CoinDesk, CoinTelegraph, Bloomberg Crypto, Twitter, Reddit, and 50+ sources in a single feed.",
     items: [
       "50+ news source integration",
       "Social media monitoring",
@@ -41,7 +41,7 @@ const features = [
     icon: "lucide:filter",
     title: "Token-Specific News",
     description:
-      "Her token için özel haber feed'i. BTC, ETH, SOL gibi token'lara özel haberleri filtreleyin ve sadece ilgili içeriği görün.",
+      "Dedicated news feed for each token. Filter news specific to tokens like BTC, ETH, SOL and view only relevant content.",
     items: [
       "Per-token news filtering",
       "Token mention tracking",
@@ -53,7 +53,7 @@ const features = [
     icon: "material-symbols:notifications-active-rounded",
     title: "Breaking News Alerts",
     description:
-      "Kritik haberler çıktığında anında alert alın. High-impact news'ler için otomatik bildirim sistemi.",
+      "Get instant alerts when critical news breaks. Automatic notification system for high-impact news.",
     items: [
       "Instant push notifications",
       "High-impact news prioritization",
@@ -65,7 +65,7 @@ const features = [
     icon: "material-symbols:trending-up-rounded",
     title: "Sentiment Trends",
     description:
-      "Market sentiment'inin zaman içindeki değişimini grafik olarak görüntüleyin. Bullish/Bearish dönüm noktalarını tespit edin.",
+      "Visualize market sentiment changes over time with charts. Detect bullish/bearish turning points.",
     items: [
       "Historical sentiment charts",
       "Sentiment momentum indicators",
@@ -80,10 +80,10 @@ export default function NewsFeatures() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Ana Özellikler
+          Key Features
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Kripto haberlerini akıllı şekilde takip edin ve piyasa hareketlerini önceden tahmin edin
+          Track crypto news intelligently and anticipate market movements in advance
         </p>
       </div>
 

@@ -11,10 +11,10 @@ interface PasswordRequirement {
 
 const validatePassword = (password: string): { valid: boolean; requirements: PasswordRequirement[] } => {
   const requirements: PasswordRequirement[] = [
-    { label: "En az 8 karakter", met: password.length >= 8 },
-    { label: "Büyük harf (A-Z)", met: /[A-Z]/.test(password) },
-    { label: "Küçük harf (a-z)", met: /[a-z]/.test(password) },
-    { label: "Rakam (0-9)", met: /[0-9]/.test(password) },
+    { label: "At least 8 characters", met: password.length >= 8 },
+    { label: "Uppercase letter (A-Z)", met: /[A-Z]/.test(password) },
+    { label: "Lowercase letter (a-z)", met: /[a-z]/.test(password) },
+    { label: "Number (0-9)", met: /[0-9]/.test(password) },
   ];
 
   const valid = requirements.every((r) => r.met);
@@ -49,7 +49,7 @@ function ResetPasswordContent() {
 
     // Validate passwords match
     if (password !== passwordConfirm) {
-      setError("Şifreler eşleşmiyor");
+      setError("Passwords do not match");
       return;
     }
 
@@ -57,7 +57,7 @@ function ResetPasswordContent() {
     const { valid, requirements } = validatePassword(password);
     if (!valid) {
       const missing = requirements.filter((r) => !r.met).map((r) => r.label);
-      setError("Eksik: " + missing.join(", "));
+      setError("Missing: " + missing.join(", "));
       return;
     }
 
@@ -73,12 +73,12 @@ function ResetPasswordContent() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Bir hata oluştu");
+        setError(data.error || "An error occurred");
       } else {
         setSuccess(true);
       }
     } catch {
-      setError("Bir hata oluştu");
+      setError("An error occurred");
     } finally {
       setLoading(false);
     }
@@ -106,17 +106,17 @@ function ResetPasswordContent() {
             </div>
 
             <h1 className="text-2xl font-bold text-white mb-2">
-              Geçersiz Link
+              Invalid Link
             </h1>
             <p className="text-gray-400 mb-6">
-              Bu şifre sıfırlama linki geçersiz.
+              This password reset link is invalid.
             </p>
 
             <Link
               href="/forgot-password"
               className="inline-block w-full bg-white text-black rounded-lg py-3 font-medium hover:bg-gray-100 transition"
             >
-              Yeni Link İste
+              Request New Link
             </Link>
           </div>
         </div>
@@ -147,27 +147,27 @@ function ResetPasswordContent() {
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-2">
-                Şifre Güncellendi!
+                Password Updated!
               </h1>
               <p className="text-gray-400 mb-6">
-                Şifreniz başarıyla güncellendi. Şimdi giriş yapabilirsiniz.
+                Your password has been successfully updated. You can now log in.
               </p>
 
               <Link
                 href="/"
                 className="inline-block w-full bg-white text-black rounded-lg py-3 font-medium hover:bg-gray-100 transition"
               >
-                Giriş Yap
+                Log In
               </Link>
             </div>
           ) : (
             <>
               <div className="text-center mb-6">
                 <h1 className="text-2xl font-bold text-white mb-2">
-                  Yeni Şifre Belirle
+                  Set New Password
                 </h1>
                 <p className="text-gray-400 text-sm">
-                  Hesabınız için yeni bir şifre belirleyin.
+                  Set a new password for your account.
                 </p>
               </div>
 
@@ -177,7 +177,7 @@ function ResetPasswordContent() {
                     type="password"
                     value={password}
                     onChange={(e) => handlePasswordChange(e.target.value)}
-                    placeholder="Yeni şifre"
+                    placeholder="New password"
                     required
                     disabled={loading}
                     className="
@@ -233,7 +233,7 @@ function ResetPasswordContent() {
                   type="password"
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
-                  placeholder="Yeni şifre (tekrar)"
+                  placeholder="New password (again)"
                   required
                   disabled={loading}
                   className="
@@ -270,7 +270,7 @@ function ResetPasswordContent() {
                     disabled:opacity-50 disabled:cursor-not-allowed
                   "
                 >
-                  {loading ? "Güncelleniyor..." : "Şifremi Güncelle"}
+                  {loading ? "Updating..." : "Update My Password"}
                 </button>
               </form>
             </>
@@ -286,7 +286,7 @@ export default function ResetPasswordPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#0d0f14] flex items-center justify-center">
-          <div className="text-white">Yükleniyor...</div>
+          <div className="text-white">Loading...</div>
         </div>
       }
     >

@@ -1,27 +1,27 @@
 const steps = [
   {
     number: "1",
-    title: "Platform Bağlantısı",
+    title: "Platform Connection",
     description:
-      "Staking yaptığınız platformları (Binance, Kraken, Coinbase vb.) API ile bağlayın veya manuel olarak pozisyonlarınızı girin.",
+      "Connect your staking platforms (Binance, Kraken, Coinbase, etc.) via API or manually enter your positions.",
   },
   {
     number: "2",
-    title: "Pozisyon Takibi",
+    title: "Position Tracking",
     description:
-      "Tüm stake pozisyonlarınız otomatik olarak pano'a yüklenir. Anlık değerler, rewards ve ROI hesaplamaları gerçek zamanlı güncellenir.",
+      "All your staking positions are automatically loaded to the dashboard. Real-time values, rewards, and ROI calculations are updated in real-time.",
   },
   {
     number: "3",
-    title: "Analiz & İçgörü",
+    title: "Analysis & Insights",
     description:
-      "APR karşılaştırmaları, TradFi comparison ve historical performance raporlarını inceleyerek en iyi stratejileri belirleyin.",
+      "Review APR comparisons, TradFi comparisons, and historical performance reports to identify the best strategies.",
   },
   {
     number: "4",
-    title: "Optimizasyon",
+    title: "Optimization",
     description:
-      "Düşük performanslı stake'leri tespit edin, daha iyi APR fırsatlarını keşfedin ve portföyünüzü optimize edin.",
+      "Identify underperforming stakes, discover better APR opportunities, and optimize your portfolio.",
   },
 ];
 
@@ -30,10 +30,10 @@ export default function StakingHowItWorks() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Nasıl Çalışır?
+          How It Works?
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Staking & Getiri Takibi'ı kullanmaya başlamak için 4 basit adım
+          4 simple steps to start using Staking & Yield Tracking
         </p>
       </div>
 

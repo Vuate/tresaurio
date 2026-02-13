@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-        { error: "Email gerekli" },
+        { error: "Email is required" },
         { status: 400 }
       );
     }
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     // Always return success to prevent email enumeration
     if (!user) {
       return NextResponse.json({
-        message: "Eğer bu email kayıtlıysa, şifre sıfırlama linki gönderildi.",
+        message: "If this email is registered, a password reset link has been sent.",
       });
     }
 
@@ -51,12 +51,12 @@ export async function POST(request: NextRequest) {
     await sendPasswordResetEmail(email, token);
 
     return NextResponse.json({
-      message: "Eğer bu email kayıtlıysa, şifre sıfırlama linki gönderildi.",
+      message: "If this email is registered, a password reset link has been sent.",
     });
   } catch (error) {
     console.error("Forgot password error:", error);
     return NextResponse.json(
-      { error: "Bir hata oluştu" },
+      { error: "An error occurred" },
       { status: 500 }
     );
   }

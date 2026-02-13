@@ -46,8 +46,8 @@ export default function Movers() {
   if (loading) {
     return (
       <div className="p-4 sm:p-5 md:p-6 xl:p-7 2xl:p-8 rounded-xl sm:rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl bg-[#0E121A] border border-white/10 shadow-xl">
-        <h3 className="text-base sm:text-lg xl:text-xl 2xl:text-2xl font-bold mb-3 sm:mb-4 xl:mb-5 2xl:mb-6">En Çok Hareket Edenler</h3>
-        <p className="text-gray-500 text-xs sm:text-sm xl:text-[15px] 2xl:text-base">Yükleniyor...</p>
+        <h3 className="text-base sm:text-lg xl:text-xl 2xl:text-2xl font-bold mb-3 sm:mb-4 xl:mb-5 2xl:mb-6">Top Movers</h3>
+        <p className="text-gray-500 text-xs sm:text-sm xl:text-[15px] 2xl:text-base">Loading...</p>
       </div>
     );
   }
@@ -64,11 +64,9 @@ export default function Movers() {
         transition-all duration-500
       "
     >
-      {/* Glow */}
       <div className="absolute top-0 right-0 w-32 h-32 sm:w-40 sm:h-40 xl:w-48 xl:h-48 2xl:w-56 2xl:h-56 bg-cyan-500/10 blur-3xl rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-32 h-32 sm:w-40 sm:h-40 xl:w-48 xl:h-48 2xl:w-56 2xl:h-56 bg-purple-500/10 blur-3xl rounded-full pointer-events-none" />
 
-      {/* Texture */}
       <div className="
         absolute inset-0 opacity-[0.12]
         bg-[radial-gradient(circle_at_top_left,rgba(0,255,240,0.2),transparent_65%),
@@ -76,9 +74,8 @@ export default function Movers() {
         blur-3xl pointer-events-none
       " />
 
-      {/* Title */}
       <h3 className="text-base sm:text-lg xl:text-xl 2xl:text-2xl font-semibold text-white mb-4 sm:mb-5 md:mb-6 xl:mb-7 2xl:mb-8 relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2.5 xl:gap-3">
-        <span>En Çok Hareket Edenler</span>
+        <span>Top Movers</span>
         <div className="
           px-2.5 sm:px-3 xl:px-3.5 2xl:px-4
           py-0.5 xl:py-1 2xl:py-1
@@ -95,15 +92,14 @@ export default function Movers() {
         </div>
       </h3>
 
-      {/* GRID - Mobilde tek kolon */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-7 md:gap-8 xl:gap-9 2xl:gap-10 relative z-10">
-        <Section title="En Çok Artanlar" color="green">
+        <Section title="Top Gainers" color="green">
           {gainers.map((c, i) => (
             <Row key={i} coin={c} />
           ))}
         </Section>
 
-        <Section title="En Çok Düşenler" color="red">
+        <Section title="Top Losers" color="red">
           {losers.map((c, i) => (
             <Row key={i} coin={c} loser />
           ))}
@@ -142,7 +138,6 @@ function Row({ coin, loser }: any) {
         overflow-hidden
       "
     >
-      {/* Shine */}
       <div
         className="
           absolute inset-0 
@@ -165,7 +160,6 @@ function Row({ coin, loser }: any) {
         </span>
       </div>
 
-      {/* Percentage */}
       <span
         className={`
           relative z-10 

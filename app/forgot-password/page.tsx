@@ -26,12 +26,12 @@ export default function ForgotPasswordPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Bir hata oluştu");
+        setError(data.error || "An error occurred");
       } else {
         setSuccess(true);
       }
     } catch {
-      setError("Bir hata oluştu");
+      setError("An error occurred");
     } finally {
       setLoading(false);
     }
@@ -61,27 +61,27 @@ export default function ForgotPasswordPage() {
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-2">
-                E-postanızı Kontrol Edin
+                Check Your Email
               </h1>
               <p className="text-gray-400 mb-6">
-                Eğer bu email kayıtlıysa, şifre sıfırlama linki gönderildi.
+                If this email is registered, a password reset link has been sent.
               </p>
 
               <Link
                 href="/"
                 className="inline-block w-full bg-white/10 text-white rounded-lg py-3 font-medium hover:bg-white/20 transition"
               >
-                Giriş Sayfasına Dön
+                Back to Login
               </Link>
             </div>
           ) : (
             <>
               <div className="text-center mb-6">
                 <h1 className="text-2xl font-bold text-white mb-2">
-                  Şifremi Unuttum
+                  Forgot Password
                 </h1>
                 <p className="text-gray-400 text-sm">
-                  E-posta adresinizi girin, size şifre sıfırlama linki gönderelim.
+                  Enter your email address and we'll send you a password reset link.
                 </p>
               </div>
 
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="E-posta"
+                  placeholder="Email"
                   required
                   disabled={loading}
                   className="
@@ -127,14 +127,14 @@ export default function ForgotPasswordPage() {
                     disabled:opacity-50 disabled:cursor-not-allowed
                   "
                 >
-                  {loading ? "Gönderiliyor..." : "Şifre Sıfırlama Linki Gönder"}
+                  {loading ? "Sending..." : "Send Password Reset Link"}
                 </button>
 
                 <Link
                   href="/"
                   className="block text-center text-sm text-gray-400 hover:text-white transition"
                 >
-                  Giriş sayfasına dön
+                  Back to login
                 </Link>
               </form>
             </>

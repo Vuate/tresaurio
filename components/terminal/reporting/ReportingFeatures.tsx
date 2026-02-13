@@ -5,37 +5,37 @@ const features = [
     icon: "mdi:database-sync-outline",
     title: "Automatic Data Collection",
     description:
-      "Tüm data otomatik toplanır. Exchange API'leri, blockchain data, news sources bir araya getirilir ve raporunuz hazırlanır.",
+      "All data is collected automatically. Exchange APIs, blockchain data, and news sources are brought together to prepare your report.",
   },
   {
     icon: "mdi:palette-outline",
     title: "Custom Templates",
     description:
-      "Kendi rapor template'inizi oluşturun. Hangi modüllerin dahil olacağını, sıralamayı ve görsel düzeni özelleştirin.",
+      "Create your own report template. Customize which modules to include, their order, and visual layout.",
   },
   {
     icon: "mdi:calendar-clock-outline",
     title: "Scheduled Reports",
     description:
-      "Günlük, haftalık veya aylık otomatik raporlar. Email'e otomatik gönderim veya PDF export desteği.",
+      "Daily, weekly, or monthly automated reports. Automatic email delivery or PDF export support.",
   },
   {
     icon: "mdi:brain",
     title: "AI-Powered Insights",
     description:
-      "Her modülde AI-generated insight'lar. Anomaly detection, trend spotting ve actionable recommendations.",
+      "AI-generated insights in every module. Anomaly detection, trend spotting, and actionable recommendations.",
   },
   {
     icon: "mdi:chart-multiple",
     title: "Visual Charts",
     description:
-      "Her metrik için görsel grafikler. Line charts, bar charts, pie charts ve heatmap'ler otomatik oluşturulur.",
+      "Visual charts for every metric. Line charts, bar charts, pie charts, and heatmaps are automatically generated.",
   },
   {
     icon: "mdi:file-export-outline",
     title: "Export Options",
     description:
-      "PDF, Excel, CSV formatlarında export. Raporlarınızı paylaşın veya arşivleyin.",
+      "Export in PDF, Excel, and CSV formats. Share or archive your reports.",
   },
 ];
 
@@ -44,10 +44,10 @@ export default function ReportingFeatures() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Öne Çıkan Özellikler
+          Key Features
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Raporlama Motoru'i güçlü kılan yetenekler
+          Capabilities that power the Reporting Engine
         </p>
       </div>
 

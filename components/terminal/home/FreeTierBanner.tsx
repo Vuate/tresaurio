@@ -10,12 +10,12 @@ export default function FreeTierBanner() {
           {/* LEFT TEXT */}
           <div className="max-w-2xl">
             <h3 className="text-2xl xl:text-3xl 2xl:text-4xl font-extrabold text-white tracking-wide">
-              Trader (Free) Planını Kullanıyorsunuz
+                You're Using the Trader (Free) Plan
             </h3>
 
             <p className="text-gray-300 text-xs xl:text-sm 2xl:text-[15px] leading-relaxed mt-2 xl:mt-2.5 2xl:mt-3">
-              Gelişmiş piyasa araçları, derin analizler ve risk yönetimi 
-              özellikleri için Pro planına geçiş yapabilirsiniz.
+              Upgrade to the Pro plan for advanced market tools, deep analytics, 
+              and risk management features.
             </p>
           </div>
 
@@ -46,7 +46,7 @@ export default function FreeTierBanner() {
                   group-hover:opacity-70 group-hover:translate-x-[130%]
                 "
               />
-              Pro'ya Yükselt
+              Upgrade to Pro
             </button>
           </div>
         </div>

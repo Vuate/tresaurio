@@ -3,10 +3,10 @@ export default function TradeHowItWorks() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Nasıl Çalışır?
+          How It Works?
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Trade &amp; Portföy Yönetimi&apos;ni kullanmaya başlamak için 4 adım
+          4 steps to start using Trade &amp; Portfolio Management
         </p>
       </div>
 
@@ -18,11 +18,11 @@ export default function TradeHowItWorks() {
             1
           </div>
           <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Borsa Bağlantısı
-          </h3>
+            Exchange Connection
+                      </h3>
           <p className="step-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Kullandığınız borsaları (Binance, OKX, Bybit vs.) API ile bağlayın
-            veya manuel olarak pozisyonlarınızı girin.
+            Connect your exchanges (Binance, OKX, Bybit, etc.) via API
+            or manually enter your positions.
           </p>
         </div>
 
@@ -32,11 +32,11 @@ export default function TradeHowItWorks() {
             2
           </div>
           <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Pozisyon Takibi
+            Position Tracking
           </h3>
           <p className="step-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Tüm spot ve futures pozisyonlarınız otomatik olarak panoya yüklenir.
-            Anlık fiyatlar ve PnL hesaplamaları gerçek zamanlı güncellenir.
+            All your spot and futures positions are automatically loaded to the dashboard.
+            Real-time prices and PnL calculations are updated instantly.
           </p>
         </div>
 
@@ -46,11 +46,11 @@ export default function TradeHowItWorks() {
             3
           </div>
           <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Analiz &amp; İçgörü
+            Analysis &amp; Insights
           </h3>
           <p className="step-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Portföy performansınızı analiz edin. En karlı / zararlı
-            pozisyonlarınızı, risk seviyenizi ve çeşitlendirme durumunuzu görün.
+            Analyze your portfolio performance. View your most profitable / losing
+            positions, risk level, and diversification status.
           </p>
         </div>
 
@@ -60,11 +60,11 @@ export default function TradeHowItWorks() {
             4
           </div>
           <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Optimizasyon
+            Optimization
           </h3>
           <p className="step-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Risk yönetimi önerilerini uygulayın, stop-loss seviyelerini belirleyin
-            ve portföy dağılımınızı optimize edin.
+            Apply risk management recommendations, set stop-loss levels,
+            and optimize your portfolio allocation.
           </p>
         </div>
       </div>

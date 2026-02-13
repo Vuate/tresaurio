@@ -10,11 +10,11 @@ function VerifyEmailContent() {
   const error = searchParams.get("error");
 
   const errorMessages: Record<string, string> = {
-    "missing-token": "Doğrulama linki geçersiz.",
-    "invalid-token": "Doğrulama linki geçersiz veya daha önce kullanılmış.",
-    "expired-token": "Doğrulama linkinin süresi dolmuş. Lütfen yeni bir link isteyin.",
-    "user-not-found": "Kullanıcı bulunamadı.",
-    "server-error": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "missing-token": "Verification link is invalid.",
+    "invalid-token": "Verification link is invalid or has already been used.",
+    "expired-token": "Verification link has expired. Please request a new link.",
+    "user-not-found": "User not found.",
+    "server-error": "An error occurred. Please try again.",
   };
 
   return (
@@ -41,17 +41,17 @@ function VerifyEmailContent() {
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-2">
-                E-posta Doğrulandı!
+                Email Verified!
               </h1>
               <p className="text-gray-400 mb-6">
-                Hesabınız başarıyla aktif edildi. Şimdi giriş yapabilirsiniz.
+                Your account has been successfully activated. You can now log in.
               </p>
 
               <Link
                 href="/"
                 className="inline-block w-full bg-white text-black rounded-lg py-3 font-medium hover:bg-gray-100 transition"
               >
-                Giriş Yap
+                Log In
               </Link>
             </>
           ) : error ? (
@@ -73,10 +73,10 @@ function VerifyEmailContent() {
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-2">
-                Doğrulama Başarısız
+                Verification Failed
               </h1>
               <p className="text-gray-400 mb-6">
-                {errorMessages[error] || "Bir hata oluştu."}
+                {errorMessages[error] || "An error occurred."}
               </p>
 
               <div className="space-y-3">
@@ -84,7 +84,7 @@ function VerifyEmailContent() {
                   href="/"
                   className="inline-block w-full bg-white/10 text-white rounded-lg py-3 font-medium hover:bg-white/20 transition"
                 >
-                  Ana Sayfaya Dön
+                  Back to Home
                 </Link>
               </div>
             </>
@@ -107,17 +107,17 @@ function VerifyEmailContent() {
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-2">
-                E-postanızı Kontrol Edin
+                Check Your Email
               </h1>
               <p className="text-gray-400 mb-6">
-                Hesabınızı aktif etmek için e-postanıza gönderilen doğrulama linkine tıklayın.
+                Click the verification link sent to your email to activate your account.
               </p>
 
               <Link
                 href="/"
                 className="inline-block w-full bg-white/10 text-white rounded-lg py-3 font-medium hover:bg-white/20 transition"
               >
-                Ana Sayfaya Dön
+                Back to Home
               </Link>
             </>
           )}
@@ -132,7 +132,7 @@ export default function VerifyEmailPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#0d0f14] flex items-center justify-center">
-          <div className="text-white">Yükleniyor...</div>
+          <div className="text-white">Loading...</div>
         </div>
       }
     >

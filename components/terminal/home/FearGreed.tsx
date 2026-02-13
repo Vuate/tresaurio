@@ -27,9 +27,9 @@ export default function FearGreed() {
     return (
       <div>
         <h3 className="text-lg xl:text-xl 2xl:text-2xl font-bold text-white mb-2 xl:mb-2.5 2xl:mb-3">
-          Korku & Açgözlülük Endeksi
+              Fear & Greed Index
         </h3>
-        <p className="text-gray-500 text-sm xl:text-[15px] 2xl:text-base">Yükleniyor...</p>
+        <p className="text-gray-500 text-sm xl:text-[15px] 2xl:text-base">Loading...</p>
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function FearGreed() {
 
       {/* TITLE */}
       <h3 className="text-xl xl:text-2xl 2xl:text-[28px] font-bold text-white mb-5 xl:mb-6 2xl:mb-7 mt-4 xl:mt-5 2xl:mt-6 relative z-10">
-        Korku & Açgözlülük Endeksi
+         Fear & Greed Index
       </h3>
 
       {/* FLEX ROW */}
@@ -83,9 +83,8 @@ export default function FearGreed() {
           </p>
 
           <p className="text-gray-400 text-xs xl:text-sm 2xl:text-[15px] max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] leading-relaxed mt-1 xl:mt-1.5 2xl:mt-2">
-            Endeks şu anda yatırımcı hissiyatını{" "}
+                 The index currently shows investor sentiment as{" "}
             <span className="font-semibold">{status.toLowerCase()}</span>{" "}
-            olarak gösteriyor.
           </p>
         </div>
       </div>
