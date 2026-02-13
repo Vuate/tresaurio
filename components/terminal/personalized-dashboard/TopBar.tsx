@@ -217,11 +217,11 @@ onClick={(e) => {
     </p>
     <div className="flex gap-1.5 sm:gap-2">
 <button
-  onClick={(e) => {
+  onClick={async (e) => {
     e.stopPropagation();
-    resetDashboard();
+    await resetDashboard();
     setConfirmReset(false);
-    window.location.reload();
+    notify({ type: "success", title: "Dashboard Reset", description: "Dashboard has been reset to default." });
   }}
   className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer"
 >
