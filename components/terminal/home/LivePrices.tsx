@@ -60,7 +60,7 @@ export default function LivePrices() {
     const update = () => {
       const now = new Date();
       setTime(
-        now.toLocaleString("tr-TR", {
+        now.toLocaleString("en-EN", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
@@ -120,7 +120,7 @@ export default function LivePrices() {
   }, []);
 
   if (loading)
-    return <p className="text-center text-gray-400 py-8 xl:py-10 2xl:py-12">Yükleniyor...</p>;
+    return <p className="text-center text-gray-400 py-8 xl:py-10 2xl:py-12">Loading...</p>;
 
   return (
     <div className="w-full mt-60 xl:mt-62 2xl:mt-64">

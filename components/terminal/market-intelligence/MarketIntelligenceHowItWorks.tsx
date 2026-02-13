@@ -3,19 +3,19 @@ const steps = [
     number: "1",
     title: "Data Collection",
     description:
-      "Real-time orderbook data, fee schedules, funding rates ve historical spreads toplanır. Tüm exchange'lerden aynı anda veri çekilir.",
+      "Real-time orderbook data, fee schedules, funding rates, and historical spreads are collected. Data is pulled from all exchanges simultaneously.",
   },
   {
     number: "2",
     title: "Cost Calculation",
     description:
-      "Order size'ınız için all-in cost hesaplanır. Fee + spread + slippage + funding component'leri bir araya getirilerek gerçek maliyet bulunur.",
+      "All-in cost is calculated for your order size. Fee + spread + slippage + funding components are combined to find the real cost.",
   },
   {
     number: "3",
     title: "Optimization",
     description:
-      "En ucuz exchange tespit edilir, VIP tier upgrade ROI hesaplanır ve execution strategy önerileri sunulur. Annual savings projection gösterilir.",
+      "The cheapest exchange is identified, VIP tier upgrade ROI is calculated, and execution strategy recommendations are provided. Annual savings projection is displayed.",
   },
 ];
 
@@ -24,10 +24,10 @@ export default function MarketIntelligenceHowItWorks() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Nasıl Çalışır?
+          How It Works?
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Market Microstructure analizi yapmak için 3 adım
+          3 steps to perform Market Microstructure analysis
         </p>
       </div>
 

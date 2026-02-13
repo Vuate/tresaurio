@@ -1,4 +1,3 @@
-// store/orderBookStore.ts
 import { create } from "zustand";
 
 type SideRow = { price: number; qty: number; total: number };

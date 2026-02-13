@@ -14,7 +14,7 @@ export default function Header() {
     const update = () => {
       const now = new Date();
       setTime(
-        now.toLocaleString("tr-TR", {
+        now.toLocaleString("en-EN", {
           year: "numeric",
           month: "long",
           day: "numeric",

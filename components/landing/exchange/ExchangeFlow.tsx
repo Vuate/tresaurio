@@ -46,7 +46,6 @@ export default function ExchangeFlow() {
           const coin = data.find((c: any) => c.symbol === ex.symbol);
           const change = coin ? Number(coin.priceChangePercent) : 0;
 
-          // 🔑 MİKRO SAPMA (aynı symbol'lerin birebir aynı görünmemesi için)
           const randomFactor = 1 + (Math.random() - 0.5) * 0.2;
 
           return {

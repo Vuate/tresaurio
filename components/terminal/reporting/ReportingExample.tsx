@@ -12,10 +12,10 @@ export default function ReportingExample() {
     <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Örnek Rapor Görünümü
+          Sample Report View
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Daily Performance Report örneği
+          Daily Performance Report example
         </p>
       </div>
 
@@ -25,8 +25,8 @@ export default function ReportingExample() {
             <div>
               <div className="text-base sm:text-lg lg:text-xl font-bold">Daily Performance Report</div>
               <div className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">
-                28 Aralık 2024 - 10:30 AM
-              </div>
+                December 28, 2024 - 10:30 AM
+                </div>
             </div>
           </div>
 

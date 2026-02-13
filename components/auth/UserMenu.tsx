@@ -66,7 +66,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
   const menuItems = [
     {
       icon: User,
-      label: "Profil",
+      label: "Profile",
       onClick: () => {
         router.push("/profile");
         setOpen(false);
@@ -74,7 +74,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
     },
     {
       icon: Wallet,
-      label: "Bakiye",
+      label: "Balance",
       onClick: () => {
         router.push("/billing");
         setOpen(false);
@@ -83,7 +83,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
     },
     {
       icon: History,
-      label: "Son Emirler",
+      label: "Recent Orders",
       onClick: () => {
         router.push("/orders");
         setOpen(false);
@@ -91,7 +91,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
     },
     {
       icon: Settings,
-      label: "Ayarlar",
+      label: "Settings",
       onClick: () => {
         router.push("/settings");
         setOpen(false);
@@ -120,7 +120,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
           )}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-white truncate">
-              {user.name || "Kullanıcı"}
+              {user.name || "User"}
             </p>
             <p className="text-xs text-gray-400 truncate">{user.email}</p>
           </div>
@@ -153,7 +153,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 border border-red-500/30 hover:border-red-500/50 transition-all"
         >
           <LogOut className="w-4 h-4 flex-shrink-0" />
-          <span>Çıkış Yap</span>
+          <span>Log Out</span>
         </button>
       </div>
     );
@@ -275,7 +275,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
                   font-semibold text-white truncate
                   ${compact ? "text-xs sm:text-sm" : "text-sm"}
                 `}>
-                  {user.name || "Kullanıcı"}
+                  {user.name || "User"}
                 </p>
                 <p className={`
                   text-gray-500 truncate
@@ -353,7 +353,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
                   ${compact ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"}
                 `} 
               />
-              <span className="font-medium">Çıkış Yap</span>
+              <span className="font-medium">Log Out</span>
             </button>
           </div>
         </div>

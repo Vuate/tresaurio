@@ -3,9 +3,9 @@ import { Icon } from "@iconify/react";
 const features = [
   {
     icon: "mdi:calculator-variant-outline",
-    title: "Toplam Maliyet Hesaplayıcı",
+     title: "Total Cost Calculator",
     description:
-      "Bir trade'in gerçek maliyetini hesaplayın. Fee + Spread + Slippage + Funding'i tek bir percentage'da toplayın.",
+      "Calculate the real cost of a trade. Combine Fee + Spread + Slippage + Funding into a single percentage.",
     items: [
       "Maker/taker fee calculation",
       "Bid-ask spread measurement",
@@ -15,9 +15,9 @@ const features = [
   },
   {
     icon: "mdi:compare-horizontal",
-    title: "Borsa Karşılaştırma",
+  title: "Exchange Comparison",
     description:
-      "Aynı trade'i farklı exchange'lerde yapmak ne kadara mal olur? Binance vs OKX vs Bybit vs Kraken karşılaştırması.",
+      "How much does the same trade cost on different exchanges? Compare Binance vs OKX vs Bybit vs Kraken.",
     items: [
       "Side-by-side cost comparison",
       "Best/worst exchange highlighting",
@@ -29,7 +29,7 @@ const features = [
     icon: "mdi:percent-outline",
     title: "Fee Structure Analysis",
     description:
-      "Exchange fee yapılarını detaylı inceleyin. VIP tier'lar, discount token'lar (BNB, OKB) ve volume-based rebate'leri hesaplayın.",
+      "Analyze exchange fee structures in detail. Calculate VIP tiers, discount tokens (BNB, OKB), and volume-based rebates.",
     items: [
       "VIP tier fee schedules",
       "Discount token (BNB/OKB) impact",
@@ -41,7 +41,7 @@ const features = [
     icon: "mdi:arrow-expand-horizontal",
     title: "Spread & Slippage",
     description:
-      "Bid-ask spread'i ve farklı order size'larda slippage'ı ölçün. $10K, $100K, $1M trade için gerçek maliyeti görün.",
+      "Measure bid-ask spread and slippage at different order sizes. See the real cost for $10K, $100K, $1M trades.",
     items: [
       "Real-time spread monitoring",
       "Slippage by order size",
@@ -53,7 +53,7 @@ const features = [
     icon: "mdi:flash-outline",
     title: "Funding Rate Tracking",
     description:
-      "Perpetual futures için funding rate'leri takip edin. Pozitif/negatif funding'in trade maliyetine etkisini hesaplayın.",
+      "Track funding rates for perpetual futures. Calculate the impact of positive/negative funding on trade costs.",
     items: [
       "8-hour funding rate tracking",
       "Cumulative funding cost",
@@ -63,9 +63,9 @@ const features = [
   },
   {
     icon: "mdi:speedometer",
-    title: "Piyasa Verimliliği Score",
+    title: "Market Efficiency Score",
     description:
-      "Her exchange'in ve coin pair'in market efficiency score'unu hesaplayın (0-100). Liquidity, spread, execution quality'i tek bir metric'te toplayın.",
+      "Calculate the market efficiency score (0-100) for each exchange and coin pair. Combine liquidity, spread, and execution quality into a single metric.",
     items: [
       "Composite efficiency score (0-100)",
       "Liquidity rating",
@@ -81,10 +81,10 @@ export default function MarketIntelligenceFeatures() {
       {/* Section Header */}
       <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
         <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
-          Ana Özellikler
+          Key Features
         </h2>
         <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
-          Trading maliyetlerinizi mikroskop altına alın ve optimize edin
+          Put your trading costs under the microscope and optimize them
         </p>
       </div>
 
