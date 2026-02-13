@@ -25,6 +25,7 @@ model User {
   sessions      Session[]
   apiKeys       ApiKey[]
   dashboard     UserDashboard?
+  templates     DashboardTemplate[]
 }
 
 model Account {
@@ -158,5 +159,20 @@ model UserDashboard {
   layout    Json     // Modül pozisyonları, boyutları, ayarları
   updatedAt DateTime @updatedAt
 
+  @@index([userId])
+}
+
+// Saved dashboard templates
+model DashboardTemplate {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  layout    Json     // { modules, zoom, panX, panY }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
   @@index([userId])
 }

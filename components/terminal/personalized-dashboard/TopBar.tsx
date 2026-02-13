@@ -11,8 +11,10 @@ export default function TopBar() {
   const topBarRef = useRef<HTMLDivElement>(null);
   const toggleAddTool = usePersonalizedDashboardStore((s) => s.toggleAddTool);
   const toggleSidebar = usePersonalizedDashboardStore((s) => s.toggleSidebar);
+  const toggleTemplates = usePersonalizedDashboardStore((s) => s.toggleTemplates);
   const sidebarOpen = usePersonalizedDashboardStore((s) => s.sidebarOpen);
   const addToolOpen = usePersonalizedDashboardStore((s) => s.addToolOpen);
+  const templatesOpen = usePersonalizedDashboardStore((s) => s.templatesOpen);
   const setTopBarHeight = usePersonalizedDashboardStore((s) => s.setTopBarHeight);
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -110,6 +112,25 @@ export default function TopBar() {
               }`}
           >
             + Add Tool
+          </button>
+
+          <button
+            onClick={toggleTemplates}
+            className={`px-2 sm:px-2.5 md:px-3 lg:px-4
+              py-1 sm:py-1 md:py-1.5
+              rounded-lg
+              border
+              text-[9px] sm:text-[10px] md:text-xs lg:text-sm
+              font-semibold
+              transition cursor-pointer
+              whitespace-nowrap
+              ${
+                templatesOpen
+                  ? "bg-teal-400/20 border-teal-400/40 text-teal-300"
+                  : "bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10"
+              }`}
+          >
+            Templates
           </button>
         </div>
       </div>
