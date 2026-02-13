@@ -1,6 +1,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useNews } from "@/hooks/useNews";
+import { RefreshCw, Settings } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -104,149 +105,149 @@ export default function NewsModule({ instanceId }: Props) {
           {loading && (
             <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
           )}
-          <button
-            onClick={refresh}
-            className="h-7 px-3 rounded-md bg-[#0b1f1f] border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors text-xs cursor-pointer"
-            title="Refresh"
-          >
-            🔄
+<button
+  onClick={refresh}
+  className="h-7 px-3 rounded-md bg-[#0b1f1f] border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors cursor-pointer flex items-center justify-center"
+  title="Refresh"
+>
+    <RefreshCw className="w-3.5 h-3.5" />
           </button>
           <div ref={settingsRef} className="relative">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="h-7 px-3 rounded-md bg-[#0b1f1f] border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors text-xs cursor-pointer"
-              title="Settings"
-            >
-              ⚙️
+<button
+  onClick={() => setShowSettings(!showSettings)}
+  className="h-7 px-3 rounded-md bg-[#0b1f1f] border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors cursor-pointer flex items-center justify-center"
+  title="Settings"
+>
+             <Settings className="w-3.5 h-3.5" />
             </button>
 
-            {showSettings && (
-              <div
-                onWheel={(e) => e.stopPropagation()}
+{showSettings && (
+  <div
+    onWheel={(e) => e.stopPropagation()}
+    className="
+      absolute right-0 mt-1 z-50
+      w-[180px]
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded
+      shadow-lg
+      p-2
+      space-y-2
+      animate-in fade-in slide-in-from-top-2 duration-200
+    "
+  >
+    <div>
+      <label className="text-white/50 mb-1 block font-medium text-[9px]">
+        Category
+      </label>
+      
+      {/* Custom Dropdown - LivePrices Style */}
+      <div ref={categoryRef} className="relative">
+        <button
+          onClick={() => setCategoryOpen((v) => !v)}
+          className="
+            w-full h-7 px-2 rounded-md
+            bg-[#0b1f1f]
+            border border-white/10
+            text-white text-[11px]
+            flex items-center justify-between
+            cursor-pointer
+            hover:bg-white/5
+            transition-all
+          "
+        >
+          <span>{selectedCategory?.name || "All News"}</span>
+          <span
+            className={`
+              text-white/50 text-[9px]
+              transition-transform duration-200
+              ${categoryOpen ? "rotate-180" : ""}
+            `}
+          >
+            ▾
+          </span>
+        </button>
+
+{categoryOpen && (
+  <div
+    onWheel={(e) => e.stopPropagation()}
+    className="
+      absolute left-0 mt-1 z-50
+      w-full
+      max-h-[140px]
+      overflow-y-auto
+      bg-[#0b1f1f]
+      border border-emerald-500/20
+      rounded
+      shadow-lg
+      animate-in fade-in slide-in-from-top-2 duration-200
+
+      [&::-webkit-scrollbar]:w-1
+      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-transparent
+    "
+  >
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  updateSettings({ category: cat.id });
+                  setCategoryOpen(false);
+                }}
                 className="
-                  absolute right-0 mt-1 z-50
-                  w-[240px]
-                  bg-[#0b1f1f]
-                  border border-emerald-500/20
-                  rounded-md
-                  shadow-lg
-                  p-3
-                  space-y-3
-                  animate-in fade-in slide-in-from-top-2 duration-200
+                  w-full px-2 py-1.5
+                  text-left text-[11px]
+                  bg-transparent cursor-pointer
+                  text-white
+                  transition-colors
+                  hover:bg-emerald-500/10
+                  hover:text-emerald-400
                 "
               >
-                <div>
-                  <label className="text-white/50 mb-1.5 block font-medium text-[10px]">
-                    Category
-                  </label>
-                  
-                  {/* Custom Dropdown - LivePrices Style */}
-                  <div ref={categoryRef} className="relative">
-                    <button
-                      onClick={() => setCategoryOpen((v) => !v)}
-                      className="
-                        w-full h-9 px-3 rounded-md
-                        bg-[#0b1f1f]
-                        border border-white/10
-                        text-white text-xs
-                        flex items-center justify-between
-                        cursor-pointer
-                        hover:bg-white/5
-                        transition-all
-                      "
-                    >
-                      <span>{selectedCategory?.name || "All News"}</span>
-                      <span
-                        className={`
-                          text-white/50 text-[10px]
-                          transition-transform duration-200
-                          ${categoryOpen ? "rotate-180" : ""}
-                        `}
-                      >
-                        ▾
-                      </span>
-                    </button>
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
 
-                    {categoryOpen && (
-                      <div
-                        onWheel={(e) => e.stopPropagation()}
-                        className="
-                          absolute left-0 mt-1 z-50
-                          w-full
-                          max-h-[200px]
-                          overflow-y-auto
-                          bg-[#0b1f1f]
-                          border border-emerald-500/20
-                          rounded-md
-                          shadow-lg
-                          animate-in fade-in slide-in-from-top-2 duration-200
-
-                          [&::-webkit-scrollbar]:w-1.5
-                          [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                          [&::-webkit-scrollbar-thumb]:rounded-full
-                          [&::-webkit-scrollbar-track]:bg-transparent
-                        "
-                      >
-                        {CATEGORIES.map((cat) => (
-                          <button
-                            key={cat.id}
-                            onClick={() => {
-                              updateSettings({ category: cat.id });
-                              setCategoryOpen(false);
-                            }}
-                            className="
-                              w-full px-3 py-2
-                              text-left text-xs
-                              bg-transparent cursor-pointer
-                              text-white
-                              transition-colors
-                              hover:bg-emerald-500/10
-                              hover:text-emerald-400
-                            "
-                          >
-                            {cat.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-white/50 mb-1.5 block font-medium text-[10px]">
-                    Items: {settings.limit}
-                  </label>
-                  <input
-                    type="range"
-                    min="5"
-                    max="50"
-                    step="5"
-                    value={settings.limit}
-                    onChange={(e) =>
-                      updateSettings({ limit: parseInt(e.target.value) })
-                    }
-                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer
-                      [&::-webkit-slider-thumb]:appearance-none
-                      [&::-webkit-slider-thumb]:w-3
-                      [&::-webkit-slider-thumb]:h-3
-                      [&::-webkit-slider-thumb]:rounded-full
-                      [&::-webkit-slider-thumb]:bg-emerald-500
-                      [&::-webkit-slider-thumb]:cursor-pointer
-                      [&::-moz-range-thumb]:w-3
-                      [&::-moz-range-thumb]:h-3
-                      [&::-moz-range-thumb]:rounded-full
-                      [&::-moz-range-thumb]:bg-emerald-500
-                      [&::-moz-range-thumb]:cursor-pointer
-                      [&::-moz-range-thumb]:border-0
-                    "
-                  />
-                  <div className="flex justify-between text-[9px] text-white/40 mt-1">
-                    <span>5</span>
-                    <span>50</span>
-                  </div>
-                </div>
-              </div>
-            )}
+    <div>
+      <label className="text-white/50 mb-1 block font-medium text-[9px]">
+        Items: {settings.limit}
+      </label>
+      <input
+        type="range"
+        min="5"
+        max="50"
+        step="5"
+        value={settings.limit}
+        onChange={(e) =>
+          updateSettings({ limit: parseInt(e.target.value) })
+        }
+        className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer
+          [&::-webkit-slider-thumb]:appearance-none
+          [&::-webkit-slider-thumb]:w-2.5
+          [&::-webkit-slider-thumb]:h-2.5
+          [&::-webkit-slider-thumb]:rounded-full
+          [&::-webkit-slider-thumb]:bg-emerald-500
+          [&::-webkit-slider-thumb]:cursor-pointer
+          [&::-moz-range-thumb]:w-2.5
+          [&::-moz-range-thumb]:h-2.5
+          [&::-moz-range-thumb]:rounded-full
+          [&::-moz-range-thumb]:bg-emerald-500
+          [&::-moz-range-thumb]:cursor-pointer
+          [&::-moz-range-thumb]:border-0
+        "
+      />
+      <div className="flex justify-between text-[8px] text-white/40 mt-0.5">
+        <span>5</span>
+        <span>50</span>
+      </div>
+    </div>
+  </div>
+)}
           </div>
         </div>
       </div>
@@ -343,11 +344,6 @@ export default function NewsModule({ instanceId }: Props) {
         </div>
       </div>
 
-      <div className="flex-shrink-0 px-3 py-2 border-t border-white/10 bg-white/5 text-center">
-        <span className="text-[10px] text-white/40">
-          Auto-refresh every 2 minutes
-        </span>
-      </div>
     </div>
   );
 }
