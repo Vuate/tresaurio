@@ -142,31 +142,31 @@ export default function NewsModule({ instanceId }: Props) {
       </label>
       
       {/* Custom Dropdown - LivePrices Style */}
-      <div ref={categoryRef} className="relative">
-        <button
-          onClick={() => setCategoryOpen((v) => !v)}
-          className="
-            w-full h-7 px-2 rounded-md
-            bg-[#0b1f1f]
-            border border-white/10
-            text-white text-[11px]
-            flex items-center justify-between
-            cursor-pointer
-            hover:bg-white/5
-            transition-all
-          "
-        >
-          <span>{selectedCategory?.name || "All News"}</span>
-          <span
-            className={`
-              text-white/50 text-[9px]
-              transition-transform duration-200
-              ${categoryOpen ? "rotate-180" : ""}
-            `}
-          >
-            ▾
-          </span>
-        </button>
+<div ref={categoryRef} className="relative">
+  <button
+    onClick={() => setCategoryOpen((v) => !v)}
+    className="
+      w-full h-7 px-2 rounded
+      bg-[#0b1f1f]
+      border border-white/10
+      text-white text-[11px]
+      flex items-center justify-between
+      cursor-pointer
+      hover:bg-white/5
+      transition-all
+    "
+  >
+    <span>{selectedCategory?.name || "All News"}</span>
+    <span
+      className={`
+        text-white/50 text-[9px]
+        transition-transform duration-200
+        ${categoryOpen ? "rotate-180" : ""}
+      `}
+    >
+      ▾
+    </span>
+  </button>
 
 {categoryOpen && (
   <div
