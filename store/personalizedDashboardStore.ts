@@ -82,13 +82,11 @@ type Actions = {
   setUIBlocked: (v: boolean) => void;
   resetDashboard: () => Promise<void>;
 
-  // DB sync
   _hydrated: boolean;
   setHydrated: (v: boolean) => void;
   loadFromDB: () => Promise<void>;
   saveToDB: () => Promise<void>;
 
-  // Templates
   fetchTemplates: () => Promise<void>;
   saveTemplate: (name: string) => Promise<void>;
   loadTemplate: (id: string) => Promise<void>;
@@ -96,7 +94,6 @@ type Actions = {
   closeAllPanels: () => void;
 };
 
-// Debounce helper for DB saves
 let saveTimeout: NodeJS.Timeout | null = null;
 function debouncedSaveToDB() {
   if (saveTimeout) clearTimeout(saveTimeout);
@@ -114,7 +111,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
     panX: 0,
     panY: 0,
 
-    notesOpen: true,
+    notesOpen: false,
     notes: [],
     notesHeight: 260,
 
@@ -145,39 +142,42 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
 
 
     setUIBlocked: (v) => set({ uiBlocked: v }),
-        resetDashboard: async () => {
-    const { topBarHeight, notesBarHeight } = get();
-    const viewportW = window.innerWidth;
-    const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
-    const minZoom = calculateMinZoom(viewportW, viewportH);
-    const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
-    const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
-      set({
-        modules: [],
-        lockedModules: new Set(),
-        notes: [],
-        alerts: [],
-        zoom: minZoom,
-        panX: centerPanX,
-        panY: centerPanY,
-        activeModuleId: null,
-      });
-      // DB'yi de temizle
-      try {
-        await fetch("/api/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+resetDashboard: async () => {
+  const { topBarHeight, notesBarHeight } = get();
+  
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+  const minZoom = calculateMinZoom(viewportW, viewportH);
+  const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
+  const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+    set({
+      modules: [],
+      lockedModules: new Set(),
+      notes: [],
+      alerts: [],
+      zoom: minZoom,
+      panX: centerPanX,
+      panY: centerPanY,
+      activeModuleId: null,
+    });
+    try {
+      await fetch("/api/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          layout: {
             modules: [],
             notes: [],
             alerts: [],
             zoom: minZoom,
             panX: centerPanX,
             panY: centerPanY,
-          }),
-        });
-      } catch {}
-    },
+            lockedModules: [],
+          },
+        }),
+      });
+    } catch {}
+  },
     _hydrated: false,
     setHydrated: (v) => set({ _hydrated: v }),
 
