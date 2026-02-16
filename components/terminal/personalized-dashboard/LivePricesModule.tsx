@@ -164,14 +164,13 @@ export default function LivePricesModule({
         stream,
         (data) => {
           try {
-            const symbolData = data.s || data.data?.s;
             const price = parseFloat(data.c || data.data?.c || 0);
             const change24h = parseFloat(data.P || data.data?.P || 0);
 
-            if (symbolData && price > 0) {
+            if (price > 0) {
               setPrices((prev) => ({
                 ...prev,
-                [symbolData]: {
+                [symbol]: {
                   price,
                   change24h,
                   lastUpdate: Date.now(),
