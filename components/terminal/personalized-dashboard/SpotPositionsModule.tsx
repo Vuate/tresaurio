@@ -253,60 +253,73 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
       const balances: SpotBalance[] = data.data;
 
-      const pricePromises = balances
-        .filter((b) => b.total > 0)
-        .map(async (balance) => {
+      const filteredBalances = balances.filter(
+        (b) => b.total > 0 && b.asset !== "USDT" && b.asset !== "USDC"
+      );
+
+      // Fetch current prices and avg entry prices in parallel
+      const enrichedData = await Promise.all(
+        filteredBalances.map(async (balance) => {
           const symbol = `${balance.asset}USDT`;
+          let currentPrice = 0;
+          let avgEntryPrice: number | null = null;
+
+          // Current price
           try {
             const priceRes = await fetch(
-              `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`,
+              `/api/v2/binance/price?symbol=${symbol}`,
             );
             if (priceRes.ok) {
               const priceData = await priceRes.json();
-              return {
-                asset: balance.asset,
-                price: parseFloat(priceData.price),
-              };
+              if (priceData.success) {
+                currentPrice = parseFloat(priceData.price || 0);
+              }
             }
-          } catch {
-            // Ignore price fetch errors
-          }
-          return { asset: balance.asset, price: 0 };
-        });
+          } catch {}
 
-      const pricesData = await Promise.all(pricePromises);
-      const priceMap = Object.fromEntries(
-        pricesData.map((p) => [p.asset, p.price]),
+          // Avg entry price from trade history
+          try {
+            const avgRes = await fetch(
+              `/api/exchange/avg-entry?exchange=${selectedExchange}&symbol=${symbol}`,
+            );
+            if (avgRes.ok) {
+              const avgData = await avgRes.json();
+              if (avgData.success && avgData.avgEntryPrice) {
+                avgEntryPrice = avgData.avgEntryPrice;
+              }
+            }
+          } catch {}
+
+          return { balance, currentPrice, avgEntryPrice };
+        })
       );
 
-      balances
-        .filter((b) => b.total > 0 && b.asset !== "USDT" && b.asset !== "USDC")
-        .forEach((balance) => {
-          const price = priceMap[balance.asset] || 0;
-          const existingPosition = spotPositions.find(
-            (p) =>
-              p.exchange === selectedExchange && p.baseAsset === balance.asset,
-          );
+      for (const { balance, currentPrice, avgEntryPrice } of enrichedData) {
+        const existingPosition = spotPositions.find(
+          (p) =>
+            p.exchange === selectedExchange && p.baseAsset === balance.asset,
+        );
 
-          if (!existingPosition && price > 0) {
-            addSpotPosition({
-              exchange: selectedExchange,
-              baseAsset: balance.asset,
-              quoteAsset: "USDT",
-              pair: `${balance.asset}/USDT`,
-              formattedPair:
-                EXCHANGE_FORMATS[selectedExchange]?.(balance.asset, "USDT") ||
-                `${balance.asset}USDT`,
-              symbol: `${balance.asset}USDT`,
-              quantity: balance.total,
-              entryPrice: price,
-              currentPrice: price,
-              totalCost: price * balance.total,
-              entryDate: new Date().toISOString().split("T")[0],
-              notes: "Synced from exchange",
-            });
-          }
-        });
+        if (!existingPosition && currentPrice > 0) {
+          const entryPrice = avgEntryPrice ?? currentPrice;
+          addSpotPosition({
+            exchange: selectedExchange,
+            baseAsset: balance.asset,
+            quoteAsset: "USDT",
+            pair: `${balance.asset}/USDT`,
+            formattedPair:
+              EXCHANGE_FORMATS[selectedExchange]?.(balance.asset, "USDT") ||
+              `${balance.asset}USDT`,
+            symbol: `${balance.asset}USDT`,
+            quantity: balance.total,
+            entryPrice,
+            currentPrice,
+            totalCost: entryPrice * balance.total,
+            entryDate: new Date().toISOString().split("T")[0],
+            notes: "Synced from exchange",
+          });
+        }
+      }
 
       setLastSync(new Date());
     } catch (error) {

@@ -128,6 +128,39 @@ async function getBinanceSpotBalances(credentials: {
     }));
 }
 
+async function getBinanceAvgEntryPrice(
+  credentials: { apiKey: string; apiSecret: string },
+  symbol: string
+): Promise<number | null> {
+  try {
+    const trades = (await binanceRequest(
+      "/api/v3/myTrades",
+      "GET",
+      { symbol, limit: 1000 },
+      credentials,
+    )) as { price: string; qty: string; quoteQty: string; isBuyer: boolean; time: number }[];
+
+    if (!trades || trades.length === 0) return null;
+
+    // Calculate weighted average from BUY trades only
+    let totalBuyQty = 0;
+    let totalBuyCost = 0;
+
+    for (const trade of trades) {
+      if (trade.isBuyer) {
+        totalBuyQty += parseFloat(trade.qty);
+        totalBuyCost += parseFloat(trade.quoteQty);
+      }
+    }
+
+    if (totalBuyQty <= 0) return null;
+    return totalBuyCost / totalBuyQty;
+  } catch (error) {
+    console.error(`[Binance] Failed to get avg entry for ${symbol}:`, error);
+    return null;
+  }
+}
+
 async function getBinanceFuturesPositions(credentials: {
   apiKey: string;
   apiSecret: string;
@@ -606,4 +639,24 @@ export async function hasApiKey(
 ): Promise<boolean> {
   const credentials = await getDecryptedApiKey(userId, exchange);
   return credentials !== null;
+}
+
+/**
+ * Get average entry price for a symbol from trade history
+ */
+export async function getAvgEntryPrice(
+  userId: string,
+  exchange: Exchange,
+  symbol: string,
+  label?: string,
+): Promise<number | null> {
+  const credentials = await getDecryptedApiKey(userId, exchange, label);
+  if (!credentials) return null;
+
+  switch (exchange) {
+    case "binance":
+      return getBinanceAvgEntryPrice(credentials, symbol);
+    default:
+      return null;
+  }
 }
