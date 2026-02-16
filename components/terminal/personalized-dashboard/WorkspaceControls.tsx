@@ -26,6 +26,7 @@ export default function WorkspaceControls() {
     activeModuleId,
     topBarHeight, 
     notesBarHeight,
+    uiBlocked,
   } = usePersonalizedDashboardStore();
 
   const [sizes, setSizes] = useState(getResponsiveSize());
@@ -66,7 +67,8 @@ export default function WorkspaceControls() {
     }
   }, [mapOpen]);
 
-  const handleZoom = (delta: number) => {
+const handleZoom = (delta: number) => {
+    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
     const minZoom = calculateMinZoom(viewport.w, viewport.h);
     const newZoom = Math.max(minZoom, Math.min(MAX_ZOOM, zoom + delta));
     
@@ -97,8 +99,10 @@ export default function WorkspaceControls() {
     setZoom(newZoom);
   };
 
-  const alignToActiveWindow = () => {
+const alignToActiveWindow = () => {
+    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
     const active = modules.find(m => m.id === activeModuleId);
+
     if (!active) return;
 
     let newPanX = viewport.w / 2 - (active.x + active.width / 2) * zoom;
@@ -124,6 +128,7 @@ export default function WorkspaceControls() {
   };
 
 const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  if (usePersonalizedDashboardStore.getState().uiBlocked) return;
   const rect = e.currentTarget.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top; 
@@ -167,11 +172,11 @@ const viewportH = (viewport.h / zoom) * actualMapScaleY;
 const bottomOffset = notesBarHeight + (window.innerWidth >= 1536 ? 24 : window.innerWidth >= 1280 ? 20 : 16);
 
   return (
-    <div
-className="fixed right-3 xl:right-4 2xl:right-6 z-50"
+<div
+className={`fixed right-3 xl:right-4 2xl:right-6 z-50 ${uiBlocked ? "pointer-events-none" : ""}`}
       style={{ bottom: bottomOffset }}
-      onMouseEnter={() => setMapOpen(true)}
-      onMouseLeave={() => setMapOpen(false)}
+        onMouseEnter={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; setMapOpen(true); }}
+        onMouseLeave={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; setMapOpen(false); }}
     >
 <div className="flex items-end gap-4 xl:gap-5 2xl:gap-6">
 <div
@@ -261,7 +266,7 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
 className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
           onMouseDown={(e) => e.preventDefault()}
         >
-       <ZoomBtn onClick={() => handleZoom(0.1)} size={sizes.buttonSize}>+</ZoomBtn>
+<ZoomBtn onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; handleZoom(0.1); }} size={sizes.buttonSize}>+</ZoomBtn>
 
 <div
   className="rounded-lg bg-[#031A1C]/95 border border-white/10 text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-teal-400 flex items-center justify-center select-none pointer-events-none cursor-default"
@@ -273,8 +278,8 @@ className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
             {Math.round(zoom * 100)}%
           </div>
 
-<ZoomBtn onClick={() => handleZoom(-0.1)} size={sizes.buttonSize}>−</ZoomBtn>
-<ZoomBtn onClick={alignToActiveWindow} size={sizes.buttonSize}>◎</ZoomBtn>
+<ZoomBtn onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; handleZoom(-0.1); }} size={sizes.buttonSize}>−</ZoomBtn>
+<ZoomBtn onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; alignToActiveWindow(); }} size={sizes.buttonSize}>◎</ZoomBtn>
         </div>
       </div>
     </div>

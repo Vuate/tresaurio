@@ -91,7 +91,8 @@ export default function AddToolPanel() {
     return acc;
   }, {} as Record<ModuleCategory, ModuleDefinition[]>);
 
-  const addAtCurrentView = (type: string) => {
+const addAtCurrentView = (type: string) => {
+    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
     const viewportCenterX = window.innerWidth / 2;
     const viewportCenterY = window.innerHeight / 2;
 

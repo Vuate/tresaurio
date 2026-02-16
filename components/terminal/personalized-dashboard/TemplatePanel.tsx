@@ -138,7 +138,7 @@ const confirmLoadTemplate = async (id: string) => {
 const handleSave = async () => {
   if (!templateName.trim() || saving || !hasModules) return;
 
-  const existing = templates.find(
+const existing = templates.find(
     (t) => t.name.toLowerCase() === templateName.trim().toLowerCase()
   );
   if (existing && !confirmOverwrite) {
@@ -148,7 +148,10 @@ const handleSave = async () => {
     return;
   }
 
+  if (confirmOverwrite) return;
+
   await confirmSaveTemplate();
+
 };
 
 const handleLoad = async (id: string) => {

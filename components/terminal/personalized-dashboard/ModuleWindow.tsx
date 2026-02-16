@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback, useMemo } from "react";
-import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { ZoomIn, ZoomOut, RotateCcw, ArrowLeftRight } from "lucide-react";
 import { Lock, Unlock } from "lucide-react";
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
@@ -44,6 +44,9 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     notesBarHeight,  
     toggleModuleLock,
     lockedModules,
+    swapSourceId,
+    setSwapSource,
+    swapModules,
   } = usePersonalizedDashboardStore();
 
     const isLocked = lockedModules.has(module.id);
@@ -74,8 +77,8 @@ export default function ModuleWindow({ module }: { module: ModuleInstance }) {
     [updateModule]
   );
 
-  const onDragMouseDown = useCallback((e: React.MouseEvent) => {
-      if (isLocked) return;
+const onDragMouseDown = useCallback((e: React.MouseEvent) => {
+      if (isLocked || usePersonalizedDashboardStore.getState().uiBlocked) return;
     e.stopPropagation();
     e.preventDefault();
 
@@ -209,8 +212,8 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
   }, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom, topBarHeight, 
     notesBarHeight, setActiveModule, updateModuleThrottled, isLocked ]);
 
-  const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
-    if (isLocked) return;
+const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
+    if (isLocked || usePersonalizedDashboardStore.getState().uiBlocked) return;
     e.stopPropagation();  
     e.preventDefault();
 
@@ -393,15 +396,11 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
         MozOsxFontSmoothing: "grayscale",
         transform: "translateZ(0)",
       }}
-      onMouseDown={() => setActiveModule(module.id)}
-      onWheelCapture={(e) => {
-        if (!isActive) return;
-        if (ref.current?.contains(e.target as Node)) {
-          e.stopPropagation();
-        }
-      }}
+onMouseDown={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; setActiveModule(module.id); }}
+
     >
       <div
+        data-module-header
         onMouseDown={onDragMouseDown}
         className={`flex items-center justify-between px-4 py-2
           border-b border-white/10 ${isLocked ? "cursor-default" : "cursor-move"}`}
@@ -415,10 +414,12 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
 
 <div className="flex gap-2 items-center">
     <button
-    onClick={(e) => {
+onClick={(e) => {
       e.stopPropagation();
+      if (usePersonalizedDashboardStore.getState().uiBlocked) return;
       toggleModuleLock(module.id);
     }}
+
     className={`h-6 w-6 rounded-md border transition-all cursor-pointer flex items-center justify-center
       ${isLocked 
         ? "bg-amber-500/20 border-amber-500/50 text-amber-400" 
@@ -432,9 +433,36 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
       <Unlock className="w-3 h-3" />
     )}
   </button>
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+
+      if (!swapSourceId) {
+        setSwapSource(module.id);
+        return;
+      }
+
+      if (swapSourceId === module.id) {
+        setSwapSource(null);
+        return;
+      }
+
+      swapModules(swapSourceId, module.id);
+    }}
+    className={`h-6 w-6 rounded-md border transition-all cursor-pointer flex items-center justify-center
+      ${swapSourceId === module.id
+        ? "bg-teal-400/25 border-teal-400/50 text-teal-300"
+        : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
+      }`}
+    title={swapSourceId === module.id ? "Cancel Swap" : swapSourceId ? "Swap with this" : "Swap Position"}
+  >
+    <ArrowLeftRight className="w-3 h-3" />
+  </button>
   <div className="flex items-center gap-1 bg-[#0b1f1f] border border-white/10 rounded-md px-2 py-1">
+
     <button
-      onClick={zoomOut}
+      onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomOut(); }}
       className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer"
       title="Zoom Out"
     >
@@ -444,14 +472,14 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
       {moduleZoom}%
     </span>
     <button
-      onClick={zoomIn}
+      onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomIn(); }}
       className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer"
       title="Zoom In"
     >
       <ZoomIn className="w-3 h-3 text-white/60 hover:text-white" />
     </button>
     <button
-      onClick={resetZoom}
+      onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; resetZoom(); }}
       className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer ml-1 border-l border-white/10 pl-1.5"
       title="Reset Zoom"
     >
@@ -461,9 +489,11 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
 
           <div className="flex gap-1">
             <button
-              onClick={() =>
-                updateModule(module.id, { minimized: !module.minimized })
-              }
+               onClick={() => {
+                if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+                updateModule(module.id, { minimized: !module.minimized });
+              }}
+
               className="h-6 w-6 rounded-md border border-white/10 bg-white/5
                 text-white/70 hover:bg-white/10 cursor-pointer"
             >
@@ -472,6 +502,7 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
 
             <button
               onClick={() => {
+                if (usePersonalizedDashboardStore.getState().uiBlocked) return;
                 removeModule(module.id);
                 useDashboardNotificationStore.getState().push({
                   type: "success",
@@ -489,10 +520,13 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
       </div>
 
       {!module.minimized && (
-        <div className="h-[calc(100%-40px)] overflow-hidden">
-          <div
-            className="
-              h-full overflow-auto p-4
+         <div className="h-[calc(100%-40px)] overflow-hidden relative">
+           {usePersonalizedDashboardStore.getState().uiBlocked && (
+          <div className="absolute inset-0 z-50" />
+       )}
+       <div
+      className="
+        h-full overflow-auto p-4
               text-white/80 leading-relaxed
 
               [&_*]:select-none
@@ -517,7 +551,6 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
               width: `${(100 / moduleZoom) * 100}%`,
               height: `${(100 / moduleZoom) * 100}%`,
             }}
-            onWheel={(e) => e.stopPropagation()}
           >
             {def?.render?.(module.id)}
           </div>
@@ -527,18 +560,22 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
       {!module.minimized && !isLocked && (
         <>
           <div
+            data-module-resize
             onMouseDown={(e) => onResizeMouseDown(e, "top-left")}
             className="absolute top-0 left-0 w-6 h-6 cursor-nwse-resize"
           />
           <div
+            data-module-resize
             onMouseDown={(e) => onResizeMouseDown(e, "top-right")}
             className="absolute top-0 right-0 w-6 h-6 cursor-nesw-resize"
           />
           <div
+            data-module-resize
             onMouseDown={(e) => onResizeMouseDown(e, "bottom-left")}
             className="absolute bottom-0 left-0 w-6 h-6 cursor-nesw-resize"
           />
           <div
+            data-module-resize
             onMouseDown={(e) => onResizeMouseDown(e, "bottom-right")}
             className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize"
           />
