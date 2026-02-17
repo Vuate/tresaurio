@@ -22,7 +22,8 @@ export default function AddToolPanel() {
   
   const panelRef = useRef<HTMLDivElement>(null); 
   const headerRef = useRef<HTMLDivElement>(null);
-  
+  const addingRef = useRef(false);
+
   const [headerHeight, setHeaderHeight] = useState(56);
 
   const effectiveNotesHeight = notesOpen ? notesBarHeight : (
@@ -92,7 +93,9 @@ export default function AddToolPanel() {
   }, {} as Record<ModuleCategory, ModuleDefinition[]>);
 
 const addAtCurrentView = (type: string) => {
+    if (addingRef.current) return;
     if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+    addingRef.current = true;
     const viewportCenterX = window.innerWidth / 2;
     const viewportCenterY = window.innerHeight / 2;
 
@@ -106,9 +109,12 @@ const addAtCurrentView = (type: string) => {
       description: `${type} added to dashboard`,
     });
 
-    toggleAddTool();
+        toggleAddTool();
+    addingRef.current = false;
+
   };
 
+  
   return (
     <div
       ref={panelRef}

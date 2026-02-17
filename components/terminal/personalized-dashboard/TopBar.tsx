@@ -382,7 +382,7 @@ onClick={(e) => {
 
           <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-white/10 animate-pulse" />
 ) : session?.user ? (
-   <div className="relative">
+   <div className="relative" onClick={() => { setConfirmReset(false); setConfirmLock(false); setShowLockAuth(false); }}>
        {uiBlocked && <div className="absolute inset-0 z-50 cursor-pointer" />}
        <UserMenu compact />
    </div>

@@ -16,10 +16,12 @@ const TemplatePanel = dynamic(() => import("@/components/terminal/personalized-d
 
 export default function Page() {
   const loadFromDB = usePersonalizedDashboardStore((s) => s.loadFromDB);
+  const closeAllPanels = usePersonalizedDashboardStore((s) => s.closeAllPanels);
 
   useEffect(() => {
+    closeAllPanels();
     loadFromDB();
-  }, [loadFromDB]);
+  }, [loadFromDB, closeAllPanels]);
   return (
     <div className="fixed inset-0 overflow-hidden bg-[#041F20]">
       <PortfolioObserver />

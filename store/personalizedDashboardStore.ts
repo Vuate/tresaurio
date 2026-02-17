@@ -269,8 +269,8 @@ resetDashboard: async () => {
       const worldCenterX = (-get().panX + viewportWidth / 2) / get().zoom;
       const worldCenterY = (-get().panY + viewportHeight / 2) / get().zoom;
 
-      const moduleX = worldCenterX - def.defaultSize.width / 2;
-      const moduleY = worldCenterY - def.defaultSize.height / 2;
+      const moduleX = Math.max(0, Math.min(worldCenterX - def.defaultSize.width / 2, WORLD_WIDTH - def.defaultSize.width));
+      const moduleY = Math.max(0, Math.min(worldCenterY - def.defaultSize.height / 2, WORLD_HEIGHT - def.defaultSize.height));
 
       set((state) => ({
         modules: [
@@ -279,8 +279,8 @@ resetDashboard: async () => {
             type: def.type,
             title: def.title,
             category: def.category,
-            x: x ?? moduleX,
-            y: y ?? moduleY,
+x: Math.max(0, Math.min(x ?? moduleX, WORLD_WIDTH - def.defaultSize.width)),
+y: Math.max(0, Math.min(y ?? moduleY, WORLD_HEIGHT - def.defaultSize.height)),
             width: def.defaultSize.width,
             height: def.defaultSize.height,
           },
