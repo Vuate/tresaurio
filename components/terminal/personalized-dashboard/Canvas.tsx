@@ -41,9 +41,14 @@ const onMouseDown = (e: MouseEvent) => {
   if (e.button !== 0) return;
 
   const target = e.target as HTMLElement;
-  if (target.closest('[data-module-window]')) {
+  if (
+    target.closest('[data-module-header]') || 
+    target.closest('[data-module-resize]') ||
+    target.closest('input, textarea, select, button, [contenteditable]')
+  ) {
     return; 
   }
+
 
   isPanningRef.current = true;
   startRef.current = {
@@ -100,14 +105,17 @@ useEffect(() => {
   if (!el) return;
 
   const ZOOM_SENSITIVITY = 0.003;
-  const onWheel = (e: WheelEvent) => {
-    const target = e.target as HTMLElement;
+const onWheel = (e: WheelEvent) => {
+    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+const target = e.target as HTMLElement;
 
-    if (!target.closest("[data-canvas-container]")) {
-      return;
-    }
+if (!target.closest("[data-canvas-container]")) {
+  return;
+}
 
     e.preventDefault();
+
+
     if (!el) return;
 
 const rect = el.getBoundingClientRect();

@@ -45,17 +45,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const template = await prisma.dashboardTemplate.upsert({
+    // Case-insensitive: find existing template
+    const existing = await prisma.dashboardTemplate.findFirst({
       where: {
-        userId_name: { userId: session.user.id, name },
-      },
-      update: { layout },
-      create: {
         userId: session.user.id,
-        name,
-        layout,
+        name: { equals: name, mode: "insensitive" },
       },
     });
+
+    let template;
+    if (existing) {
+      template = await prisma.dashboardTemplate.update({
+        where: { id: existing.id },
+        data: { name, layout },
+      });
+    } else {
+      template = await prisma.dashboardTemplate.create({
+        data: {
+          userId: session.user.id,
+          name,
+          layout,
+        },
+      });
+    }
 
     return NextResponse.json({ template });
   } catch (error) {

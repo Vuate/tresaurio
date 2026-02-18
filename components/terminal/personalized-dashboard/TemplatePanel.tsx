@@ -106,63 +106,73 @@ export default function TemplatePanel() {
 
   const hasModules = modules.length > 0;
 
-  const handleSave = async () => {
-    if (!templateName.trim() || saving || !hasModules) return;
 
-    // Check if name already exists
-    const existing = templates.find(
-      (t) => t.name.toLowerCase() === templateName.trim().toLowerCase()
-    );
-    if (existing && !confirmOverwrite) {
-      setConfirmOverwrite(true);
-      return;
-    }
+  const confirmSaveTemplate = async () => {
+  if (!templateName.trim() || saving) return;
+  setSaving(true);
+  try {
+    await saveTemplate(templateName.trim());
+    notify({ type: "success", title: "Template Saved", description: `"${templateName.trim()}" saved successfully.` });
+    setTemplateName("");
+    setConfirmOverwrite(false);
+  } catch {
+    notify({ type: "error", title: "Save Failed", description: "Could not save template." });
+  }
+  setSaving(false);
+};
 
-    setSaving(true);
-    try {
-      await saveTemplate(templateName.trim());
-      notify({ type: "success", title: "Template Saved", description: `"${templateName.trim()}" saved successfully.` });
-      setTemplateName("");
-      setConfirmOverwrite(false);
-    } catch {
-      notify({ type: "error", title: "Save Failed", description: "Could not save template." });
-    }
-    setSaving(false);
-  };
+const confirmLoadTemplate = async (id: string) => {
+  setLoadingId(id);
+  setConfirmLoadId(null);
+  try {
+    await loadTemplate(id);
+    const name = templates.find((t) => t.id === id)?.name || "Template";
+    notify({ type: "success", title: "Template Loaded", description: `"${name}" applied to dashboard.` });
+    toggleTemplates();
+  } catch {
+    notify({ type: "error", title: "Load Failed", description: "Could not load template." });
+  }
+  setLoadingId(null);
+};
 
-  const handleLoad = async (id: string) => {
-    // First click → show confirmation
-    if (confirmLoadId !== id) {
-      setConfirmLoadId(id);
-      setConfirmDeleteId(null);
-      setConfirmOverwrite(false);
-      return;
-    }
+const handleSave = async () => {
+  if (!templateName.trim() || saving || !hasModules) return;
 
-    // Second click (confirm) → actually load
-    setLoadingId(id);
+const existing = templates.find(
+    (t) => t.name.toLowerCase() === templateName.trim().toLowerCase()
+  );
+  if (existing && !confirmOverwrite) {
+    setConfirmOverwrite(true);
     setConfirmLoadId(null);
-    try {
-      await loadTemplate(id);
-      const name = templates.find((t) => t.id === id)?.name || "Template";
-      notify({ type: "success", title: "Template Loaded", description: `"${name}" applied to dashboard.` });
-      toggleTemplates();
-    } catch {
-      notify({ type: "error", title: "Load Failed", description: "Could not load template." });
-    }
-    setLoadingId(null);
-  };
+    setConfirmDeleteId(null);
+    return;
+  }
 
-  const handleDelete = async (id: string) => {
-    // First click → show confirmation
-    if (confirmDeleteId !== id) {
-      setConfirmDeleteId(id);
-      setConfirmLoadId(null);
-      setConfirmOverwrite(false);
-      return;
-    }
+  if (confirmOverwrite) return;
 
-    // Second click (confirm) → actually delete
+  await confirmSaveTemplate();
+
+};
+
+const handleLoad = async (id: string) => {
+  if (confirmLoadId !== id) {
+    setConfirmLoadId(id);
+    setConfirmDeleteId(null);
+    setConfirmOverwrite(false);
+    return;
+  }
+};
+
+const handleDelete = async (id: string) => {
+  if (confirmDeleteId !== id) {
+    setConfirmDeleteId(id);
+    setConfirmLoadId(null);
+    setConfirmOverwrite(false);
+    return;
+  }
+};
+
+  const confirmDeleteTemplate = async (id: string) => {
     setDeletingId(id);
     setConfirmDeleteId(null);
     try {
@@ -181,7 +191,6 @@ export default function TemplatePanel() {
     setConfirmOverwrite(false);
   };
 
-  // Not logged in
   if (!session?.user) {
     return (
 <div
@@ -245,21 +254,29 @@ export default function TemplatePanel() {
               disabled={!templateName.trim() || saving || !hasModules}
               className="px-3 py-1.5 rounded-lg bg-teal-400/15 border border-teal-400/30 text-xs font-semibold text-teal-300 hover:bg-teal-400/25 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {saving ? "..." : confirmOverwrite ? "Overwrite" : "Save"}
+              {saving ? "..." : "Save"}
             </button>
           </div>
           {/* Overwrite warning */}
 {confirmOverwrite && (
-  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2 py-1.5 rounded-lg bg-red-400/15 border border-red-400/30">
+  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-red-400/15 border border-red-400/30">
     <span className="text-[10px] sm:text-[11px] text-red-300">
-      Template with this name already exists.
+      Template with this name already exists. Overwrite?
     </span>
-    <button
-      onClick={handleCancelConfirm}
-      className="text-[10px] sm:text-[11px] text-white/40 hover:text-white/70 transition cursor-pointer ml-0 sm:ml-2"
-    >
-      Cancel
-    </button>
+    <div className="flex gap-1.5 sm:gap-1 ml-0 sm:ml-2 w-full sm:w-auto">
+      <button
+        onClick={confirmSaveTemplate}
+        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer whitespace-nowrap"
+      >
+        Yes
+      </button>
+      <button
+        onClick={handleCancelConfirm}
+        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer whitespace-nowrap"
+      >
+        Cancel
+      </button>
+    </div>
   </div>
 )}
           {/* Empty dashboard warning */}
@@ -316,11 +333,11 @@ export default function TemplatePanel() {
 {confirmLoadId === t.id && (
   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-red-400/15 border border-red-400/30">
     <span className="text-[10px] sm:text-[11px] text-red-300">
-      This will replace your current dashboard. Continue?
-    </span>
+This will replace your current dashboard. Continue? 
+To avoid losing changes, you can save as a new template or overwrite your existing template before loading    </span>
     <div className="flex gap-1.5 sm:gap-1 ml-0 sm:ml-2 w-full sm:w-auto">
       <button
-        onClick={() => handleLoad(t.id)}
+        onClick={() => confirmLoadTemplate(t.id)}
         className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer whitespace-nowrap"
       >
         Yes
@@ -329,7 +346,7 @@ export default function TemplatePanel() {
         onClick={handleCancelConfirm}
         className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer whitespace-nowrap"
       >
-        No
+        Cancel
       </button>
     </div>
   </div>
@@ -343,7 +360,7 @@ export default function TemplatePanel() {
     </span>
     <div className="flex gap-1.5 sm:gap-1 ml-0 sm:ml-2 w-full sm:w-auto">
       <button
-        onClick={() => handleDelete(t.id)}
+        onClick={() => confirmDeleteTemplate(t.id)}
         className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer whitespace-nowrap"
       >
         Yes
@@ -352,7 +369,7 @@ export default function TemplatePanel() {
         onClick={handleCancelConfirm}
         className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer whitespace-nowrap"
       >
-        No
+        Cancel
       </button>
     </div>
   </div>

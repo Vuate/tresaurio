@@ -10,8 +10,8 @@ import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
 
 export const MAX_ZOOM = 3;
-export const WORLD_WIDTH = 4000;
-export const WORLD_HEIGHT = 2250;
+export const WORLD_WIDTH = 8000;
+export const WORLD_HEIGHT = 4500;
 
 export function calculateMinZoom(viewportW: number, viewportH: number): number {
   const minZoomX = viewportW / WORLD_WIDTH;
@@ -43,6 +43,7 @@ lockedModules: Set<ModuleId>;
 
   alerts: AlertItem[];
   uiBlocked: boolean;
+  swapSourceId: string | null;
 
   // Templates
   templates: { id: string; name: string; createdAt: string; updatedAt: string }[];
@@ -80,15 +81,16 @@ type Actions = {
   removeAlert: (id: string) => void;
 
   setUIBlocked: (v: boolean) => void;
+  setSwapSource: (id: string | null) => void;
+  swapModules: (id1: string, id2: string) => void;
   resetDashboard: () => Promise<void>;
 
-  // DB sync
+
   _hydrated: boolean;
   setHydrated: (v: boolean) => void;
   loadFromDB: () => Promise<void>;
   saveToDB: () => Promise<void>;
 
-  // Templates
   fetchTemplates: () => Promise<void>;
   saveTemplate: (name: string) => Promise<void>;
   loadTemplate: (id: string) => Promise<void>;
@@ -96,7 +98,6 @@ type Actions = {
   closeAllPanels: () => void;
 };
 
-// Debounce helper for DB saves
 let saveTimeout: NodeJS.Timeout | null = null;
 function debouncedSaveToDB() {
   if (saveTimeout) clearTimeout(saveTimeout);
@@ -110,11 +111,12 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
   (set, get) => ({
     lockedModules: new Set(),
     uiBlocked: false,
+    swapSourceId: null,
     zoom: 1,
     panX: 0,
     panY: 0,
 
-    notesOpen: true,
+    notesOpen: false,
     notes: [],
     notesHeight: 260,
 
@@ -145,39 +147,68 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
 
 
     setUIBlocked: (v) => set({ uiBlocked: v }),
-        resetDashboard: async () => {
-    const { topBarHeight, notesBarHeight } = get();
-    const viewportW = window.innerWidth;
-    const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
-    const minZoom = calculateMinZoom(viewportW, viewportH);
-    const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
-    const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
-      set({
-        modules: [],
-        lockedModules: new Set(),
-        notes: [],
-        alerts: [],
-        zoom: minZoom,
-        panX: centerPanX,
-        panY: centerPanY,
-        activeModuleId: null,
-      });
-      // DB'yi de temizle
-      try {
-        await fetch("/api/dashboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+    setSwapSource: (id) => set({ swapSourceId: id }),
+
+swapModules: (id1, id2) => {
+  const modules = get().modules;
+  const m1 = modules.find(m => m.id === id1);
+  const m2 = modules.find(m => m.id === id2);
+  if (!m1 || !m2) return;
+
+  // m1 → m2'nin yerine gidecek, sınır kontrolü yap
+  const newX1 = Math.max(0, Math.min(m2.x, WORLD_WIDTH - m1.width));
+  const newY1 = Math.max(0, Math.min(m2.y, WORLD_HEIGHT - m1.height));
+
+  // m2 → m1'in yerine gidecek, sınır kontrolü yap
+  const newX2 = Math.max(0, Math.min(m1.x, WORLD_WIDTH - m2.width));
+  const newY2 = Math.max(0, Math.min(m1.y, WORLD_HEIGHT - m2.height));
+
+  set({
+    modules: modules.map(m => {
+      if (m.id === id1) return { ...m, x: newX1, y: newY1 };
+      if (m.id === id2) return { ...m, x: newX2, y: newY2 };
+      return m;
+    }),
+    swapSourceId: null,
+  });
+},
+
+resetDashboard: async () => {
+  const { topBarHeight, notesBarHeight } = get();
+  
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+  const minZoom = calculateMinZoom(viewportW, viewportH);
+  const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
+  const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+    set({
+      modules: [],
+      lockedModules: new Set(),
+      notes: [],
+      alerts: [],
+      zoom: minZoom,
+      panX: centerPanX,
+      panY: centerPanY,
+      activeModuleId: null,
+    });
+    try {
+      await fetch("/api/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          layout: {
             modules: [],
             notes: [],
             alerts: [],
             zoom: minZoom,
             panX: centerPanX,
             panY: centerPanY,
-          }),
-        });
-      } catch {}
-    },
+            lockedModules: [],
+          },
+        }),
+      });
+    } catch {}
+  },
     _hydrated: false,
     setHydrated: (v) => set({ _hydrated: v }),
 
@@ -238,8 +269,8 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
       const worldCenterX = (-get().panX + viewportWidth / 2) / get().zoom;
       const worldCenterY = (-get().panY + viewportHeight / 2) / get().zoom;
 
-      const moduleX = worldCenterX - def.defaultSize.width / 2;
-      const moduleY = worldCenterY - def.defaultSize.height / 2;
+      const moduleX = Math.max(0, Math.min(worldCenterX - def.defaultSize.width / 2, WORLD_WIDTH - def.defaultSize.width));
+      const moduleY = Math.max(0, Math.min(worldCenterY - def.defaultSize.height / 2, WORLD_HEIGHT - def.defaultSize.height));
 
       set((state) => ({
         modules: [
@@ -248,8 +279,8 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
             type: def.type,
             title: def.title,
             category: def.category,
-            x: x ?? moduleX,
-            y: y ?? moduleY,
+x: Math.max(0, Math.min(x ?? moduleX, WORLD_WIDTH - def.defaultSize.width)),
+y: Math.max(0, Math.min(y ?? moduleY, WORLD_HEIGHT - def.defaultSize.height)),
             width: def.defaultSize.width,
             height: def.defaultSize.height,
           },
@@ -355,17 +386,24 @@ loadFromDB: async () => {
     const { layout } = await res.json();
     if (!layout) return;
 
-    const { modules, notes, alerts, zoom, panX, panY, lockedModules } = layout;
-    if (modules && modules.length > 0) {
-      set({
-        modules,
-        ...(notes && { notes }),
-        ...(alerts && { alerts }),
-        ...(typeof zoom === "number" && { zoom }),
-        ...(typeof panX === "number" && { panX }),
-        ...(typeof panY === "number" && { panY }),
-        ...(lockedModules && { lockedModules: new Set(lockedModules) }),
-      });
+const { modules, notes, alerts, lockedModules, uiBlocked } = layout;
+if (modules && modules.length > 0) {
+  const { topBarHeight, notesBarHeight } = get();
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+  const minZoom = calculateMinZoom(viewportW, viewportH);
+  const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
+  const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+  set({
+    modules,
+    ...(notes && { notes }),
+    ...(alerts && { alerts }),
+    zoom: minZoom,
+    panX: centerPanX,
+    panY: centerPanY,
+    ...(lockedModules && { lockedModules: new Set(lockedModules) }),
+    ...(typeof uiBlocked === "boolean" && { uiBlocked }),
+  });
       console.log("[Dashboard] Loaded from DB");
     }
   } catch (err) {
@@ -376,19 +414,20 @@ loadFromDB: async () => {
     // DB sync — save
 saveToDB: async () => {
   try {
-    const { modules, notes, alerts, zoom, panX, panY, lockedModules } = get();
+    const { modules, notes, alerts, zoom, panX, panY, lockedModules, uiBlocked  } = get();
     await fetch("/api/dashboard", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        layout: { 
+layout: { 
           modules, 
           notes, 
           alerts, 
           zoom, 
           panX, 
           panY,
-          lockedModules: Array.from(lockedModules)
+          lockedModules: Array.from(lockedModules),
+          uiBlocked
         },
       }),
     });
@@ -411,13 +450,13 @@ saveToDB: async () => {
 
     saveTemplate: async (name: string) => {
       try {
-        const { modules, zoom, panX, panY, lockedModules } = get();
+        const { modules, zoom, panX, panY, lockedModules, uiBlocked  } = get();
         const res = await fetch("/api/dashboard/templates", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name,
-            layout: { modules, zoom, panX, panY, lockedModules: Array.from(lockedModules) },
+            layout: { modules, zoom, panX, panY, lockedModules: Array.from(lockedModules), uiBlocked },
           }),
         });
         if (!res.ok) return;
@@ -435,7 +474,7 @@ loadTemplate: async (id: string) => {
     const { template } = await res.json();
     if (!template?.layout) return;
 
-    const { modules, lockedModules } = template.layout;
+    const { modules, lockedModules, uiBlocked  } = template.layout;
 
     const { topBarHeight, notesBarHeight } = get();
     const viewportW = window.innerWidth;
@@ -447,6 +486,7 @@ loadTemplate: async (id: string) => {
     set({
       ...(modules && { modules }),
         lockedModules: lockedModules ? new Set(lockedModules) : new Set(),
+      ...(typeof uiBlocked === "boolean" && { uiBlocked }),
       zoom: minZoom,
       panX: centerPanX,
       panY: centerPanY,
@@ -485,7 +525,8 @@ loadTemplate: async (id: string) => {
       zoom: state.zoom,
       panX: state.panX,
       panY: state.panY,
-        lockedModules: Array.from(state.lockedModules),
+ lockedModules: Array.from(state.lockedModules),
+        uiBlocked: state.uiBlocked,
     }),
         storage: {
       getItem: (name) => {
@@ -543,7 +584,8 @@ usePersonalizedDashboardStore.subscribe(
     const changed =
       state.modules !== prevState.modules ||
       state.notes !== prevState.notes ||
-      state.alerts !== prevState.alerts;
+state.alerts !== prevState.alerts ||    
+state.uiBlocked !== prevState.uiBlocked;
 
     if (changed) {
       debouncedSaveToDB();

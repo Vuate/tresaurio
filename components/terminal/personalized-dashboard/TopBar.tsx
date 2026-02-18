@@ -10,7 +10,9 @@ import UserMenu from "@/components/auth/UserMenu";
 
 export default function TopBar() {
   const topBarRef = useRef<HTMLDivElement>(null);
-  const toggleAddTool = usePersonalizedDashboardStore((s) => s.toggleAddTool);
+const toggleAddTool = usePersonalizedDashboardStore((s) => s.toggleAddTool);
+  const uiBlocked = usePersonalizedDashboardStore((s) => s.uiBlocked);
+  const setUIBlocked = usePersonalizedDashboardStore((s) => s.setUIBlocked);
   const toggleSidebar = usePersonalizedDashboardStore((s) => s.toggleSidebar);
   const resetDashboard = usePersonalizedDashboardStore((s) => s.resetDashboard);
   const toggleTemplates = usePersonalizedDashboardStore((s) => s.toggleTemplates);
@@ -23,8 +25,17 @@ export default function TopBar() {
   const { data: session, status } = useSession();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-   const [confirmReset, setConfirmReset] = useState(false);
-  const notify = useDashboardNotificationStore((s) => s.push);
+const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmLock, setConfirmLock] = useState(false);
+  const [showLockAuth, setShowLockAuth] = useState(false);
+const notify = useDashboardNotificationStore((s) => s.push);
+
+  const closeEverything = () => {
+    closeAllPanels();
+    setConfirmReset(false);
+    setConfirmLock(false);
+    setShowLockAuth(false);
+  };
 
   useEffect(() => {
     const measureHeight = () => {
@@ -39,16 +50,22 @@ export default function TopBar() {
     return () => window.removeEventListener("resize", measureHeight);
   }, [setTopBarHeight]);
 
-  useEffect(() => {
-  if (!confirmReset) return;
+useEffect(() => {
+  if (!confirmReset && !confirmLock && !showLockAuth) return;
   const handleClick = (e: MouseEvent) => {
     const target = e.target as Node;
     const topBar = document.querySelector("[data-topbar]");
     if (topBar?.contains(target)) return;
     setConfirmReset(false);
+    setConfirmLock(false);
+    setShowLockAuth(false);
   };
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") setConfirmReset(false);
+    if (e.key === "Escape") {
+      setConfirmReset(false);
+      setConfirmLock(false);
+      setShowLockAuth(false);
+    }
   };
   const timer = setTimeout(() => {
     document.addEventListener("mousedown", handleClick);
@@ -59,7 +76,8 @@ export default function TopBar() {
     document.removeEventListener("mousedown", handleClick);
     document.removeEventListener("keydown", handleKeyDown);
   };
-}, [confirmReset]);
+}, [confirmReset, confirmLock, showLockAuth]);
+
 
   return (
     <div
@@ -74,9 +92,9 @@ export default function TopBar() {
         border-b border-white/10 select-none"
     >
       <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center justify-center
+<button
+  onClick={() => { if (uiBlocked) return; router.back(); }}
+  className="flex items-center justify-center
             min-w-[44px] min-h-[44px]
             w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10
             rounded-lg
@@ -97,17 +115,22 @@ export default function TopBar() {
             className="h-6 sm:h-7 md:h-8 lg:h-9 w-auto select-none flex-shrink-0"
             draggable={false}
           />
-          <span className="text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-white leading-none whitespace-nowrap">
+<span className="hidden sm:inline text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-white leading-none whitespace-nowrap">
             Treasurio
           </span>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 ml-2 sm:ml-3 md:ml-4 lg:ml-6">
 <button
-  onClick={() => {
-    toggleSidebar();
-    setConfirmReset(false);
+onClick={() => {
+    if (uiBlocked) return;
+    const wasOpen = sidebarOpen;
+    closeEverything();
+    if (!wasOpen) toggleSidebar();
   }}
+
+
+  disabled={uiBlocked}
   className={`px-2 sm:px-2.5 md:px-3 lg:px-4 
     py-1 sm:py-1 md:py-1.5 
     rounded-lg
@@ -116,20 +139,27 @@ export default function TopBar() {
     font-semibold
     transition cursor-pointer
     whitespace-nowrap
-    ${
-      sidebarOpen
-        ? "bg-teal-400/20 border-teal-400/40 text-teal-300"
-        : "bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10"
-    }`}
+${sidebarOpen
+  ? "bg-teal-400/20 border-teal-400/40 text-teal-300"
+  : "bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10"
+}
+
+    `}
 >
   Sidebar
 </button>
 
 <button
-  onClick={() => {
-    toggleAddTool();
-    setConfirmReset(false);
+onClick={() => {
+    if (uiBlocked) return;
+    const wasOpen = addToolOpen;
+    closeEverything();
+    if (!wasOpen) toggleAddTool();
   }}
+
+
+  disabled={uiBlocked}
+
   className={`px-2 sm:px-2.5 md:px-3 lg:px-4 
     py-1 sm:py-1 md:py-1.5 
     rounded-lg
@@ -148,10 +178,16 @@ export default function TopBar() {
 </button>
 
 <button
-  onClick={() => {
-    toggleTemplates();
-    setConfirmReset(false);
+onClick={() => {
+    if (uiBlocked) return;
+    const wasOpen = templatesOpen;
+    closeEverything();
+    if (!wasOpen) toggleTemplates();
   }}
+
+
+  disabled={uiBlocked}
+
   className={`px-2 sm:px-2.5 md:px-3 lg:px-4
     py-1 sm:py-1 md:py-1.5
     rounded-lg
@@ -174,18 +210,122 @@ export default function TopBar() {
         </div>
       </div>
 
+
       <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-shrink-0">
         {/* Reset Dashboard */}
+
+
+        {/* Lock Dashboard */}
+<div className="relative">
+  <button
+onClick={(e) => {
+      e.stopPropagation();
+      
+      if (uiBlocked) {
+        closeEverything();
+        setUIBlocked(false);
+        closeAllPanels();
+        notify({ type: "success", title: "Dashboard Unlocked", description: "All interactions are enabled." });
+        return;
+      }
+      
+      if (!session?.user) {
+        const wasOpen = showLockAuth;
+        closeEverything();
+        if (!wasOpen) setShowLockAuth(true);
+        return;
+      }
+      
+      // Confirmation toggle
+      const wasOpen = confirmLock;
+      closeEverything();
+      if (!wasOpen) setConfirmLock(true);
+
+    }}
+    className={`flex items-center justify-center
+      min-w-[44px] min-h-[44px]
+      w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10
+      rounded-lg border transition cursor-pointer
+      ${uiBlocked
+        ? "bg-amber-400/25 border-amber-400/50 text-amber-300"
+        : confirmLock
+          ? "bg-amber-400/20 border-amber-400/40 text-amber-300"
+          : "bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10"
+      }`}
+    title={uiBlocked ? "Unlock Dashboard" : "Lock Dashboard"}
+  >
+    <svg
+      className="w-4 h-4 sm:w-[18px] sm:h-[18px]"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      {uiBlocked ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      ) : (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+      )}
+    </svg>
+  </button>
+
+  {/* Auth uyarısı — giriş yapmamış kullanıcı */}
+  {showLockAuth && (
+    <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-2.5 rounded-xl bg-[#041F20]/95 backdrop-blur border border-amber-400/30 shadow-lg z-[60]">
+      <p className="text-[10px] sm:text-[11px] text-amber-300 mb-2">
+        Sign in to use dashboard lock.
+      </p>
+      <button
+        onClick={() => setShowLockAuth(false)}
+        className="w-full px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer"
+      >
+        OK
+      </button>
+    </div>
+  )}
+
+  {/* Confirmation dialog — giriş yapmış kullanıcı */}
+  {confirmLock && (
+    <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-2.5 rounded-xl bg-[#041F20]/95 backdrop-blur border border-amber-400/30 shadow-lg z-[60]">
+      <p className="text-[10px] sm:text-[11px] text-amber-300 mb-2">
+        Lock dashboard? All interactions will be disabled.
+      </p>
+      <div className="flex gap-1.5 sm:gap-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setUIBlocked(true);
+            setConfirmLock(false);
+            closeAllPanels();
+            notify({ type: "success", title: "Dashboard Locked", description: "All interactions are disabled." });
+          }}
+          className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-amber-300 bg-amber-400/15 border border-amber-400/30 hover:bg-amber-400/25 transition cursor-pointer"
+        >
+          Yes, Lock
+        </button>
+        <button
+          onClick={() => setConfirmLock(false)}
+          className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )}
+</div>
+
+
 <div className="relative">
   <button
 onClick={(e) => {
   e.stopPropagation();
-  if (!confirmReset) {
-    setConfirmReset(true);
-    closeAllPanels();
-    return;
-  }
+  if (uiBlocked) return;
+  const wasOpen = confirmReset;
+  closeEverything();
+  if (!wasOpen) setConfirmReset(true);
 }}
+
+
     className={`flex items-center justify-center
       min-w-[44px] min-h-[44px]
       w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10
@@ -241,11 +381,15 @@ onClick={(e) => {
         {status === "loading" ? (
 
           <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-white/10 animate-pulse" />
-        ) : session?.user ? (
-          <UserMenu compact />
-        ) : (
+) : session?.user ? (
+   <div className="relative" onClick={() => { setConfirmReset(false); setConfirmLock(false); setShowLockAuth(false); }}>
+       {uiBlocked && <div className="absolute inset-0 z-50 cursor-pointer" />}
+       <UserMenu compact />
+   </div>
+) : (
 <button
   onClick={() => {
+    closeEverything();
     setAuthMode("login");
     setShowAuthModal(true);
   }}

@@ -177,7 +177,10 @@ useEffect(() => {
 
         <div
           onMouseDown={(e) => e.stopPropagation()}
-          onClick={toggleNotes}
+          onClick={() => {
+          if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+            toggleNotes();
+       }}
           className="px-6 xl:px-8 2xl:px-12 flex items-center justify-between cursor-pointer select-none"
           style={{ height: headerHeight }}
         >

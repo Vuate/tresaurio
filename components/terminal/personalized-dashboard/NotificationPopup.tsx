@@ -46,7 +46,7 @@ export default function NotificationPopup({
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [show, onClose]);
+  }, [show]);
 
   if (!show) return null;
 
