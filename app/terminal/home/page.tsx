@@ -1,5 +1,5 @@
 import Header from "@/components/terminal/home/Header";
-import LivePrices from "@/components/terminal/home/LivePrices";
+import LivePrices from "@/components/terminal/home/HomeLivePrices";
 import QuickStats from "@/components/terminal/home/QuickStats";
 import Movers from "@/components/terminal/home/Movers";
 import FearGreed from "@/components/terminal/home/FearGreed";
