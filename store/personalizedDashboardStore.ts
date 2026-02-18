@@ -386,18 +386,24 @@ loadFromDB: async () => {
     const { layout } = await res.json();
     if (!layout) return;
 
-const { modules, notes, alerts, zoom, panX, panY, lockedModules, uiBlocked } = layout;
-    if (modules && modules.length > 0) {
-      set({
-        modules,
-        ...(notes && { notes }),
-        ...(alerts && { alerts }),
-        ...(typeof zoom === "number" && { zoom }),
-        ...(typeof panX === "number" && { panX }),
-        ...(typeof panY === "number" && { panY }),
-        ...(lockedModules && { lockedModules: new Set(lockedModules) }),
-        ...(typeof uiBlocked === "boolean" && { uiBlocked }),
-      });
+const { modules, notes, alerts, lockedModules, uiBlocked } = layout;
+if (modules && modules.length > 0) {
+  const { topBarHeight, notesBarHeight } = get();
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight - topBarHeight - notesBarHeight;
+  const minZoom = calculateMinZoom(viewportW, viewportH);
+  const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
+  const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+  set({
+    modules,
+    ...(notes && { notes }),
+    ...(alerts && { alerts }),
+    zoom: minZoom,
+    panX: centerPanX,
+    panY: centerPanY,
+    ...(lockedModules && { lockedModules: new Set(lockedModules) }),
+    ...(typeof uiBlocked === "boolean" && { uiBlocked }),
+  });
       console.log("[Dashboard] Loaded from DB");
     }
   } catch (err) {
