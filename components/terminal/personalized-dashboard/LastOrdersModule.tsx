@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useLastOrders } from "@/hooks/useLastOrders";
-import { RefreshCw, Settings } from "lucide-react";
+import { RefreshCw, Settings, AlertTriangle } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -157,10 +157,9 @@ export default function LastOrdersModule({ instanceId }: Props) {
               return (
                 <div
                   className={`
-                    absolute z-[999] w-full max-h-[120px] overflow-y-auto
-                    bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl
-                    animate-in fade-in duration-200
-                    [&::-webkit-scrollbar]:w-1.5
+                   absolute z-[999] w-full
+                 bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl
+                   animate-in fade-in duration-200
                     [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-transparent
@@ -213,10 +212,9 @@ export default function LastOrdersModule({ instanceId }: Props) {
               return (
                 <div
                   className={`
-                    absolute z-[999] w-full max-h-[160px] overflow-y-auto
-                    bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl
-                    animate-in fade-in duration-200
-                    [&::-webkit-scrollbar]:w-1.5
+                   absolute z-[999] w-full
+               bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl
+                 animate-in fade-in duration-200
                     [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-transparent
@@ -279,7 +277,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
       >
         {error && (
           <div className="text-center py-6 sm:py-8">
-            <div className="text-red-400 mb-2 text-xl sm:text-2xl">⚠️</div>
+<div className="text-red-400 mb-2 flex justify-center"><AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6" /></div>
             <div className="text-red-400 text-[10px] sm:text-xs mb-2">{error}</div>
             <button
               onClick={refresh}

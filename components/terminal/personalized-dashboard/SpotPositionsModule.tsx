@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
-import { Plus, Trash2, RefreshCw, Key, AlertCircle, X, Pencil } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Key, AlertCircle, X, AlertTriangle, Pencil } from "lucide-react";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { usePriceStore } from "@/store/priceStore";
 import { useSession } from "next-auth/react";
 import AuthModal from "@/components/auth/AuthModal";
-
 
 interface Props {
   instanceId: string;
@@ -90,9 +89,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [lastSync, setLastSync] = useState<Date | null>(null);
-  const [editingEntryPriceId, setEditingEntryPriceId] = useState<string | null>(null);
-  const [editingEntryPriceValue, setEditingEntryPriceValue] = useState<string>("");
-
 
   const exchangeRef = useRef<HTMLDivElement>(null);
   const exchangeModalRef = useRef<HTMLDivElement>(null);
@@ -107,6 +103,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     label: "",
   });
   const [savingKey, setSavingKey] = useState(false);
+
+  const [editingEntryPriceId, setEditingEntryPriceId] = useState<string | null>(null);
+  const [editingEntryPriceValue, setEditingEntryPriceValue] = useState<string>("");
 
   const [formData, setFormData] = useState({
     exchange: "",
@@ -412,17 +411,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     }
   };
 
-  const saveEntryPrice = (positionId: string) => {
-    const parsed = parseFloat(editingEntryPriceValue);
-    if (!isNaN(parsed) && parsed > 0) {
-      updateSpotPosition(positionId, { manualEntryPrice: parsed });
-    } else {
-      updateSpotPosition(positionId, { manualEntryPrice: undefined });
-    }
-    setEditingEntryPriceId(null);
-    setEditingEntryPriceValue("");
-  };
-
   const portfolio = useMemo(() => {
     const totalInvestment = spotPositions.reduce(
       (sum, p) => sum + (p.manualEntryPrice ?? p.entryPrice) * p.quantity,
@@ -494,17 +482,27 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     });
   };
 
- const calculatePnL = (position: (typeof spotPositions)[0]) => {
-  const effectiveEntryPrice = position.manualEntryPrice ?? position.entryPrice;
-  const effectiveCost = effectiveEntryPrice * position.quantity;
-  const currentPrice = prices[position.symbol] || position.currentPrice;
-  const currentValue = position.quantity * currentPrice;
-  const pnl = currentValue - effectiveCost;
-  const pnlPercent = (pnl / effectiveCost) * 100;
-  const priceChange = currentPrice - effectiveEntryPrice;
-  return { currentValue, pnl, pnlPercent, currentPrice, priceChange };
-};
+  const saveEntryPrice = (positionId: string) => {
+    const parsed = parseFloat(editingEntryPriceValue);
+    if (!isNaN(parsed) && parsed > 0) {
+      updateSpotPosition(positionId, { manualEntryPrice: parsed });
+    } else {
+      updateSpotPosition(positionId, { manualEntryPrice: undefined });
+    }
+    setEditingEntryPriceId(null);
+    setEditingEntryPriceValue("");
+  };
 
+  const calculatePnL = (position: (typeof spotPositions)[0]) => {
+    const effectiveEntryPrice = position.manualEntryPrice ?? position.entryPrice;
+    const effectiveCost = effectiveEntryPrice * position.quantity;
+    const currentPrice = prices[position.symbol] || position.currentPrice;
+    const currentValue = position.quantity * currentPrice;
+    const pnl = currentValue - effectiveCost;
+    const pnlPercent = (pnl / effectiveCost) * 100;
+    const priceChange = currentPrice - effectiveEntryPrice;
+    return { currentValue, pnl, pnlPercent, currentPrice, priceChange };
+  };
 
   const totalCost = useMemo(() => {
     const price = parseFloat(formData.entryPrice) || 0;
@@ -1312,7 +1310,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
           {/* Warning - FIXED, NO SCROLL */}
           <div className="p-3 bg-yellow-500/10 border-b border-yellow-500/30 flex items-start gap-2 flex-shrink-0">
-            <span className="text-yellow-400 text-lg shrink-0">⚠️</span>
+<AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0" />
             <div className="text-yellow-400 text-[10px] break-words flex-1">
               Only use READ-ONLY API keys! Never share keys with withdrawal
               permissions.

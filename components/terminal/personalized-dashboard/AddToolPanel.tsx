@@ -106,7 +106,7 @@ const addAtCurrentView = (type: string) => {
     useDashboardNotificationStore.getState().push({
       type: "success",
       title: "Tool Added",
-      description: `${type} added to dashboard`,
+      description: `${moduleRegistry[type]?.title ?? type} added to dashboard`,
     });
 
         toggleAddTool();

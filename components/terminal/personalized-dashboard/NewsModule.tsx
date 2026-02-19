@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useNews } from "@/hooks/useNews";
-import { RefreshCw, Settings } from "lucide-react";
+import { Settings, AlertTriangle, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -105,13 +105,6 @@ export default function NewsModule({ instanceId }: Props) {
           {loading && (
             <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
           )}
-<button
-  onClick={refresh}
-  className="h-7 px-3 rounded-md bg-[#0b1f1f] border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors cursor-pointer flex items-center justify-center"
-  title="Refresh"
->
-    <RefreshCw className="w-3.5 h-3.5" />
-          </button>
           <div ref={settingsRef} className="relative">
 <button
   onClick={() => setShowSettings(!showSettings)}
@@ -126,7 +119,7 @@ export default function NewsModule({ instanceId }: Props) {
     onWheel={(e) => e.stopPropagation()}
     className="
       absolute right-0 mt-1 z-50
-      w-[180px]
+      w-[150px]
       bg-[#0b1f1f]
       border border-emerald-500/20
       rounded
@@ -271,7 +264,7 @@ export default function NewsModule({ instanceId }: Props) {
         <div className="space-y-2">
           {error && (
             <div className="p-4 text-center">
-              <div className="text-red-400 mb-2 text-xs">⚠️ {error}</div>
+<div className="text-red-400 mb-2 text-xs flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> {error}</div>
               <button
                 onClick={refresh}
                 className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
@@ -283,7 +276,7 @@ export default function NewsModule({ instanceId }: Props) {
 
           {!error && news.length === 0 && !loading && (
             <div className="text-center py-8 text-white/40 text-xs">
-              No news available. Click "Refresh" to load news.
+              No news available.
             </div>
           )}
 
@@ -321,11 +314,11 @@ export default function NewsModule({ instanceId }: Props) {
                       <span
                         className={`text-xs ${getSentimentColor(item.sentiment)}`}
                       >
-                        {item.sentiment === "positive"
-                          ? "📈"
-                          : item.sentiment === "negative"
-                            ? "📉"
-                            : "➖"}
+{item.sentiment === "positive"
+  ? <TrendingUp className="w-3 h-3" />
+  : item.sentiment === "negative"
+    ? <TrendingDown className="w-3 h-3" />
+    : <Minus className="w-3 h-3" />}
                       </span>
                     )}
                     {item.category && (

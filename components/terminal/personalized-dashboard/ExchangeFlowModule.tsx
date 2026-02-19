@@ -371,8 +371,8 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
           disabled={refreshing}
           className="
             h-7 w-7 rounded-md
-            bg-blue-500/20 border border-blue-500/30
-            text-blue-300 hover:bg-blue-500/30
+        bg-white/5 border border-white/10
+         text-white/50 hover:bg-white/10
             transition-all flex items-center justify-center
             cursor-pointer
             disabled:opacity-50 disabled:cursor-not-allowed

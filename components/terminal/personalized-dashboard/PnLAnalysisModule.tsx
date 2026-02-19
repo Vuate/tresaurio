@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { usePnL } from "@/hooks/usePnL";
+import { BarChart2 } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -95,7 +96,7 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
         {/* Empty State */}
         {pnl.totalInvestment === 0 ? (
           <div className="text-center py-6 sm:py-8 text-white/40">
-            <div className="text-2xl sm:text-4xl mb-1 sm:mb-2">📊</div>
+<div className="mb-1 sm:mb-2 flex justify-center"><BarChart2 className="w-6 h-6 sm:w-8 sm:h-8 text-white/40" /></div>
             <div className="text-[10px] sm:text-xs">No positions yet</div>
             <div className="text-[9px] sm:text-[10px] mt-0.5 sm:mt-1">
               Add positions to see PnL analysis

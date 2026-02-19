@@ -214,23 +214,16 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     return (
       <div
         onWheel={(e) => e.stopPropagation()}
-        className={`
-          absolute mt-1 z-[999]
-          w-[120px] sm:w-[140px]
-          max-h-[200px] sm:max-h-[88px]
-          overflow-y-auto
-          bg-[#0b1f1f]
-          border border-emerald-500/20
-          rounded-lg
-          shadow-xl
+className={`
+  absolute mt-1 z-[999]
+  w-[120px] sm:w-[140px]
+  bg-[#0b1f1f]
+  border border-emerald-500/20
+  rounded-lg
+  shadow-xl
 
-          [&::-webkit-scrollbar]:w-1.5
-          [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-track]:bg-transparent
-
-          ${shouldOpenLeft ? 'right-0' : 'left-0'}
-        `}
+  ${shouldOpenLeft ? 'right-0' : 'left-0'}
+`}
       >
         {EXCHANGES.map((ex) => (
           <button
@@ -357,23 +350,16 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     return (
       <div
         onWheel={(e) => e.stopPropagation()}
-        className={`
-          absolute mt-1 z-[999]
-          w-[120px] sm:w-[140px]
-          max-h-[200px]
-          overflow-y-auto
-          bg-[#0b1f1f]
-          border border-emerald-500/20
-          rounded-lg
-          shadow-xl
+className={`
+  absolute mt-1 z-[999]
+  w-[120px] sm:w-[140px]
+  bg-[#0b1f1f]
+  border border-emerald-500/20
+  rounded-lg
+  shadow-xl
 
-          [&::-webkit-scrollbar]:w-1.5
-          [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-track]:bg-transparent
-
-          ${shouldOpenLeft ? 'right-0' : 'left-0'}
-        `}
+  ${shouldOpenLeft ? 'right-0' : 'left-0'}
+`}
       >
         {POPULAR_SYMBOLS.map((sym) => (
           <button

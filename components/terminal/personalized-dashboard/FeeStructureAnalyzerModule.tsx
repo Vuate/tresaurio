@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { TrendingDown, DollarSign, Award } from "lucide-react";
+import { TrendingDown, DollarSign, Award, AlertTriangle  } from "lucide-react";
 
 type Exchange = "binance" | "okx" | "bybit";
 
@@ -411,7 +411,7 @@ useEffect(() => {
 
       {analysis.makerRatio < 50 && (
         <div className="bg-yellow-500/10 border border-yellow-500/20 rounded p-2 text-[10px] text-yellow-400">
-          ⚠️ Consider using more limit orders (maker) to reduce fees
+<AlertTriangle className="w-3 h-3 inline mr-1" /> Consider using more limit orders (maker) to reduce fees
         </div>
       )}
     </div>
