@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useFuturesPositionStore } from "@/store/futuresPositionStore";
-import { TrendingUp, TrendingDown, X, RefreshCw, Key, Link2, AlertCircle, Trash2 } from "lucide-react";
+import { TrendingUp, TrendingDown, X, RefreshCw, Key, Link2, AlertCircle, Trash2, AlertTriangle } from "lucide-react";
 import { usePriceStore } from "@/store/priceStore";
 import { useSession } from "next-auth/react";
 import AuthModal from "@/components/auth/AuthModal";
@@ -528,12 +528,10 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
               <div
                 onWheel={(e) => e.stopPropagation()}
                 className={`
-                  absolute z-[999]
-                  w-[140px]
-                  max-h-[120px]
-                  overflow-y-auto
-                  bg-[#0b1f1f]
-                  border border-emerald-500/20
+absolute z-[999]
+w-[140px]
+bg-[#0b1f1f]
+border border-emerald-500/20
                   rounded-lg
                   shadow-xl
                   animate-in fade-in duration-200
@@ -926,7 +924,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           </div>
 
           <div className="flex-shrink-0 p-2.5 bg-yellow-500/10 border border-yellow-500/30 rounded-none text-yellow-400 text-[10px] break-words">
-            ⚠️ Only use READ-ONLY API keys! Enable Futures permissions in your exchange API settings.
+<AlertTriangle className="w-3 h-3 inline mr-1 shrink-0" /> Only use READ-ONLY API keys! Enable Futures permissions in your exchange API settings.
           </div>
 
           <div
@@ -974,9 +972,8 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                     <div
                       onWheel={(e) => e.stopPropagation()}
                       className="
-                        absolute z-50 mt-1 w-full
-                        max-h-[120px] overflow-y-auto
-                        bg-[#0a0e1a]
+                      absolute z-50 mt-1 w-full
+                      bg-[#0a0e1a]
                         border border-white/10
                         rounded-md
                         shadow-lg

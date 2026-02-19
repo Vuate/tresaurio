@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
-import { Plus, Trash2, RefreshCw, Key, AlertCircle, X } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Key, AlertCircle, X, AlertTriangle } from "lucide-react";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { usePriceStore } from "@/store/priceStore";
 import { useSession } from "next-auth/react";
@@ -1260,7 +1260,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
           {/* Warning - FIXED, NO SCROLL */}
           <div className="p-3 bg-yellow-500/10 border-b border-yellow-500/30 flex items-start gap-2 flex-shrink-0">
-            <span className="text-yellow-400 text-lg shrink-0">⚠️</span>
+<AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0" />
             <div className="text-yellow-400 text-[10px] break-words flex-1">
               Only use READ-ONLY API keys! Never share keys with withdrawal
               permissions.

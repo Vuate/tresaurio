@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect } from "react";
 import { usePortfolioStore } from "@/store/portfolioStore";
-import { TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertCircle, Zap } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -167,9 +167,10 @@ export default function FuturesActionsModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
-          ⚡ Futures Actions
-        </span>
+       <span className="font-semibold text-white/90 text-xs whitespace-nowrap flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-white/60" />
+              Futures Actions
+       </span>
         <span className="text-white/40 text-xs">•</span>
         <span
           className={`text-xs font-semibold whitespace-nowrap ${
@@ -488,7 +489,7 @@ export default function FuturesActionsModule({ instanceId }: Props) {
           max="125"
           value={leverage}
           onChange={(e) => handleLeverageSliderChange(parseInt(e.target.value))}
-          className="w-full accent-blue-500 mb-2"
+          className="w-full accent-blue-500 mb-2 cursor-pointer"
         />
 
         <div>

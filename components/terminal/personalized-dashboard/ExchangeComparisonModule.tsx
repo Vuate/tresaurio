@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { AlertTriangle } from "lucide-react";
+
 
 interface ExchangePrice {
   exchange: string;
@@ -327,7 +329,7 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
           {spread > 0.05 && (
             <div className="px-2 py-1.5 rounded bg-yellow-400/10 border border-yellow-400/20">
               <div className="text-[10px] text-yellow-400 font-medium">
-                ⚠️ Arbitrage opportunity detected
+<AlertTriangle className="w-3 h-3 inline mr-1" /> Arbitrage opportunity detected
               </div>
             </div>
           )}

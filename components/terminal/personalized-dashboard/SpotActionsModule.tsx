@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { usePortfolioStore } from "@/store/portfolioStore";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Coins } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -95,9 +95,11 @@ export default function SpotActionsModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
-          💰 Spot Actions
-        </span>
+<span className="font-semibold text-white/90 text-xs whitespace-nowrap flex items-center gap-1.5">
+  <Coins className="w-3.5 h-3.5 text-white/60" />
+  Spot Actions
+</span>
+
 
         <span className="text-white/40 text-xs">•</span>
 

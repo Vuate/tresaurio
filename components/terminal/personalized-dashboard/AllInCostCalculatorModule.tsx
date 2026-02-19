@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Calculator, TrendingUp, AlertTriangle, Plus, X } from "lucide-react";
+import { Calculator, TrendingUp, TrendingDown, AlertTriangle, Plus, X} from "lucide-react";
 
 type PositionSide = "long" | "short";
 type FeeType = "maker" | "taker";
@@ -944,20 +944,21 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
 
         {costs.costImpact > 0.1 && (
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-2 text-[10px] text-yellow-400">
-            ⚠️ High cost impact ({costs.costImpact.toFixed(2)}%)!
+<AlertTriangle className="w-3 h-3 inline mr-1" /> High cost impact ({costs.costImpact.toFixed(2)}%)!
           </div>
         )}
 
         {leverage > 10 && (
           <div className="bg-red-500/10 border border-red-500/20 rounded-md p-2 text-[10px] text-red-400">
-            ⚠️ High leverage ({leverage}x)! Risk of liquidation.
+<AlertTriangle className="w-3 h-3 inline mr-1" /> High leverage ({leverage}x)! Risk of liquidation.
           </div>
         )}
 
         <div className="bg-white/5 border border-white/10 rounded-md p-2 text-[10px] text-white/40">
           {side === "long"
-            ? `📈 Price must reach $${costs.effectivePrice.toLocaleString()} to break even`
-            : `📉 Price must drop to $${costs.effectivePrice.toLocaleString()} to break even`}
+? <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Price must reach ${costs.effectivePrice.toLocaleString()} to break even</span>
+: <span className="flex items-center gap-1"><TrendingDown className="w-3 h-3" /> Price must drop to ${costs.effectivePrice.toLocaleString()} to break even</span>
+          }
         </div>
       </div>
 

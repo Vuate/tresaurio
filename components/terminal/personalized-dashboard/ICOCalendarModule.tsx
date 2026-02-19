@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Gem } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -365,7 +366,7 @@ export default function ICOCalendarModule({ instanceId }: Props) {
                   {ico.raised > 100000000 && (
                     <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-1.5 sm:p-2 mt-1 sm:mt-2">
                       <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-blue-400">
-                        <span>💎</span>
+<Gem className="w-3 h-3 text-blue-400" />
                         <span>Major funding round - high market interest</span>
                       </div>
                     </div>
