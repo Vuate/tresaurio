@@ -141,6 +141,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
         locked.add(id);
       }
       set({ lockedModules: locked });
+        debouncedSaveToDB();
     },
 
         isModuleLocked: (id) => get().lockedModules.has(id),

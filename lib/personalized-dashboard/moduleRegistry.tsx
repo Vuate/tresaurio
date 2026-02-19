@@ -142,7 +142,7 @@ export const moduleRegistry: Record<string, ModuleDefinition> = {
   "funding-rate": {
     type: "funding-rate",
     title: "Funding Rate Tracker",
-    description: "8-hour funding rate takibi ve trend analizi",
+description: "8-hour funding rate tracking and trend analysis",
     category: "market-microstructure",
     defaultSize: { width: 310, height: 400 },
     render: (instanceId: string) => (
