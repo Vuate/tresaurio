@@ -2,37 +2,24 @@
 
 import { useEffect, useState } from "react";
 
-type TickerItem = {
-  symbol: string;
-  lastPrice: string;
-  priceChangePercent: string;
-};
-
-type ProxyResponse<T> =
-  | { success: true; data: T }
-  | { success: false; error?: string };
-
-type KlineRow = [number, string, string, string, string, ...unknown[]];
-
 function TrendLine({ data }: { data: number[] }) {
   if (!data || data.length === 0) return null;
 
   const max = Math.max(...data);
   const min = Math.min(...data);
-  const denomY = max - min || 1;
 
   const points = data
     .map((v, i) => {
       const x = (i / (data.length - 1)) * 120;
-      const y = 30 - ((v - min) / denomY) * 30;
+      const y = 30 - ((v - min) / (max - min)) * 30;
       return `${x},${y}`;
     })
     .join(" ");
 
   return (
-    <svg
-      width="80"
-      height="24"
+    <svg 
+      width="80" 
+      height="24" 
       className="sm:w-[90px] sm:h-[28px] md:w-[100px] md:h-[30px] lg:w-[120px] lg:h-[32px] xl:w-[140px] 2xl:w-[160px]"
     >
       <polyline
@@ -47,7 +34,7 @@ function TrendLine({ data }: { data: number[] }) {
   );
 }
 
-const mapSymbols: Record<string, number> = {
+const mapSymbols: any = {
   BTC: 1,
   ETH: 1027,
   BNB: 1839,
@@ -63,12 +50,10 @@ function getIcon(symbol: string) {
   return `https://s2.coinmarketcap.com/static/img/coins/64x64/${id}.png`;
 }
 
-const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"];
-
 export default function LivePrices() {
-  const [prices, setPrices] = useState<TickerItem[]>([]);
+  const [prices, setPrices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [trendData, setTrendData] = useState<Record<string, number[]>>({});
+  const [trendData, setTrendData] = useState<any>({});
   const [time, setTime] = useState("");
 
   useEffect(() => {
@@ -88,69 +73,50 @@ export default function LivePrices() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    let alive = true;
+  const symbols = [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "USDTUSDT",
+  ];
 
+  useEffect(() => {
     async function load() {
-      try {
-        const qs = SYMBOLS.join(",");
-        const res = await fetch(
-          `/api/v2/binance/ticker?symbols=${encodeURIComponent(qs)}`,
-          { cache: "no-store" }
-        );
-        const json = (await res.json()) as ProxyResponse<TickerItem[]>;
-        if (!json.success) return;
-        const data = Array.isArray(json.data) ? json.data : [];
-        if (alive) {
-          setPrices(data);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("Ticker fetch error:", err);
-      }
+      const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
+      const all = await res.json();
+      setPrices(all.filter((i: any) => symbols.includes(i.symbol)));
+      setLoading(false);
     }
 
     load();
     const int = setInterval(load, 5000);
-    return () => {
-      alive = false;
-      clearInterval(int);
-    };
+    return () => clearInterval(int);
   }, []);
 
   useEffect(() => {
-    let alive = true;
-
     async function loadTrend() {
-      const trend: Record<string, number[]> = {};
+      const trend: any = {};
 
-      for (const s of SYMBOLS) {
+      for (const s of symbols) {
         try {
           const r = await fetch(
-            `/api/v2/binance/klines?symbol=${encodeURIComponent(s)}&interval=1m&limit=30`,
-            { cache: "no-store" }
+            `https://api.binance.com/api/v3/klines?symbol=${s}&interval=1m&limit=30`
           );
-          const json = (await r.json()) as ProxyResponse<KlineRow[]>;
-          if (json.success && Array.isArray(json.data)) {
-            trend[s] = json.data.map((c) => Number(c[4])).filter((n) => Number.isFinite(n));
-          } else {
-            trend[s] = [];
-          }
+          const json = await r.json();
+          trend[s] = json.map((c: any) => Number(c[4]));
         } catch (err) {
           console.log("Trend fetch error:", err);
-          trend[s] = [];
         }
       }
 
-      if (alive) setTrendData(trend);
+      setTrendData(trend);
     }
 
     loadTrend();
     const interval = setInterval(loadTrend, 5000);
-    return () => {
-      alive = false;
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   if (loading)
@@ -161,7 +127,7 @@ export default function LivePrices() {
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 sm:mb-6 xl:mb-7 2xl:mb-8 gap-2 sm:gap-0">
         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-2 sm:gap-4 xl:gap-5 2xl:gap-6">
           <h2 className="text-lg sm:text-xl md:text-2xl xl:text-[28px] 2xl:text-3xl font-extrabold text-white leading-none">
-            Live Market Prices
+         Live Market Prices
           </h2>
 
           <span className="flex items-center gap-1.5 sm:gap-2 text-green-400 font-semibold text-xs sm:text-sm sm:pb-[2px]">
@@ -196,11 +162,14 @@ export default function LivePrices() {
             <div
               key={p.symbol}
               className="
-                grid grid-cols-[auto_1fr_auto_auto]
+                /* Mobil: Kompakt grid (4 kolon) */
+                grid grid-cols-[auto_1fr_auto_auto] 
                 gap-x-2 gap-y-1
                 px-2.5 py-2
+                /* Tablet */
                 sm:grid-cols-[auto_1fr_auto_auto]
                 sm:gap-x-3 sm:px-3 sm:py-2.5
+                /* Desktop */
                 lg:grid-cols-[200px_minmax(100px,1fr)_160px_100px] lg:gap-x-0 lg:px-4 lg:py-3
                 xl:grid-cols-[220px_minmax(120px,1fr)_180px_110px] xl:px-5 xl:py-3.5
                 2xl:grid-cols-[240px_minmax(140px,1fr)_200px_120px] 2xl:px-6 2xl:py-4
@@ -223,7 +192,7 @@ export default function LivePrices() {
               </div>
 
               <div className="flex items-center justify-center lg:justify-start col-span-2 lg:col-span-1">
-                <TrendLine data={trendData[p.symbol] ?? []} />
+                <TrendLine data={trendData[p.symbol]} />
               </div>
 
               <p className="text-white text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl font-semibold text-right col-span-1 lg:text-right leading-none">
@@ -235,7 +204,7 @@ export default function LivePrices() {
                   percent >= 0 ? "text-green-400" : "text-red-400"
                 }`}
               >
-                {percent >= 0 ? "+" : ""}{Number.isFinite(percent) ? percent.toFixed(2) : "0.00"}%
+                {percent >= 0 ? "+" : ""}{percent.toFixed(2)}%
               </p>
             </div>
           );
