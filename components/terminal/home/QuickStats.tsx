@@ -2,31 +2,16 @@
 
 import { useEffect, useState } from "react";
 
-type ProxyResponse<T> =
-  | { success: true; data: T }
-  | { success: false; error?: string };
-
-type CoinGeckoGlobal = {
-  data: {
-    total_market_cap: Record<string, number>;
-    total_volume: Record<string, number>;
-    market_cap_percentage: Record<string, number>;
-    active_cryptocurrencies: number;
-  };
-};
-
 export default function QuickStats() {
-  const [stats, setStats] = useState<CoinGeckoGlobal["data"] | null>(null);
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   async function fetchStats() {
     try {
-      const res = await fetch("/api/v2/coingecko/global", { cache: "no-store" });
-      const json = (await res.json()) as ProxyResponse<CoinGeckoGlobal>;
-      if (json.success) {
-        setStats(json.data.data);
-        setLoading(false);
-      }
+      const res = await fetch("https://api.coingecko.com/api/v3/global");
+      const data = await res.json();
+      setStats(data.data);
+      setLoading(false);
     } catch (err) {
       console.error("QuickStats API error:", err);
     }
@@ -69,14 +54,14 @@ export default function QuickStats() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string | number }) {
+function StatCard({ label, value }: any) {
   return (
     <div
       className="
-        relative
+        relative 
         p-5 xl:p-5.5 2xl:p-6
         rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
-        bg-[#0C0F14]/80 border border-white/5
+        bg-[#0C0F14]/80 border border-white/5 
         backdrop-blur-xl
         overflow-hidden
         shadow-[0_0_25px_-8px_rgba(0,0,0,0.6)]
@@ -98,7 +83,7 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
       <div
         className="
           absolute inset-0 rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
-          ring-1 ring-white/5
+          ring-1 ring-white/5 
           pointer-events-none
         "
       />
