@@ -17,6 +17,7 @@ export interface SpotPosition {
   totalCost: number;
   entryDate: string;
   notes?: string;
+  manualEntryPrice?: number;
 }
 
 export interface FuturesPosition {
