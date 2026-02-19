@@ -9,7 +9,17 @@ type Item = {
   icon: string;
 };
 
-const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"];
+type ProxyResponse<T> =
+  | { success: true; data: T }
+  | { success: false; error?: string };
+
+type Binance24hrTicker = {
+  symbol: string;
+  quoteVolume: string;
+  priceChangePercent: string;
+};
+
+const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"] as const;
 
 const ICON_MAP: Record<string, number> = {
   BTC: 1,
@@ -30,13 +40,26 @@ export default function TickerBar() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const data = await res.json();
+      try {
+        const res = await fetch(
+          `/api/v2/binance/ticker?symbols=${SYMBOLS.join(",")}`,
+          { cache: "no-store" },
+        );
 
-      setItems(
-        data
-          .filter((c: any) => SYMBOLS.includes(c.symbol))
-          .map((c: any) => {
+        const json = (await res.json()) as ProxyResponse<Binance24hrTicker[]>;
+
+        if (!json.success) {
+          console.error(json.error);
+          return;
+        }
+
+        const data = json.data;
+        if (!Array.isArray(data)) return;
+
+        const nextItems: Item[] = data
+          // defensive: route already returns requested symbols, but keep it safe
+          .filter((c) => (SYMBOLS as readonly string[]).includes(c.symbol))
+          .map((c) => {
             const volume = Number(c.quoteVolume);
             return {
               name: c.symbol.replace("USDT", ""),
@@ -47,8 +70,12 @@ export default function TickerBar() {
               change: Number(c.priceChangePercent),
               icon: getIcon(c.symbol),
             };
-          })
-      );
+          });
+
+        setItems(nextItems);
+      } catch (e) {
+        console.error(e);
+      }
     };
 
     fetchData();
@@ -59,10 +86,10 @@ export default function TickerBar() {
   useEffect(() => {
     if (!trackRef.current) return;
 
-    const block = trackRef.current.children[0] as HTMLElement;
-    if (!block) return;
+    const firstChild = trackRef.current.children[0];
+    if (!(firstChild instanceof HTMLElement)) return;
 
-    const width = block.scrollWidth;
+    const width = firstChild.scrollWidth;
     trackRef.current.style.setProperty("--marquee-distance", `-${width}px`);
   }, [items]);
 
@@ -74,12 +101,12 @@ export default function TickerBar() {
         ref={trackRef}
         className="flex flex-nowrap"
         style={{
-          width: 'max-content',
-          willChange: 'transform',
-          animation: 'marquee 25s linear infinite',
+          width: "max-content",
+          willChange: "transform",
+          animation: "marquee 25s linear infinite",
         }}
       >
-        {[...Array(3)].map((_, blockIndex) => (
+        {Array.from({ length: 3 }).map((_, blockIndex) => (
           <div
             key={blockIndex}
             className="flex items-center gap-4 xl:gap-6 2xl:gap-7 px-4 xl:px-6 2xl:px-7"

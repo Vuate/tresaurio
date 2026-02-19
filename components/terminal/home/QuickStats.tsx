@@ -1,107 +1,112 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+
+type ProxyResponse<T> =
+  | { success: true; data: T }
+  | { success: false; error?: string };
+
+// CoinGecko /global response (biz sadece kullandığımız alanları tipliyoruz)
+type CoinGeckoGlobal = {
+  data: {
+    total_market_cap: Record<string, number>;
+    total_volume: Record<string, number>;
+    market_cap_change_percentage_24h_usd: number;
+    active_cryptocurrencies: number;
+    markets: number;
+  };
+};
 
 export default function QuickStats() {
-  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
-  async function fetchStats() {
-    try {
-      const res = await fetch("https://api.coingecko.com/api/v3/global");
-      const data = await res.json();
-      setStats(data.data);
-      setLoading(false);
-    } catch (err) {
-      console.error("QuickStats API error:", err);
-    }
-  }
+  const [global, setGlobal] = useState<CoinGeckoGlobal | null>(null);
 
   useEffect(() => {
-    fetchStats();
-    const interval = setInterval(fetchStats, 60000);
-    return () => clearInterval(interval);
+    let alive = true;
+
+    async function load() {
+      try {
+        // ✅ TASK GEREĞİ: dış API yerine proxy route kullanıyoruz (CORS yok)
+        const res = await fetch("/api/v2/coingecko/global", {
+          cache: "no-store",
+        });
+
+        // ekstra güvenlik (API hata dönerse)
+        if (!res.ok) {
+          console.error("QuickStats fetch failed:", res.status);
+          return;
+        }
+
+        const json = (await res.json()) as ProxyResponse<CoinGeckoGlobal>;
+
+        if (!json.success) {
+          console.error("Proxy error:", json.error);
+          return;
+        }
+
+        if (alive) {
+          setGlobal(json.data); // proxy formatı: { success, data }
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("QuickStats error:", error);
+      }
+    }
+
+    load();
+    const interval = setInterval(load, 60_000); // 1 dk refresh
+
+    return () => {
+      alive = false;
+      clearInterval(interval);
+    };
   }, []);
 
-  if (loading || !stats) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 xl:gap-4.5 2xl:gap-5 mb-10 xl:mb-11 2xl:mb-12">
-        {[1, 2, 3, 4].map((n) => (
-          <div
-            key={n}
-            className="bg-[#0F121A] border border-white/10 p-5 xl:p-5.5 2xl:p-6 rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl animate-pulse"
-          >
-            <div className="h-3.5 xl:h-4 w-20 xl:w-22 2xl:w-24 bg-white/10 rounded mb-2.5 xl:mb-3"></div>
-            <div className="h-5 xl:h-5.5 2xl:h-6 w-16 xl:w-18 2xl:w-20 bg-white/20 rounded"></div>
-          </div>
-        ))}
-      </div>
-    );
+  if (loading || !global) {
+    return <div className="text-gray-400">Loading...</div>;
   }
 
-  const marketCap = stats.total_market_cap.usd;
-  const volume = stats.total_volume.usd;
-  const btcDominance = stats.market_cap_percentage.btc;
-  const activeCoins = stats.active_cryptocurrencies;
+  const usdMcap = global.data.total_market_cap?.usd ?? 0;
+  const usdVol = global.data.total_volume?.usd ?? 0;
+  const change24h =
+    global.data.market_cap_change_percentage_24h_usd ?? 0;
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 gap-4 xl:gap-4.5 2xl:gap-5 mb-10 xl:mb-11 2xl:mb-12 mt-3 xl:mt-4">
-      <StatCard label="Total Market Cap" value={`$${formatNumber(marketCap)}`} />
-      <StatCard label="24h Trading Volume" value={`$${formatNumber(volume)}`} />
-      <StatCard label="BTC Dominance" value={`${btcDominance.toFixed(2)}%`} />
-      <StatCard label="Active Cryptocurrencies" value={activeCoins} />
-    </section>
-  );
-}
+    <div className="grid grid-cols-2 gap-3">
+      <div className="rounded-xl border border-white/10 p-4">
+        <div className="text-gray-400 text-xs">Total Market Cap</div>
+        <div className="text-white font-bold text-lg">
+          ${usdMcap.toLocaleString()}
+        </div>
+      </div>
 
-function StatCard({ label, value }: any) {
-  return (
-    <div
-      className="
-        relative 
-        p-5 xl:p-5.5 2xl:p-6
-        rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
-        bg-[#0C0F14]/80 border border-white/5 
-        backdrop-blur-xl
-        overflow-hidden
-        shadow-[0_0_25px_-8px_rgba(0,0,0,0.6)]
-      "
-    >
-      {/* BLOB */}
-      <div
-        className="
-          absolute -top-20 xl:-top-22 2xl:-top-25
-          -right-20 xl:-right-22 2xl:-right-25
-          w-36 h-36 xl:w-40 xl:h-40 2xl:w-44 2xl:h-44
-          bg-gradient-to-br from-cyan-400/20 via-teal-500/10 to-transparent
-          rounded-full blur-2xl
-          pointer-events-none
-        "
-      />
+      <div className="rounded-xl border border-white/10 p-4">
+        <div className="text-gray-400 text-xs">Total Volume (24h)</div>
+        <div className="text-white font-bold text-lg">
+          ${usdVol.toLocaleString()}
+        </div>
+      </div>
 
-      {/* RING */}
-      <div
-        className="
-          absolute inset-0 rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
-          ring-1 ring-white/5 
-          pointer-events-none
-        "
-      />
+      <div className="rounded-xl border border-white/10 p-4">
+        <div className="text-gray-400 text-xs">Market Cap Change (24h)</div>
+        <div
+          className={`font-bold text-lg ${
+            change24h >= 0 ? "text-green-400" : "text-red-400"
+          }`}
+        >
+          {change24h >= 0 ? "+" : ""}
+          {change24h.toFixed(2)}%
+        </div>
+      </div>
 
-      <p className="text-gray-400 text-[11px] xl:text-xs 2xl:text-xs mb-0.5 xl:mb-1 uppercase tracking-wide relative z-10">
-        {label}
-      </p>
-
-      <p className="text-3xl xl:text-4xl 2xl:text-4xl font-bold text-white tracking-tight relative z-10">
-        {value}
-      </p>
+      <div className="rounded-xl border border-white/10 p-4">
+        <div className="text-gray-400 text-xs">
+          Active Cryptos / Markets
+        </div>
+        <div className="text-white font-bold text-lg">
+          {global.data.active_cryptocurrencies} / {global.data.markets}
+        </div>
+      </div>
     </div>
   );
-}
-
-function formatNumber(num: number) {
-  return Intl.NumberFormat("en-US", {
-    notation: "compact",
-    maximumFractionDigits: 2,
-  }).format(num);
 }

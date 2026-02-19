@@ -1,159 +1,163 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-function TrendLine({ data }: { data: number[] }) {
-  if (!data || data.length === 0) return null;
+type TickerItem = {
+  symbol: string;
+  lastPrice: string;
+  priceChangePercent: string;
+};
+
+type ProxyResponse<T> =
+  | { success: true; data: T }
+  | { success: false; error?: string };
+
+type KlineRow = [
+  number, // openTime
+  string, // open
+  string, // high
+  string, // low
+  string, // close (index 4)
+  string, // volume
+  number, // closeTime
+  string, // quoteAssetVolume
+  number, // numberOfTrades
+  string, // takerBuyBaseAssetVolume
+  string, // takerBuyQuoteAssetVolume
+  string, // ignore
+];
+
+function TrendLine({ data }: { data?: number[] }) {
+  if (!data || data.length < 2) return null;
 
   const max = Math.max(...data);
   const min = Math.min(...data);
 
+  const denomX = data.length - 1;
+  const denomY = max - min || 1;
+
   const points = data
     .map((v, i) => {
-      const x = (i / (data.length - 1)) * 120;
-      const y = 30 - ((v - min) / (max - min)) * 30;
+      const x = (i / denomX) * 120;
+      const y = 30 - ((v - min) / denomY) * 30;
       return `${x},${y}`;
     })
     .join(" ");
 
   return (
-    <svg 
-      width="80" 
-      height="24" 
-      className="sm:w-[90px] sm:h-[28px] md:w-[100px] md:h-[30px] lg:w-[120px] lg:h-[32px] xl:w-[140px] 2xl:w-[160px]"
-    >
+    <svg width="80" height="24" className="w-[120px] h-[32px]">
       <polyline
         points={points}
         fill="none"
         stroke="#2effb9"
         strokeWidth="2"
-        className="lg:stroke-[3]"
         strokeLinecap="round"
       />
     </svg>
   );
 }
 
-const mapSymbols: any = {
-  BTC: 1,
-  ETH: 1027,
-  BNB: 1839,
-  SOL: 5426,
-  XRP: 52,
-  USDT: 825,
-};
+const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"] as const;
 
-function getIcon(symbol: string) {
-  const clean = symbol.toUpperCase();
-  const id = mapSymbols[clean];
-  if (!id) return "https://s2.coinmarketcap.com/static/img/coins/64x64/1.png";
-  return `https://s2.coinmarketcap.com/static/img/coins/64x64/${id}.png`;
-}
-
-export default function LivePrices() {
-  const [prices, setPrices] = useState<any[]>([]);
+export default function HomeLivePrices() {
+  const [prices, setPrices] = useState<TickerItem[]>([]);
+  const [trendData, setTrendData] = useState<Record<string, number[]>>({});
   const [loading, setLoading] = useState(true);
-  const [trendData, setTrendData] = useState<any>({});
-  const [time, setTime] = useState("");
 
+  // ✅ Ticker: proxy route üzerinden (CORS yok)
   useEffect(() => {
-    const update = () => {
-      const now = new Date();
-      setTime(
-        now.toLocaleString("en-EN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
-      );
-    };
+    let alive = true;
 
-    update();
-    const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    async function loadTicker() {
+      try {
+        const qs = SYMBOLS.join(",");
+        const res = await fetch(
+          `/api/v2/binance/ticker?symbols=${encodeURIComponent(qs)}`,
+          { cache: "no-store" },
+        );
 
-  const symbols = [
-    "BTCUSDT",
-    "ETHUSDT",
-    "BNBUSDT",
-    "SOLUSDT",
-    "XRPUSDT",
-    "USDTUSDT",
-  ];
+        const json = (await res.json()) as ProxyResponse<TickerItem[]>;
 
-  useEffect(() => {
-    async function load() {
-      const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const all = await res.json();
-      setPrices(all.filter((i: any) => symbols.includes(i.symbol)));
-      setLoading(false);
+        if (!json.success) {
+          console.error(json.error);
+          return;
+        }
+
+        const all = Array.isArray(json.data) ? json.data : [];
+        const filtered = all.filter((i) =>
+          (SYMBOLS as readonly string[]).includes(i.symbol),
+        );
+
+        if (alive) {
+          setPrices(filtered);
+          setLoading(false);
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
 
-    load();
-    const int = setInterval(load, 5000);
-    return () => clearInterval(int);
+    loadTicker();
+    const int = setInterval(loadTicker, 5000);
+
+    return () => {
+      alive = false;
+      clearInterval(int);
+    };
   }, []);
 
+  // ✅ Klines (sparkline trend): proxy route üzerinden (CORS yok)
   useEffect(() => {
-    async function loadTrend() {
-      const trend: any = {};
+    let alive = true;
 
-      for (const s of symbols) {
+    async function loadTrends() {
+      const trend: Record<string, number[]> = {};
+
+      for (const s of SYMBOLS) {
         try {
           const r = await fetch(
-            `https://api.binance.com/api/v3/klines?symbol=${s}&interval=1m&limit=30`
+            `/api/v2/binance/klines?symbol=${encodeURIComponent(
+              s,
+            )}&interval=1m&limit=30`,
+            { cache: "no-store" },
           );
-          const json = await r.json();
-          trend[s] = json.map((c: any) => Number(c[4]));
+
+          const j = (await r.json()) as ProxyResponse<KlineRow[]>;
+
+          if (!j.success) {
+            console.error(j.error);
+            trend[s] = [];
+            continue;
+          }
+
+          const rows = j.data;
+
+          trend[s] = (Array.isArray(rows) ? rows : [])
+            .map((c) => Number(c[4])) // close
+            .filter((n) => Number.isFinite(n));
         } catch (err) {
           console.log("Trend fetch error:", err);
+          trend[s] = [];
         }
       }
 
-      setTrendData(trend);
+      if (alive) setTrendData(trend);
     }
 
-    loadTrend();
-    const interval = setInterval(loadTrend, 5000);
-    return () => clearInterval(interval);
+    loadTrends();
+    const int = setInterval(loadTrends, 5000);
+
+    return () => {
+      alive = false;
+      clearInterval(int);
+    };
   }, []);
 
-  if (loading)
-    return <p className="text-center text-gray-400 py-8 xl:py-10 2xl:py-12">Loading...</p>;
+  if (loading) return <div className="text-gray-400">Loading...</div>;
 
   return (
-    <div className="w-full mt-60 xl:mt-62 2xl:mt-64">
-      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 sm:mb-6 xl:mb-7 2xl:mb-8 gap-2 sm:gap-0">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end gap-2 sm:gap-4 xl:gap-5 2xl:gap-6">
-          <h2 className="text-lg sm:text-xl md:text-2xl xl:text-[28px] 2xl:text-3xl font-extrabold text-white leading-none">
-         Live Market Prices
-          </h2>
-
-          <span className="flex items-center gap-1.5 sm:gap-2 text-green-400 font-semibold text-xs sm:text-sm sm:pb-[2px]">
-            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></span>
-            LIVE
-          </span>
-        </div>
-
-        <div className="flex items-center gap-1 sm:gap-1.5 xl:gap-2 text-left sm:text-right sm:mr-2 xl:mr-2.5 2xl:mr-3">
-          <p className="text-gray-400 text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-xs uppercase whitespace-nowrap">
-            Last Update:
-          </p>
-          <p className="text-white font-semibold text-[10px] sm:text-xs xl:text-[13px] 2xl:text-sm whitespace-nowrap">
-            {time}
-          </p>
-        </div>
-      </div>
-
-      <div className="divide-y divide-white/5 border border-white/10 rounded-lg sm:rounded-xl xl:rounded-2xl 2xl:rounded-2xl overflow-hidden">
-        <div className="hidden lg:grid grid-cols-[200px_minmax(100px,1fr)_160px_100px] xl:grid-cols-[220px_minmax(120px,1fr)_180px_110px] 2xl:grid-cols-[240px_minmax(140px,1fr)_200px_120px] px-4 xl:px-5 2xl:px-6 py-2.5 xl:py-3 bg-white/[0.02] text-[11px] xl:text-xs 2xl:text-xs text-gray-400 uppercase tracking-wider">
-          <span>Coin</span>
-          <span>Trend</span>
-          <span className="text-right">Price</span>
-          <span className="text-right">24h %</span>
-        </div>
-
+    <div className="w-full">
+      <div className="divide-y divide-white/10 border border-white/10 rounded-xl overflow-hidden">
         {prices.map((p) => {
           const name = p.symbol.replace("USDT", "");
           const percent = Number(p.priceChangePercent);
@@ -161,51 +165,26 @@ export default function LivePrices() {
           return (
             <div
               key={p.symbol}
-              className="
-                /* Mobil: Kompakt grid (4 kolon) */
-                grid grid-cols-[auto_1fr_auto_auto] 
-                gap-x-2 gap-y-1
-                px-2.5 py-2
-                /* Tablet */
-                sm:grid-cols-[auto_1fr_auto_auto]
-                sm:gap-x-3 sm:px-3 sm:py-2.5
-                /* Desktop */
-                lg:grid-cols-[200px_minmax(100px,1fr)_160px_100px] lg:gap-x-0 lg:px-4 lg:py-3
-                xl:grid-cols-[220px_minmax(120px,1fr)_180px_110px] xl:px-5 xl:py-3.5
-                2xl:grid-cols-[240px_minmax(140px,1fr)_200px_120px] 2xl:px-6 2xl:py-4
-                hover:bg-white/[0.03] transition-all
-                items-center
-              "
+              className="grid grid-cols-[140px_1fr_140px_90px] items-center px-4 py-3"
             >
-              <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-3 xl:gap-3.5 2xl:gap-4 col-span-1">
-                <img
-                  src={getIcon(name)}
-                  onError={(e) => (e.currentTarget.src = getIcon("BTC"))}
-                  alt={name}
-                  className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 2xl:w-11 2xl:h-11 rounded-lg object-cover flex-shrink-0"
-                />
+              <div className="text-white font-semibold">{name}</div>
 
-                <div className="lg:block">
-                  <p className="text-white font-semibold text-xs sm:text-sm lg:text-sm xl:text-[15px] 2xl:text-base leading-none">{name}</p>
-                  <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-[11px] xl:text-xs 2xl:text-xs mt-0.5">{p.symbol}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center lg:justify-start col-span-2 lg:col-span-1">
+              <div className="flex justify-start">
                 <TrendLine data={trendData[p.symbol]} />
               </div>
 
-              <p className="text-white text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl font-semibold text-right col-span-1 lg:text-right leading-none">
+              <div className="text-right text-white font-semibold">
                 ${Number(p.lastPrice).toLocaleString()}
-              </p>
+              </div>
 
-              <p
-                className={`text-right text-[10px] sm:text-xs lg:text-xs xl:text-sm 2xl:text-sm font-semibold col-start-4 lg:col-start-auto leading-none ${
+              <div
+                className={`text-right font-semibold ${
                   percent >= 0 ? "text-green-400" : "text-red-400"
                 }`}
               >
-                {percent >= 0 ? "+" : ""}{percent.toFixed(2)}%
-              </p>
+                {percent >= 0 ? "+" : ""}
+                {Number.isFinite(percent) ? percent.toFixed(2) : "0.00"}%
+              </div>
             </div>
           );
         })}

@@ -11,14 +11,24 @@ type Coin = {
   price_change_percentage_24h: number;
 };
 
+type ProxyResponse<T> =
+  | { success: true; data: T }
+  | { success: false; error?: string };
+
+type Binance24hrTicker = {
+  symbol: string;
+  lastPrice: string;
+  priceChangePercent: string;
+};
+
+// ❗ FIX: USDTUSDT kaldırıldı (geçersiz symbol → 500 hatası yapıyordu)
 const SYMBOLS = [
   "BTCUSDT",
   "ETHUSDT",
   "BNBUSDT",
   "SOLUSDT",
   "XRPUSDT",
-  "USDTUSDT",
-];
+] as const;
 
 const ICON_MAP: Record<string, number> = {
   BTC: 1,
@@ -26,7 +36,6 @@ const ICON_MAP: Record<string, number> = {
   BNB: 1839,
   SOL: 5426,
   XRP: 52,
-  USDT: 825,
 };
 
 const getIcon = (symbol: string) =>
@@ -39,13 +48,25 @@ export default function CryptoTicker() {
 
   useEffect(() => {
     const fetchCoins = async () => {
-      const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const data = await res.json();
+      try {
+        const qs = SYMBOLS.join(",");
+        const res = await fetch(
+          `/api/v2/binance/ticker?symbols=${encodeURIComponent(qs)}`,
+          { cache: "no-store" }
+        );
 
-      setCoins(
-        data
-          .filter((c: any) => SYMBOLS.includes(c.symbol))
-          .map((c: any) => {
+        const json = (await res.json()) as ProxyResponse<Binance24hrTicker[]>;
+
+        if (!json.success) {
+          console.error("Ticker API error:", json.error);
+          return;
+        }
+
+        const data = json.data;
+        if (!Array.isArray(data)) return;
+
+        setCoins(
+          data.map((c) => {
             const name = c.symbol.replace("USDT", "");
             return {
               id: c.symbol,
@@ -56,7 +77,10 @@ export default function CryptoTicker() {
               price_change_percentage_24h: Number(c.priceChangePercent),
             };
           })
-      );
+        );
+      } catch (e) {
+        console.error("CryptoTicker fetch error:", e);
+      }
     };
 
     fetchCoins();
@@ -102,18 +126,22 @@ export default function CryptoTicker() {
             />
 
             <div className="flex min-w-0 flex-col gap-0.5 xl:gap-1">
-              <span className="
-                text-[13px] xl:text-[14px] 2xl:text-[15px]
-                font-bold tracking-wide text-white
-              ">
+              <span
+                className="
+                  text-[13px] xl:text-[14px] 2xl:text-[15px]
+                  font-bold tracking-wide text-white
+                "
+              >
                 {coin.symbol.toUpperCase()}
               </span>
 
-              <span className="
-                whitespace-nowrap 
-                text-[14px] xl:text-[15px] 2xl:text-[16px]
-                text-gray-200 tabular-nums
-              ">
+              <span
+                className="
+                  whitespace-nowrap 
+                  text-[14px] xl:text-[15px] 2xl:text-[16px]
+                  text-gray-200 tabular-nums
+                "
+              >
                 ${coin.current_price.toLocaleString("en-US")}
               </span>
 

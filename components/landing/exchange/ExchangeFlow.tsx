@@ -38,7 +38,7 @@ export default function ExchangeFlow() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
+      const res = await fetch("/api/v2/binance/ticker");
       const data = await res.json();
 
       setFlows(
