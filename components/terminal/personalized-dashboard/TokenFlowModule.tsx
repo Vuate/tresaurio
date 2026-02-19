@@ -328,7 +328,7 @@ export default function TokenFlowModule({ instanceId }: Props) {
 
 {tokenDropdownOpen && (() => {
   const buttonRect = tokenDropdownRef.current?.getBoundingClientRect();
-  const shouldOpenLeft = buttonRect ? buttonRect.left > window.innerWidth / 2 : false;
+const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) : false;
 
   return (
     <div

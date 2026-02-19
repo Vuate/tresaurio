@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -353,7 +354,7 @@ export default function TokenUnlockModule({ instanceId }: Props) {
                   {unlock.percentage > 10 && (
                     <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-1.5 sm:p-2 mt-1 sm:mt-2">
                       <div className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] text-red-400">
-                        <span>⚠️</span>
+<AlertTriangle className="w-3 h-3 text-red-400 shrink-0" />
                         <span>High supply impact - potential price pressure</span>
                       </div>
                     </div>

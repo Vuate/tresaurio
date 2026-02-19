@@ -113,8 +113,11 @@ if (!target.closest("[data-canvas-container]")) {
   return;
 }
 
-    e.preventDefault();
+if (target.closest("[data-module-window]")) {
+  return;
+}
 
+    e.preventDefault();
 
     if (!el) return;
 

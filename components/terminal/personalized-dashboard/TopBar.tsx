@@ -225,7 +225,7 @@ onClick={(e) => {
         closeEverything();
         setUIBlocked(false);
         closeAllPanels();
-        notify({ type: "success", title: "Dashboard Unlocked", description: "All interactions are enabled." });
+        notify({ type: "success", title: "Dashboard Unlocked", description: "Layout is unlocked." });
         return;
       }
       
@@ -288,7 +288,7 @@ onClick={(e) => {
   {confirmLock && (
     <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-2.5 rounded-xl bg-[#041F20]/95 backdrop-blur border border-amber-400/30 shadow-lg z-[60]">
       <p className="text-[10px] sm:text-[11px] text-amber-300 mb-2">
-        Lock dashboard? All interactions will be disabled.
+        Lock dashboard?
       </p>
       <div className="flex gap-1.5 sm:gap-2">
         <button
@@ -297,7 +297,7 @@ onClick={(e) => {
             setUIBlocked(true);
             setConfirmLock(false);
             closeAllPanels();
-            notify({ type: "success", title: "Dashboard Locked", description: "All interactions are disabled." });
+            notify({ type: "success", title: "Dashboard Locked", description: "Layout is locked." });
           }}
           className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-amber-300 bg-amber-400/15 border border-amber-400/30 hover:bg-amber-400/25 transition cursor-pointer"
         >

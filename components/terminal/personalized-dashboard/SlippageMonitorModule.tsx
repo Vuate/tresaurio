@@ -423,7 +423,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
             {slippageData.impact === "high" && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-md p-2">
                 <div className="flex items-start gap-2">
-                  <span className="text-red-400 text-sm leading-none">⚠️</span>
+<AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
                   <div className="text-[10px] text-red-400 leading-tight">
                     <strong>High slippage detected!</strong> Consider splitting your order or
                     using limit orders.
@@ -435,7 +435,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
             {slippageData.insufficientLiquidity && (
               <div className="bg-orange-500/10 border border-orange-500/20 rounded-md p-2">
                 <div className="flex items-start gap-2">
-                  <span className="text-orange-400 text-sm leading-none">⚠️</span>
+<AlertTriangle className="w-3.5 h-3.5 text-orange-400 shrink-0" />
                   <div className="text-[10px] text-orange-400 leading-tight">
                     <strong>Insufficient liquidity!</strong> Order cannot be fully filled at
                     current market depth.

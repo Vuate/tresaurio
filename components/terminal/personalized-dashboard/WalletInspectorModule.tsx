@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface Props {
   instanceId: string;
@@ -325,7 +326,7 @@ export default function WalletInspectorModule({ instanceId }: Props) {
       >
         {error ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
-            <div className="text-4xl mb-2">⚠️</div>
+<div className="mb-2 flex justify-center"><AlertTriangle className="w-8 h-8 text-red-400" /></div>
             <div className="text-sm text-red-400 px-4 break-words">{error}</div>
           </div>
         ) : !walletData ? (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback, useMemo } from "react";
-import { ZoomIn, ZoomOut, RotateCcw, ArrowLeftRight } from "lucide-react";
+import { ZoomIn, ZoomOut, RotateCcw, ArrowLeftRight, Minus, Maximize2, X } from "lucide-react";
 import { Lock, Unlock } from "lucide-react";
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
@@ -28,8 +28,11 @@ function throttle<T extends (...args: any[]) => any>(
 }
 
 export default function ModuleWindow({ module }: { module: ModuleInstance }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isDraggingWindow, setIsDraggingWindow] = useState(false);
+const ref = useRef<HTMLDivElement>(null);
+const headerRef = useRef<HTMLDivElement>(null);
+const [isDraggingWindow, setIsDraggingWindow] = useState(false);
+const [headerHeight, setHeaderHeight] = useState(42);
+
 
   const { 
     updateModule, 
@@ -390,29 +393,34 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
         left: module.x,
         top: module.y,
         width: module.width,
-        height: module.minimized ? 42 : module.height,
+height: module.minimized ? headerHeight : module.height,
         zIndex: isDraggingWindow ? 99999 : (isActive ? 50 : 10),
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
         transform: "translateZ(0)",
       }}
-onMouseDown={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; setActiveModule(module.id); }}
-
+     onMouseDown={() => { setActiveModule(module.id); }}
     >
-      <div
-        data-module-header
-        onMouseDown={onDragMouseDown}
-        className={`flex items-center justify-between px-4 py-2
-          border-b border-white/10 ${isLocked ? "cursor-default" : "cursor-move"}`}
-      >
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.35)]" />
-          <div className="text-[12px] font-semibold text-white/90">
-            {module.title}
-          </div>
-        </div>
+<div
+  data-module-header
+  ref={(el) => {
+    if (el && el.offsetHeight !== headerHeight) {
+      setHeaderHeight(el.offsetHeight);
+    }
+  }}
+  onMouseDown={onDragMouseDown}
+className={`flex items-center justify-between px-4 py-2
+  border-b border-white/10 ${isLocked ? "cursor-default" : "cursor-move"}`}
+>
 
-<div className="flex gap-2 items-center">
+<div className="flex items-center gap-2 min-w-0 flex-1">
+<span className="w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.35)] flex-shrink-0" />
+  <div className="text-[12px] font-semibold text-white/90 truncate">
+    {module.title}
+  </div>
+</div>
+
+<div className="flex gap-2 items-center flex-shrink-0">
     <button
 onClick={(e) => {
       e.stopPropagation();
@@ -487,43 +495,43 @@ onClick={(e) => {
     </button>
   </div>
 
-          <div className="flex gap-1">
-            <button
-               onClick={() => {
-                if (usePersonalizedDashboardStore.getState().uiBlocked) return;
-                updateModule(module.id, { minimized: !module.minimized });
-              }}
+<div className="flex gap-1">
+  <button
+    onClick={() => {
+      if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+      updateModule(module.id, { minimized: !module.minimized });
+    }}
+className="h-6 w-6 rounded-md border border-white/10 bg-white/5
+  text-white/70 hover:bg-white/10 cursor-pointer flex items-center justify-center"
+title={module.minimized ? "Restore" : "Minimize"}
+  >
+    {module.minimized ? <Maximize2 className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+  </button>
 
-              className="h-6 w-6 rounded-md border border-white/10 bg-white/5
-                text-white/70 hover:bg-white/10 cursor-pointer"
-            >
-              {module.minimized ? "□" : "—"}
-            </button>
+  <button
+    onClick={() => {
+      if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+      removeModule(module.id);
+      useDashboardNotificationStore.getState().push({
+        type: "success",
+        title: "Module Removed",
+        description: `${module.title} removed from dashboard`,
+      });
+    }}
+className="h-6 w-6 rounded-md border border-white/10 bg-white/5
+  hover:bg-red-500/80 cursor-pointer flex items-center justify-center"
+  title="Remove Module"
+  >
+    <X className="w-3 h-3 text-white/70" />
+  </button>
+</div>
 
-            <button
-              onClick={() => {
-                if (usePersonalizedDashboardStore.getState().uiBlocked) return;
-                removeModule(module.id);
-                useDashboardNotificationStore.getState().push({
-                  type: "success",
-                  title: "Module Removed",
-                  description: `${module.title} removed from dashboard`,
-                });
-              }}
-              className="h-6 w-6 rounded-md border border-white/10 bg-white/5
-                hover:bg-red-500/80 cursor-pointer"
-            >
-              ×
-            </button>
-          </div>
+          
         </div>
       </div>
 
-      {!module.minimized && (
-         <div className="h-[calc(100%-40px)] overflow-hidden relative">
-           {usePersonalizedDashboardStore.getState().uiBlocked && (
-          <div className="absolute inset-0 z-50" />
-       )}
+           {!module.minimized && (
+<div className="h-[calc(100%-40px)] overflow-hidden relative">
        <div
       className="
         h-full overflow-auto p-4
