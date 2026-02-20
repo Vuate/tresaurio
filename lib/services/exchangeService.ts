@@ -82,8 +82,6 @@ async function binanceRequest(
   });
 
   const responseText = await response.text();
-  console.log("[Binance] Response status:", response.status);
-  console.log("[Binance] Response body:", responseText.substring(0, 500));
 
   if (!responseText) {
     throw new Error(
@@ -101,6 +99,7 @@ async function binanceRequest(
   }
 
   if (!response.ok) {
+    console.error("[Binance] Error:", response.status, data.msg);
     throw new Error(`Binance API Error: ${data.msg || response.statusText}`);
   }
 
@@ -230,8 +229,6 @@ async function okxRequest(
   });
 
   const responseText = await response.text();
-  console.log("[OKX] Response status:", response.status);
-  console.log("[OKX] Response body:", responseText.substring(0, 500));
 
   if (!responseText) {
     throw new Error(
@@ -249,6 +246,7 @@ async function okxRequest(
   }
 
   if (data.code !== "0") {
+    console.error("[OKX] Error:", data.code, data.msg);
     throw new Error(`OKX API Error: ${data.msg}`);
   }
 
@@ -277,6 +275,49 @@ async function getOKXSpotBalances(credentials: {
       locked: parseFloat(d.frozenBal),
       total: parseFloat(d.availBal) + parseFloat(d.frozenBal),
     }));
+}
+
+async function getOKXFuturesPositions(credentials: {
+  apiKey: string;
+  apiSecret: string;
+  passphrase?: string;
+}): Promise<FuturesPosition[]> {
+  const data = (await okxRequest(
+    "/api/v5/account/positions?instType=SWAP",
+    "GET",
+    null,
+    credentials,
+  )) as {
+    instId: string;
+    pos: string;
+    avgPx: string;
+    markPx: string;
+    lever: string;
+    upl: string;
+    liqPx: string;
+    mgnMode: string;
+  }[];
+
+  if (!data || data.length === 0) return [];
+
+  return data
+    .filter((p) => parseFloat(p.pos) !== 0)
+    .map((p) => {
+      const size = parseFloat(p.pos);
+      // OKX instId format: "BTC-USDT-SWAP" → symbol "BTCUSDT"
+      const symbol = p.instId.replace("-SWAP", "").replace("-", "");
+      return {
+        symbol,
+        side: size > 0 ? ("long" as const) : ("short" as const),
+        size: Math.abs(size),
+        entryPrice: parseFloat(p.avgPx),
+        markPrice: parseFloat(p.markPx),
+        leverage: parseInt(p.lever),
+        unrealizedPnl: parseFloat(p.upl),
+        marginType: p.mgnMode === "cross" ? ("cross" as const) : ("isolated" as const),
+        liquidationPrice: p.liqPx ? parseFloat(p.liqPx) : 0,
+      };
+    });
 }
 
 // ============================================
@@ -320,8 +361,6 @@ async function bybitRequest(
   });
 
   const responseText = await response.text();
-  console.log("[Bybit] Response status:", response.status);
-  console.log("[Bybit] Response body:", responseText.substring(0, 500));
 
   if (!responseText) {
     throw new Error(
@@ -339,6 +378,7 @@ async function bybitRequest(
   }
 
   if (data.retCode !== 0) {
+    console.error("[Bybit] Error:", data.retCode, data.retMsg);
     throw new Error(`Bybit API Error: ${data.retMsg}`);
   }
 
@@ -367,6 +407,46 @@ async function getBybitSpotBalances(credentials: {
       free: parseFloat(c.walletBalance) - parseFloat(c.locked || "0"),
       locked: parseFloat(c.locked || "0"),
       total: parseFloat(c.walletBalance),
+    }));
+}
+
+async function getBybitFuturesPositions(credentials: {
+  apiKey: string;
+  apiSecret: string;
+}): Promise<FuturesPosition[]> {
+  const data = (await bybitRequest(
+    "/v5/position/list",
+    "GET",
+    { category: "linear", settleCoin: "USDT" },
+    credentials,
+  )) as {
+    list: {
+      symbol: string;
+      side: string;
+      size: string;
+      avgPrice: string;
+      markPrice: string;
+      leverage: string;
+      unrealisedPnl: string;
+      liqPrice: string;
+      tradeMode: number;
+    }[];
+  };
+
+  if (!data.list || data.list.length === 0) return [];
+
+  return data.list
+    .filter((p) => parseFloat(p.size) !== 0)
+    .map((p) => ({
+      symbol: p.symbol,
+      side: p.side === "Buy" ? ("long" as const) : ("short" as const),
+      size: parseFloat(p.size),
+      entryPrice: parseFloat(p.avgPrice),
+      markPrice: parseFloat(p.markPrice),
+      leverage: parseInt(p.leverage),
+      unrealizedPnl: parseFloat(p.unrealisedPnl),
+      marginType: p.tradeMode === 0 ? ("cross" as const) : ("isolated" as const),
+      liquidationPrice: p.liqPrice ? parseFloat(p.liqPrice) : 0,
     }));
 }
 
@@ -411,8 +491,6 @@ async function binanceTrRequest(
   });
 
   const responseText = await response.text();
-  console.log("[BinanceTR] Response status:", response.status);
-  console.log("[BinanceTR] Response body:", responseText.substring(0, 500));
 
   if (!responseText) {
     throw new Error(
@@ -430,6 +508,7 @@ async function binanceTrRequest(
   }
 
   if (data.code !== 0) {
+    console.error("[BinanceTR] Error:", data.code, data.msg);
     throw new Error(`Binance TR API Error: ${data.msg || "Unknown error"}`);
   }
 
@@ -473,7 +552,6 @@ async function getHyperliquidSpotBalances(
     }),
   });
   const responseText = await response.text();
-  console.log("[Hyperliquid] Response status:", response.status);
 
   if (!responseText) {
     throw new Error("Hyperliquid API Error: Empty response");
@@ -516,7 +594,6 @@ async function getHyperliquidFuturesPositions(
   });
 
   const responseText = await response.text();
-  console.log("[Hyperliquid Futures] Response status:", response.status);
 
   if (!responseText) {
     throw new Error("Hyperliquid API Error: Empty response");
@@ -618,13 +695,11 @@ export async function getFuturesPositions(
       // Binance TR does not support futures
       throw new Error("Binance TR does not support futures trading");
     case "okx":
-      // TODO: Implement OKX futures
-      throw new Error("OKX futures not implemented yet");
+      return getOKXFuturesPositions(credentials);
     case "hyperliquid":
       return getHyperliquidFuturesPositions(credentials.apiKey);
     case "bybit":
-      // TODO: Implement Bybit futures
-      throw new Error("Bybit futures not implemented yet");
+      return getBybitFuturesPositions(credentials);
     default:
       throw new Error(`Unknown exchange: ${exchange}`);
   }
