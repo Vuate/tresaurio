@@ -163,14 +163,17 @@ export async function testApiKey(
   exchange: Exchange,
   label?: string,
 ): Promise<boolean> {
+  const { getSpotBalances, getFuturesPositions } = await import("./exchangeService");
   try {
-    const credentials = await getDecryptedApiKey(userId, exchange, label);
-    if (!credentials) return false;
-
-    // TODO: Implement actual test calls to each exchange
-    // For now, just return true if credentials exist
+    await getSpotBalances(userId, exchange, label);
     return true;
   } catch {
-    return false;
+    // Key may be futures-only, try that too
+    try {
+      await getFuturesPositions(userId, exchange, label);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
