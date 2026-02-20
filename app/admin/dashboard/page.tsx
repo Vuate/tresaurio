@@ -19,6 +19,8 @@ import {
   Shield,
   BarChart3,
   Globe,
+  Users,
+  LogIn,
 } from "lucide-react";
 import {
   apiMonitor,
@@ -28,6 +30,21 @@ import {
 } from "@/lib/config/apiMonitor";
 import { EXCHANGE_CONFIG, DATA_PROVIDER_CONFIG } from "@/lib/config/apiConfig";
 
+type ActivityLog = {
+  id: string;
+  action: string;
+  createdAt: string;
+  user: { name: string | null; email: string };
+};
+
+type UserRow = {
+  id: string;
+  name: string | null;
+  email: string;
+  createdAt: string;
+  activityLogs: { action: string; createdAt: string }[];
+};
+
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [stats, setStats] = useState<SourceStats[]>([]);
@@ -36,6 +53,10 @@ export default function AdminDashboardPage() {
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
+  const [totalUsers, setTotalUsers] = useState<number | null>(null);
+  const [userList, setUserList] = useState<UserRow[]>([]);
+  const [recentLogs, setRecentLogs] = useState<ActivityLog[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   // Auth check
   useEffect(() => {
@@ -82,6 +103,32 @@ export default function AdminDashboardPage() {
       clearInterval(interval);
     };
   }, [loadStats, autoRefresh]);
+
+  const fetchUsers = useCallback(async () => {
+    const session = sessionStorage.getItem("admin_session");
+    if (!session) return;
+    const { password } = JSON.parse(session);
+    setUsersLoading(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        headers: { "x-admin-password": password },
+      });
+      const json = await res.json();
+      if (json.success) {
+        setTotalUsers(json.data.totalUsers);
+        setUserList(json.data.users);
+        setRecentLogs(json.data.recentLogs);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setUsersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleLogout = () => {
     sessionStorage.removeItem("admin_session");
@@ -426,6 +473,102 @@ export default function AdminDashboardPage() {
                 )}
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Users Section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-emerald-400" />
+              <h2 className="text-lg font-semibold">Users</h2>
+              {totalUsers !== null && (
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+                  {totalUsers} total
+                </span>
+              )}
+            </div>
+            <button
+              onClick={fetchUsers}
+              disabled={usersLoading}
+              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 transition-colors"
+              title="Refresh users"
+            >
+              <RefreshCw className={`w-4 h-4 ${usersLoading ? "animate-spin" : ""}`} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* User List */}
+            <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
+              <div className="px-4 py-3 border-b border-white/10 text-sm font-medium text-white/60">
+                Registered Users
+              </div>
+              <div className="divide-y divide-white/5 max-h-72 overflow-y-auto">
+                {userList.length === 0 && !usersLoading && (
+                  <div className="px-4 py-6 text-center text-white/30 text-sm">No users yet</div>
+                )}
+                {userList.map((u) => {
+                  const lastLog = u.activityLogs[0];
+                  return (
+                    <div key={u.id} className="px-4 py-3 flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium">{u.name || u.email}</div>
+                        {u.name && <div className="text-xs text-white/40">{u.email}</div>}
+                        <div className="text-xs text-white/30 mt-0.5">
+                          Joined {new Date(u.createdAt).toLocaleDateString("tr-TR")}
+                        </div>
+                      </div>
+                      {lastLog && (
+                        <div className="text-right">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs border ${
+                            lastLog.action === "login"
+                              ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                              : "text-white/40 bg-white/5 border-white/10"
+                          }`}>
+                            <LogIn className="w-3 h-3" />
+                            {lastLog.action}
+                          </span>
+                          <div className="text-xs text-white/30 mt-1">
+                            {new Date(lastLog.createdAt).toLocaleString("tr-TR")}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
+              <div className="px-4 py-3 border-b border-white/10 text-sm font-medium text-white/60">
+                Recent Activity (last 50)
+              </div>
+              <div className="divide-y divide-white/5 max-h-72 overflow-y-auto">
+                {recentLogs.length === 0 && !usersLoading && (
+                  <div className="px-4 py-6 text-center text-white/30 text-sm">No activity yet</div>
+                )}
+                {recentLogs.map((log) => (
+                  <div key={log.id} className="px-4 py-2.5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className={`w-2 h-2 rounded-full shrink-0 ${
+                        log.action === "login" ? "bg-emerald-400" : "bg-white/30"
+                      }`} />
+                      <div>
+                        <span className="text-sm">{log.user.name || log.user.email}</span>
+                        <span className={`ml-2 text-xs ${
+                          log.action === "login" ? "text-emerald-400" : "text-white/40"
+                        }`}>{log.action}</span>
+                      </div>
+                    </div>
+                    <div className="text-xs text-white/30 shrink-0">
+                      {new Date(log.createdAt).toLocaleString("tr-TR")}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 

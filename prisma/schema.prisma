@@ -26,7 +26,22 @@ model User {
   apiKeys       ApiKey[]
   dashboard     UserDashboard?
   templates     DashboardTemplate[]
+  
+    activityLogs  UserActivityLog[]
 }
+model UserActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
 
 model Account {
   id                String  @id @default(cuid())

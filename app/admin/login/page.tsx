@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Eye, EyeOff, AlertCircle, Shield } from "lucide-react";
 
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "tresaurio2024";
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "treasurio2001";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -57,6 +57,7 @@ export default function AdminLoginPage() {
         authenticated: true,
         expires: Date.now() + 4 * 60 * 60 * 1000,
         loginTime: Date.now(),
+        password: password,
       };
       sessionStorage.setItem("admin_session", JSON.stringify(session));
       router.push("/admin/dashboard");
