@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { Plus, Trash2, RefreshCw, Key, AlertCircle, X, AlertTriangle, Pencil } from "lucide-react";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { usePriceStore } from "@/store/priceStore";
+import { wsService } from "@/services/WebSocketService";
 import { useSession } from "next-auth/react";
 import AuthModal from "@/components/auth/AuthModal";
 
@@ -122,41 +123,36 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     fetchApiKeys();
   }, []);
 
-  // Fetch current prices for spot positions
+  // Subscribe to live prices via WebSocket for spot positions
+  const symbolsKey = useMemo(
+    () => [...new Set(spotPositions.map((p) => p.symbol))].sort().join(","),
+    [spotPositions]
+  );
+
   useEffect(() => {
-    if (spotPositions.length === 0) return;
+    if (!symbolsKey) return;
 
-    const fetchSpotPrice = async (symbol: string): Promise<number | null> => {
-      try {
-        const res = await fetch(
-          `https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`
-        );
-        if (res.ok) {
-          const data = await res.json();
-          return data.price ? parseFloat(data.price) : null;
-        }
-      } catch (err) {
-        console.error(`Failed to fetch spot price for ${symbol}:`, err);
-      }
-      return null;
+    const symbols = symbolsKey.split(",").filter(Boolean);
+
+    const unsubscribes = symbols.map((symbol) => {
+      const stream = `${symbol.toLowerCase()}@ticker`;
+      return wsService.subscribe(
+        stream,
+        (rawData: any) => {
+          const price = parseFloat(rawData.c || "0");
+          if (price > 0) {
+            usePriceStore.getState().updatePrice(symbol, price);
+          }
+        },
+        "spot",
+        "binance"
+      );
+    });
+
+    return () => {
+      unsubscribes.forEach((unsub) => unsub());
     };
-
-    const fetchAllPrices = async () => {
-      const symbols = [...new Set(spotPositions.map((p) => p.symbol))];
-
-      for (const symbol of symbols) {
-        const price = await fetchSpotPrice(symbol);
-        if (price) {
-          usePriceStore.getState().updatePrice(symbol, price);
-        }
-      }
-    };
-
-    fetchAllPrices();
-    const interval = setInterval(fetchAllPrices, 5000);
-
-    return () => clearInterval(interval);
-  }, [spotPositions]);
+  }, [symbolsKey]);
 
   const fetchApiKeys = async () => {
     try {
