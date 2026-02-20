@@ -84,8 +84,9 @@ export default function LivePrices() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch("https://api.binance.com/api/v3/ticker/24hr");
-      const all = await res.json();
+      const res = await fetch("/api/v2/binance/ticker");
+      const json = await res.json();
+      const all = json.success ? json.data : [];
       setPrices(all.filter((i: any) => symbols.includes(i.symbol)));
       setLoading(false);
     }
@@ -102,10 +103,10 @@ export default function LivePrices() {
       for (const s of symbols) {
         try {
           const r = await fetch(
-            `https://api.binance.com/api/v3/klines?symbol=${s}&interval=1m&limit=30`
+            `/api/v2/binance/klines?symbol=${s}&interval=1m&limit=30`
           );
-          const json = await r.json();
-          trend[s] = json.map((c: any) => Number(c[4]));
+          const rJson = await r.json();
+          trend[s] = (rJson.success ? rJson.data : []).map((c: any) => Number(c[4]));
         } catch (err) {
           console.log("Trend fetch error:", err);
         }
