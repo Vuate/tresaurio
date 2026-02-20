@@ -73,4 +73,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
+  events: {
+    async signIn({ user }) {
+      if (!user?.id) return;
+      await prisma.userActivityLog.create({
+        data: {
+          userId: user.id,
+          action: "login",
+        },
+      });
+    },
+    async signOut(message) {
+      const token = "token" in message ? message.token : null;
+      if (!token?.id) return;
+      await prisma.userActivityLog.create({
+        data: {
+          userId: token.id as string,
+          action: "logout",
+        },
+      });
+    },
+  },
 });
