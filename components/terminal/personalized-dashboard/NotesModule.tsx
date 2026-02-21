@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore"; 
 import NotificationPopup from "@/components/terminal/personalized-dashboard/NotificationPopup";
@@ -116,7 +117,7 @@ export default function NotesModule() {
                 "
                 title="Delete note"
               >
-                ✕
+                <X className="w-3 h-3" />
               </button>
 
               <div className="flex flex-col gap-0.5 min-w-0 pr-1">

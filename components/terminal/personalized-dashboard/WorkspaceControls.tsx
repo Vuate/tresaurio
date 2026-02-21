@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { Map, Crosshair } from "lucide-react";
 
-import { usePersonalizedDashboardStore, MAX_ZOOM, WORLD_WIDTH, WORLD_HEIGHT, calculateMinZoom } 
+import { usePersonalizedDashboardStore, MAX_ZOOM, WORLD_WIDTH, WORLD_HEIGHT, calculateMinZoom }
 from "@/store/personalizedDashboardStore";
 
 
@@ -197,7 +198,7 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
               "
               onMouseDown={(e) => e.preventDefault()}
             >
-              ⛶
+              <Map className="w-3.5 h-3.5" />
             </div>
           )}
 
@@ -279,7 +280,7 @@ className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
           </div>
 
 <ZoomBtn onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; handleZoom(-0.1); }} size={sizes.buttonSize}>−</ZoomBtn>
-<ZoomBtn onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; alignToActiveWindow(); }} size={sizes.buttonSize}>◎</ZoomBtn>
+<ZoomBtn onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; alignToActiveWindow(); }} size={sizes.buttonSize}><Crosshair className="w-3.5 h-3.5 xl:w-4 xl:h-4 2xl:w-4.5 2xl:h-4.5 " /></ZoomBtn>
         </div>
       </div>
     </div>
@@ -299,16 +300,17 @@ function ZoomBtn({
     <button
       onClick={onClick}
       onMouseDown={(e) => e.preventDefault()}
-      className="
-      rounded-lg
-        bg-[#031A1C]/95
-        border border-white/10
-       text-white text-sm xl:text-base 2xl:text-lg
-        hover:bg-teal-400/20
-        transition
-        select-none
-        cursor-pointer
-      "
+className="
+  rounded-lg
+    bg-[#031A1C]/95
+    border border-white/10
+   text-white text-sm xl:text-base 2xl:text-lg
+    hover:bg-teal-400/20
+    transition
+    select-none
+    cursor-pointer
+    flex items-center justify-center
+"
             style={{ width: size, height: size }}
     >
       {children}

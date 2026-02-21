@@ -6,6 +6,7 @@ import type { ModuleCategory } from "@/lib/personalized-dashboard/types";
 import type { ModuleDefinition } from "@/lib/personalized-dashboard/moduleRegistry";
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
 import { useEffect, useRef, useState } from "react";
+import { Search } from "lucide-react";
 
 export default function AddToolPanel() {
   const {
@@ -23,8 +24,10 @@ export default function AddToolPanel() {
   const panelRef = useRef<HTMLDivElement>(null); 
   const headerRef = useRef<HTMLDivElement>(null);
   const addingRef = useRef(false);
+const searchRef = useRef<HTMLInputElement>(null);
 
   const [headerHeight, setHeaderHeight] = useState(56);
+const [search, setSearch] = useState("");
 
   const effectiveNotesHeight = notesOpen ? notesBarHeight : (
     typeof window !== 'undefined' 
@@ -44,12 +47,18 @@ export default function AddToolPanel() {
     return () => window.removeEventListener('resize', updateHeight);
   }, [topBarHeight, effectiveNotesHeight]);
 
-  useEffect(() => {
-    if (addToolOpen && headerRef.current) {
-      const height = headerRef.current.getBoundingClientRect().height;
-      setHeaderHeight(height);
-    }
-  }, [addToolOpen]);
+useEffect(() => {
+  if (addToolOpen && headerRef.current) {
+    const height = headerRef.current.getBoundingClientRect().height;
+    setHeaderHeight(height);
+  }
+  if (addToolOpen) {
+    setTimeout(() => searchRef.current?.focus(), 50);
+  } else {
+    setSearch("");
+  }
+}, [addToolOpen]);
+
 
   useEffect(() => {
     if (!addToolOpen) return;
@@ -85,12 +94,19 @@ export default function AddToolPanel() {
 
   if (!addToolOpen) return null;
 
-  const grouped = Object.values(moduleRegistry).reduce((acc, mod) => {
-    const category = mod.category;
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(mod);
-    return acc;
-  }, {} as Record<ModuleCategory, ModuleDefinition[]>);
+const filtered = Object.values(moduleRegistry).filter(
+  (mod) =>
+    mod.title.toLowerCase().includes(search.toLowerCase()) ||
+    mod.description?.toLowerCase().includes(search.toLowerCase())
+);
+
+const grouped = filtered.reduce((acc, mod) => {
+  const category = mod.category;
+  if (!acc[category]) acc[category] = [];
+  acc[category].push(mod);
+  return acc;
+}, {} as Record<ModuleCategory, ModuleDefinition[]>);
+
 
 const addAtCurrentView = (type: string) => {
     if (addingRef.current) return;
@@ -135,12 +151,32 @@ const addAtCurrentView = (type: string) => {
   style={{
     height: `calc(${availableHeight}px - ${headerHeight}px)`,
   }}
-  className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
+  className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
   onWheel={(e) => {
     e.stopPropagation();
   }}
 >
-        {Object.entries(grouped).map(([category, mods]) => (
+  <div className="sticky top-0 z-10 px-3 pt-3 pb-2 bg-[#041F20]/95">
+    <div className="relative">
+      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30 pointer-events-none" />
+      <input
+        ref={searchRef}
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search tools..."
+        className="w-full bg-white/5 border border-white/10 rounded-lg pl-7 pr-3 py-1.5 text-[12px] xl:text-[12.5px] 2xl:text-xs text-white placeholder-white/30 outline-none focus:border-teal-400/50 transition"
+      />
+    </div>
+  </div>
+  <div className="p-3 pt-1 space-y-4">
+  {Object.entries(grouped).length === 0 && (
+    <div className="px-1 py-6 text-center text-[12px] text-white/30">
+      No tools found
+    </div>
+  )}
+  {Object.entries(grouped).map(([category, mods]) => (
+
           <div key={category}>
             <div className="px-1 py-1 text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/40 font-bold">
               {category.replace("-", " ")}
@@ -165,6 +201,7 @@ const addAtCurrentView = (type: string) => {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

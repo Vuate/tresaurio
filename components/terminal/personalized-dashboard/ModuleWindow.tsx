@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState, useCallback, useMemo } from "react";
+import { useRef, useState, useCallback, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { ZoomIn, ZoomOut, RotateCcw, ArrowLeftRight, Minus, Maximize2, X } from "lucide-react";
-import { Lock, Unlock } from "lucide-react";
+import { Lock, Unlock, Copy, Scaling } from "lucide-react";
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 import type { ModuleInstance } from "@/lib/personalized-dashboard/types";
@@ -29,7 +30,6 @@ function throttle<T extends (...args: any[]) => any>(
 
 export default function ModuleWindow({ module }: { module: ModuleInstance }) {
 const ref = useRef<HTMLDivElement>(null);
-const headerRef = useRef<HTMLDivElement>(null);
 const [isDraggingWindow, setIsDraggingWindow] = useState(false);
 const [headerHeight, setHeaderHeight] = useState(42);
 
@@ -39,6 +39,7 @@ const [headerHeight, setHeaderHeight] = useState(42);
     setActiveModule, 
     activeModuleId, 
     removeModule, 
+    addModule,
     zoom,
     setPan,
     panX,
@@ -50,6 +51,9 @@ const [headerHeight, setHeaderHeight] = useState(42);
     swapSourceId,
     setSwapSource,
     swapModules,
+    sizeSourceId,
+    setSizeSource,
+    applySizeFromSource,
   } = usePersonalizedDashboardStore();
 
     const isLocked = lockedModules.has(module.id);
@@ -57,11 +61,57 @@ const [headerHeight, setHeaderHeight] = useState(42);
   const def = moduleRegistry[module.type];
   const isActive = activeModuleId === module.id;
 
-  const [moduleZoom, setModuleZoom] = useState(100);
+const [moduleZoom, setModuleZoom] = useState(module.contentZoom ?? 100);
+useEffect(() => {
+  setModuleZoom(module.contentZoom ?? 100);
+}, [module.contentZoom]);
 
-  const zoomIn = useCallback(() => setModuleZoom((prev) => Math.min(200, prev + 10)), []);
-  const zoomOut = useCallback(() => setModuleZoom((prev) => Math.max(50, prev - 10)), []);
-  const resetZoom = useCallback(() => setModuleZoom(100), []);
+const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+
+const zoomIn = useCallback(() => {
+  const next = Math.min(200, moduleZoom + 10);
+  setModuleZoom(next);
+  updateModule(module.id, { contentZoom: next });
+}, [module.id, moduleZoom, updateModule]);
+const zoomOut = useCallback(() => {
+  const next = Math.max(50, moduleZoom - 10);
+  setModuleZoom(next);
+  updateModule(module.id, { contentZoom: next });
+}, [module.id, moduleZoom, updateModule]);
+const resetZoom = useCallback(() => {
+  setModuleZoom(100);
+  updateModule(module.id, { contentZoom: 100 });
+}, [module.id, updateModule]);
+
+useEffect(() => {
+  const el = ref.current;
+  if (!el) return;
+  const handler = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+  el.addEventListener("contextmenu", handler);
+  return () => el.removeEventListener("contextmenu", handler);
+}, []);
+
+useEffect(() => {
+  if (!contextMenu) return;
+  const close = (e: Event) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-context-menu]')) return;
+    setContextMenu(null);
+  };
+  window.addEventListener("mousedown", close, true);
+  window.addEventListener("wheel", close, true);
+  return () => {
+    window.removeEventListener("mousedown", close, true);
+    window.removeEventListener("wheel", close, true);
+  };
+}, [contextMenu]);
+
+
+
 
   const minSizes = useMemo(() => {
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
@@ -383,12 +433,16 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
       data-module-window 
       className={`absolute rounded-2xl border backdrop-blur
         select-none overflow-hidden
-        ${isLocked 
-          ? "border-amber-500/30 bg-[#041F20]/98" 
-          : isActive 
-            ? "border-teal-400 bg-[#041F20]/95"
-            : "border-white/10 bg-[#041F20]/95"
-        }`}
+${isLocked 
+  ? "border-amber-500/30 bg-[#041F20]/98" 
+  : swapSourceId === module.id
+    ? "border-blue-400 bg-[#041F20]/95"
+    : sizeSourceId === module.id
+      ? "border-yellow-400 bg-[#041F20]/95"
+      : isActive 
+        ? "border-teal-400 bg-[#041F20]/95"
+        : "border-white/10 bg-[#041F20]/95"
+}`}
       style={{
         left: module.x,
         top: module.y,
@@ -401,6 +455,7 @@ height: module.minimized ? headerHeight : module.height,
       }}
      onMouseDown={() => { setActiveModule(module.id); }}
     >
+
 <div
   data-module-header
   ref={(el) => {
@@ -441,33 +496,9 @@ onClick={(e) => {
       <Unlock className="w-3 h-3" />
     )}
   </button>
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      if (usePersonalizedDashboardStore.getState().uiBlocked) return;
 
-      if (!swapSourceId) {
-        setSwapSource(module.id);
-        return;
-      }
-
-      if (swapSourceId === module.id) {
-        setSwapSource(null);
-        return;
-      }
-
-      swapModules(swapSourceId, module.id);
-    }}
-    className={`h-6 w-6 rounded-md border transition-all cursor-pointer flex items-center justify-center
-      ${swapSourceId === module.id
-        ? "bg-teal-400/25 border-teal-400/50 text-teal-300"
-        : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
-      }`}
-    title={swapSourceId === module.id ? "Cancel Swap" : swapSourceId ? "Swap with this" : "Swap Position"}
-  >
-    <ArrowLeftRight className="w-3 h-3" />
-  </button>
   <div className="flex items-center gap-1 bg-[#0b1f1f] border border-white/10 rounded-md px-2 py-1">
+
 
     <button
       onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomOut(); }}
@@ -530,9 +561,36 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
         </div>
       </div>
 
+{(swapSourceId === module.id || sizeSourceId === module.id) && (
+<div className="absolute inset-x-0 bottom-0 z-50 flex flex-col items-center justify-center gap-2 pointer-events-none"
+  style={{
+    top: headerHeight,
+    background: swapSourceId === module.id && sizeSourceId === module.id
+      ? "color-mix(in srgb, rgb(59 130 246 / 0.1), rgb(234 179 8 / 0.1))"
+      : swapSourceId === module.id
+        ? "rgb(59 130 246 / 0.1)"
+        : "rgb(234 179 8 / 0.1)"
+  }}
+>
+    {swapSourceId === module.id && (
+      <span className="text-blue-300 text-xs font-semibold bg-blue-500/20 px-3 py-1.5 rounded-lg border border-blue-400/30">
+        Click another module to swap
+      </span>
+    )}
+    {sizeSourceId === module.id && (
+      <span className="text-yellow-300 text-xs font-semibold bg-yellow-500/20 px-3 py-1.5 rounded-lg border border-yellow-400/30">
+        Click another module to apply size
+      </span>
+    )}
+  </div>
+)}
+
+
+
            {!module.minimized && (
-<div className="h-[calc(100%-40px)] overflow-hidden relative">
-       <div
+<div className="overflow-hidden relative" style={{ height: `calc(100% - ${headerHeight}px)` }}>
+       <div 
+         onWheel={(e) => e.stopPropagation()}
       className="
         h-full overflow-auto p-4
               text-white/80 leading-relaxed
@@ -589,6 +647,86 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
           />
         </>
       )}
+
+      {contextMenu && createPortal(
+        <div
+          data-context-menu
+style={{
+  position: "fixed",
+  top: Math.max(8, Math.min(contextMenu.y, window.innerHeight - 160 - 8)),
+  left: Math.max(8, Math.min(contextMenu.x, window.innerWidth - 160 - 8)),
+  zIndex: 99999,
+}}
+          className="bg-[#041F20] border border-white/10 rounded-xl shadow-xl p-1.5 flex flex-col gap-1 min-w-[160px]"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setContextMenu(null);
+              if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+              if (!swapSourceId) { setSwapSource(module.id); return; }
+              if (swapSourceId === module.id) { setSwapSource(null); return; }
+              swapModules(swapSourceId, module.id);
+            }}
+            className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors
+              ${swapSourceId === module.id
+                ? "bg-teal-400/25 text-teal-300"
+                : "text-white/70 hover:bg-white/10"
+              }`}
+          >
+            <ArrowLeftRight className="w-3 h-3" />
+            {swapSourceId === module.id ? "Cancel Swap" : swapSourceId ? "Swap with this" : "Swap Position"}
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setContextMenu(null);
+              if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+              const { panX: px, panY: py, zoom: z, topBarHeight: tbh, notesBarHeight: nbh } = usePersonalizedDashboardStore.getState();
+              const vw = window.innerWidth;
+              const vh = window.innerHeight - tbh - nbh;
+              const worldCenterX = (-px + vw / 2) / z;
+              const worldCenterY = (-py + vh / 2) / z;
+              const newX = Math.max(0, Math.min(worldCenterX - module.width / 2, WORLD_WIDTH - module.width));
+              const newY = Math.max(0, Math.min(worldCenterY - module.height / 2, WORLD_HEIGHT - module.height));
+              const newId = crypto.randomUUID();
+              addModule({ id: newId, type: module.type, title: module.title, category: module.category, x: newX, y: newY, width: module.width, height: module.height, contentZoom: moduleZoom });
+              if (isLocked) toggleModuleLock(newId);
+              useDashboardNotificationStore.getState().push({ type: "success", title: "Module Duplicated", description: `${module.title} duplicated` });
+            }}
+            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] text-white/70 hover:bg-white/10 transition-colors"
+          >
+            <Copy className="w-3 h-3" />
+            Duplicate Module
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setContextMenu(null);
+              if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+              if (!sizeSourceId) { setSizeSource(module.id); return; }
+              if (sizeSourceId === module.id) { setSizeSource(null); return; }
+              applySizeFromSource(sizeSourceId, module.id);
+            }}
+            className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors
+              ${sizeSourceId === module.id
+                ? "bg-teal-400/25 text-teal-300"
+                : "text-white/70 hover:bg-white/10"
+              }`}
+          >
+            <Scaling className="w-3 h-3" />
+            {sizeSourceId === module.id ? "Cancel Size Copy" : sizeSourceId ? "Apply size here" : "Copy Size"}
+          </button>
+        </div>,
+        document.body
+      )}
+
+
     </div>
+
   );
 }
