@@ -9,7 +9,7 @@ import type {
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
 
-export const MAX_ZOOM = 3;
+export const MAX_ZOOM = 2;
 export const WORLD_WIDTH = 8000;
 export const WORLD_HEIGHT = 4500;
 
