@@ -670,7 +670,7 @@ style={{
               if (swapSourceId === module.id) { setSwapSource(null); return; }
               swapModules(swapSourceId, module.id);
             }}
-            className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors
+            className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer
               ${swapSourceId === module.id
                 ? "bg-teal-400/25 text-teal-300"
                 : "text-white/70 hover:bg-white/10"
@@ -697,7 +697,7 @@ style={{
               if (isLocked) toggleModuleLock(newId);
               useDashboardNotificationStore.getState().push({ type: "success", title: "Module Duplicated", description: `${module.title} duplicated` });
             }}
-            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] text-white/70 hover:bg-white/10 transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] text-white/70 hover:bg-white/10 transition-colors cursor-pointer"
           >
             <Copy className="w-3 h-3" />
             Duplicate Module
@@ -712,7 +712,7 @@ style={{
               if (sizeSourceId === module.id) { setSizeSource(null); return; }
               applySizeFromSource(sizeSourceId, module.id);
             }}
-            className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors
+            className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer
               ${sizeSourceId === module.id
                 ? "bg-teal-400/25 text-teal-300"
                 : "text-white/70 hover:bg-white/10"
