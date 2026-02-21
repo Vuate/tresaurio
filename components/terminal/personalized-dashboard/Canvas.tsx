@@ -28,7 +28,10 @@ const didInitRef = useRef(false);
     notesBarHeight, 
   } = usePersonalizedDashboardStore();
 
-
+const panXRef = useRef(panX);
+const panYRef = useRef(panY);
+useEffect(() => { panXRef.current = panX; }, [panX]);
+useEffect(() => { panYRef.current = panY; }, [panY]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -51,10 +54,10 @@ const onMouseDown = (e: MouseEvent) => {
 
 
   isPanningRef.current = true;
-  startRef.current = {
-    x: e.clientX - panX,
-    y: e.clientY - panY,
-  };
+startRef.current = {
+  x: e.clientX - panXRef.current,
+  y: e.clientY - panYRef.current,
+};
 
   container.style.cursor = "grabbing";
   e.preventDefault();

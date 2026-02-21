@@ -58,6 +58,7 @@ export type ModuleInstance = {
   width: number;
   height: number;
   minimized?: boolean;
+  contentZoom?: number;
 };
 
 // ==================== EXISTING TYPES ====================

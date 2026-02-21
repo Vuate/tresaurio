@@ -5,6 +5,7 @@ import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStor
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import { ArrowLeft } from "lucide-react";
 import AuthModal from "@/components/auth/AuthModal";
 import UserMenu from "@/components/auth/UserMenu";
 
@@ -105,7 +106,7 @@ useEffect(() => {
             transition cursor-pointer flex-shrink-0"
           title="Back"
         >
-          ←
+          <ArrowLeft className="w-4 h-4" />
         </button>
 
         <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">

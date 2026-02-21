@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { X, Check, Info } from "lucide-react";
 
 interface NotificationPopupProps {
   show: boolean;
@@ -71,7 +72,7 @@ export default function NotificationPopup({
       ? "text-emerald-300"
       : "text-teal-300";
 
-  const icon = type === "error" ? "✕" : type === "success" ? "✓" : "ℹ";
+  const icon = type === "error" ? <X className="w-4 h-4" /> : type === "success" ? <Check className="w-4 h-4" /> : <Info className="w-4 h-4" />;
 
   const handleClose = () => {
     setIsVisible(false);
@@ -124,7 +125,7 @@ export default function NotificationPopup({
                 flex-shrink-0 w-6 h-6 flex items-center justify-center
                 rounded hover:bg-white/10"
             >
-              ✕
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
 

@@ -44,6 +44,7 @@ lockedModules: Set<ModuleId>;
   alerts: AlertItem[];
   uiBlocked: boolean;
   swapSourceId: string | null;
+  sizeSourceId: string | null;
 
   // Templates
   templates: { id: string; name: string; createdAt: string; updatedAt: string }[];
@@ -84,7 +85,8 @@ type Actions = {
   setSwapSource: (id: string | null) => void;
   swapModules: (id1: string, id2: string) => void;
   resetDashboard: () => Promise<void>;
-
+  setSizeSource: (id: string | null) => void;
+  applySizeFromSource: (sourceId: string, targetId: string) => void;
 
   _hydrated: boolean;
   setHydrated: (v: boolean) => void;
@@ -112,6 +114,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
     lockedModules: new Set(),
     uiBlocked: false,
     swapSourceId: null,
+    sizeSourceId: null,
     zoom: 1,
     panX: 0,
     panY: 0,
@@ -149,6 +152,26 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
 
     setUIBlocked: (v) => set({ uiBlocked: v }),
     setSwapSource: (id) => set({ swapSourceId: id }),
+        setSizeSource: (id) => set({ sizeSourceId: id }),
+applySizeFromSource: (sourceId, targetId) => {
+  const modules = get().modules;
+  const source = modules.find(m => m.id === sourceId);
+  const target = modules.find(m => m.id === targetId);
+  if (!source || !target) return;
+  set({
+    modules: modules.map(m =>
+      m.id === targetId ? {
+        ...m,
+        width: source.width,
+        height: source.height,
+        x: Math.max(0, Math.min(target.x, WORLD_WIDTH - source.width)),
+        y: Math.max(0, Math.min(target.y, WORLD_HEIGHT - source.height)),
+      } : m
+    ),
+    sizeSourceId: null,
+  });
+},
+
 
 swapModules: (id1, id2) => {
   const modules = get().modules;
@@ -303,6 +326,8 @@ y: Math.max(0, Math.min(y ?? moduleY, WORLD_HEIGHT - def.defaultSize.height)),
         modules: get().modules.filter((m) => m.id !== id),
         activeModuleId:
           get().activeModuleId === id ? null : get().activeModuleId,
+    swapSourceId: get().swapSourceId === id ? null : get().swapSourceId,
+    sizeSourceId: get().sizeSourceId === id ? null : get().sizeSourceId,
       }),
 
     toggleAddTool: () =>
