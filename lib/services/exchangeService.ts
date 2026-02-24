@@ -716,6 +716,108 @@ export async function hasApiKey(
   return credentials !== null;
 }
 
+async function getBybitAvgEntryPrice(
+  credentials: { apiKey: string; apiSecret: string },
+  symbol: string,
+): Promise<number | null> {
+  try {
+    const data = (await bybitRequest(
+      "/v5/execution/list",
+      "GET",
+      { category: "spot", symbol, limit: "100" },
+      credentials,
+    )) as { list: { execPrice: string; execQty: string; side: string }[] };
+
+    if (!data.list || data.list.length === 0) return null;
+
+    let totalBuyQty = 0;
+    let totalBuyCost = 0;
+
+    for (const trade of data.list) {
+      if (trade.side === "Buy") {
+        const qty = parseFloat(trade.execQty);
+        const price = parseFloat(trade.execPrice);
+        totalBuyQty += qty;
+        totalBuyCost += qty * price;
+      }
+    }
+
+    if (totalBuyQty <= 0) return null;
+    return totalBuyCost / totalBuyQty;
+  } catch (error) {
+    console.error(`[Bybit] Failed to get avg entry for ${symbol}:`, error);
+    return null;
+  }
+}
+
+async function getOKXAvgEntryPrice(
+  credentials: { apiKey: string; apiSecret: string; passphrase?: string },
+  symbol: string,
+): Promise<number | null> {
+  try {
+    const instId = symbol.replace(/^(.+)(USDT|USDC)$/, "$1-$2");
+
+    const data = (await okxRequest(
+      `/api/v5/trade/fills?instType=SPOT&instId=${instId}&limit=100`,
+      "GET",
+      null,
+      credentials,
+    )) as { px: string; sz: string; side: string }[];
+
+    if (!data || data.length === 0) return null;
+
+    let totalBuyQty = 0;
+    let totalBuyCost = 0;
+
+    for (const trade of data) {
+      if (trade.side === "buy") {
+        const qty = parseFloat(trade.sz);
+        const price = parseFloat(trade.px);
+        totalBuyQty += qty;
+        totalBuyCost += qty * price;
+      }
+    }
+
+    if (totalBuyQty <= 0) return null;
+    return totalBuyCost / totalBuyQty;
+  } catch (error) {
+    console.error(`[OKX] Failed to get avg entry for ${symbol}:`, error);
+    return null;
+  }
+}
+
+async function getBinanceTrAvgEntryPrice(
+  credentials: { apiKey: string; apiSecret: string },
+  symbol: string,
+): Promise<number | null> {
+  try {
+    const data = (await binanceTrRequest(
+      "/open/v1/orders/trades",
+      "GET",
+      { symbol, limit: 500 },
+      credentials,
+    )) as { price: string; qty: string; quoteQty: string; isBuyer: boolean }[];
+
+    if (!data || data.length === 0) return null;
+
+    let totalBuyQty = 0;
+    let totalBuyCost = 0;
+
+    for (const trade of data) {
+      if (trade.isBuyer) {
+        totalBuyQty += parseFloat(trade.qty);
+        totalBuyCost += parseFloat(trade.quoteQty);
+      }
+    }
+
+    if (totalBuyQty <= 0) return null;
+    return totalBuyCost / totalBuyQty;
+  } catch (error) {
+    console.error(`[BinanceTR] Failed to get avg entry for ${symbol}:`, error);
+    return null;
+  }
+}
+
 /**
  * Get average entry price for a symbol from trade history
  */
@@ -731,6 +833,12 @@ export async function getAvgEntryPrice(
   switch (exchange) {
     case "binance":
       return getBinanceAvgEntryPrice(credentials, symbol);
+    case "bybit":
+      return getBybitAvgEntryPrice(credentials, symbol);
+    case "okx":
+      return getOKXAvgEntryPrice(credentials, symbol);
+    case "binance-tr":
+      return getBinanceTrAvgEntryPrice(credentials, symbol);
     default:
       return null;
   }

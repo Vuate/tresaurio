@@ -71,9 +71,19 @@ function useWindowSizeCheck() {
   return isTooSmall;
 }
 
+// Smart dollar formatter: $193 for large, $0.26 for small, $0.0012 for tiny
+function formatUSD(amount: number): string {
+  const abs = Math.abs(amount);
+  if (abs >= 100) return amount.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  if (abs >= 0.01) return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return amount.toFixed(4);
+}
+
 export default function SpotPositionsModule({ instanceId }: Props) {
-  const { spotPositions, addSpotPosition, removeSpotPosition, updateSpotPosition } =
-    usePortfolioStore();
+  const spotPositions = usePortfolioStore((s) => s.spotPositions);
+  const addSpotPosition = usePortfolioStore((s) => s.addSpotPosition);
+  const removeSpotPosition = usePortfolioStore((s) => s.removeSpotPosition);
+  const updateSpotPosition = usePortfolioStore((s) => s.updateSpotPosition);
   const prices = usePriceStore((s) => s.prices);
   const { data: session } = useSession();
 
@@ -123,18 +133,26 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     fetchApiKeys();
   }, []);
 
-  // Subscribe to live prices via WebSocket for spot positions
-  const symbolsKey = useMemo(
-    () => [...new Set(spotPositions.map((p) => p.symbol))].sort().join(","),
-    [spotPositions]
-  );
+  // WebSocket subscriptions - ref-based to prevent reconnect loops
+  const wsSymbolsRef = useRef<string>("");
+  const wsUnsubscribesRef = useRef<(() => void)[]>([]);
 
   useEffect(() => {
-    if (!symbolsKey) return;
+    const symbols = [...new Set(spotPositions.map((p) => p.symbol))].sort();
+    const newKey = symbols.join(",");
 
-    const symbols = symbolsKey.split(",").filter(Boolean);
+    // Only re-subscribe if symbol list actually changed
+    if (newKey === wsSymbolsRef.current) return;
 
-    const unsubscribes = symbols.map((symbol) => {
+    wsUnsubscribesRef.current.forEach((unsub) => unsub());
+    wsSymbolsRef.current = newKey;
+
+    if (!newKey) {
+      wsUnsubscribesRef.current = [];
+      return;
+    }
+
+    wsUnsubscribesRef.current = symbols.map((symbol) => {
       const stream = `${symbol.toLowerCase()}@ticker`;
       return wsService.subscribe(
         stream,
@@ -148,11 +166,16 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         "binance"
       );
     });
+  }, [spotPositions]);
 
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
-      unsubscribes.forEach((unsub) => unsub());
+      wsUnsubscribesRef.current.forEach((unsub) => unsub());
+      wsUnsubscribesRef.current = [];
+      wsSymbolsRef.current = "";
     };
-  }, [symbolsKey]);
+  }, []);
 
   const fetchApiKeys = async () => {
     try {
@@ -731,11 +754,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               Investment
             </div>
             <div className="text-white font-semibold text-xs break-words leading-tight">
-              $
-              {portfolio.totalInvestment.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
+              ${formatUSD(portfolio.totalInvestment)}
             </div>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
@@ -743,11 +762,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               Value
             </div>
             <div className="text-white font-semibold text-xs break-words leading-tight">
-              $
-              {portfolio.currentValue.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
+              ${formatUSD(portfolio.currentValue)}
             </div>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
@@ -759,11 +774,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 portfolio.totalPnL >= 0 ? "text-emerald-400" : "text-red-400"
               }`}
             >
-              {portfolio.totalPnL >= 0 ? "+" : ""}$
-              {Math.abs(portfolio.totalPnL).toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              })}
+              {portfolio.totalPnL >= 0 ? "+" : "-"}${formatUSD(Math.abs(portfolio.totalPnL))}
             </div>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
@@ -955,11 +966,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                         Cost
                       </div>
                       <div className="text-white font-semibold break-words leading-tight truncate">
-                        $
-                        {position.totalCost.toLocaleString(undefined, {
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        })}
+                        ${formatUSD(position.totalCost)}
                       </div>
                     </div>
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
@@ -967,11 +974,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                         Value
                       </div>
                       <div className="text-white font-semibold break-words leading-tight truncate">
-                        $
-                        {currentValue.toLocaleString(undefined, {
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        })}
+                        ${formatUSD(currentValue)}
                       </div>
                     </div>
                     <div className="bg-white/5 rounded px-2 py-1.5 min-w-0 overflow-hidden">
@@ -984,11 +987,11 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                         }`}
                       >
                         <div className="truncate">
-                          {pnl >= 0 ? "+" : ""}${Math.abs(pnl).toFixed(0)}
+                          {pnl >= 0 ? "+" : "-"}${formatUSD(Math.abs(pnl))}
                         </div>
                         <div className="truncate">
                           ({pnlPercent >= 0 ? "+" : ""}
-                          {pnlPercent.toFixed(1)}%)
+                          {pnlPercent.toFixed(2)}%)
                         </div>
                       </div>
                     </div>
