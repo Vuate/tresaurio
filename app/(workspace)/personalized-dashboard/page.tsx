@@ -11,7 +11,6 @@ const Canvas = dynamic(() => import("@/components/terminal/personalized-dashboar
 const WorkspaceControls = dynamic(() => import("@/components/terminal/personalized-dashboard/WorkspaceControls"), { ssr: false });
 const NotesPanel = dynamic(() => import("@/components/terminal/personalized-dashboard/NotesPanel"), { ssr: false });
 const AlertObserver = dynamic(() => import("@/components/terminal/personalized-dashboard/AlertObserver"), { ssr: false });
-const PortfolioObserver = dynamic(() => import("@/components/terminal/personalized-dashboard/PortfolioObserver"), { ssr: false });
 const TemplatePanel = dynamic(() => import("@/components/terminal/personalized-dashboard/TemplatePanel"), { ssr: false });
 
 export default function Page() {
@@ -24,7 +23,6 @@ export default function Page() {
   }, [loadFromDB, closeAllPanels]);
   return (
     <div className="fixed inset-0 overflow-hidden bg-[#041F20]">
-      <PortfolioObserver />
       <AlertObserver />
       <TopBar />
       <AddToolPanel />
