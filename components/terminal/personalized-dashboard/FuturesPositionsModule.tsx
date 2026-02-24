@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useFuturesPositionStore } from "@/store/futuresPositionStore";
 import { TrendingUp, TrendingDown, X, RefreshCw, Key, Link2, AlertCircle, Trash2, AlertTriangle } from "lucide-react";
-import { usePriceStore } from "@/store/priceStore";
 import { useSession } from "next-auth/react";
 import AuthModal from "@/components/auth/AuthModal";
 
@@ -45,7 +44,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   const positions = useFuturesPositionStore((s) => s.positions);
   const removePosition = useFuturesPositionStore((s) => s.removePosition);
   const addPosition = useFuturesPositionStore((s) => s.addPosition);
-  const prices = usePriceStore((s) => s.prices);
+ const [localPrices, setLocalPrices] = useState<Record<string, number>>({})
   const { data: session } = useSession();
 
   // API Key states
@@ -190,12 +189,17 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
     const fetchPrices = async () => {
       const symbols = [...new Set(positions.map((p) => p.symbol))];
+      const updates: Record<string, number> = {};
 
       for (const symbol of symbols) {
         const price = await fetchPriceFromExchange(symbol, selectedExchange);
         if (price) {
-          usePriceStore.getState().updatePrice(symbol, price);
+          updates[symbol] = price;
         }
+      }
+
+      if (Object.keys(updates).length > 0) {
+        setLocalPrices((prev) => ({ ...prev, ...updates }));
       }
     };
 
@@ -742,7 +746,7 @@ border border-emerald-500/20
             {/* Total Net PnL Summary */}
             {(() => {
               const totalNetPnL = positions.reduce((sum, pos) => {
-                const currentPrice = prices[pos.symbol] || pos.markPrice || pos.entryPrice;
+                const currentPrice = localPrices[pos.symbol] || pos.markPrice || pos.entryPrice;
                 const pnl =
                   pos.side === "long"
                     ? (currentPrice - pos.entryPrice) * pos.size
@@ -777,7 +781,7 @@ border border-emerald-500/20
 
             <div className="space-y-2">
               {positions.map((pos) => {
-                const currentPrice = prices[pos.symbol] || pos.markPrice || pos.entryPrice;
+                const currentPrice = localPrices[pos.symbol] || pos.markPrice || pos.entryPrice;
                 const pnl =
                   pos.side === "long"
                     ? (currentPrice - pos.entryPrice) * pos.size
@@ -822,12 +826,12 @@ border border-emerald-500/20
                     <div className="text-[11px] space-y-0.5">
                       <div className="flex justify-between text-white/50">
                         <span>Entry</span>
-                        <span className="truncate ml-2">${pos.entryPrice.toLocaleString()}</span>
+                        <span className="truncate ml-2">${pos.entryPrice.toLocaleString('en-US')}</span>
                       </div>
 
                       <div className="flex justify-between text-white/50">
                         <span>Current</span>
-                        <span className="truncate ml-2">${currentPrice.toLocaleString()}</span>
+                        <span className="truncate ml-2">${currentPrice.toLocaleString('en-US')}</span>
                       </div>
 
                       <div className="flex justify-between text-white/50">

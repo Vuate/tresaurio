@@ -26,7 +26,7 @@ export const useFuturesPositionStore = create<FuturesPositionStore>((set) => ({
         ...state.positions,
         {
           ...position,
-          id: Date.now().toString(),
+          id: crypto.randomUUID()
         },
       ],
     })),
