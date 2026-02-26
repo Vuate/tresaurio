@@ -10,8 +10,10 @@ import ComparisonHeader from "@/components/learn/ComparisonHeader";
 import TreasurioComparison from "@/components/learn/TreasurioComparison";
 import ExchangeComparison from "@/components/learn/ExchangeComparison";
 import KeyBenefitsList from "@/components/learn/KeyBenefitsList";
+import { notFound } from "next/navigation";
 
 export default function LearnPage() {
+  notFound();
   return (
     <>
       <Hero />
