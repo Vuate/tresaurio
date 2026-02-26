@@ -44,7 +44,9 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   const positions = useFuturesPositionStore((s) => s.positions);
   const removePosition = useFuturesPositionStore((s) => s.removePosition);
   const addPosition = useFuturesPositionStore((s) => s.addPosition);
- const [localPrices, setLocalPrices] = useState<Record<string, number>>({})
+  const [localPrices, setLocalPrices] = useState<Record<string, number>>({});
+  const [realizedPnl, setRealizedPnl] = useState<number | null>(null);
+  const [loadingRealized, setLoadingRealized] = useState(false);
   const { data: session } = useSession();
 
   // API Key states
@@ -101,10 +103,34 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
     };
   }, [exchangeModalDropdownOpen]);
 
+  const fetchRealizedPnl = async () => {
+    if (!apiKeys.some((k) => k.exchange === selectedExchange && k.isActive)) return;
+    setLoadingRealized(true);
+    try {
+      const response = await fetch(`/api/exchange/realized-pnl?exchange=${selectedExchange}`);
+      const data = await response.json();
+      if (data.success) {
+        setRealizedPnl(data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch realized PnL:", error);
+    } finally {
+      setLoadingRealized(false);
+    }
+  };
+
   // Fetch API keys on mount
   useEffect(() => {
     fetchApiKeys();
   }, []);
+
+  // Load realized PnL when exchange changes and has API key + positions
+  useEffect(() => {
+    if (positions.length > 0 && apiKeys.some((k) => k.exchange === selectedExchange && k.isActive)) {
+      fetchRealizedPnl();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedExchange, apiKeys]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -267,6 +293,9 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
       });
 
       setLastSync(new Date());
+
+      // Fetch realized PnL after sync
+      fetchRealizedPnl();
     } catch (error) {
       console.error("Sync error:", error);
       setSyncError(
@@ -763,16 +792,21 @@ border border-emerald-500/20
 
               return (
                 <div className="mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10">
-                  <div className="text-[10px] text-white/50 mb-1">Total Net PnL</div>
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <div className={`text-xl font-bold truncate ${isProfit ? "text-emerald-400" : "text-red-400"}`}>
-                      {isProfit ? "+" : ""}${totalNetPnL.toFixed(2)}
-                    </div>
-                    <div className={`text-sm font-semibold whitespace-nowrap ${isProfit ? "text-emerald-400" : "text-red-400"}`}>
-                      {isProfit ? "+" : ""}{totalPnlPercent.toFixed(2)}%
-                    </div>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-[10px] text-white/50">Float PnL</span>
+                    <span className={`text-sm font-bold ${isProfit ? "text-emerald-400" : "text-red-400"}`}>
+                      {isProfit ? "+" : ""}${totalNetPnL.toFixed(2)} ({isProfit ? "+" : ""}{totalPnlPercent.toFixed(2)}%)
+                    </span>
                   </div>
-                  <div className="text-[9px] text-white/40 mt-1 truncate">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] text-white/50">Realized PnL</span>
+                    <span className={`text-sm font-bold ${realizedPnl === null ? "text-white/30" : realizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                      {realizedPnl === null
+                        ? (loadingRealized ? "..." : "—")
+                        : `${realizedPnl >= 0 ? "+" : ""}$${realizedPnl.toFixed(2)}`}
+                    </span>
+                  </div>
+                  <div className="text-[9px] text-white/40 mt-1.5 truncate">
                     {positions.length} position{positions.length > 1 ? "s" : ""} • ${totalValue.toFixed(2)} total value
                   </div>
                 </div>

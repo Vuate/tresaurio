@@ -818,6 +818,252 @@ async function getBinanceTrAvgEntryPrice(
   }
 }
 
+// ============================================
+// Realized PnL Implementations
+// ============================================
+
+async function getBinanceFuturesRealizedPnl(
+  credentials: { apiKey: string; apiSecret: string },
+): Promise<number> {
+  try {
+    const data = (await binanceRequest(
+      "/fapi/v1/income",
+      "GET",
+      { incomeType: "REALIZED_PNL", limit: 1000 },
+      credentials,
+      "https://fapi.binance.com",
+    )) as { income: string }[];
+    if (!data || data.length === 0) return 0;
+    return data.reduce((sum, item) => sum + parseFloat(item.income || "0"), 0);
+  } catch (error) {
+    console.error("[Binance] Failed to get realized PnL:", error);
+    return 0;
+  }
+}
+
+async function getOKXFuturesRealizedPnl(
+  credentials: { apiKey: string; apiSecret: string; passphrase?: string },
+): Promise<number> {
+  try {
+    const data = (await okxRequest(
+      "/api/v5/account/positions-history?instType=SWAP&limit=100",
+      "GET",
+      null,
+      credentials,
+    )) as { realizedPnl: string }[];
+    if (!data || data.length === 0) return 0;
+    return data.reduce((sum, item) => sum + parseFloat(item.realizedPnl || "0"), 0);
+  } catch (error) {
+    console.error("[OKX] Failed to get realized PnL:", error);
+    return 0;
+  }
+}
+
+async function getBybitFuturesRealizedPnl(
+  credentials: { apiKey: string; apiSecret: string },
+): Promise<number> {
+  try {
+    const data = (await bybitRequest(
+      "/v5/position/closed-pnl",
+      "GET",
+      { category: "linear", limit: 200 },
+      credentials,
+    )) as { list: { closedPnl: string }[] };
+    if (!data?.list || data.list.length === 0) return 0;
+    return data.list.reduce((sum, item) => sum + parseFloat(item.closedPnl || "0"), 0);
+  } catch (error) {
+    console.error("[Bybit] Failed to get realized PnL:", error);
+    return 0;
+  }
+}
+
+/**
+ * Get total realized PnL for futures from exchange
+ */
+export async function getFuturesRealizedPnl(
+  userId: string,
+  exchange: Exchange,
+  label?: string,
+): Promise<number> {
+  const credentials = await getDecryptedApiKey(userId, exchange, label);
+  if (!credentials) throw new Error(`No API key found for ${exchange}`);
+
+  switch (exchange) {
+    case "binance":
+      return getBinanceFuturesRealizedPnl(credentials);
+    case "okx":
+      return getOKXFuturesRealizedPnl(credentials);
+    case "bybit":
+      return getBybitFuturesRealizedPnl(credentials);
+    default:
+      return 0;
+  }
+}
+
+// ============================================
+// Spot Realized PnL Implementations
+// ============================================
+
+async function getBinanceSpotRealizedPnl(
+  credentials: { apiKey: string; apiSecret: string },
+  symbols: string[],
+): Promise<number> {
+  let total = 0;
+  for (const symbol of symbols) {
+    try {
+      const trades = (await binanceRequest(
+        "/api/v3/myTrades",
+        "GET",
+        { symbol, limit: 500 },
+        credentials,
+      )) as { price: string; qty: string; quoteQty: string; isBuyer: boolean }[];
+
+      if (!trades || trades.length === 0) continue;
+
+      let totalBuyQty = 0, totalBuyCost = 0;
+      let totalSellQty = 0, totalSellValue = 0;
+
+      for (const t of trades) {
+        const qty = parseFloat(t.qty);
+        const price = parseFloat(t.price);
+        if (t.isBuyer) { totalBuyQty += qty; totalBuyCost += qty * price; }
+        else { totalSellQty += qty; totalSellValue += qty * price; }
+      }
+
+      const avgBuy = totalBuyQty > 0 ? totalBuyCost / totalBuyQty : 0;
+      total += totalSellValue - totalSellQty * avgBuy;
+    } catch { /* skip symbol */ }
+  }
+  return total;
+}
+
+async function getOKXSpotRealizedPnl(
+  credentials: { apiKey: string; apiSecret: string; passphrase?: string },
+  symbols: string[],
+): Promise<number> {
+  let total = 0;
+  for (const symbol of symbols) {
+    try {
+      const instId = symbol.replace(/^(.+)(USDT|USDC)$/, "$1-$2");
+      const trades = (await okxRequest(
+        `/api/v5/trade/fills?instType=SPOT&instId=${instId}&limit=100`,
+        "GET",
+        null,
+        credentials,
+      )) as { px: string; sz: string; side: string }[];
+
+      if (!trades || trades.length === 0) continue;
+
+      let totalBuyQty = 0, totalBuyCost = 0;
+      let totalSellQty = 0, totalSellValue = 0;
+
+      for (const t of trades) {
+        const qty = parseFloat(t.sz);
+        const price = parseFloat(t.px);
+        if (t.side === "buy") { totalBuyQty += qty; totalBuyCost += qty * price; }
+        else { totalSellQty += qty; totalSellValue += qty * price; }
+      }
+
+      const avgBuy = totalBuyQty > 0 ? totalBuyCost / totalBuyQty : 0;
+      total += totalSellValue - totalSellQty * avgBuy;
+    } catch { /* skip symbol */ }
+  }
+  return total;
+}
+
+async function getBybitSpotRealizedPnl(
+  credentials: { apiKey: string; apiSecret: string },
+  symbols: string[],
+): Promise<number> {
+  let total = 0;
+  for (const symbol of symbols) {
+    try {
+      const data = (await bybitRequest(
+        "/v5/execution/list",
+        "GET",
+        { category: "spot", symbol, limit: 100 },
+        credentials,
+      )) as { list: { execPrice: string; execQty: string; side: string }[] };
+
+      if (!data?.list || data.list.length === 0) continue;
+
+      let totalBuyQty = 0, totalBuyCost = 0;
+      let totalSellQty = 0, totalSellValue = 0;
+
+      for (const t of data.list) {
+        const qty = parseFloat(t.execQty);
+        const price = parseFloat(t.execPrice);
+        if (t.side === "Buy") { totalBuyQty += qty; totalBuyCost += qty * price; }
+        else { totalSellQty += qty; totalSellValue += qty * price; }
+      }
+
+      const avgBuy = totalBuyQty > 0 ? totalBuyCost / totalBuyQty : 0;
+      total += totalSellValue - totalSellQty * avgBuy;
+    } catch { /* skip symbol */ }
+  }
+  return total;
+}
+
+async function getBinanceTRSpotRealizedPnl(
+  credentials: { apiKey: string; apiSecret: string },
+  symbols: string[],
+): Promise<number> {
+  let total = 0;
+  for (const symbol of symbols) {
+    try {
+      const trades = (await binanceTrRequest(
+        "/open/v1/orders/trades",
+        "GET",
+        { symbol, limit: 500 },
+        credentials,
+      )) as { price: string; qty: string; quoteQty: string; isBuyer: boolean }[];
+
+      if (!trades || trades.length === 0) continue;
+
+      let totalBuyQty = 0, totalBuyCost = 0;
+      let totalSellQty = 0, totalSellValue = 0;
+
+      for (const t of trades) {
+        const qty = parseFloat(t.qty);
+        const price = parseFloat(t.price);
+        if (t.isBuyer) { totalBuyQty += qty; totalBuyCost += qty * price; }
+        else { totalSellQty += qty; totalSellValue += qty * price; }
+      }
+
+      const avgBuy = totalBuyQty > 0 ? totalBuyCost / totalBuyQty : 0;
+      total += totalSellValue - totalSellQty * avgBuy;
+    } catch { /* skip symbol */ }
+  }
+  return total;
+}
+
+/**
+ * Get total realized PnL for spot positions from exchange
+ */
+export async function getSpotRealizedPnl(
+  userId: string,
+  exchange: Exchange,
+  symbols: string[],
+  label?: string,
+): Promise<number> {
+  if (symbols.length === 0) return 0;
+  const credentials = await getDecryptedApiKey(userId, exchange, label);
+  if (!credentials) throw new Error(`No API key found for ${exchange}`);
+
+  switch (exchange) {
+    case "binance":
+      return getBinanceSpotRealizedPnl(credentials, symbols);
+    case "okx":
+      return getOKXSpotRealizedPnl(credentials, symbols);
+    case "bybit":
+      return getBybitSpotRealizedPnl(credentials, symbols);
+    case "binance-tr":
+      return getBinanceTRSpotRealizedPnl(credentials, symbols);
+    default:
+      return 0;
+  }
+}
+
 /**
  * Get average entry price for a symbol from trade history
  */
