@@ -13,7 +13,7 @@ import { WORLD_WIDTH, WORLD_HEIGHT } from "@/store/personalizedDashboardStore";
 
 
 type ResizeDir = "top-left" | "top-right" | "bottom-left" | "bottom-right";
-
+// Limits how often a function can fire — at most once per limit ms. Used to cap drag and resize update frequency.
 function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number
@@ -61,6 +61,7 @@ const [headerHeight, setHeaderHeight] = useState(42);
   const def = moduleRegistry[module.type];
   const isActive = activeModuleId === module.id;
 
+//  Syncs local content zoom state with the persisted module.contentZoom value whenever it changes externally.
 const [moduleZoom, setModuleZoom] = useState(module.contentZoom ?? 100);
 useEffect(() => {
   setModuleZoom(module.contentZoom ?? 100);
@@ -68,6 +69,7 @@ useEffect(() => {
 
 const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
+// Content zoom controls — clamp between 50% and 200%, then persist the new value to the store.
 const zoomIn = useCallback(() => {
   const next = Math.min(200, moduleZoom + 10);
   setModuleZoom(next);
@@ -83,6 +85,7 @@ const resetZoom = useCallback(() => {
   updateModule(module.id, { contentZoom: 100 });
 }, [module.id, updateModule]);
 
+// Attaches a right-click listener to the module window to open the context menu at the cursor position.
 useEffect(() => {
   const el = ref.current;
   if (!el) return;
@@ -95,6 +98,7 @@ useEffect(() => {
   return () => el.removeEventListener("contextmenu", handler);
 }, []);
 
+// Closes the context menu when the user clicks outside it or scrolls the canvas.
 useEffect(() => {
   if (!contextMenu) return;
   const close = (e: Event) => {
@@ -110,9 +114,7 @@ useEffect(() => {
   };
 }, [contextMenu]);
 
-
-
-
+// Computes the minimum allowed module dimensions based on the current viewport size.
   const minSizes = useMemo(() => {
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
     const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
@@ -123,6 +125,7 @@ useEffect(() => {
     };
   }, []);
 
+  // Throttled wrapper around updateModule — limits store writes to 60fps during drag and resize.
   const updateModuleThrottled = useMemo(
     () => throttle((id: string, updates: Partial<ModuleInstance>) => {
       updateModule(id, updates);
@@ -130,6 +133,7 @@ useEffect(() => {
     [updateModule]
   );
 
+// Handles drag-to-move using a rAF animation loop. Auto-pans the viewport when dragged near screen edges.
 const onDragMouseDown = useCallback((e: React.MouseEvent) => {
       if (isLocked || usePersonalizedDashboardStore.getState().uiBlocked) return;
     e.stopPropagation();
@@ -183,8 +187,8 @@ const onDragMouseDown = useCallback((e: React.MouseEvent) => {
       const mouseNearLeftEdge = currentMouseX < EDGE_THRESHOLD;
       const mouseNearRightEdge = currentMouseX > vw - EDGE_THRESHOLD;
       const mouseNearTopEdge = currentMouseY < topBarHeight + EDGE_THRESHOLD;
-const viewportHeight = window.innerHeight - topBarHeight - notesBarHeight;
-const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE_THRESHOLD;
+      const viewportHeight = window.innerHeight - topBarHeight - notesBarHeight;
+      const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE_THRESHOLD;
       const hitLeftWorldEdge = desiredX <= 0;
       const hitRightWorldEdge = desiredX >= WORLD_WIDTH - module.width;
       const hitTopWorldEdge = desiredY <= 0;
@@ -265,6 +269,7 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
   }, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom, topBarHeight, 
     notesBarHeight, setActiveModule, updateModuleThrottled, isLocked ]);
 
+// Handles corner resize for all four handles. Enforces min size constraints and auto-pans near screen edges.
 const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
     if (isLocked || usePersonalizedDashboardStore.getState().uiBlocked) return;
     e.stopPropagation();  
@@ -347,8 +352,8 @@ const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
       const mouseNearLeftEdge = currentMouseX < EDGE_THRESHOLD;
       const mouseNearRightEdge = currentMouseX > vw - EDGE_THRESHOLD;
       const mouseNearTopEdge = currentMouseY < topBarHeight + EDGE_THRESHOLD;
-const viewportHeight = window.innerHeight - topBarHeight - notesBarHeight;
-const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE_THRESHOLD;
+      const viewportHeight = window.innerHeight - topBarHeight - notesBarHeight;
+      const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE_THRESHOLD;
       const hitLeftWorldEdge = dir.includes("left") && newX === 0;
       const hitRightWorldEdge = dir.includes("right") && (newX + newWidth) === WORLD_WIDTH;
       const hitTopWorldEdge = dir.includes("top") && newY === 0;
@@ -420,6 +425,7 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
   }, [module.id, module.width, module.height, module.x, module.y, panX, panY, zoom, topBarHeight, 
     notesBarHeight, minSizes, setActiveModule, updateModuleThrottled, isLocked]);
 
+  // Computes a CSS clamp font-size that counteracts the combined canvas zoom and module content zoom.
   const responsiveFontSize = useMemo(() => {
     const combinedZoom = zoom * (moduleZoom / 100);
     const baseFontSize = 12;
@@ -433,21 +439,21 @@ const mouseNearBottomEdge = currentMouseY > topBarHeight + viewportHeight - EDGE
       data-module-window 
       className={`absolute rounded-2xl border backdrop-blur
         select-none overflow-hidden
-${isLocked 
-  ? "border-amber-500/30 bg-[#041F20]/98" 
-  : swapSourceId === module.id
-    ? "border-blue-400 bg-[#041F20]/95"
-    : sizeSourceId === module.id
-      ? "border-yellow-400 bg-[#041F20]/95"
-      : isActive 
-        ? "border-teal-400 bg-[#041F20]/95"
-        : "border-white/10 bg-[#041F20]/95"
-}`}
+            ${isLocked 
+              ? "border-amber-500/30 bg-[#041F20]/98" 
+              : swapSourceId === module.id
+                ? "border-blue-400 bg-[#041F20]/95"
+                : sizeSourceId === module.id
+                  ? "border-yellow-400 bg-[#041F20]/95"
+                  : isActive 
+                    ? "border-teal-400 bg-[#041F20]/95"
+                    : "border-white/10 bg-[#041F20]/95"
+            }`}
       style={{
         left: module.x,
         top: module.y,
         width: module.width,
-height: module.minimized ? headerHeight : module.height,
+        height: module.minimized ? headerHeight : module.height,
         zIndex: isDraggingWindow ? 99999 : (isActive ? 50 : 10),
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
@@ -561,17 +567,17 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
         </div>
       </div>
 
-{(swapSourceId === module.id || sizeSourceId === module.id) && (
-<div className="absolute inset-x-0 bottom-0 z-50 flex flex-col items-center justify-center gap-2 pointer-events-none"
-  style={{
-    top: headerHeight,
-    background: swapSourceId === module.id && sizeSourceId === module.id
-      ? "color-mix(in srgb, rgb(59 130 246 / 0.1), rgb(234 179 8 / 0.1))"
-      : swapSourceId === module.id
-        ? "rgb(59 130 246 / 0.1)"
-        : "rgb(234 179 8 / 0.1)"
-  }}
->
+    {(swapSourceId === module.id || sizeSourceId === module.id) && (
+    <div className="absolute inset-x-0 bottom-0 z-50 flex flex-col items-center justify-center gap-2 pointer-events-none"
+      style={{
+        top: headerHeight,
+        background: swapSourceId === module.id && sizeSourceId === module.id
+          ? "color-mix(in srgb, rgb(59 130 246 / 0.1), rgb(234 179 8 / 0.1))"
+          : swapSourceId === module.id
+            ? "rgb(59 130 246 / 0.1)"
+            : "rgb(234 179 8 / 0.1)"
+      }}
+    >
     {swapSourceId === module.id && (
       <span className="text-blue-300 text-xs font-semibold bg-blue-500/20 px-3 py-1.5 rounded-lg border border-blue-400/30">
         Click another module to swap
@@ -583,7 +589,7 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
       </span>
     )}
   </div>
-)}
+    )}
 
 
 
@@ -651,12 +657,12 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
       {contextMenu && createPortal(
         <div
           data-context-menu
-style={{
-  position: "fixed",
-  top: Math.max(8, Math.min(contextMenu.y, window.innerHeight - 160 - 8)),
-  left: Math.max(8, Math.min(contextMenu.x, window.innerWidth - 160 - 8)),
-  zIndex: 99999,
-}}
+          style={{
+            position: "fixed",
+            top: Math.max(8, Math.min(contextMenu.y, window.innerHeight - 160 - 8)),
+            left: Math.max(8, Math.min(contextMenu.x, window.innerWidth - 160 - 8)),
+            zIndex: 99999,
+          }}
           className="bg-[#041F20] border border-white/10 rounded-xl shadow-xl p-1.5 flex flex-col gap-1 min-w-[160px]"
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}

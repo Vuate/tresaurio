@@ -9,6 +9,7 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -153,10 +154,13 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
 
       {/* Social Logins */}
       <div className="space-y-2 xl:space-y-2 2xl:space-y-2">
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => signIn("google", { callbackUrl: window.location.pathname })}
+<button
+  type="button"
+  disabled={loading || googleLoading}
+  onClick={() => {
+    setGoogleLoading(true);
+    signIn("google", { callbackUrl: window.location.pathname });
+  }}
           className="
             w-full flex items-center justify-center
             gap-2 xl:gap-2 2xl:gap-2

@@ -220,6 +220,7 @@ className={`
   bg-[#0b1f1f]
   border border-emerald-500/20
   rounded-lg
+  overflow-hidden
   shadow-xl
 
   ${shouldOpenLeft ? 'right-0' : 'left-0'}
@@ -239,6 +240,7 @@ className={`
               text-white
               transition-colors
               hover:text-emerald-400
+                hover:bg-emerald-500/10
             "
           >
             {ex.name}
@@ -288,6 +290,7 @@ className={`
           bg-[#0b1f1f]
           border border-emerald-500/20
           rounded-lg
+          overflow-hidden
           shadow-xl
 
           ${shouldOpenLeft ? 'right-0' : 'left-0'}
@@ -307,6 +310,7 @@ className={`
               text-white
               transition-colors
               hover:text-emerald-400
+                hover:bg-emerald-500/10
             "
           >
             {mt.name}
@@ -356,6 +360,7 @@ className={`
   bg-[#0b1f1f]
   border border-emerald-500/20
   rounded-lg
+  overflow-hidden
   shadow-xl
 
   ${shouldOpenLeft ? 'right-0' : 'left-0'}
@@ -375,6 +380,7 @@ className={`
               text-white
               transition-colors
               hover:text-emerald-400
+              hover:bg-emerald-500/10
             "
           >
             {sym}

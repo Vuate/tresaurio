@@ -182,7 +182,6 @@ document.addEventListener("pointerdown", handleClickOutside);
       bg-[#0b1f1f]
       border border-emerald-500/20
       rounded-none
-
       max-h-[min(72px,30vh)]
       overflow-y-auto
 
@@ -199,56 +198,54 @@ document.addEventListener("pointerdown", handleClickOutside);
           setSelectedSymbol(s);
           setSymbolOpen(false);
         }}
-className="
-  w-full
-  text-left
-  px-3 py-2
-  text-xs
-  text-white
-  transition-colors
-  hover:text-emerald-400
-  cursor-pointer
-"
-      >
-        {s}
-      </button>
-    ))}
-  </div>
-)}
+          className="
+            w-full
+            text-left
+            px-3 py-2
+            text-xs
+            text-white
+            transition-colors
+          hover:bg-emerald-500/10
+            hover:text-emerald-400
+            cursor-pointer
+          "
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+          </div>
+                </div>
 
-</div>
-
-
-      </div>
-
-<div className="bg-white/5 border border-white/10 rounded p-2">
-  <div className="flex flex-wrap justify-between items-center gap-2">
-    <span className="text-white/50 text-[10px]">
-      Current Price (Live)
-    </span>
-    <div className="flex items-center gap-2">
-      <span className="text-white font-semibold break-all">
-        ${currentPrice.toLocaleString()}
-      </span>
-      <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-    </div>
-  </div>
-</div>
-
-      <div className="bg-white/5 border border-white/10 rounded p-3 space-y-2">
-        <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
-          <Plus className="w-3 h-3" />
-          <span>Add Trade</span>
+        <div className="bg-white/5 border border-white/10 rounded p-2">
+          <div className="flex flex-wrap justify-between items-center gap-2">
+            <span className="text-white/50 text-[10px]">
+              Current Price (Live)
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-white font-semibold break-all">
+                ${currentPrice.toLocaleString()}
+              </span>
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            </div>
+          </div>
         </div>
 
-<div
-  className="
-    grid
-    gap-2
-      grid-cols-1
+          <div className="bg-white/5 border border-white/10 rounded p-3 space-y-2">
+            <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
+              <Plus className="w-3 h-3" />
+              <span>Add Trade</span>
+            </div>
 
-  "
->
+              <div
+                className="
+                  grid
+                  gap-2
+                    grid-cols-1
+
+                "
+              >
           <div>
             <label className="block text-white/40 text-[10px] mb-1">
               Quantity
@@ -280,17 +277,17 @@ className="
 
         <button
           onClick={addTrade}
-className="
-  w-full
-  bg-emerald-500/80
-  hover:bg-emerald-500
-  text-black
-  py-1.5
-  rounded-md
-  transition
-  text-xs
-  font-semibold cursor-pointer
-"        >
+                className="
+                  w-full
+                  bg-emerald-500/80
+                  hover:bg-emerald-500
+                  text-black
+                  py-1.5
+                  rounded-md
+                  transition
+                  text-xs
+                  font-semibold cursor-pointer
+                "        >
           Add Trade
         </button>
       </div>
@@ -299,18 +296,18 @@ className="
         <div className="space-y-1">
           <div className="flex items-center justify-between text-white/40 text-[10px] mb-1">
             <span>Trades ({trades.length})</span>
-<button
-  onClick={clearAll}
-  className="
-    text-red-400
-    hover:text-red-400
-    transition-colors
-    cursor-pointer
-    
-  "
->
-  Clear All
-</button>
+          <button
+            onClick={clearAll}
+            className="
+              text-red-400
+              hover:text-red-400
+              transition-colors
+              cursor-pointer
+              
+            "
+          >
+            Clear All
+          </button>
           </div>
 
 {trades.map((trade, idx) => (
@@ -345,7 +342,6 @@ className="
     </button>
   </div>
 ))}
-
 
         </div>
       )}

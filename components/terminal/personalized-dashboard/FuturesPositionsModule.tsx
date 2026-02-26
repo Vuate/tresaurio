@@ -532,11 +532,12 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
               <div
                 onWheel={(e) => e.stopPropagation()}
                 className={`
-absolute z-[999]
-w-[140px]
-bg-[#0b1f1f]
-border border-emerald-500/20
+                 absolute z-[999]
+                 w-[140px]
+               bg-[#0b1f1f]
+                 border border-emerald-500/20
                   rounded-lg
+                  overflow-hidden
                   shadow-xl
                   animate-in fade-in duration-200
 
@@ -980,6 +981,7 @@ border border-emerald-500/20
                       bg-[#0a0e1a]
                         border border-white/10
                         rounded-md
+                        overflow-hidden
                         shadow-lg
 
                         [&::-webkit-scrollbar]:w-1.5
@@ -1002,8 +1004,8 @@ border border-emerald-500/20
                             bg-transparent
                             text-white
                             transition-colors
-                            hover:bg-white/10
-                            hover:text-white
+                          hover:bg-emerald-500/10
+                          hover:text-emerald-400
                           "
                         >
                           {ex.toUpperCase()}

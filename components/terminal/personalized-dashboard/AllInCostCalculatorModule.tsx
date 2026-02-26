@@ -598,7 +598,7 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
       overflow-y-auto
       bg-[#0b1f1f]
       border border-emerald-500/20
-      rounded
+      rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
@@ -734,7 +734,7 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
       overflow-y-auto
       bg-[#0b1f1f]
       border border-emerald-500/20
-      rounded
+      rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 

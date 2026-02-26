@@ -564,7 +564,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           <button
             onClick={() => setExchangeOpen((v) => !v)}
             className="
-              h-7 px-3 rounded-md
+              h-7 px-3 rounded-none
               bg-[#0b1f1f]
               border border-white/10
               text-white text-xs
@@ -604,7 +604,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         overflow-y-auto
         bg-[#0b1f1f]
         border border-emerald-500/20
-        rounded-md
+        rounded-none
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
@@ -692,7 +692,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             <button
               onClick={() => deleteExchangeKey(selectedExchange)}
               className="
-                h-7 px-2 rounded-md
+                h-7 px-2 rounded-none
                 bg-red-500/10 border border-red-500/20
                 text-red-400 text-xs
                 hover:bg-red-500/20
@@ -715,7 +715,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               setShowApiKeyModal(true);
             }}
             className="
-              h-7 px-3 rounded-md
+              h-7 px-3 rounded-none
               bg-blue-500/20 border border-blue-500/30
               text-blue-400 text-xs
               hover:bg-blue-500/30
@@ -883,7 +883,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
                   {/* Metrics Grid - Fully responsive */}
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] mb-2">
-                    <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
+                   <div className="bg-white/5 rounded px-2 py-1.5 min-w-0 overflow-hidden">
                       <div className="flex items-center justify-between mb-0.5">
                         <span className="text-white/50 leading-tight text-[9px]">Entry</span>
                         {editingEntryPriceId !== position.id && (
@@ -1076,16 +1076,16 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                   <button
                     onClick={() => setExchangeModalOpen((v) => !v)}
                     className="
-    w-full h-9
-    flex items-center justify-between
-    bg-white/5
-    border border-white/10
-    rounded-md px-3
-    text-white text-xs
-    cursor-pointer
-    hover:bg-white/8
-    transition-colors
-  "
+                          w-full h-9
+                          flex items-center justify-between
+                          bg-white/5
+                          border border-white/10
+                          rounded-md px-3
+                          text-white text-xs
+                          cursor-pointer
+                          hover:bg-white/8
+                          transition-colors
+                        "
                   >
                     <span>
                       {formData.exchange
@@ -1103,18 +1103,18 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                     <div
                       onWheel={(e) => e.stopPropagation()}
                       className="
-      absolute z-50 mt-1 w-full
-      max-h-[120px] overflow-y-auto
-      bg-[#0a0e1a]
-      border border-white/10
-      rounded-md
-      shadow-lg
+                              absolute z-50 mt-1 w-full
+                              max-h-[120px] overflow-y-auto
+                              bg-[#0a0e1a]
+                              border border-white/10
+                              rounded-none
+                              shadow-lg
 
-      [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-thumb]:bg-white/20
-      [&::-webkit-scrollbar-thumb]:rounded-full
-      [&::-webkit-scrollbar-track]:bg-transparent
-    "
+                              [&::-webkit-scrollbar]:w-1.5
+                              [&::-webkit-scrollbar-thumb]:bg-white/20
+                              [&::-webkit-scrollbar-thumb]:rounded-full
+                              [&::-webkit-scrollbar-track]:bg-transparent
+                            "
                     >
                       {ALL_EXCHANGES.map((ex) => (
                         <button
@@ -1123,16 +1123,16 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                             setFormData({ ...formData, exchange: ex });
                             setExchangeModalOpen(false);
                           }}
-                          className="
-          w-full px-3 py-2
-          text-left text-xs
-          cursor-pointer
-          bg-transparent
-          text-white
-          transition-colors
-          hover:bg-white/10
-          hover:text-white
-        "
+                      className="
+                        w-full px-3 py-2
+                        text-left text-xs
+                        cursor-pointer
+                        bg-transparent
+                        text-white
+                        transition-colors
+                        hover:bg-emerald-500/10
+                        hover:text-emerald-400
+                      "
                         >
                           {ex.toUpperCase()}
                         </button>
@@ -1379,7 +1379,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           max-h-[120px] overflow-y-auto
           bg-[#0a0e1a]
           border border-white/10
-          rounded-md
+          rounded-none
           shadow-lg
 
           [&::-webkit-scrollbar]:w-1.5
@@ -1402,8 +1402,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               bg-transparent
               text-white
               transition-colors
-              hover:bg-white/10
-              hover:text-white
+               hover:bg-emerald-500/10
+              hover:text-emerald-400
             "
                         >
                           {ex.toUpperCase()}

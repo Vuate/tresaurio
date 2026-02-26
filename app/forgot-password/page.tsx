@@ -124,7 +124,7 @@ export default function ForgotPasswordPage() {
                     font-medium
                     hover:bg-gray-100
                     transition-all
-                    disabled:opacity-50 disabled:cursor-not-allowed
+                    disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
                   "
                 >
                   {loading ? "Sending..." : "Send Password Reset Link"}

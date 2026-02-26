@@ -119,8 +119,55 @@ export default function LivePrices() {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading)
-    return <p className="text-center text-gray-400 py-8 xl:py-10 2xl:py-12">Loading...</p>;
+if (loading)
+  return (
+    <div className="w-full mt-60 xl:mt-62 2xl:mt-64 animate-pulse">
+      {/* Header */}
+      <div className="flex items-end justify-between mb-6">
+        <div className="flex items-end gap-4">
+          <div className="h-7 w-48 bg-white/10 rounded-lg" />
+          <div className="h-4 w-12 bg-white/10 rounded-md mb-0.5" />
+        </div>
+        <div className="h-4 w-32 bg-white/10 rounded-md" />
+      </div>
+
+      {/* Table */}
+      <div className="border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
+        {/* Header row */}
+        <div className="hidden lg:grid grid-cols-[200px_1fr_160px_100px] px-4 py-2.5 bg-white/[0.02] gap-4">
+          {["w-10", "w-10", "w-10", "w-10"].map((w, i) => (
+            <div key={i} className={`h-3 ${w} bg-white/10 rounded`} />
+          ))}
+        </div>
+
+        {/* Rows */}
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="grid grid-cols-[auto_1fr_auto_auto] lg:grid-cols-[200px_1fr_160px_100px] gap-x-3 px-3 py-3 lg:px-4 lg:py-3.5 items-center"
+          >
+            {/* Icon + name */}
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-white/10 rounded-lg shrink-0" />
+              <div className="flex flex-col gap-1.5">
+                <div className="h-3 w-10 bg-white/10 rounded" />
+                <div className="h-2.5 w-14 bg-white/10 rounded" />
+              </div>
+            </div>
+
+            {/* Trend line */}
+            <div className="h-5 w-24 bg-white/10 rounded col-span-2 lg:col-span-1" />
+
+            {/* Price */}
+            <div className="h-4 w-20 bg-white/10 rounded ml-auto" />
+
+            {/* % */}
+            <div className="h-3.5 w-12 bg-white/10 rounded ml-auto" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="w-full mt-60 xl:mt-62 2xl:mt-64">

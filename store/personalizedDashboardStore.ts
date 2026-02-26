@@ -8,11 +8,13 @@ import type {
 } from "@/lib/personalized-dashboard/types";
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
+import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
 
 export const MAX_ZOOM = 2;
 export const WORLD_WIDTH = 8000;
 export const WORLD_HEIGHT = 4500;
 
+// Calculates the minimum zoom level so the world always fills the viewport.
 export function calculateMinZoom(viewportW: number, viewportH: number): number {
   const minZoomX = viewportW / WORLD_WIDTH;
   const minZoomY = viewportH / WORLD_HEIGHT;
@@ -100,6 +102,8 @@ type Actions = {
   closeAllPanels: () => void;
 };
 
+// Debounces DB save calls — waits 3 seconds after the last change before saving.
+// Prevents excessive API calls on rapid state updates (e.g. dragging modules).
 let saveTimeout: NodeJS.Timeout | null = null;
 function debouncedSaveToDB() {
   if (saveTimeout) clearTimeout(saveTimeout);
@@ -136,8 +140,9 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
     alerts: [],
     templates: [],
 
-        toggleModuleLock: (id) => {
-      const locked = new Set(get().lockedModules);
+// Toggles the locked state of a module. Locked modules cannot be moved or resized.
+toggleModuleLock: (id) => {
+  const locked = new Set(get().lockedModules);
       if (locked.has(id)) {
         locked.delete(id);
       } else {
@@ -147,13 +152,14 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
         debouncedSaveToDB();
     },
 
-        isModuleLocked: (id) => get().lockedModules.has(id),
-
-
+    isModuleLocked: (id) => get().lockedModules.has(id),
+    
     setUIBlocked: (v) => set({ uiBlocked: v }),
     setSwapSource: (id) => set({ swapSourceId: id }),
-        setSizeSource: (id) => set({ sizeSourceId: id }),
-applySizeFromSource: (sourceId, targetId) => {
+    setSizeSource: (id) => set({ sizeSourceId: id }),
+    // Copies the width and height of a source module to a target module.
+// Clamps position to ensure the resized module stays within world boundaries.
+    applySizeFromSource: (sourceId, targetId) => {
   const modules = get().modules;
   const source = modules.find(m => m.id === sourceId);
   const target = modules.find(m => m.id === targetId);
@@ -172,18 +178,18 @@ applySizeFromSource: (sourceId, targetId) => {
   });
 },
 
-
+// Swaps the positions of two modules on the canvas.
+// Boundary checks ensure neither module goes out of the world bounds after swap.
 swapModules: (id1, id2) => {
   const modules = get().modules;
   const m1 = modules.find(m => m.id === id1);
   const m2 = modules.find(m => m.id === id2);
   if (!m1 || !m2) return;
 
-  // m1 → m2'nin yerine gidecek, sınır kontrolü yap
+ 
   const newX1 = Math.max(0, Math.min(m2.x, WORLD_WIDTH - m1.width));
   const newY1 = Math.max(0, Math.min(m2.y, WORLD_HEIGHT - m1.height));
 
-  // m2 → m1'in yerine gidecek, sınır kontrolü yap
   const newX2 = Math.max(0, Math.min(m1.x, WORLD_WIDTH - m2.width));
   const newY2 = Math.max(0, Math.min(m1.y, WORLD_HEIGHT - m2.height));
 
@@ -197,6 +203,7 @@ swapModules: (id1, id2) => {
   });
 },
 
+// Clears all modules, notes, and alerts. Resets zoom to fit the viewport and syncs to DB.
 resetDashboard: async () => {
   const { topBarHeight, notesBarHeight } = get();
   
@@ -231,7 +238,18 @@ resetDashboard: async () => {
           },
         }),
       });
-    } catch {}
+            useDashboardNotificationStore.getState().push({
+        type: "success",
+        title: "Dashboard Reset",
+        description: "Dashboard has been reset to default.",
+      });
+    } catch {
+      useDashboardNotificationStore.getState().push({
+        type: "error",
+        title: "Reset Failed",
+        description: "Dashboard could not be reset.",
+      });
+    }
   },
     _hydrated: false,
     setHydrated: (v) => set({ _hydrated: v }),
@@ -279,7 +297,8 @@ resetDashboard: async () => {
         activeModuleId: m.id,
       }),
       
-
+// Creates a new module instance from the registry and places it at the center of the current viewport.
+// Falls back to provided x/y coordinates if given.
     addModuleByType: (type, x, y) => {
       const def = moduleRegistry[type];
       if (!def) return;
@@ -303,8 +322,8 @@ resetDashboard: async () => {
             type: def.type,
             title: def.title,
             category: def.category,
-x: Math.max(0, Math.min(x ?? moduleX, WORLD_WIDTH - def.defaultSize.width)),
-y: Math.max(0, Math.min(y ?? moduleY, WORLD_HEIGHT - def.defaultSize.height)),
+            x: Math.max(0, Math.min(x ?? moduleX, WORLD_WIDTH - def.defaultSize.width)),
+            y: Math.max(0, Math.min(y ?? moduleY, WORLD_HEIGHT - def.defaultSize.height)),
             width: def.defaultSize.width,
             height: def.defaultSize.height,
           },
@@ -485,18 +504,19 @@ layout: {
             layout: { modules, zoom, panX, panY, lockedModules: Array.from(lockedModules), uiBlocked },
           }),
         });
-        if (!res.ok) return;
+if (!res.ok) throw new Error("Failed to save template");
         // Refresh list
         await get().fetchTemplates();
       } catch (err) {
         console.error("[Dashboard] Save template failed:", err);
+          throw err;
       }
     },
 
 loadTemplate: async (id: string) => {
   try {
     const res = await fetch(`/api/dashboard/templates/${id}`);
-    if (!res.ok) return;
+if (!res.ok) throw new Error("Failed to load template");
     const { template } = await res.json();
     if (!template?.layout) return;
 
@@ -519,6 +539,7 @@ loadTemplate: async (id: string) => {
     });
   } catch (err) {
     console.error("[Dashboard] Load template failed:", err);
+      throw err;
   }
 },
 
@@ -602,7 +623,8 @@ onRehydrateStorage: () => {
   )
 );
 
-// Subscribe to state changes → debounced DB save (only after hydration)
+// Watches for state changes and triggers a debounced DB save whenever
+// modules, notes, alerts, or uiBlocked change — but only after hydration is complete.
 usePersonalizedDashboardStore.subscribe(
   (state, prevState) => {
     if (!state._hydrated) return;

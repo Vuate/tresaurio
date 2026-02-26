@@ -139,7 +139,7 @@ export default function NewsModule({ instanceId }: Props) {
   <button
     onClick={() => setCategoryOpen((v) => !v)}
     className="
-      w-full h-7 px-2 rounded
+      w-full h-7 px-2 rounded-none
       bg-[#0b1f1f]
       border border-white/10
       text-white text-[11px]
@@ -171,7 +171,7 @@ export default function NewsModule({ instanceId }: Props) {
       overflow-y-auto
       bg-[#0b1f1f]
       border border-emerald-500/20
-      rounded
+      rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
