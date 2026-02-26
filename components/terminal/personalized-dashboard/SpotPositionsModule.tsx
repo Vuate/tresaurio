@@ -100,6 +100,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [lastSync, setLastSync] = useState<Date | null>(null);
+  const [realizedPnl, setRealizedPnl] = useState<number | null>(null);
+  const [loadingRealized, setLoadingRealized] = useState(false);
 
   const exchangeRef = useRef<HTMLDivElement>(null);
   const exchangeModalRef = useRef<HTMLDivElement>(null);
@@ -127,6 +129,22 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     entryDate: new Date().toISOString().split("T")[0],
     notes: "",
   });
+
+  const fetchSpotRealizedPnl = async (symbols: string[]) => {
+    if (!symbols.length) return;
+    setLoadingRealized(true);
+    try {
+      const response = await fetch(
+        `/api/exchange/spot-realized-pnl?exchange=${selectedExchange}&symbols=${symbols.join(",")}`
+      );
+      const data = await response.json();
+      if (data.success) setRealizedPnl(data.data);
+    } catch (error) {
+      console.error("Failed to fetch spot realized PnL:", error);
+    } finally {
+      setLoadingRealized(false);
+    }
+  };
 
   // Fetch API keys on mount
   useEffect(() => {
@@ -344,6 +362,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       }
 
       setLastSync(new Date());
+
+      // Fetch realized PnL for synced symbols
+      const symbols = filteredBalances.map((b) => `${b.asset}USDT`);
+      fetchSpotRealizedPnl(symbols);
     } catch (error) {
       console.error("Sync error:", error);
       setSyncError(error instanceof Error ? error.message : "Failed to sync");
@@ -767,7 +789,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           </div>
           <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
             <div className="text-white/40 text-[10px] mb-0.5 break-words leading-tight">
-              P&L
+              Float PnL
             </div>
             <div
               className={`font-semibold text-xs break-words leading-tight ${
@@ -779,17 +801,16 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           </div>
           <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
             <div className="text-white/40 text-[10px] mb-0.5 break-words leading-tight">
-              P&L %
+              Realized PnL
             </div>
             <div
               className={`font-semibold text-xs break-words leading-tight ${
-                portfolio.totalPnLPercent >= 0
-                  ? "text-emerald-400"
-                  : "text-red-400"
+                realizedPnl === null ? "text-white/30" : realizedPnl >= 0 ? "text-emerald-400" : "text-red-400"
               }`}
             >
-              {portfolio.totalPnLPercent >= 0 ? "+" : ""}
-              {portfolio.totalPnLPercent.toFixed(2)}%
+              {realizedPnl === null
+                ? (loadingRealized ? "..." : "—")
+                : `${realizedPnl >= 0 ? "+" : "-"}$${formatUSD(Math.abs(realizedPnl))}`}
             </div>
           </div>
         </div>
