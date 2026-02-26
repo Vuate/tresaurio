@@ -64,41 +64,13 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
         .slice(0, 2)
     : user.email?.charAt(0).toUpperCase() || "U";
 
-  const menuItems = [
-    {
-      icon: User,
-      label: "Profile",
-      onClick: () => {
-        router.push("/profile");
-        setOpen(false);
-      },
-    },
-    {
-      icon: Wallet,
-      label: "Balance",
-      onClick: () => {
-        router.push("/billing");
-        setOpen(false);
-      },
-      badge: "Demo",
-    },
-    {
-      icon: History,
-      label: "Recent Orders",
-      onClick: () => {
-        router.push("/orders");
-        setOpen(false);
-      },
-    },
-    {
-      icon: Settings,
-      label: "Settings",
-      onClick: () => {
-        router.push("/settings");
-        setOpen(false);
-      },
-    },
-  ];
+const menuItems = [
+  { icon: User,     label: "Profile",        onClick: () => {}, disabled: true },
+  { icon: Wallet,   label: "Balance",         onClick: () => {}, badge: "Demo", disabled: true },
+  { icon: History,  label: "Recent Orders",   onClick: () => {}, disabled: true },
+  { icon: Settings, label: "Settings",        onClick: () => {}, disabled: true },
+];
+
 
   // ========================================
   // MOBILE VARIANT - Navbar mobile menu için
@@ -130,11 +102,17 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
         {/* Menu Items - Full Width Buttons */}
         <div className="space-y-2">
           {menuItems.map((item, i) => (
-            <button
-              key={i}
-              onClick={item.onClick}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-all border border-white/10 hover:border-white/20"
-            >
+<button
+  key={i}
+  disabled={item.disabled}
+  title={item.disabled ? "Coming Soon" : undefined}
+  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all border border-white/10
+    ${item.disabled
+      ? "opacity-40 cursor-not-allowed text-gray-400"
+      : "text-gray-300 hover:bg-white/5 hover:text-white hover:border-white/20"
+    }`}
+>
+
               <item.icon className="w-4 h-4 text-gray-400 flex-shrink-0" />
               <span className="flex-1 text-left font-medium">{item.label}</span>
               {item.badge && (
@@ -294,23 +272,23 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
           {/* Menu Items */}
           <div className="py-1">
             {menuItems.map((item, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  item.onClick();
-                  setOpen(false);
-                  setUserMenuOpen(false);
-                }}
-                className={`
-                  w-full flex items-center text-gray-300 
-                  hover:bg-white/5 hover:text-white 
-                  transition-colors cursor-pointer
-                  ${compact 
-                    ? "gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm" 
-                    : "gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-2.5 text-sm"
-                  }
-                `}
-              >
+<button
+  key={i}
+  disabled={item.disabled}
+  title={item.disabled ? "Coming Soon" : undefined}
+  className={`
+    w-full flex items-center transition-colors
+    ${item.disabled
+      ? "opacity-40 cursor-not-allowed text-gray-400"
+      : "text-gray-300 hover:text-white cursor-pointer"
+    }
+    ${compact 
+      ? "gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm" 
+      : "gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-2.5 text-sm"
+    }
+  `}
+>
+
                 <item.icon 
                   className={`
                     text-gray-500 flex-shrink-0
@@ -343,7 +321,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
               }}
               className={`
                 w-full flex items-center text-red-400 
-                hover:bg-red-500/10 hover:text-red-300
+                hover:text-red-300
                 transition-colors cursor-pointer
                 ${compact 
                   ? "gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm" 

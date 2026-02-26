@@ -25,6 +25,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirement[]>([]);
   const [showRequirements, setShowRequirements] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { requirements } = validatePassword(e.target.value);
@@ -278,10 +279,13 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
 
       {/* Social Logins */}
       <div className="space-y-2 xl:space-y-2 2xl:space-y-2">
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => signIn("google", { callbackUrl: window.location.pathname })}
+  <button
+  type="button"
+  disabled={loading || googleLoading}
+  onClick={() => {
+    setGoogleLoading(true);
+    signIn("google", { callbackUrl: window.location.pathname });
+  }}
           className="
             w-full flex items-center justify-center
             gap-2 xl:gap-2 2xl:gap-2

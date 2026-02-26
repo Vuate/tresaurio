@@ -6,7 +6,7 @@ import { Map, Crosshair } from "lucide-react";
 import { usePersonalizedDashboardStore, MAX_ZOOM, WORLD_WIDTH, WORLD_HEIGHT, calculateMinZoom }
 from "@/store/personalizedDashboardStore";
 
-
+// Returns map and button sizes based on the current viewport width for responsive layout.
 const getResponsiveSize = () => {
   const w = window.innerWidth;
   return {
@@ -36,18 +36,17 @@ export default function WorkspaceControls() {
   const [minimapHeaderHeight, setMinimapHeaderHeight] = useState(32);
   const headerRef = useRef<HTMLDivElement>(null);
 
+  // Updates responsive sizes whenever the browser window is resized.
     useEffect(() => {
     const handleResize = () => setSizes(getResponsiveSize());
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-
-
   const MAP_SCALE_X = sizes.mapSize / WORLD_WIDTH;
   const MAP_SCALE_Y = sizes.mapSize / WORLD_HEIGHT;
 
-
+// Tracks the usable viewport dimensions, accounting for the top bar and notes bar heights.
   useEffect(() => {
     const updateViewport = () => {
       setViewport({
@@ -61,6 +60,7 @@ export default function WorkspaceControls() {
     return () => window.removeEventListener("resize", updateViewport);
   }, [topBarHeight, notesBarHeight]);
 
+  // Measures the minimap header height so the map canvas area is correctly offset below it.
   useEffect(() => {
     if (mapOpen && headerRef.current) {
       const rect = headerRef.current.getBoundingClientRect();
@@ -68,6 +68,7 @@ export default function WorkspaceControls() {
     }
   }, [mapOpen]);
 
+// Zooms in or out centered on the viewport midpoint and clamps pan to keep the world in bounds.
 const handleZoom = (delta: number) => {
     if (usePersonalizedDashboardStore.getState().uiBlocked) return;
     const minZoom = calculateMinZoom(viewport.w, viewport.h);
@@ -100,6 +101,7 @@ const handleZoom = (delta: number) => {
     setZoom(newZoom);
   };
 
+// Pans the viewport to center the currently active module, clamped to world boundaries.
 const alignToActiveWindow = () => {
     if (usePersonalizedDashboardStore.getState().uiBlocked) return;
     const active = modules.find(m => m.id === activeModuleId);
@@ -128,6 +130,7 @@ const alignToActiveWindow = () => {
     setPan(newPanX, newPanY);
   };
 
+// Converts a click on the minimap to world coordinates and pans the canvas to that position.
 const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   if (usePersonalizedDashboardStore.getState().uiBlocked) return;
   const rect = e.currentTarget.getBoundingClientRect();
@@ -159,17 +162,18 @@ const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   setPan(newPanX, newPanY);
 };
 
+// Derived map dimensions that subtract the minimap header from the total drawable area.
 const actualMapHeight = sizes.mapSize - minimapHeaderHeight;
 const actualMapScaleY = actualMapHeight / WORLD_HEIGHT;
 
-
+// Maps the current pan and zoom to minimap coordinates for the viewport indicator rectangle.
 const viewportX = (-panX / zoom) * MAP_SCALE_X;
 const viewportY = (-panY / zoom) * actualMapScaleY;
 
 const viewportW = (viewport.w / zoom) * MAP_SCALE_X;
 const viewportH = (viewport.h / zoom) * actualMapScaleY;
 
-
+// Calculates the bottom spacing for the controls panel, accounting for the notes bar and screen size.
 const bottomOffset = notesBarHeight + (window.innerWidth >= 1536 ? 24 : window.innerWidth >= 1280 ? 20 : 16);
 
   return (
@@ -216,16 +220,16 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
                 Map
               </span>
             </div>
-<div
-  className="absolute cursor-pointer"
-  style={{
-    top: minimapHeaderHeight,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  }}
-  onClick={handleMapClick}
->
+        <div
+          className="absolute cursor-pointer"
+          style={{
+            top: minimapHeaderHeight,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          }}
+          onClick={handleMapClick}
+        >
               {modules.map(m => {
                 const moduleMapScaleY = actualMapHeight / WORLD_HEIGHT;
                 
@@ -234,31 +238,31 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
                     key={m.id}
                     className={`absolute bg-teal-400/30 border border-teal-400 rounded-[2px]
                       ${m.id === activeModuleId ? 'border-2 bg-teal-400/50' : ''}`}
-      style={{
-        left: m.x * MAP_SCALE_X,
-              top: m.y * actualMapScaleY,  
-        width: m.width * MAP_SCALE_X,
-        height: m.height * actualMapScaleY,
-      }}
+                  style={{
+                    left: m.x * MAP_SCALE_X,
+                          top: m.y * actualMapScaleY,  
+                    width: m.width * MAP_SCALE_X,
+                    height: m.height * actualMapScaleY,
+                  }}
                   />
                 );
               })}
 
-<div
-  className="absolute border-2 border-white bg-white/5 rounded-[2px]"
-  style={{
-    left: Math.max(0, Math.min(sizes.mapSize - viewportW, viewportX)),
-    top: Math.max(
-      0, 
-      Math.min(
-        actualMapHeight - viewportH, 
-        viewportY
-      )
-    ),
-    width: Math.min(sizes.mapSize, viewportW),
-    height: Math.min(actualMapHeight, viewportH),
-  }}
-/>
+            <div
+              className="absolute border-2 border-white bg-white/5 rounded-[2px]"
+              style={{
+                left: Math.max(0, Math.min(sizes.mapSize - viewportW, viewportX)),
+                top: Math.max(
+                  0, 
+                  Math.min(
+                    actualMapHeight - viewportH, 
+                    viewportY
+                  )
+                ),
+                width: Math.min(sizes.mapSize, viewportW),
+                height: Math.min(actualMapHeight, viewportH),
+              }}
+            />
             </div>
           </div>
         </div>
@@ -287,33 +291,34 @@ className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
   );
 }
 
-function ZoomBtn({
-  children,
-  onClick,
-  size,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-    size: number; 
-}) {
-  return (
-    <button
-      onClick={onClick}
-      onMouseDown={(e) => e.preventDefault()}
-className="
-  rounded-lg
-    bg-[#031A1C]/95
-    border border-white/10
-   text-white text-sm xl:text-base 2xl:text-lg
-    hover:bg-teal-400/20
-    transition
-    select-none
-    cursor-pointer
-    flex items-center justify-center
-"
-            style={{ width: size, height: size }}
-    >
-      {children}
-    </button>
-  );
-}
+// Reusable button used by zoom controls — consistent dark style with a dynamic size prop.
+    function ZoomBtn({
+      children,
+      onClick,
+      size,
+    }: {
+      children: React.ReactNode;
+      onClick: () => void;
+        size: number; 
+    }) {
+      return (
+        <button
+          onClick={onClick}
+          onMouseDown={(e) => e.preventDefault()}
+    className="
+      rounded-lg
+        bg-[#031A1C]/95
+        border border-white/10
+      text-white text-sm xl:text-base 2xl:text-lg
+        hover:bg-teal-400/20
+        transition
+        select-none
+        cursor-pointer
+        flex items-center justify-center
+    "
+                style={{ width: size, height: size }}
+        >
+          {children}
+        </button>
+      );
+    }

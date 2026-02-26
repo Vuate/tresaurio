@@ -158,7 +158,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
                 <div
                   className={`
                    absolute z-[999] w-full
-                 bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl
+                 bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl overflow-hidden
                    animate-in fade-in duration-200
                     [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
                     [&::-webkit-scrollbar-thumb]:rounded-full
@@ -213,7 +213,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
                 <div
                   className={`
                    absolute z-[999] w-full
-               bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl
+               bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl overflow-hidden
                  animate-in fade-in duration-200
                     [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
                     [&::-webkit-scrollbar-thumb]:rounded-full

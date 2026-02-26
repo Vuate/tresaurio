@@ -249,17 +249,20 @@ export default function CreateAlertModule({ instanceId }: Props) {
             Target Price
           </label>
           <input
-            type="number"
-            placeholder="Target price"
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleCreateAlert();
+              type="number"
+              placeholder="Target price"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+          onKeyDown={(e) => {
+             if (["e", "E", "+", "-"].includes(e.key)) {
+               e.preventDefault();
+                  }
+                    if (e.key === "Enter") {
+               handleCreateAlert();
               }
-            }}
-            className="w-full h-9 rounded-lg bg-white/5 border border-white/10 px-3 text-white text-xs outline-none"
-          />
+           }}
+  className="w-full h-9 rounded-lg bg-white/5 border border-white/10 px-3 text-white text-xs outline-none"
+        />
         </div>
 
         <button

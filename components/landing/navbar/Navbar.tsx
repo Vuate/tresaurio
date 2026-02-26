@@ -116,13 +116,14 @@ export default function Navbar() {
             title="Coming Soon"
             className="opacity-40 cursor-not-allowed font-medium"
           >
-            LEARN ( Coming Soon )
+            LEARN
           </button>
 
           <button 
-            onClick={() => router.push("/download")}
-            className="font-medium transition duration-150 hover:text-teal-300 hover:-translate-y-0.5 transform cursor-pointer"
-          >
+              disabled
+              title="Coming Soon"
+              className="opacity-40 cursor-not-allowed font-medium"
+            >
             API
           </button>
           
@@ -196,15 +197,12 @@ export default function Navbar() {
                   disabled
                   className="text-left text-gray-300/40 font-medium py-2 cursor-not-allowed"
                 >
-                  LEARN ( Coming Soon )
+                  LEARN
                 </button>
 
                 <button
-                  onClick={() => {
-                    router.push("/download");
-                    setMobileMenuOpen(false);
-                  }}
-                  className="text-left text-gray-300 font-medium py-2 hover:text-teal-300 transition cursor-pointer"
+                  disabled
+                  className="text-left text-gray-300/40 font-medium py-2 cursor-not-allowed"
                 >
                   API
                 </button>

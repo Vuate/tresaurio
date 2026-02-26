@@ -280,22 +280,21 @@ export default function ICOCalendarModule({ instanceId }: Props) {
                 key={ico.id}
                 className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
               >
-                <div className="flex items-start justify-between mb-1.5 sm:mb-2">
-                  <div className="min-w-0">
-                    <div className="font-semibold text-white text-[10px] sm:text-xs truncate">
-                      {ico.name}
-                    </div>
-                    <div className="text-[9px] sm:text-[10px] text-white/40">
-                      {ico.symbol} • {ico.chain}
-                    </div>
-                  </div>
-                  <span
-                    className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold flex-shrink-0 ml-2 ${getStatusColor(ico.status)}`}
-                  >
-                    {ico.status}
-                  </span>
+            <div className="flex items-center justify-between gap-1 mb-1.5 sm:mb-2">
+              <div className="min-w-0 flex-1 overflow-hidden">
+                <div className="font-semibold text-white text-[10px] sm:text-xs truncate">
+                  {ico.name}
                 </div>
-
+                <div className="text-[9px] sm:text-[10px] text-white/40 truncate">
+                  {ico.symbol} • {ico.chain}
+                </div>
+              </div>
+              <span
+                className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold flex-shrink-0 ${getStatusColor(ico.status)}`}
+              >
+                {ico.status}
+              </span>
+            </div>
                 <div className="space-y-1 sm:space-y-1.5">
                   {ico.price > 0 && (
                     <div className="flex justify-between text-[10px] sm:text-[11px]">

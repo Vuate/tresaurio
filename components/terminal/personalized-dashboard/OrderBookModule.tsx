@@ -517,20 +517,20 @@ export default function OrderBookModule({
             <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
               <div>
                 <div className="text-red-400 mb-1">SELL (Asks)</div>
-                <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-white/40">
-                  <div>Price</div>
-                  <div className="text-right">Qty</div>
-                  <div className="text-right hidden sm:block">Total</div>
-                </div>
+                    <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-white/40 overflow-hidden">
+                      <div className="truncate">Price</div>
+                      <div className="text-right truncate">Qty</div>
+                      <div className="text-right truncate hidden sm:block">Total</div>
+                    </div>
               </div>
 
               <div>
                 <div className="text-emerald-400 mb-1 text-right">BUY (Bids)</div>
-                <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-white/40">
-                  <div>Price</div>
-                  <div className="text-right">Qty</div>
-                  <div className="text-right hidden sm:block">Total</div>
-                </div>
+                    <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-white/40 overflow-hidden">
+                      <div className="truncate">Price</div>
+                      <div className="text-right truncate">Qty</div>
+                      <div className="text-right truncate hidden sm:block">Total</div>
+                    </div>
               </div>
             </div>
 

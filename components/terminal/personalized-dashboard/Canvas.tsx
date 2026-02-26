@@ -28,20 +28,21 @@ const didInitRef = useRef(false);
     notesBarHeight, 
   } = usePersonalizedDashboardStore();
 
+// Mirrors panX/panY state to refs so drag event listeners always read the latest value without stale closures.
 const panXRef = useRef(panX);
 const panYRef = useRef(panY);
 useEffect(() => { panXRef.current = panX; }, [panX]);
 useEffect(() => { panYRef.current = panY; }, [panY]);
 
+// Enables drag-to-pan the canvas. Ignores drags that start on module headers, resize handles, or interactive elements.
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
     if (!container || !canvas) return;
 
-
 const onMouseDown = (e: MouseEvent) => {
-  if (usePersonalizedDashboardStore.getState().uiBlocked) return;
-  if (e.button !== 0) return;
+    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+    if (e.button !== 0) return;
 
   const target = e.target as HTMLElement;
   if (
@@ -103,21 +104,22 @@ setPan(x, y);
     };
   }, [panX, panY, zoom, setPan]);
 
-useEffect(() => {
-  const el = containerRef.current;
-  if (!el) return;
+    // Handles mouse wheel zoom centered on the cursor. Skips events that originate inside a module window.
+    useEffect(() => {
+      const el = containerRef.current;
+      if (!el) return;
 
-  const ZOOM_SENSITIVITY = 0.003;
-const onWheel = (e: WheelEvent) => {
-    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
-const target = e.target as HTMLElement;
+    const ZOOM_SENSITIVITY = 0.003;
+    const onWheel = (e: WheelEvent) => {
+      if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+    const target = e.target as HTMLElement;
 
-if (!target.closest("[data-canvas-container]")) {
-  return;
-}
+    if (!target.closest("[data-canvas-container]")) {
+      return;
+    }
 
-if (target.closest("[data-module-window]")) {
-  return;
+    if (target.closest("[data-module-window]")) {
+      return;
 }
 
     e.preventDefault();
@@ -166,6 +168,7 @@ const minZoom = calculateMinZoom(rect.width, rect.height);
   return () => el.removeEventListener("wheel", onWheel);
 }, [zoom, panX, panY, setZoom, setPan, topBarHeight, notesBarHeight]);
 
+// Blurs the active input when Escape is pressed — prevents keyboard shortcuts from firing while the user is typing.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -177,24 +180,25 @@ const minZoom = calculateMinZoom(rect.width, rect.height);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-useEffect(() => {
-  if (!containerRef.current) return;
+    // Runs once on mount to calculate the initial zoom and pan so the world canvas fits and centers in the viewport.
+    useEffect(() => {
+      if (!containerRef.current) return;
 
-  requestAnimationFrame(() => {
-    if (!containerRef.current) return;
+      requestAnimationFrame(() => {
+        if (!containerRef.current) return;
 
-    const rect = containerRef.current.getBoundingClientRect();
-    const initialZoom = calculateMinZoom(rect.width, rect.height);
+        const rect = containerRef.current.getBoundingClientRect();
+        const initialZoom = calculateMinZoom(rect.width, rect.height);
 
-    const centerPanX = (rect.width - WORLD_WIDTH * initialZoom) / 2;
-    const centerPanY = (rect.height - WORLD_HEIGHT * initialZoom) / 2;
+        const centerPanX = (rect.width - WORLD_WIDTH * initialZoom) / 2;
+        const centerPanY = (rect.height - WORLD_HEIGHT * initialZoom) / 2;
 
-    setZoom(initialZoom);
-    setPan(centerPanX, centerPanY);
+        setZoom(initialZoom);
+        setPan(centerPanX, centerPanY);
 
-    didInitRef.current = true;
-  });
-}, []);
+        didInitRef.current = true;
+      });
+    }, []);
 
 
 /* ZOOM - PAN CLAMP WHEN THE NOTES PANEL CHANGES */
@@ -242,8 +246,6 @@ useEffect(() => {
   }
 }, [ topBarHeight, notesBarHeight, setZoom, setPan]);
 
-
-
   return (
     <div
       ref={containerRef}
@@ -254,38 +256,36 @@ useEffect(() => {
         select-none
         focus:outline-none focus-visible:outline-none
       "
-style={{
-    top: topBarHeight || 0, 
-    bottom: notesBarHeight || 0, 
-  cursor: "grab",
-
-
-}}
+    style={{
+        top: topBarHeight || 0, 
+        bottom: notesBarHeight || 0, 
+      cursor: "grab",
+    }}
     >
       {/* SIDEBAR */}
       <SidebarPanel />
 
     <DashboardNotifications />
 
-<div className="absolute inset-0 overflow-hidden">
-<div
-  ref={canvasRef}
-  className="relative"
-  style={{
-  width: WORLD_WIDTH,
-  height: WORLD_HEIGHT,
-    transform: `translate(${panX}px, ${panY}px) scale(${zoom})`,
-    transformOrigin: "0 0",
+      <div className="absolute inset-0 overflow-hidden">
+      <div
+        ref={canvasRef}
+        className="relative"
+        style={{
+        width: WORLD_WIDTH,
+        height: WORLD_HEIGHT,
+          transform: `translate(${panX}px, ${panY}px) scale(${zoom})`,
+          transformOrigin: "0 0",
 
-    backgroundColor: "#041F20",
-    backgroundImage: `
-      linear-gradient(rgba(25,216,208,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(25,216,208,0.03) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1px)
-    `,
-    backgroundSize: "50px 50px",
-  }}
->
+          backgroundColor: "#041F20",
+          backgroundImage: `
+            linear-gradient(rgba(25,216,208,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(25,216,208,0.03) 1px, transparent 1px),
+            radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1px)
+          `,
+          backgroundSize: "50px 50px",
+        }}
+      >
         {modules.map((m) => (
           <ModuleWindow key={m.id} module={m} />
         ))}

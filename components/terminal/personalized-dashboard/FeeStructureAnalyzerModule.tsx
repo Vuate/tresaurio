@@ -205,6 +205,7 @@ useEffect(() => {
             w-full text-left px-3 py-2
             text-xs cursor-pointer
             hover:text-emerald-400
+              hover:bg-emerald-500/10
           "
         >
           {e.toUpperCase()}
@@ -265,6 +266,7 @@ useEffect(() => {
               w-full text-left px-3 py-2
               text-xs cursor-pointer
               hover:text-emerald-400
+                hover:bg-emerald-500/10
             "
           >
             VIP {level} (M {fees.maker}% / T {fees.taker}%)

@@ -383,7 +383,10 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
       </div>
 
       <div className="px-3 pt-2 pb-3 flex-shrink-0">
-        <div className="grid grid-cols-3 gap-2 transition-all duration-300">
+          <div
+            className="grid gap-2 transition-all duration-300"
+            style={{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }}
+          >
           {/* Deposits Card */}
           <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20 rounded-lg p-2 overflow-hidden min-w-0">
             <div className="flex flex-col gap-1">

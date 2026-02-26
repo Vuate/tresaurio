@@ -100,12 +100,15 @@ export default function Sidebar() {
           label="Market Microstructure"
           active={isActive("/terminal/market-intelligence")}
         />
-        <NavItem
-          href="/terminal/transfer"
-          icon={<Icon icon="mdi:lock-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
-          label="Transfer"
-          active={isActive("/terminal/transfer")}
-        />
+        <div className="relative opacity-40">
+          <NavItem
+            href="/terminal/transfer"
+            icon={<Icon icon="mdi:lock-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+            label="Transfer"
+            active={false}
+          />
+          <div className="absolute inset-0 cursor-not-allowed" title="Coming Soon" />
+        </div>
         <NavItem
           href="/terminal/reporting"
           icon={<Icon icon="mdi:file-chart-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}

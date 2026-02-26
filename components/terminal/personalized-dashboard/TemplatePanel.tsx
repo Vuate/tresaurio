@@ -29,6 +29,7 @@ export default function TemplatePanel() {
   const [saving, setSaving] = useState(false);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const templateInputRef = useRef<HTMLInputElement>(null);
 
   // Confirmation states
   const [confirmLoadId, setConfirmLoadId] = useState<string | null>(null);
@@ -62,6 +63,9 @@ export default function TemplatePanel() {
     if (templatesOpen && headerRef.current) {
       const height = headerRef.current.getBoundingClientRect().height;
       setHeaderHeight(height);
+    }
+      if (templatesOpen) {
+      setTimeout(() => templateInputRef.current?.focus(), 50);
     }
   }, [templatesOpen]);
 
@@ -223,20 +227,21 @@ const handleDelete = async (id: string) => {
         </div>
       </div>
 
-      <div
-        style={{
-          height: `calc(${availableHeight}px - ${headerHeight}px)`,
-        }}
-        className="p-3 space-y-3 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
-        onWheel={(e) => e.stopPropagation()}
-      >
-        {/* Save new template */}
-        <div className="space-y-2">
+<div
+  style={{
+    height: `calc(${availableHeight}px - ${headerHeight}px)`,
+  }}
+  className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
+  onWheel={(e) => e.stopPropagation()}
+>
+  {/* Save new template */}
+  <div className="sticky top-0 z-10 px-3 pt-3 pb-2 bg-[#041F20]/95 space-y-2">
           <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/40 font-bold px-1">
             Save Template
           </div>
           <div className="flex gap-2">
             <input
+              ref={templateInputRef}
               type="text"
               value={templateName}
               onChange={(e) => {
@@ -288,7 +293,7 @@ const handleDelete = async (id: string) => {
         </div>
 
         {/* Saved templates list */}
-        <div className="space-y-2">
+        <div className="px-3 pb-3 pt-1 space-y-2">
           <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/40 font-bold px-1">
             Saved Templates
           </div>

@@ -68,7 +68,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 pt-6 text-sm text-slate-400">
-          © 2025 Treasurio. All rights reserved
+          © 2026 Treasurio. All rights reserved
         </div>
       </div>
     </footer>

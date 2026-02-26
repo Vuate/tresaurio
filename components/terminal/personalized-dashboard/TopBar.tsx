@@ -362,7 +362,6 @@ onClick={(e) => {
     e.stopPropagation();
     await resetDashboard();
     setConfirmReset(false);
-    notify({ type: "success", title: "Dashboard Reset", description: "Dashboard has been reset to default." });
   }}
   className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer"
 >
