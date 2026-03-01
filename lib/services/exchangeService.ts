@@ -3,6 +3,7 @@
 
 import crypto from "crypto";
 import { getDecryptedApiKey, Exchange } from "./apiKeyService";
+import { exchangeFetch } from "./exchangeFetch";
 
 // ============================================
 // Types
@@ -45,7 +46,7 @@ export interface OrderResult {
 // ============================================
 
 async function getBinanceServerTime(): Promise<number> {
-  const response = await fetch("https://api.binance.com/api/v3/time");
+  const response = await exchangeFetch("https://api.binance.com/api/v3/time");
   const data = await response.json();
   return data.serverTime;
 }
@@ -74,7 +75,7 @@ async function binanceRequest(
 
   const url = `${baseUrl}${endpoint}?${queryParams.toString()}`;
 
-  const response = await fetch(url, {
+  const response = await exchangeFetch(url, {
     method,
     headers: {
       "X-MBX-APIKEY": credentials.apiKey,
@@ -216,7 +217,7 @@ async function okxRequest(
     .update(signStr)
     .digest("base64");
 
-  const response = await fetch(`https://www.okx.com${endpoint}`, {
+  const response = await exchangeFetch(`https://www.okx.com${endpoint}`, {
     method,
     headers: {
       "OK-ACCESS-KEY": credentials.apiKey,
@@ -349,7 +350,7 @@ async function bybitRequest(
 
   const url = `https://api.bybit.com${endpoint}${sortedParams ? "?" + sortedParams : ""}`;
 
-  const response = await fetch(url, {
+  const response = await exchangeFetch(url, {
     method,
     headers: {
       "X-BAPI-API-KEY": credentials.apiKey,
@@ -455,7 +456,7 @@ async function getBybitFuturesPositions(credentials: {
 // ============================================
 
 async function getBinanceTrServerTime(): Promise<number> {
-  const response = await fetch("https://www.binance.tr/open/v1/common/time");
+  const response = await exchangeFetch("https://www.binance.tr/open/v1/common/time");
   const data = await response.json();
   return data.timestamp;
 }
@@ -483,7 +484,7 @@ async function binanceTrRequest(
 
   const url = `https://www.binance.tr${endpoint}?${queryParams.toString()}`;
 
-  const response = await fetch(url, {
+  const response = await exchangeFetch(url, {
     method,
     headers: {
       "X-MBX-APIKEY": credentials.apiKey,
@@ -543,7 +544,7 @@ async function getBinanceTrSpotBalances(credentials: {
 async function getHyperliquidSpotBalances(
   walletAddress: string,
 ): Promise<SpotBalance[]> {
-  const response = await fetch("https://api.hyperliquid.xyz/info", {
+  const response = await exchangeFetch("https://api.hyperliquid.xyz/info", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -584,7 +585,7 @@ async function getHyperliquidSpotBalances(
 async function getHyperliquidFuturesPositions(
   walletAddress: string,
 ): Promise<FuturesPosition[]> {
-  const response = await fetch("https://api.hyperliquid.xyz/info", {
+  const response = await exchangeFetch("https://api.hyperliquid.xyz/info", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
