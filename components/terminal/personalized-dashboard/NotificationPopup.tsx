@@ -141,7 +141,7 @@ export default function NotificationPopup({
                   : "bg-teal-500/20 text-teal-300 hover:bg-teal-500/30"
                 }`}
             >
-              Tamam
+              Okey
             </button>
           </div>
         </div>
