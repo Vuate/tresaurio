@@ -34,6 +34,15 @@ const panYRef = useRef(panY);
 useEffect(() => { panXRef.current = panX; }, [panX]);
 useEffect(() => { panYRef.current = panY; }, [panY]);
 
+// Blocks browser zoom (Ctrl+scroll or trackpad pinch) across the entire page.
+useEffect(() => {
+  const preventBrowserZoom = (e: WheelEvent) => {
+    if (e.ctrlKey) e.preventDefault();
+  };
+  window.addEventListener("wheel", preventBrowserZoom, { passive: false, capture: true });
+  return () => window.removeEventListener("wheel", preventBrowserZoom, { capture: true });
+}, []);
+
 // Enables drag-to-pan the canvas. Ignores drags that start on module headers, resize handles, or interactive elements.
   useEffect(() => {
     const container = containerRef.current;
