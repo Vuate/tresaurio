@@ -15,6 +15,7 @@ type FuturesPositionStore = {
   positions: FuturesPosition[];
   addPosition: (position: Omit<FuturesPosition, "id">) => void;
   removePosition: (id: string) => void;
+  updatePosition: (id: string, updates: Partial<FuturesPosition>) => void;
 };
 
 export const useFuturesPositionStore = create<FuturesPositionStore>((set) => ({
@@ -34,5 +35,12 @@ export const useFuturesPositionStore = create<FuturesPositionStore>((set) => ({
   removePosition: (id) =>
     set((state) => ({
       positions: state.positions.filter((p) => p.id !== id),
+    })),
+
+  updatePosition: (id, updates) =>
+    set((state) => ({
+      positions: state.positions.map((p) =>
+        p.id === id ? { ...p, ...updates } : p
+      ),
     })),
 }));

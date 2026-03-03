@@ -44,6 +44,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   const positions = useFuturesPositionStore((s) => s.positions);
   const removePosition = useFuturesPositionStore((s) => s.removePosition);
   const addPosition = useFuturesPositionStore((s) => s.addPosition);
+  const updatePosition = useFuturesPositionStore((s) => s.updatePosition);
   const [localPrices, setLocalPrices] = useState<Record<string, number>>({});
   const [realizedPnl, setRealizedPnl] = useState<number | null>(null);
   const [loadingRealized, setLoadingRealized] = useState(false);
@@ -275,12 +276,26 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
       const apiPositions: FuturesPositionFromAPI[] = data.data;
 
+      // Remove positions that are no longer open on the exchange
+      const stalePositions = positions.filter(
+        (p) => !apiPositions.some((ap) => ap.symbol === p.symbol && ap.side === p.side)
+      );
+      stalePositions.forEach((p) => removePosition(p.id));
+
+      // Update existing or add new positions
       apiPositions.forEach((pos) => {
         const existingPosition = positions.find(
           (p) => p.symbol === pos.symbol && p.side === pos.side
         );
 
-        if (!existingPosition) {
+        if (existingPosition) {
+          updatePosition(existingPosition.id, {
+            entryPrice: pos.entryPrice,
+            markPrice: pos.markPrice,
+            size: pos.size,
+            leverage: pos.leverage,
+          });
+        } else {
           addPosition({
             symbol: pos.symbol,
             side: pos.side,
