@@ -5,9 +5,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 type Chain = "ethereum" | "bsc" | "tron" | "solana";
 
+interface TokenBalance {
+  symbol: string;
+  amount: number;
+  value: number;
+}
+
 interface BalanceResult {
   balance: number;
   transactions24h: number;
+  tokens: TokenBalance[];
 }
 
 async function getEthereumBalance(address: string): Promise<BalanceResult> {
@@ -40,7 +47,8 @@ async function getEthereumBalance(address: string): Promise<BalanceResult> {
       if (rpcData.result !== undefined) {
         const balance = parseInt(rpcData.result, 16) / 1e18;
         console.log(`[Wallet API] ETH balance from ${rpcUrl}: ${balance}`);
-        return { balance, transactions24h: 0 };
+        const tokens = await getEthBscTokens(address, "eth");
+        return { balance, transactions24h: 0, tokens };
       }
     } catch (err) {
       console.warn(`[Wallet API] Ethereum RPC ${rpcUrl} failed:`, err);
@@ -50,7 +58,34 @@ async function getEthereumBalance(address: string): Promise<BalanceResult> {
 
   // All RPCs failed - return 0 balance instead of error (better UX)
   console.error("[Wallet API] All Ethereum RPCs failed");
-  return { balance: 0, transactions24h: 0 };
+  return { balance: 0, transactions24h: 0, tokens: [] };
+}
+
+async function getEthBscTokens(address: string, blockchain: "eth" | "bsc"): Promise<TokenBalance[]> {
+  try {
+    const res = await fetch("https://rpc.ankr.com/multichain", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        method: "ankr_getAccountBalance",
+        params: { blockchain, walletAddress: address, pageSize: 50 },
+        id: 1,
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = await res.json();
+    const assets: any[] = data.result?.assets || [];
+    return assets
+      .filter((a: any) => a.tokenType === "ERC20" && Number(a.balanceUsd) > 0)
+      .map((a: any) => ({
+        symbol: a.tokenSymbol,
+        amount: Number(a.balance),
+        value: Number(a.balanceUsd),
+      }));
+  } catch {
+    return [];
+  }
 }
 
 async function getBscBalance(address: string): Promise<BalanceResult> {
@@ -83,7 +118,8 @@ async function getBscBalance(address: string): Promise<BalanceResult> {
       if (rpcData.result !== undefined) {
         const balance = parseInt(rpcData.result, 16) / 1e18;
         console.log(`[Wallet API] BSC balance from ${rpcUrl}: ${balance}`);
-        return { balance, transactions24h: 0 };
+        const tokens = await getEthBscTokens(address, "bsc");
+        return { balance, transactions24h: 0, tokens };
       }
     } catch (err) {
       console.warn(`[Wallet API] BSC RPC ${rpcUrl} failed:`, err);
@@ -93,7 +129,7 @@ async function getBscBalance(address: string): Promise<BalanceResult> {
 
   // All RPCs failed - return 0 balance instead of error
   console.error("[Wallet API] All BSC RPCs failed");
-  return { balance: 0, transactions24h: 0 };
+  return { balance: 0, transactions24h: 0, tokens: [] };
 }
 
 async function getTronBalance(address: string): Promise<BalanceResult> {
@@ -109,13 +145,32 @@ async function getTronBalance(address: string): Promise<BalanceResult> {
     const data = await res.json();
     const balance = data.balance ? data.balance / 1e6 : 0;
     console.log(`[Wallet API] TRX balance: ${balance}`);
+
+    const trc20: TokenBalance[] = Array.isArray(data.trc20token_balances)
+      ? data.trc20token_balances
+          .filter((t: any) => t.balance && Number(t.balance) > 0)
+          .map((t: any) => {
+            const decimals = Number(t.tokenDecimal) || 6;
+            const amount = Number(t.balance) / Math.pow(10, decimals);
+            const symbol = (t.tokenAbbr || t.tokenName || "").toUpperCase();
+            const STABLECOIN_PRICE: Record<string, number> = { USDT: 1, USDC: 1, TUSD: 1, BUSD: 1, DAI: 1 };
+            const price = STABLECOIN_PRICE[symbol] ?? Number(t.tokenPrice) ?? 0;
+            return {
+              symbol,
+              amount,
+              value: amount * price,
+            };
+          })
+      : [];
+
     return {
       balance,
       transactions24h: data.transactions || 0,
+      tokens: trc20,
     };
   } catch (err) {
     console.error("[Wallet API] Tron failed:", err);
-    return { balance: 0, transactions24h: 0 };
+    return { balance: 0, transactions24h: 0, tokens: [] };
   }
 }
 
@@ -148,7 +203,7 @@ async function getSolanaBalance(address: string): Promise<BalanceResult> {
       if (rpcData.result?.value !== undefined) {
         const balance = rpcData.result.value / 1e9;
         console.log(`[Wallet API] SOL balance from ${rpcUrl}: ${balance}`);
-        return { balance, transactions24h: 0 };
+        return { balance, transactions24h: 0, tokens: [] };
       }
     } catch (err) {
       console.warn(`[Wallet API] Solana RPC ${rpcUrl} failed:`, err);
@@ -158,7 +213,7 @@ async function getSolanaBalance(address: string): Promise<BalanceResult> {
 
   // All RPCs failed - return 0 balance instead of error
   console.error("[Wallet API] All Solana RPCs failed");
-  return { balance: 0, transactions24h: 0 };
+  return { balance: 0, transactions24h: 0, tokens: [] };
 }
 
 export async function GET(request: NextRequest) {
@@ -200,6 +255,7 @@ export async function GET(request: NextRequest) {
     data: {
       balance: result.balance,
       transactions24h: result.transactions24h,
+      tokens: result.tokens,
     },
   });
 }

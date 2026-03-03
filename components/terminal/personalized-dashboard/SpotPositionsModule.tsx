@@ -83,6 +83,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   const spotPositions = usePortfolioStore((s) => s.spotPositions);
   const addSpotPosition = usePortfolioStore((s) => s.addSpotPosition);
   const removeSpotPosition = usePortfolioStore((s) => s.removeSpotPosition);
+  const clearSpotPositionsByExchange = usePortfolioStore((s) => s.clearSpotPositionsByExchange);
   const updateSpotPosition = usePortfolioStore((s) => s.updateSpotPosition);
   const prices = usePriceStore((s) => s.prices);
   const { data: session } = useSession();
@@ -642,7 +643,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         <button
           key={ex}
           onClick={() => {
+            clearSpotPositionsByExchange(selectedExchange);
             setSelectedExchange(ex);
+            setRealizedPnl(null);
             setExchangeOpen(false);
           }}
           className="

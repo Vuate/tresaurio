@@ -49,6 +49,7 @@ type PortfolioActions = {
   // Spot
   addSpotPosition: (p: Omit<SpotPosition, "id">) => void;
   removeSpotPosition: (id: string) => void;
+  clearSpotPositionsByExchange: (exchange: string) => void;
   updateSpotPosition: (id: string, updates: Partial<SpotPosition>) => void;
   updateSpotPrice: (symbol: string, price: number) => void;
 
@@ -80,6 +81,11 @@ export const usePortfolioStore = create<PortfolioState & PortfolioActions>()(
       removeSpotPosition: (id) =>
         set((state) => ({
           spotPositions: state.spotPositions.filter((p) => p.id !== id),
+        })),
+
+      clearSpotPositionsByExchange: (exchange) =>
+        set((state) => ({
+          spotPositions: state.spotPositions.filter((p) => p.exchange !== exchange),
         })),
 
       updateSpotPosition: (id, updates) =>

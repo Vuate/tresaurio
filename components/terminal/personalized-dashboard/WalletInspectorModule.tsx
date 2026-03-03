@@ -76,7 +76,7 @@ const fetchWalletData = async (address: string, chain: Chain): Promise<WalletDat
     return {
       address,
       balance: data.data.balance || 0,
-      tokens: [],
+      tokens: data.data.tokens || [],
       nfts: 0,
       transactions24h: data.data.transactions24h || 0,
       label: nativeSymbols[chain],
@@ -138,6 +138,7 @@ export default function WalletInspectorModule({ instanceId }: Props) {
   // Fetch native token price based on selected chain
   useEffect(() => {
     const fetchPrice = async () => {
+      setNativePrice(0);
       try {
         const symbols: Record<Chain, string> = {
           ethereum: "ETHUSDT",
@@ -348,7 +349,7 @@ export default function WalletInspectorModule({ instanceId }: Props) {
             <div className="px-3 py-2 rounded-md bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20">
               <div className="text-[10px] text-white/60 mb-1">Total Value</div>
               <div className="text-xl sm:text-2xl font-bold text-white font-mono break-words">
-                ${totalValue.toLocaleString(undefined, {
+                ${totalValue.toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2
                 })}
@@ -382,11 +383,11 @@ export default function WalletInspectorModule({ instanceId }: Props) {
                           {token.symbol}
                         </div>
                         <div className="text-xs font-bold text-white font-mono whitespace-nowrap">
-                          ${token.value.toLocaleString()}
+                          ${token.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
                       </div>
                       <div className="text-[10px] text-white/60 break-words">
-                        {token.amount.toLocaleString()} tokens
+                        {token.amount.toLocaleString('en-US')} tokens
                       </div>
                     </div>
                   ))}
