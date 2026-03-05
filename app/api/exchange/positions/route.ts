@@ -3,7 +3,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { getFuturesPositions, hasApiKey } from "@/lib/services/exchangeService";
+import {
+  getFuturesPositions,
+  getFuturesAvailableBalance,
+  hasApiKey
+} from "@/lib/services/exchangeService";
 import { Exchange } from "@/lib/services/apiKeyService";
 
 // GET /api/exchange/positions?exchange=binance
@@ -41,14 +45,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const positions = await getFuturesPositions(session.user.id, exchange, label);
+const positions = await getFuturesPositions(session.user.id, exchange, label);
 
-    return NextResponse.json({
-      success: true,
-      exchange,
-      data: positions,
-      timestamp: new Date().toISOString(),
-    });
+let balance: { asset: string; availableBalance: number } | null = null;
+
+try {
+  balance = await getFuturesAvailableBalance(session.user.id, exchange, label);
+} catch (e) {
+  console.warn("[Exchange Positions] balance fetch failed:", e);
+}
+
+return NextResponse.json({
+  success: true,
+  exchange,
+  data: positions,
+  balance,
+  timestamp: new Date().toISOString(),
+});
+
   } catch (error) {
     console.error("[Exchange Positions] GET Error:", error);
 
