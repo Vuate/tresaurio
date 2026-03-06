@@ -867,12 +867,15 @@ async function getBinanceTrAvgEntryPrice(
 
 async function getBinanceFuturesRealizedPnl(
   credentials: { apiKey: string; apiSecret: string },
+  startTime?: number,
 ): Promise<number> {
   try {
+    const params: Record<string, string | number> = { incomeType: "REALIZED_PNL", limit: 1000 };
+    if (startTime) params.startTime = startTime;
     const data = (await binanceRequest(
       "/fapi/v1/income",
       "GET",
-      { incomeType: "REALIZED_PNL", limit: 1000 },
+      params,
       credentials,
       "https://fapi.binance.com",
     )) as { income: string }[];
@@ -926,6 +929,7 @@ async function getBybitFuturesRealizedPnl(
 export async function getFuturesRealizedPnl(
   userId: string,
   exchange: Exchange,
+  startTime?: number,
   label?: string,
 ): Promise<number> {
   const credentials = await getDecryptedApiKey(userId, exchange, label);
@@ -933,7 +937,7 @@ export async function getFuturesRealizedPnl(
 
   switch (exchange) {
     case "binance":
-      return getBinanceFuturesRealizedPnl(credentials);
+      return getBinanceFuturesRealizedPnl(credentials, startTime);
     case "okx":
       return getOKXFuturesRealizedPnl(credentials);
     case "bybit":

@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const exchange = searchParams.get("exchange") as Exchange | null;
+    const startTimeParam = searchParams.get("startTime");
+    const startTime = startTimeParam ? parseInt(startTimeParam) : undefined;
 
     if (!exchange) {
       return NextResponse.json({ success: false, error: "Missing required parameter: exchange" }, { status: 400 });
@@ -23,7 +25,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: `No API key configured for ${exchange}`, needsApiKey: true }, { status: 401 });
     }
 
-    const realizedPnl = await getFuturesRealizedPnl(session.user.id, exchange);
+    const realizedPnl = await getFuturesRealizedPnl(session.user.id, exchange, startTime);
 
     return NextResponse.json({
       success: true,
