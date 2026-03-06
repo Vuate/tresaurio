@@ -48,6 +48,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   const [localPrices, setLocalPrices] = useState<Record<string, number>>({});
   const [realizedPnl, setRealizedPnl] = useState<number | null>(null);
   const [loadingRealized, setLoadingRealized] = useState(false);
+  const [pnlFilter, setPnlFilter] = useState<"today" | "7d" | "30d" | "all">("all");
   const { data: session } = useSession();
   const [availableBalance, setAvailableBalance] = useState<{
   asset: string;
@@ -111,7 +112,18 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
     if (!apiKeys.some((k) => k.exchange === selectedExchange && k.isActive)) return;
     setLoadingRealized(true);
     try {
-      const response = await fetch(`/api/exchange/realized-pnl?exchange=${selectedExchange}`);
+      const now = Math.floor(Date.now() / 1000);
+      const startTimeMap: Record<string, number | undefined> = {
+        today: now - 86400,
+        "7d": now - 7 * 86400,
+        "30d": now - 30 * 86400,
+        all: undefined,
+      };
+      const startTime = startTimeMap[pnlFilter];
+      const url = startTime
+        ? `/api/exchange/realized-pnl?exchange=${selectedExchange}&startTime=${startTime * 1000}`
+        : `/api/exchange/realized-pnl?exchange=${selectedExchange}`;
+      const response = await fetch(url);
       const data = await response.json();
       if (data.success) {
         setRealizedPnl(data.data);
@@ -134,7 +146,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
       fetchRealizedPnl();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedExchange, apiKeys]);
+  }, [selectedExchange, apiKeys, pnlFilter]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -825,7 +837,18 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-white/50">Realized PnL</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-white/50">Realized PnL</span>
+                      {(["today", "7d", "30d", "all"] as const).map((f) => (
+                        <button
+                          key={f}
+                          onClick={() => setPnlFilter(f)}
+                          className={`text-[9px] px-1.5 py-0.5 rounded ${pnlFilter === f ? "bg-white/20 text-white" : "text-white/30 hover:text-white/60"}`}
+                        >
+                          {f === "today" ? "1D" : f === "7d" ? "7D" : f === "30d" ? "30D" : "All"}
+                        </button>
+                      ))}
+                    </div>
                     <span className={`text-sm font-bold ${realizedPnl === null ? "text-white/30" : realizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}>
                       {realizedPnl === null
                         ? (loadingRealized ? "..." : "—")
