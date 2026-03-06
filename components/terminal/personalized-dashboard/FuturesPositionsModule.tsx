@@ -49,7 +49,10 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   const [realizedPnl, setRealizedPnl] = useState<number | null>(null);
   const [loadingRealized, setLoadingRealized] = useState(false);
   const { data: session } = useSession();
-
+  const [availableBalance, setAvailableBalance] = useState<{
+  asset: string;
+  availableBalance: number;
+} | null>(null);
   // API Key states
   const [apiKeys, setApiKeys] = useState<ApiKeyInfo[]>([]);
   const [selectedExchange, setSelectedExchange] = useState<string>("binance");
@@ -273,9 +276,10 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
       if (!data.success) {
         throw new Error(data.error || "Failed to fetch positions");
       }
-
+      setAvailableBalance(data.balance ?? null);
+     
       const apiPositions: FuturesPositionFromAPI[] = data.data;
-
+    
       // Remove positions that are no longer open on the exchange
       const stalePositions = positions.filter(
         (p) => !apiPositions.some((ap) => ap.symbol === p.symbol && ap.side === p.side)
@@ -701,15 +705,21 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           scrollbar-track-transparent
         "
       >
-        {positions.length === 0 && (
-          <div className="space-y-2 mb-4">
-            <input
-              type="text"
-              placeholder="Symbol (e.g. BTCUSDT)"
-              value={symbol}
-              onChange={(e) => setSymbol(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
-            />
+    {positions.length === 0 && (
+     <div className="space-y-2 mb-4">
+     <div className="text-xs opacity-70">
+      Available Balance: {availableBalance?.availableBalance ?? 0}{" "}
+      {availableBalance?.asset ?? "USDT"}
+     </div>
+
+    <input
+       type="text"
+       placeholder="Symbol (e.g. BTCUSDT)"
+       value={symbol}
+       onChange={(e) => setSymbol(e.target.value)}
+       className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+    />
+    
 
             <div className="grid grid-cols-2 gap-2">
               <button

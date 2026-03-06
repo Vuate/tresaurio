@@ -198,6 +198,26 @@ async function getBinanceFuturesPositions(credentials: {
     }));
 }
 
+async function getBinanceFuturesAvailableBalance(
+  credentials: { apiKey: string; apiSecret: string },
+  asset: string = "USDT",
+): Promise<{ asset: string; availableBalance: number }> {
+
+  const data = (await binanceRequest(
+    "/fapi/v2/balance",
+    "GET",
+    {},
+    credentials,
+    "https://fapi.binance.com",
+  )) as { asset: string; availableBalance: string }[];
+
+const usdt = data.find((b) => b.asset.toUpperCase() === asset.toUpperCase());
+
+return {
+  asset,
+  availableBalance: usdt ? parseFloat(usdt.availableBalance) : 0,
+};
+}
 // ============================================
 // OKX Implementation
 // ============================================
@@ -705,6 +725,28 @@ export async function getFuturesPositions(
       throw new Error(`Unknown exchange: ${exchange}`);
   }
 }
+
+
+/**
+ * Get futures available balance
+ */
+export async function getFuturesAvailableBalance(
+  userId: string,
+  exchange: Exchange,
+  label?: string,
+) {
+  const credentials = await getDecryptedApiKey(userId, exchange, label);
+  if (!credentials) {
+    throw new Error(`No API key found for ${exchange}`);
+  }
+
+  if (exchange !== "binance") {
+    throw new Error(`${exchange} futures balance not implemented`);
+  }
+
+  return getBinanceFuturesAvailableBalance(credentials, "USDT");
+}
+
 
 /**
  * Check if exchange has valid API key configured
