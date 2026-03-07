@@ -877,6 +877,8 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                 const fundingCost = fundingRate
                   ? pos.entryPrice * pos.size * (fundingRate.fundingRate / 100)
                   : null;
+                const sizeUSDT = currentPrice * pos.size;
+                const initialMargin = sizeUSDT / pos.leverage;
 
                 return (
                   <div
@@ -920,6 +922,16 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                       <div className="flex justify-between text-white/50">
                         <span>Size</span>
                         <span className="truncate ml-2">{pos.size}</span>
+                      </div>
+
+                      <div className="flex justify-between text-white/50">
+                        <span>Size (USDT)</span>
+                        <span className="truncate ml-2">${sizeUSDT.toFixed(2)}</span>
+                      </div>
+
+                      <div className="flex justify-between text-white/50">
+                        <span>Initial Margin</span>
+                        <span className="truncate ml-2">${initialMargin.toFixed(2)}</span>
                       </div>
 
                       {fundingRate && (
