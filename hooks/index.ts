@@ -16,3 +16,6 @@ export type { NewsItem } from "./useNews";
 
 export { useLastOrders } from "./useLastOrders";
 export type { OrderHistory } from "./useLastOrders";
+
+export { useExchangeKeys } from "./useExchangeKeys";
+export type { ExchangeConnection, RefreshPermissionsResult } from "./useExchangeKeys";

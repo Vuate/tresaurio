@@ -661,6 +661,211 @@ async function getHyperliquidFuturesPositions(
 }
 
 // ============================================
+// Permission Detection
+// ============================================
+
+export type ApiPermission =
+  | "read"
+  | "spot"
+  | "futures"
+  | "margin"
+  | "withdraw"
+  | "internal_transfer";
+
+export interface DetectedPermissions {
+  permissions: ApiPermission[];
+  detectedAt: string;
+  partial: boolean;
+  warnings: string[];
+}
+
+function emptyDetection(
+  warnings = ["Could not detect permissions automatically"],
+): DetectedPermissions {
+  return {
+    permissions: [],
+    detectedAt: new Date().toISOString(),
+    partial: true,
+    warnings,
+  };
+}
+
+async function detectBinancePermissions(
+  credentials: { apiKey: string; apiSecret: string },
+  baseUrl = "https://api.binance.com",
+): Promise<DetectedPermissions> {
+  try {
+    const data = (await binanceRequest(
+      "/sapi/v1/account/apiRestrictions",
+      "GET",
+      {},
+      credentials,
+      baseUrl,
+    )) as Record<string, unknown>;
+
+    const permissions: ApiPermission[] = [];
+    const warnings: string[] = [];
+
+    if (data.enableReading) permissions.push("read");
+    if (data.enableSpotAndMarginTrading) permissions.push("spot");
+    if (data.enableFutures) permissions.push("futures");
+    if (data.enableMargin) permissions.push("margin");
+    if (data.enableWithdrawals) {
+      permissions.push("withdraw");
+      warnings.push(
+        "This key has withdrawal permission enabled. For better security, consider creating a read-only key.",
+      );
+    }
+    if (data.enableInternalTransfer) permissions.push("internal_transfer");
+
+    if (permissions.length === 0) permissions.push("read");
+
+    return {
+      permissions,
+      detectedAt: new Date().toISOString(),
+      partial: false,
+      warnings,
+    };
+  } catch (error) {
+    console.warn(
+      "[detectPermissions] Binance failed:",
+      error instanceof Error ? error.message : error,
+    );
+    return emptyDetection();
+  }
+}
+
+async function detectBybitPermissions(
+  credentials: { apiKey: string; apiSecret: string },
+): Promise<DetectedPermissions> {
+  try {
+    const result = (await bybitRequest(
+      "/v5/user/query-api",
+      "GET",
+      {},
+      credentials,
+    )) as {
+      readOnly: number;
+      permissions: Record<string, string[]>;
+    };
+
+    const permissions: ApiPermission[] = ["read"];
+    const warnings: string[] = [];
+
+    if (String(result.readOnly) === "1") {
+      return {
+        permissions: ["read"],
+        detectedAt: new Date().toISOString(),
+        partial: false,
+        warnings: [],
+      };
+    }
+
+    const perms = result.permissions || {};
+
+    if (perms.Spot && perms.Spot.length > 0) permissions.push("spot");
+    if (perms.ContractTrade && perms.ContractTrade.length > 0)
+      permissions.push("futures");
+
+    const walletPerms = perms.Wallet || [];
+    const hasWithdraw = walletPerms.some((p) => {
+      const lower = p.toLowerCase();
+      return lower.includes("withdraw") || lower.includes("submembertransfer");
+    });
+    if (hasWithdraw) {
+      permissions.push("withdraw");
+      warnings.push(
+        "This key has wallet/transfer permissions. For better security, consider creating a read-only key.",
+      );
+    }
+
+    return {
+      permissions,
+      detectedAt: new Date().toISOString(),
+      partial: false,
+      warnings,
+    };
+  } catch (error) {
+    console.warn(
+      "[detectPermissions] Bybit failed:",
+      error instanceof Error ? error.message : error,
+    );
+    return emptyDetection();
+  }
+}
+
+async function detectOkxPermissions(
+  credentials: { apiKey: string; apiSecret: string; passphrase?: string },
+): Promise<DetectedPermissions> {
+  const permissions: ApiPermission[] = [];
+  const warnings: string[] = [];
+
+  try {
+    await okxRequest("/api/v5/account/config", "GET", null, credentials);
+    permissions.push("read");
+  } catch {
+    return emptyDetection(["Could not verify OKX key permissions"]);
+  }
+
+  try {
+    await okxRequest("/api/v5/account/balance", "GET", null, credentials);
+    if (!permissions.includes("spot")) permissions.push("spot");
+  } catch {
+    // Spot balance not accessible
+  }
+
+  try {
+    await okxRequest("/api/v5/account/positions", "GET", null, credentials);
+    permissions.push("futures");
+  } catch {
+    // Futures positions not accessible
+  }
+
+  return {
+    permissions,
+    detectedAt: new Date().toISOString(),
+    partial: true,
+    warnings:
+      warnings.length > 0
+        ? warnings
+        : [
+            "OKX does not expose full permission details. Trade/withdraw permissions could not be verified.",
+          ],
+  };
+}
+
+/**
+ * Detect API key permissions by querying the exchange.
+ * Never throws — always returns a result with `partial: true` on failure.
+ */
+export async function detectApiKeyPermissions(
+  exchange: Exchange,
+  credentials: { apiKey: string; apiSecret: string; passphrase?: string },
+): Promise<DetectedPermissions> {
+  switch (exchange) {
+    case "binance":
+      return detectBinancePermissions(credentials);
+    case "binance-tr":
+      return emptyDetection([
+        "Automatic permission detection is not available for Binance TR. Permissions are set to defaults.",
+      ]);
+    case "bybit":
+      return detectBybitPermissions(credentials);
+    case "okx":
+      return detectOkxPermissions(credentials);
+    case "hyperliquid":
+      return {
+        permissions: ["read", "spot", "futures"],
+        detectedAt: new Date().toISOString(),
+        partial: false,
+        warnings: [],
+      };
+    default:
+      return emptyDetection();
+  }
+}
+
+// ============================================
 // Unified Public Interface
 // ============================================
 

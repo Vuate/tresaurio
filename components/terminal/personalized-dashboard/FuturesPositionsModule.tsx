@@ -2,19 +2,14 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useFuturesPositionStore } from "@/store/futuresPositionStore";
-import { TrendingUp, TrendingDown, X, RefreshCw, Key, Link2, AlertCircle, Trash2, AlertTriangle } from "lucide-react";
+import { TrendingUp, TrendingDown, X, RefreshCw, Key, AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import AuthModal from "@/components/auth/AuthModal";
+import SelectConnectionModal from "./SelectConnectionModal";
+import { useExchangeKeys } from "@/hooks/useExchangeKeys";
 
 interface Props {
   instanceId: string;
-}
-
-interface ApiKeyInfo {
-  id: string;
-  exchange: string;
-  label: string | null;
-  isActive: boolean;
 }
 
 interface FuturesPositionFromAPI {
@@ -54,31 +49,47 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   asset: string;
   availableBalance: number;
 } | null>(null);
-  // API Key states
-  const [apiKeys, setApiKeys] = useState<ApiKeyInfo[]>([]);
-  const [selectedExchange, setSelectedExchange] = useState<string>("binance");
+  const { keys: apiKeys, loading: keysLoading, hasKeyForExchange, refetch: refetchKeys } = useExchangeKeys();
+
+  const connectionStorageKey = `futures-connection-${instanceId}`;
+  const [selectedExchange, setSelectedExchange] = useState<string>(() => {
+    if (typeof window === "undefined") return "binance";
+    try {
+      const saved = localStorage.getItem(connectionStorageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.exchange || "binance";
+      }
+    } catch {}
+    return "binance";
+  });
+  const [selectedKeyId, setSelectedKeyId] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const saved = localStorage.getItem(connectionStorageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.keyId || null;
+      }
+    } catch {}
+    return null;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(connectionStorageKey, JSON.stringify({ exchange: selectedExchange, keyId: selectedKeyId }));
+    } catch {}
+  }, [selectedExchange, selectedKeyId, connectionStorageKey]);
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [lastSync, setLastSync] = useState<Date | null>(null);
-  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [showSelectModal, setShowSelectModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [exchangeDropdownOpen, setExchangeDropdownOpen] = useState(false);
-  const [exchangeModalDropdownOpen, setExchangeModalDropdownOpen] = useState(false);
 
   const exchangeDropdownRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const exchangeModalRef = useRef<HTMLDivElement>(null);
-
-  // API Key form
-  const [apiKeyForm, setApiKeyForm] = useState({
-    exchange: "binance",
-    apiKey: "",
-    apiSecret: "",
-    passphrase: "",
-    label: "",
-  });
-  const [savingKey, setSavingKey] = useState(false);
 
   // Position form
   const [symbol, setSymbol] = useState("");
@@ -92,21 +103,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   const [fundingRates, setFundingRates] = useState<Record<string, FundingRate>>({});
   const [loadingFunding, setLoadingFunding] = useState(false);
 
-  // Close exchange modal dropdown on outside click
-  useEffect(() => {
-    if (!exchangeModalDropdownOpen) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (exchangeModalRef.current && !exchangeModalRef.current.contains(e.target as Node)) {
-        setExchangeModalDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [exchangeModalDropdownOpen]);
 
   const fetchRealizedPnl = async () => {
     if (!apiKeys.some((k) => k.exchange === selectedExchange && k.isActive)) return;
@@ -134,11 +130,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
       setLoadingRealized(false);
     }
   };
-
-  // Fetch API keys on mount
-  useEffect(() => {
-    fetchApiKeys();
-  }, []);
 
   // Load realized PnL when exchange changes and has API key + positions
   useEffect(() => {
@@ -168,7 +159,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   }, [exchangeDropdownOpen]);
 
   useEffect(() => {
-    if (showApiKeyModal) {
+    if (showSelectModal) {
       document.body.style.overflow = 'hidden';
       
       if (contentRef.current) {
@@ -184,7 +175,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
         contentRef.current.style.overflow = '';
       }
     };
-  }, [showApiKeyModal]);
+  }, [showSelectModal]);
 
   // Fetch current prices for positions (multi-exchange support)
   useEffect(() => {
@@ -251,23 +242,9 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
     return () => clearInterval(interval);
   }, [positions, selectedExchange]);
 
-  const fetchApiKeys = async () => {
-    try {
-      const response = await fetch("/api/exchange/keys");
-      const data = await response.json();
-      if (data.success) {
-        setApiKeys(data.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch API keys:", error);
-    }
-  };
-
   const hasApiKey = useCallback(
-    (exchange: string) => {
-      return apiKeys.some((k) => k.exchange === exchange && k.isActive);
-    },
-    [apiKeys]
+    (exchange: string) => hasKeyForExchange(exchange),
+    [hasKeyForExchange]
   );
 
   const syncFromExchange = async () => {
@@ -337,76 +314,6 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
     }
   };
 
-  const saveApiKey = async () => {
-    if (!apiKeyForm.apiKey || (apiKeyForm.exchange !== "hyperliquid" && !apiKeyForm.apiSecret)) {
-      alert("API Key and Secret are required");
-      return;
-    }
-
-    if (apiKeyForm.exchange === "okx" && !apiKeyForm.passphrase) {
-      alert("Passphrase is required for OKX");
-      return;
-    }
-
-    setSavingKey(true);
-
-    try {
-      const response = await fetch("/api/exchange/keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          exchange: apiKeyForm.exchange,
-          apiKey: apiKeyForm.apiKey,
-          apiSecret: apiKeyForm.apiSecret || "none",
-          passphrase: apiKeyForm.passphrase || undefined,
-          label: apiKeyForm.label || undefined,
-          permissions: ["futures"],
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || "Failed to save API key");
-      }
-
-      await fetchApiKeys();
-      setShowApiKeyModal(false);
-      setApiKeyForm({
-        exchange: "binance",
-        apiKey: "",
-        apiSecret: "",
-        passphrase: "",
-        label: "",
-      });
-    } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to save API key");
-    } finally {
-      setSavingKey(false);
-    }
-  };
-
-  const deleteExchangeKey = async (exchange: string) => {
-    const key = apiKeys.find((k) => k.exchange === exchange);
-    if (!key) return;
-
-    if (!confirm(`Delete API key for ${exchange.toUpperCase()}?`)) return;
-
-    try {
-      const response = await fetch(`/api/exchange/keys?id=${key.id}`, {
-        method: "DELETE",
-      });
-      const data = await response.json();
-      if (data.success) {
-        await fetchApiKeys();
-        setSyncError(null);
-      } else {
-        alert(data.error || "Failed to delete API key");
-      }
-    } catch (error) {
-      alert("Failed to delete API key");
-    }
-  };
 
   // Fetch funding rates
   useEffect(() => {
@@ -543,7 +450,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
   };
 
   return (
-    <div className={`h-full flex flex-col relative ${showApiKeyModal ? 'overflow-hidden' : ''}`}>
+    <div className={`h-full flex flex-col relative ${showSelectModal ? 'overflow-hidden' : ''}`}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-2 sm:px-3 py-2 flex-shrink-0">
         <div ref={exchangeDropdownRef} className="relative">       
           <button
@@ -615,6 +522,8 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                     key={ex}
                     onClick={() => {
                       setSelectedExchange(ex);
+                      const keyForExchange = apiKeys.find((k) => k.exchange === ex && k.isActive);
+                      setSelectedKeyId(keyForExchange?.id || null);
                       setExchangeDropdownOpen(false);
                     }}
                     className="
@@ -653,20 +562,12 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                   setShowAuthModal(true);
                   return;
                 }
-                setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
-                setShowApiKeyModal(true);
+                setShowSelectModal(true);
               }}
               className="h-7 px-2 bg-white/5 border border-white/10 text-white/60 rounded-lg text-xs hover:bg-white/10 transition-colors cursor-pointer"
-              title="Change API Key"
+              title="Change Connection"
             >
               <Key className="w-3 h-3" />
-            </button>
-            <button
-              onClick={() => deleteExchangeKey(selectedExchange)}
-              className="h-7 px-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs hover:bg-red-500/20 transition-colors cursor-pointer"
-              title="Delete API Key"
-            >
-              <Trash2 className="w-3 h-3" />
             </button>
           </div>
         ) : (
@@ -676,8 +577,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                 setShowAuthModal(true);
                 return;
               }
-              setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
-              setShowApiKeyModal(true);
+              setShowSelectModal(true);
             }}
             className="h-7 px-2.5 sm:px-3 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-lg text-xs hover:bg-blue-500/30 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
           >
@@ -988,188 +888,20 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* API Key Modal - FULL SCREEN */}
-      {showApiKeyModal && (
-        <div 
-          className="
-            fixed inset-0
-            bg-[#0a0e1a] z-[100]
-            flex flex-col overflow-hidden
-            animate-in fade-in slide-in-from-bottom-4 duration-200
-          "
-          style={{
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            margin: 0,
-            padding: 0,
-          }}
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          onWheel={(e) => e.stopPropagation()}
-        >
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <span className="text-white font-semibold text-[11px] sm:text-xs flex items-center gap-1.5 break-words min-w-0">
-              <Key className="w-3.5 h-3.5 shrink-0" />
-              <span className="break-words">Connect Futures API</span>
-            </span>
-            <button
-              onClick={() => setShowApiKeyModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto shrink-0"
-            >
-              ×
-            </button>
-          </div>
-
-          <div className="flex-shrink-0 p-2.5 bg-yellow-500/10 border border-yellow-500/30 rounded-none text-yellow-400 text-[10px] break-words">
-<AlertTriangle className="w-3 h-3 inline mr-1 shrink-0" /> Only use READ-ONLY API keys! Enable Futures permissions in your exchange API settings.
-          </div>
-
-          <div
-            className="
-              flex-1 min-h-0 overflow-y-auto p-3
-              [&::-webkit-scrollbar]:w-1.5
-              [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-              [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-              scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
-            "
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="space-y-3">
-              {/* Exchange */}
-              <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
-                  Exchange
-                </label>
-                <div ref={exchangeModalRef} className="relative">
-                  <button
-                    onClick={() => setExchangeModalDropdownOpen((v) => !v)}
-                    className="
-                      w-full h-9
-                      flex items-center justify-between
-                      bg-white/5
-                      border border-white/10
-                      rounded-md px-3
-                      text-white text-xs
-                      cursor-pointer
-                      hover:bg-white/8
-                      transition-colors
-                    "
-                  >
-                    <span>{apiKeyForm.exchange ? apiKeyForm.exchange.toUpperCase() : "Select Exchange"}</span>
-                    <span className={`text-white/50 transition-transform ${exchangeModalDropdownOpen ? "rotate-180" : ""}`}>
-                      ▾
-                    </span>
-                  </button>
-
-                  {exchangeModalDropdownOpen && (
-                    <div
-                      onWheel={(e) => e.stopPropagation()}
-                      className="
-                      absolute z-50 mt-1 w-full
-                      bg-[#0a0e1a]
-                        border border-white/10
-                        rounded-md
-                        overflow-hidden
-                        shadow-lg
-
-                        [&::-webkit-scrollbar]:w-1.5
-                        [&::-webkit-scrollbar-thumb]:bg-white/20
-                        [&::-webkit-scrollbar-thumb]:rounded-full
-                        [&::-webkit-scrollbar-track]:bg-transparent
-                      "
-                    >
-                      {SUPPORTED_EXCHANGES.map((ex) => (
-                        <button
-                          key={ex}
-                          onClick={() => {
-                            setApiKeyForm({ ...apiKeyForm, exchange: ex });
-                            setExchangeModalDropdownOpen(false);
-                          }}
-                          className="
-                            w-full px-3 py-2
-                            text-left text-xs
-                            cursor-pointer
-                            bg-transparent
-                            text-white
-                            transition-colors
-                          hover:bg-emerald-500/10
-                          hover:text-emerald-400
-                          "
-                        >
-                          {ex.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">API Key</label>
-                <input
-                  type="password"
-                  value={apiKeyForm.apiKey}
-                  onChange={(e) => setApiKeyForm({ ...apiKeyForm, apiKey: e.target.value })}
-                  placeholder="Enter your API key"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">API Secret</label>
-                <input
-                  type="password"
-                  value={apiKeyForm.apiSecret}
-                  onChange={(e) => setApiKeyForm({ ...apiKeyForm, apiSecret: e.target.value })}
-                  placeholder="Enter your API secret"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
-                />
-              </div>
-
-              {apiKeyForm.exchange === "okx" && (
-                <div>
-                  <label className="block text-white/50 mb-1.5 text-[10px] font-medium">Passphrase</label>
-                  <input
-                    type="password"
-                    value={apiKeyForm.passphrase}
-                    onChange={(e) => setApiKeyForm({ ...apiKeyForm, passphrase: e.target.value })}
-                    placeholder="Enter your passphrase"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">Label (Optional)</label>
-                <input
-                  type="text"
-                  value={apiKeyForm.label}
-                  onChange={(e) => setApiKeyForm({ ...apiKeyForm, label: e.target.value })}
-                  placeholder="e.g., Futures Account"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3 border-t border-white/10 flex-shrink-0">
-            <button
-              onClick={saveApiKey}
-              disabled={savingKey}
-              className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded-lg font-semibold text-xs cursor-pointer transition-colors flex items-center justify-center gap-2"
-            >
-              <Link2 className="w-3.5 h-3.5" />
-              {savingKey ? "Connecting..." : "Connect & Save"}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Select Connection Modal */}
+      <SelectConnectionModal
+        open={showSelectModal}
+        onClose={() => setShowSelectModal(false)}
+        keys={apiKeys}
+        loading={keysLoading}
+        onSelect={(key) => {
+          setSelectedExchange(key.exchange);
+          setSelectedKeyId(key.id);
+          setShowSelectModal(false);
+        }}
+        selectedKeyId={selectedKeyId}
+        title="Select Futures Connection"
+      />
 
       <AuthModal
         open={showAuthModal}

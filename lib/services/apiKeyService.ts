@@ -139,6 +139,85 @@ export async function getDecryptedApiKey(
 }
 
 /**
+ * Update API key label
+ */
+export async function updateApiKeyLabel(
+  id: string,
+  label: string,
+): Promise<ApiKeyOutput> {
+  const updated = await prisma.apiKey.update({
+    where: { id },
+    data: { label },
+    select: {
+      id: true,
+      exchange: true,
+      label: true,
+      permissions: true,
+      isTestnet: true,
+      isActive: true,
+      lastUsedAt: true,
+      createdAt: true,
+    },
+  });
+  return updated as ApiKeyOutput;
+}
+
+/**
+ * Update API key permissions
+ */
+export async function updateApiKeyPermissions(
+  id: string,
+  permissions: string[],
+): Promise<ApiKeyOutput> {
+  const updated = await prisma.apiKey.update({
+    where: { id },
+    data: { permissions },
+    select: {
+      id: true,
+      exchange: true,
+      label: true,
+      permissions: true,
+      isTestnet: true,
+      isActive: true,
+      lastUsedAt: true,
+      createdAt: true,
+    },
+  });
+  return updated as ApiKeyOutput;
+}
+
+/**
+ * Get decrypted API credentials by key ID.
+ * Returns userId for authorization checks.
+ * ONLY use server-side!
+ */
+export async function getDecryptedApiKeyById(
+  id: string,
+): Promise<(DecryptedApiKey & { userId: string; exchange: Exchange }) | null> {
+  const key = await prisma.apiKey.findUnique({
+    where: { id },
+    select: {
+      userId: true,
+      exchange: true,
+      apiKey: true,
+      apiSecret: true,
+      passphrase: true,
+      isActive: true,
+    },
+  });
+
+  if (!key || !key.isActive) return null;
+
+  return {
+    userId: key.userId,
+    exchange: key.exchange as Exchange,
+    apiKey: decrypt(key.apiKey),
+    apiSecret: decrypt(key.apiSecret),
+    passphrase: key.passphrase ? decrypt(key.passphrase) : undefined,
+  };
+}
+
+/**
  * Delete an API key
  */
 export async function deleteApiKey(id: string): Promise<void> {

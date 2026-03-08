@@ -12,6 +12,7 @@ import {
   History,
   LogOut,
   ChevronDown,
+  Key,
 } from "lucide-react";
 
 interface UserMenuProps {
@@ -66,6 +67,7 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
 
 const menuItems = [
   { icon: User,     label: "Profile",        onClick: () => {}, disabled: true },
+  { icon: Key,      label: "API Keys",       onClick: () => { router.push("/terminal/settings/api-keys"); setOpen(false); setUserMenuOpen(false); }, disabled: false },
   { icon: Wallet,   label: "Balance",         onClick: () => {}, badge: "Demo", disabled: true },
   { icon: History,  label: "Recent Orders",   onClick: () => {}, disabled: true },
   { icon: Settings, label: "Settings",        onClick: () => {}, disabled: true },
@@ -105,6 +107,7 @@ const menuItems = [
 <button
   key={i}
   disabled={item.disabled}
+  onClick={item.disabled ? undefined : item.onClick}
   title={item.disabled ? "Coming Soon" : undefined}
   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all border border-white/10
     ${item.disabled
@@ -275,6 +278,7 @@ const menuItems = [
 <button
   key={i}
   disabled={item.disabled}
+  onClick={item.disabled ? undefined : item.onClick}
   title={item.disabled ? "Coming Soon" : undefined}
   className={`
     w-full flex items-center transition-colors

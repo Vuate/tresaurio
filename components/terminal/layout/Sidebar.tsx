@@ -115,6 +115,17 @@ export default function Sidebar() {
           label="Reporting"
           active={isActive("/terminal/reporting")}
         />
+
+        <div className="flex-1" />
+
+        <SectionLabel label="SETTINGS" />
+
+        <NavItem
+          href="/terminal/settings/api-keys"
+          icon={<Icon icon="mdi:key-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          label="API Keys"
+          active={isActive("/terminal/settings/api-keys")}
+        />
       </div>
     </aside>
   );
