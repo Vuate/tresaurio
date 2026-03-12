@@ -1,22 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
-import { Plus, Trash2, RefreshCw, Key, AlertCircle, X, AlertTriangle, Pencil } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Key, AlertCircle, X, Pencil } from "lucide-react";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { usePriceStore } from "@/store/priceStore";
 import { wsService } from "@/services/WebSocketService";
 import { useSession } from "next-auth/react";
 import AuthModal from "@/components/auth/AuthModal";
+import SelectConnectionModal from "./SelectConnectionModal";
+import { useExchangeKeys } from "@/hooks/useExchangeKeys";
 
 interface Props {
   instanceId: string;
-}
-
-interface ApiKeyInfo {
-  id: string;
-  exchange: string;
-  label: string | null;
-  isActive: boolean;
 }
 
 interface SpotBalance {
@@ -90,12 +85,42 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
   const windowTooSmall = useWindowSizeCheck();
 
+  const { keys: apiKeys, loading: keysLoading, hasKeyForExchange, refetch: refetchKeys } = useExchangeKeys();
+
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [showSelectModal, setShowSelectModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-  const [apiKeys, setApiKeys] = useState<ApiKeyInfo[]>([]);
-  const [selectedExchange, setSelectedExchange] = useState<string>("binance");
+
+  const storageKey = `spot-connection-${instanceId}`;
+  const [selectedExchange, setSelectedExchange] = useState<string>(() => {
+    if (typeof window === "undefined") return "binance";
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.exchange || "binance";
+      }
+    } catch {}
+    return "binance";
+  });
+  const [selectedKeyId, setSelectedKeyId] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.keyId || null;
+      }
+    } catch {}
+    return null;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ exchange: selectedExchange, keyId: selectedKeyId }));
+    } catch {}
+  }, [selectedExchange, selectedKeyId, storageKey]);
   const [exchangeOpen, setExchangeOpen] = useState(false);
   const [exchangeModalOpen, setExchangeModalOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -107,16 +132,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   const exchangeRef = useRef<HTMLDivElement>(null);
   const exchangeModalRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  // API Key form
-  const [apiKeyForm, setApiKeyForm] = useState({
-    exchange: "binance",
-    apiKey: "",
-    apiSecret: "",
-    passphrase: "",
-    label: "",
-  });
-  const [savingKey, setSavingKey] = useState(false);
 
   const [editingEntryPriceId, setEditingEntryPriceId] = useState<string | null>(null);
   const [editingEntryPriceValue, setEditingEntryPriceValue] = useState<string>("");
@@ -147,10 +162,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     }
   };
 
-  // Fetch API keys on mount
-  useEffect(() => {
-    fetchApiKeys();
-  }, []);
+  const hasApiKey = useCallback(
+    (exchange: string) => hasKeyForExchange(exchange),
+    [hasKeyForExchange]
+  );
 
   // WebSocket subscriptions - ref-based to prevent reconnect loops
   const wsSymbolsRef = useRef<string>("");
@@ -196,24 +211,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     };
   }, []);
 
-  const fetchApiKeys = async () => {
-    try {
-      const response = await fetch("/api/exchange/keys");
-      const data = await response.json();
-      if (data.success) {
-        setApiKeys(data.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch API keys:", error);
-    }
-  };
-
-  const hasApiKey = useCallback(
-    (exchange: string) => {
-      return apiKeys.some((k) => k.exchange === exchange && k.isActive);
-    },
-    [apiKeys],
-  );
 
   // Close exchange dropdown on outside click
   useEffect(() => {
@@ -253,9 +250,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     };
   }, [exchangeModalOpen]);
 
-  //  Modal açıkken arka plan scroll'unu kilitle
   useEffect(() => {
-    if (showAddModal || showApiKeyModal) {
+    if (showAddModal || showSelectModal) {
       document.body.style.overflow = "hidden";
 
       if (contentRef.current) {
@@ -271,7 +267,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         contentRef.current.style.overflow = "";
       }
     };
-  }, [showAddModal, showApiKeyModal]);
+  }, [showAddModal, showSelectModal]);
 
   const syncFromExchange = async () => {
     if (!hasApiKey(selectedExchange)) {
@@ -375,83 +371,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     }
   };
 
-  const saveApiKey = async () => {
-    if(!apiKeyForm.apiKey) {
-    alert("API Key / Wallet Adress is required");
-    return;  
-    }
-    if (apiKeyForm.exchange !== "hyperliquid" && !apiKeyForm.apiSecret) {
-    alert("API Secret is required");
-    return;  
-    }
-
-    if (
-      (apiKeyForm.exchange === "okx" || apiKeyForm.exchange === "coinbase") &&
-      !apiKeyForm.passphrase
-    ) {
-      alert("Passphrase is required for this exchange");
-      return;
-    }
-
-    setSavingKey(true);
-
-    try {
-      const response = await fetch("/api/exchange/keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          exchange: apiKeyForm.exchange,
-          apiKey: apiKeyForm.apiKey,
-          apiSecret: apiKeyForm.apiSecret || "none",
-          passphrase: apiKeyForm.passphrase || undefined,
-          label: apiKeyForm.label || undefined,
-          permissions: ["spot"],
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || "Failed to save API key");
-      }
-
-      await fetchApiKeys();
-      setShowApiKeyModal(false);
-      setApiKeyForm({
-        exchange: "binance",
-        apiKey: "",
-        apiSecret: "",
-        passphrase: "",
-        label: "",
-      });
-    } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to save API key");
-    } finally {
-      setSavingKey(false);
-    }
-  };
-
-  const deleteExchangeKey = async (exchange: string) => {
-    const key = apiKeys.find((k) => k.exchange === exchange);
-    if (!key) return;
-
-    if (!confirm(`Delete API key for ${exchange.toUpperCase()}?`)) return;
-
-    try {
-      const response = await fetch(`/api/exchange/keys?id=${key.id}`, {
-        method: "DELETE",
-      });
-      const data = await response.json();
-      if (data.success) {
-        await fetchApiKeys();
-        setSyncError(null);
-      } else {
-        alert(data.error || "Failed to delete API key");
-      }
-    } catch (error) {
-      alert("Failed to delete API key");
-    }
-  };
 
   const portfolio = useMemo(() => {
     const totalInvestment = spotPositions.reduce(
@@ -571,7 +490,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
   return (
     <div
-      className={`h-full flex flex-col relative ${showAddModal || showApiKeyModal ? "overflow-hidden" : ""}`}
+      className={`h-full flex flex-col relative ${showAddModal || showSelectModal ? "overflow-hidden" : ""}`}
     >
       {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
@@ -645,6 +564,8 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           onClick={() => {
             clearSpotPositionsByExchange(selectedExchange);
             setSelectedExchange(ex);
+            const keyForExchange = apiKeys.find((k) => k.exchange === ex && k.isActive);
+            setSelectedKeyId(keyForExchange?.id || null);
             setRealizedPnl(null);
             setExchangeOpen(false);
           }}
@@ -699,8 +620,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                   setShowAuthModal(true);
                   return;
                 }
-                setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
-                setShowApiKeyModal(true);
+                setShowSelectModal(true);
               }}
               className="
                 h-7 px-2 rounded-md
@@ -710,23 +630,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 transition-colors
                 cursor-pointer
               "
-              title="Change API Key"
+              title="Change Connection"
             >
               <Key className="w-3 h-3" />
-            </button>
-            <button
-              onClick={() => deleteExchangeKey(selectedExchange)}
-              className="
-                h-7 px-2 rounded-none
-                bg-red-500/10 border border-red-500/20
-                text-red-400 text-xs
-                hover:bg-red-500/20
-                transition-colors
-                cursor-pointer
-              "
-              title="Delete API Key"
-            >
-              <Trash2 className="w-3 h-3" />
             </button>
           </div>
         ) : (
@@ -736,8 +642,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                 setShowAuthModal(true);
                 return;
               }
-              setApiKeyForm({ ...apiKeyForm, exchange: selectedExchange });
-              setShowApiKeyModal(true);
+              setShowSelectModal(true);
             }}
             className="
               h-7 px-3 rounded-none
@@ -1294,235 +1199,25 @@ export default function SpotPositionsModule({ instanceId }: Props) {
         </div>
       )}
 
-      {/* API Key Modal - TRULY FULL SCREEN */}
-      {showApiKeyModal && (
-        <div
-          className="
-            fixed inset-0
-            bg-[#0a0e1a] z-[100]
-            flex flex-col overflow-hidden
-            animate-in fade-in slide-in-from-bottom-4 duration-200
-          "
-          style={{
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            margin: 0,
-            padding: 0,
-          }}
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          onWheel={(e) => e.stopPropagation()}
-        >
-          {/* Modal Header */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Key className="w-4 h-4 text-white shrink-0" />
-              <span className="text-white font-semibold text-xs">
-                Connect Exchange API
-              </span>
-            </div>
-            <button
-              onClick={() => setShowApiKeyModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto shrink-0"
-            >
-              ×
-            </button>
-          </div>
-
-          {/* Warning - FIXED, NO SCROLL */}
-          <div className="p-3 bg-yellow-500/10 border-b border-yellow-500/30 flex items-start gap-2 flex-shrink-0">
-<AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0" />
-            <div className="text-yellow-400 text-[10px] break-words flex-1">
-              Only use READ-ONLY API keys! Never share keys with withdrawal
-              permissions.
-            </div>
-          </div>
-
-          {/* Modal Content */}
-          <div
-            className="
-              flex-1 min-h-0
-              overflow-y-auto
-              p-3
-
-              [&::-webkit-scrollbar]:w-1.5
-              [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-              [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
-              scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
-            "
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="space-y-3">
-              {/* Exchange */}
-              <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
-                  Exchange
-                </label>
-                <div className="relative">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExchangeModalOpen((v) => !v);
-                    }}
-                    className="
-        w-full h-9
-        flex items-center justify-between
-        bg-white/5
-        border border-white/10
-        rounded-md px-3
-        text-white text-xs
-        cursor-pointer
-        hover:bg-white/8
-        transition-colors
-      "
-                  >
-                    <span>
-                      {apiKeyForm.exchange
-                        ? apiKeyForm.exchange.toUpperCase()
-                        : "Select Exchange"}
-                    </span>
-                    <span
-                      className={`text-white/50 transition-transform ${exchangeModalOpen ? "rotate-180" : ""}`}
-                    >
-                      ▾
-                    </span>
-                  </button>
-
-                  {exchangeModalOpen && (
-                    <div
-                      onWheel={(e) => e.stopPropagation()}
-                      className="
-          absolute z-50 mt-1 w-full
-          max-h-[120px] overflow-y-auto
-          bg-[#0a0e1a]
-          border border-white/10
-          rounded-none
-          shadow-lg
-
-          [&::-webkit-scrollbar]:w-1.5
-          [&::-webkit-scrollbar-thumb]:bg-white/20
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-track]:bg-transparent
-        "
-                    >
-                      {SUPPORTED_EXCHANGES.map((ex) => (
-                        <button
-                          key={ex}
-                          onClick={() => {
-                            setApiKeyForm({ ...apiKeyForm, exchange: ex });
-                            setExchangeModalOpen(false);
-                          }}
-                          className="
-              w-full px-3 py-2
-              text-left text-xs
-              cursor-pointer
-              bg-transparent
-              text-white
-              transition-colors
-               hover:bg-emerald-500/10
-              hover:text-emerald-400
-            "
-                        >
-                          {ex.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* API Key */}
-              <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
-                  API Key
-                </label>
-                <input
-                  type="password"
-                  value={apiKeyForm.apiKey}
-                  onChange={(e) =>
-                    setApiKeyForm({ ...apiKeyForm, apiKey: e.target.value })
-                  }
-                  placeholder="Enter your API key"
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
-                />
-              </div>
-
-              {/* API Secret */}
-              <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
-                  API Secret
-                </label>
-                <input
-                  type="password"
-                  value={apiKeyForm.apiSecret}
-                  onChange={(e) =>
-                    setApiKeyForm({ ...apiKeyForm, apiSecret: e.target.value })
-                  }
-                  placeholder="Enter your API secret"
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
-                />
-              </div>
-
-              {/* Passphrase (for OKX/Coinbase) */}
-              {(apiKeyForm.exchange === "okx" ||
-                apiKeyForm.exchange === "coinbase") && (
-                <div>
-                  <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
-                    Passphrase
-                  </label>
-                  <input
-                    type="password"
-                    value={apiKeyForm.passphrase}
-                    onChange={(e) =>
-                      setApiKeyForm({
-                        ...apiKeyForm,
-                        passphrase: e.target.value,
-                      })
-                    }
-                    placeholder="Enter your passphrase"
-                    className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
-                  />
-                </div>
-              )}
-
-              {/* Label */}
-              <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
-                  Label (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={apiKeyForm.label}
-                  onChange={(e) =>
-                    setApiKeyForm({ ...apiKeyForm, label: e.target.value })
-                  }
-                  placeholder="e.g., Main Account"
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Modal Footer */}
-          <div className="p-3 border-t border-white/10 flex-shrink-0">
-            <button
-              onClick={saveApiKey}
-              disabled={savingKey}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white py-2 rounded-md font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
-            >
-              <Key className="w-4 h-4" />
-              {savingKey ? "Connecting..." : "Connect & Save"}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Select Connection Modal */}
+      <SelectConnectionModal
+        open={showSelectModal}
+        onClose={() => setShowSelectModal(false)}
+        keys={apiKeys}
+        loading={keysLoading}
+        onSelect={(key) => {
+          const prevExchange = selectedExchange;
+          if (key.exchange !== prevExchange) {
+            clearSpotPositionsByExchange(prevExchange);
+          }
+          setSelectedExchange(key.exchange);
+          setSelectedKeyId(key.id);
+          setRealizedPnl(null);
+          setShowSelectModal(false);
+        }}
+        selectedKeyId={selectedKeyId}
+        title="Select Spot Connection"
+      />
 
       {/* Auth Modal */}
       <AuthModal
