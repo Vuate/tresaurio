@@ -170,7 +170,7 @@ useEffect(() => {
     className="
       w-full flex justify-between items-center
       bg-white/5 border border-white/10
-      rounded px-3 py-1.5
+      rounded-none px-3 py-1.5
       text-white text-xs cursor-pointer
     "
   >
@@ -182,14 +182,14 @@ useEffect(() => {
     <div
       className="
         absolute z-50 mt-1 w-full
-        bg-[#0b1f1f]
-        border border-emerald-500/20
+bg-[#1E2025]
+border border-white/10
         rounded-none
         max-h-[72px]
         overflow-y-auto
 
         [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -204,8 +204,8 @@ useEffect(() => {
           className="
             w-full text-left px-3 py-2
             text-xs cursor-pointer
-            hover:text-emerald-400
-              hover:bg-emerald-500/10
+          hover:text-[#1A73E8]/65
+
           "
         >
           {e.toUpperCase()}
@@ -230,7 +230,7 @@ useEffect(() => {
     className="
       w-full flex justify-between items-center
       bg-white/5 border border-white/10
-      rounded px-3 py-1.5
+      rounded-none px-3 py-1.5
       text-white text-xs cursor-pointer
     "
   >
@@ -242,14 +242,14 @@ useEffect(() => {
     <div
       className="
         absolute z-50 mt-1 w-full
-        bg-[#0b1f1f]
-        border border-emerald-500/20
+bg-[#1E2025]
+border border-white/10
         rounded-none
         max-h-[72px]
         overflow-y-auto
 
         [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+        [&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -265,8 +265,8 @@ useEffect(() => {
             className="
               w-full text-left px-3 py-2
               text-xs cursor-pointer
-              hover:text-emerald-400
-                hover:bg-emerald-500/10
+            hover:text-[#1A73E8]/65
+
             "
           >
             VIP {level} (M {fees.maker}% / T {fees.taker}%)
@@ -288,7 +288,7 @@ useEffect(() => {
             type="number"
             value={monthlyVolume}
             onChange={(e) => setMonthlyVolume(parseFloat(e.target.value) || 0)}
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            className="w-full bg-white/5 border border-white/10 rounded-none px-3 py-1.5 text-white"
             step="100000"
           />
         </div>
@@ -305,7 +305,7 @@ useEffect(() => {
                 Math.min(100, Math.max(0, parseFloat(e.target.value) || 0))
               )
             }
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            className="w-full bg-white/5 border border-white/10 rounded-none px-3 py-1.5 text-white"
             min="0"
             max="100"
             step="5"

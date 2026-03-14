@@ -457,12 +457,11 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             onClick={() => setExchangeDropdownOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#0b1f1f]
+            bg-[#111318] 
               border border-white/10
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
             "
@@ -501,15 +500,15 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                 className={`
                  absolute z-[999]
                  w-[140px]
-               bg-[#0b1f1f]
-                 border border-emerald-500/20
+             bg-[#111318] border border-white/10
+
                   rounded-lg
                   overflow-hidden
                   shadow-xl
                   animate-in fade-in duration-200
 
                   [&::-webkit-scrollbar]:w-1.5
-                  [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                  [&::-webkit-scrollbar-thumb]:bg-white/20
                   [&::-webkit-scrollbar-thumb]:rounded-full
                   [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -532,8 +531,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                       bg-transparent cursor-pointer
                       text-white
                       transition-colors
-                      hover:bg-emerald-500/10
-                      hover:text-emerald-400
+                 hover:text-[#1A73E8]/65
                       flex items-center justify-between
                     "
                   >
@@ -608,13 +606,11 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+        [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
     {positions.length === 0 && (
@@ -888,20 +884,188 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
         )}
       </div>
 
-      {/* Select Connection Modal */}
-      <SelectConnectionModal
-        open={showSelectModal}
-        onClose={() => setShowSelectModal(false)}
-        keys={apiKeys}
-        loading={keysLoading}
-        onSelect={(key) => {
-          setSelectedExchange(key.exchange);
-          setSelectedKeyId(key.id);
-          setShowSelectModal(false);
-        }}
-        selectedKeyId={selectedKeyId}
-        title="Select Futures Connection"
-      />
+      {/* API Key Modal - FULL SCREEN */}
+      {showApiKeyModal && (
+        <div 
+          className="
+            fixed inset-0
+            bg-[#0a0e1a] z-[100]
+            flex flex-col overflow-hidden
+            animate-in fade-in slide-in-from-bottom-4 duration-200
+          "
+          style={{
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            margin: 0,
+            padding: 0,
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+        >
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
+            <span className="text-white font-semibold text-[11px] sm:text-xs flex items-center gap-1.5 break-words min-w-0">
+              <Key className="w-3.5 h-3.5 shrink-0" />
+              <span className="break-words">Connect Futures API</span>
+            </span>
+            <button
+              onClick={() => setShowApiKeyModal(false)}
+              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto shrink-0"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="flex-shrink-0 p-2.5 bg-yellow-500/10 border border-yellow-500/30 rounded-none text-yellow-400 text-[10px] break-words">
+<AlertTriangle className="w-3 h-3 inline mr-1 shrink-0" /> Only use READ-ONLY API keys! Enable Futures permissions in your exchange API settings.
+          </div>
+
+          <div
+            className="
+              flex-1 min-h-0 overflow-y-auto p-3
+              [&::-webkit-scrollbar]:w-1.5
+              [&::-webkit-scrollbar-track]:bg-transparent
+              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+              scrollbar-thin
+              scrollbar-thumb-teal-400/40
+              scrollbar-track-transparent
+            "
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="space-y-3">
+              {/* Exchange */}
+              <div>
+                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                  Exchange
+                </label>
+                <div ref={exchangeModalRef} className="relative">
+                  <button
+                    onClick={() => setExchangeModalDropdownOpen((v) => !v)}
+                    className="
+                      w-full h-9
+                      flex items-center justify-between
+                      bg-white/5
+                      border border-white/10
+                      rounded-md px-3
+                      text-white text-xs
+                      cursor-pointer
+                      hover:bg-white/8
+                      transition-colors
+                    "
+                  >
+                    <span>{apiKeyForm.exchange ? apiKeyForm.exchange.toUpperCase() : "Select Exchange"}</span>
+                    <span className={`text-white/50 transition-transform ${exchangeModalDropdownOpen ? "rotate-180" : ""}`}>
+                      ▾
+                    </span>
+                  </button>
+
+                  {exchangeModalDropdownOpen && (
+                    <div
+                      onWheel={(e) => e.stopPropagation()}
+                      className="
+                      absolute z-50 mt-1 w-full
+                      bg-[#0a0e1a]
+                        border border-white/10
+                        rounded-md
+                        overflow-hidden
+                        shadow-lg
+
+                        [&::-webkit-scrollbar]:w-1.5
+                        [&::-webkit-scrollbar-thumb]:bg-white/20
+                        [&::-webkit-scrollbar-thumb]:rounded-full
+                        [&::-webkit-scrollbar-track]:bg-transparent
+                      "
+                    >
+                      {SUPPORTED_EXCHANGES.map((ex) => (
+                        <button
+                          key={ex}
+                          onClick={() => {
+                            setApiKeyForm({ ...apiKeyForm, exchange: ex });
+                            setExchangeModalDropdownOpen(false);
+                          }}
+                          className="
+                            w-full px-3 py-2
+                            text-left text-xs
+                            cursor-pointer
+                            bg-transparent
+                            text-white
+                            transition-colors
+                          hover:bg-emerald-500/10
+                          hover:text-emerald-400
+                          "
+                        >
+                          {ex.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">API Key</label>
+                <input
+                  type="password"
+                  value={apiKeyForm.apiKey}
+                  onChange={(e) => setApiKeyForm({ ...apiKeyForm, apiKey: e.target.value })}
+                  placeholder="Enter your API key"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">API Secret</label>
+                <input
+                  type="password"
+                  value={apiKeyForm.apiSecret}
+                  onChange={(e) => setApiKeyForm({ ...apiKeyForm, apiSecret: e.target.value })}
+                  placeholder="Enter your API secret"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                />
+              </div>
+
+              {apiKeyForm.exchange === "okx" && (
+                <div>
+                  <label className="block text-white/50 mb-1.5 text-[10px] font-medium">Passphrase</label>
+                  <input
+                    type="password"
+                    value={apiKeyForm.passphrase}
+                    onChange={(e) => setApiKeyForm({ ...apiKeyForm, passphrase: e.target.value })}
+                    placeholder="Enter your passphrase"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">Label (Optional)</label>
+                <input
+                  type="text"
+                  value={apiKeyForm.label}
+                  onChange={(e) => setApiKeyForm({ ...apiKeyForm, label: e.target.value })}
+                  placeholder="e.g., Futures Account"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 border-t border-white/10 flex-shrink-0">
+            <button
+              onClick={saveApiKey}
+              disabled={savingKey}
+              className="w-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded-lg font-semibold text-xs cursor-pointer transition-colors flex items-center justify-center gap-2"
+            >
+              <Link2 className="w-3.5 h-3.5" />
+              {savingKey ? "Connecting..." : "Connect & Save"}
+            </button>
+          </div>
+        </div>
+      )}
 
       <AuthModal
         open={showAuthModal}

@@ -8,7 +8,7 @@ export default function StakingCTA() {
         mt-10 sm:mt-12 lg:mt-14 xl:mt-16 2xl:mt-18
         rounded-xl sm:rounded-2xl lg:rounded-3xl
         border border-teal-500/30
-        bg-gradient-to-br from-teal-500/10 to-teal-600/5
+        bg-[#041F20]/95
         px-6 sm:px-8 lg:px-10 xl:px-12
         py-10 sm:py-12 lg:py-14 xl:py-16
         text-center
@@ -29,15 +29,14 @@ export default function StakingCTA() {
           cta-button
           inline-flex items-center gap-2 sm:gap-2.5 lg:gap-3
           rounded-lg sm:rounded-xl lg:rounded-2xl
-          bg-gradient-to-br from-teal-400 to-teal-600
+         bg-[#1A73E8]
           px-5 sm:px-6 lg:px-7 xl:px-8
           py-2.5 sm:py-3 lg:py-3.5 xl:py-4
           text-sm sm:text-base lg:text-lg xl:text-xl
           font-bold
-          text-[#031A1C]
+          text-white
           transition-all duration-300
-          hover:-translate-y-[2px]
-          hover:shadow-[0_12px_32px_rgba(25,216,208,0.4)]
+          hover:-translate-y-[3px]
         "
       >
         <span>Go to Personalized Dashboard</span>

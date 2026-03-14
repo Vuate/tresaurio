@@ -30,16 +30,28 @@ export default function UserMenu({ variant = "default", compact = false }: UserM
 
 
   // Close menu on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        setUserMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+useEffect(() => {
+  const handleClickOutside = (e: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      setOpen(false);
+      setUserMenuOpen(false);
+    }
+  };
+  const handleTouchOutside = (e: TouchEvent) => {
+    if (e.touches.length > 1) return;
+    if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      setOpen(false);
+      setUserMenuOpen(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutside);
+  document.addEventListener("touchstart", handleTouchOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+    document.removeEventListener("touchstart", handleTouchOutside);
+  };
+}, []);
+
 
   // Close on escape
   useEffect(() => {
@@ -218,7 +230,7 @@ const menuItems = [
       {/* Dropdown Menu - Responsive Width */}
       {open && (
         <div className={`
-          absolute right-0 top-full mt-2 
+          absolute right-0 top-full mt-4 
           bg-[#0d0f14] border border-white/10 rounded-xl shadow-2xl 
           overflow-hidden z-[200]
           ${compact 

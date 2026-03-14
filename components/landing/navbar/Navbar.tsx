@@ -69,7 +69,7 @@ export default function Navbar() {
 
     after:content-[''] after:absolute after:-left-20 after:top-0
     after:w-24 after:h-full after:rounded-full
-    after:bg-gradient-to-r after:from-transparent after:via-teal-300/70 after:to-transparent
+  after:bg-gradient-to-r after:from-transparent after:via-[#1A73E8]/70 after:to-transparent
     after:opacity-60 after:transition-all after:duration-700 after:ease-out
     hover:after:left-full
   `;
@@ -106,7 +106,7 @@ export default function Navbar() {
         <div className="hidden md:flex flex-1 items-center gap-4 lg:gap-6 xl:gap-8 ml-8 lg:ml-12 text-gray-300 text-sm">
           <button 
             onClick={() => router.push("/terminal/home")}
-            className="font-medium transition duration-150 hover:text-teal-300 hover:-translate-y-0.5 transform cursor-pointer"
+            className="font-medium transition duration-150  hover:-translate-y-0.5 transform cursor-pointer"
           >
             TERMINAL
           </button>
@@ -129,7 +129,7 @@ export default function Navbar() {
           
           <button 
             onClick={() => router.push("/pricing")}
-            className="font-medium transition duration-150 hover:text-teal-300 hover:-translate-y-0.5 transform cursor-pointer"
+            className="font-medium transition duration-150 hover:-translate-y-0.5 transform cursor-pointer"
           >
             PRICING
           </button>
@@ -147,7 +147,7 @@ export default function Navbar() {
                 }}
                 className={
                   glassBase +
-                  " border border-teal-400/50 bg-teal-400/10 hover:text-teal-200"
+                  " border border-[#1A73E8]/50 bg-[#1A73E8]/10 hover:text-white"
                 }
               >
                 LOG IN
@@ -160,7 +160,7 @@ export default function Navbar() {
                 }}
                 className={
                   glassBase +
-                  " border border-white/40 bg-white/5 hover:text-teal-200"
+                  " border border-[#1A73E8]/30 bg-[#1A73E8]/5 hover:text-white"
                 }
               >
                 SIGN UP
@@ -179,7 +179,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 w-full bg-[#031A1C] backdrop-blur-2xl border-t border-white/10 z-[100]">
+<div className="md:hidden fixed top-16 left-0 w-full bg-[#031A1C] backdrop-blur-2xl border-t border-white/10 z-[100]">
             <div className="flex flex-col p-6 gap-4">
               {/* Mobile Navigation */}
               <div className="flex flex-col gap-3 pb-4 border-b border-white/10">
@@ -212,7 +212,7 @@ export default function Navbar() {
                     router.push("/pricing");
                     setMobileMenuOpen(false);
                   }}
-                  className="text-left text-gray-300 font-medium py-2 hover:text-teal-300 transition cursor-pointer"
+                  className="text-left text-gray-300 font-medium py-2 transition cursor-pointer"
                 >
                   PRICING
                 </button>
@@ -230,7 +230,7 @@ export default function Navbar() {
                         setAuthOpen(true);
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full border border-teal-400/30 bg-teal-900/40 hover:bg-teal-900/60 text-white py-3 rounded-lg transition-all cursor-pointer"
+className="w-full border border-[#1A73E8]/50 bg-[#1A73E8]/10 hover:bg-[#1A73E8]/20 text-white py-3 rounded-lg transition-all cursor-pointer"
                     >
                       LOG IN
                     </Button>
@@ -241,8 +241,7 @@ export default function Navbar() {
                         setAuthOpen(true);
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full border border-teal-400/30 bg-teal-900/40 hover:bg-teal-900/60 text-white py-3 rounded-lg transition-all cursor-pointer"
-                    >
+className="w-full border border-[#1A73E8]/30 bg-[#1A73E8]/5 hover:bg-[#1A73E8]/15 text-white py-3 rounded-lg transition-all cursor-pointer"                    >
                       SIGN UP
                     </Button>
                   </>

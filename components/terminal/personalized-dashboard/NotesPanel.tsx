@@ -106,12 +106,52 @@ useEffect(() => {
     isResizingRef.current = false;
   };
 
+  const onTouchMove = (e: TouchEvent) => {
+    if (!isResizingRef.current) return;
+    const touch = e.touches[0];
+
+    const MIN_HEIGHT = window.innerWidth >= 1536 ? 180 : window.innerWidth >= 1280 ? 160 : 140;
+    const SAFETY_BUFFER = 16;
+
+    const MIN_TOP_CLEARANCE_RATIO = 0.45;
+    const dynamicMinClearance = window.innerHeight * MIN_TOP_CLEARANCE_RATIO;
+
+    const mapHeight = window.innerWidth >= 1536 ? 180 : window.innerWidth >= 1280 ? 160 : 140;
+
+    const reservedTopSpace = Math.max(
+      topBarHeight + mapHeight + SAFETY_BUFFER,
+      dynamicMinClearance
+    );
+
+    const availableHeight = window.innerHeight - reservedTopSpace;
+
+    const delta = startYRef.current - touch.clientY;
+
+    const maxHeight = Math.max(MIN_HEIGHT, availableHeight);
+
+    const newHeight = Math.min(
+      Math.max(startHeightRef.current + delta, MIN_HEIGHT),
+      maxHeight
+    );
+
+    setNotesHeight(newHeight);
+    e.preventDefault();
+  };
+
+  const onTouchEnd = () => {
+    isResizingRef.current = false;
+  };
+
   window.addEventListener("mousemove", onMouseMove);
   window.addEventListener("mouseup", onMouseUp);
+  window.addEventListener("touchmove", onTouchMove, { passive: false });
+  window.addEventListener("touchend", onTouchEnd);
 
   return () => {
     window.removeEventListener("mousemove", onMouseMove);
     window.removeEventListener("mouseup", onMouseUp);
+    window.removeEventListener("touchmove", onTouchMove);
+    window.removeEventListener("touchend", onTouchEnd);
   };
 }, [setNotesHeight, topBarHeight]);
 
@@ -156,21 +196,27 @@ useEffect(() => {
       <div
         ref={notesPanelRef}
         className="fixed bottom-0 left-0 right-0 z-40
-          bg-[#031A1C]/95 backdrop-blur
-          border-t border-white/10"
+        bg-[#080A10] backdrop-blur-md
+          border-t border-white/[0.07]"
         style={{
           height: notesOpen ? notesHeight : headerHeight,
         }}
       >
         {notesOpen && (
           <div
-            className="absolute -top-1 left-0 right-0 h-2 cursor-ns-resize z-50"
+            className="absolute -top-1 left-0 right-0 h-7 cursor-ns-resize z-50"
             onMouseDown={(e) => {
               e.stopPropagation();
               isResizingRef.current = true;
               startYRef.current = e.clientY;
               startHeightRef.current = notesHeight;
               e.preventDefault();
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+              isResizingRef.current = true;
+              startYRef.current = e.touches[0].clientY;
+              startHeightRef.current = notesHeight;
             }}
           />
         )}
@@ -226,13 +272,13 @@ useEffect(() => {
                     
                     [&::-webkit-scrollbar]:w-2
                     [&::-webkit-scrollbar-track]:bg-transparent
-                    [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:bg-white/20
                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-thumb]:cursor-pointer
-                    [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+               [&::-webkit-scrollbar-thumb:hover]:bg-white/40
                     
                     scrollbar-thin
-                    scrollbar-thumb-teal-400/40
+               scrollbar-thumb-white/20
                     scrollbar-track-transparent
                   "
                 />
@@ -241,9 +287,9 @@ useEffect(() => {
               <button
                 onClick={handleSave}
                 className="self-end px-4 xl:px-5 2xl:px-6 py-1.5 xl:py-2 2xl:py-2.5 rounded-md
-                  bg-teal-400/20 text-teal-300
+              bg-[#1A73E8] text-white
                   text-xs xl:text-[13px] 2xl:text-sm font-semibold
-                  hover:bg-teal-400/30 transition cursor-pointer"
+                 hover:bg-[#1A73E8]/85 transition cursor-pointer"
               >
                 Save Note
               </button>
@@ -257,13 +303,13 @@ useEffect(() => {
 
                 [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:bg-transparent
-                [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+               [&::-webkit-scrollbar-thumb]:bg-white/20
                 [&::-webkit-scrollbar-thumb]:rounded-full
                 [&::-webkit-scrollbar-thumb]:cursor-pointer
-                [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+            [&::-webkit-scrollbar-thumb:hover]:bg-white/40
 
                 scrollbar-thin
-                scrollbar-thumb-teal-400/40
+                scrollbar-thumb-white/20
                 scrollbar-track-transparent
               ">
                 {notes.length === 0 && (
@@ -273,9 +319,9 @@ useEffect(() => {
                 {notes.map((n) => (
                   <div
                     key={n.id}
-                    className="rounded-lg border border-white/10
-                      bg-white/5 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80
-                      relative group"
+            className="rounded-lg border border-white/[0.06]
+              bg-white/[0.03] px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80
+              relative group"
                   >
                     <button
                       onClick={(e) => {

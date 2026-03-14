@@ -132,7 +132,7 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
           py-2 xl:py-2.25 2xl:py-2.5
           text-xs xl:text-[13px] 2xl:text-sm
           font-medium
-          hover:bg-gray-100
+          hover:bg-white-100
           transition-all
           disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
         "

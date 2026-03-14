@@ -15,12 +15,14 @@ const TemplatePanel = dynamic(() => import("@/components/terminal/personalized-d
 
 export default function Page() {
   const loadFromDB = usePersonalizedDashboardStore((s) => s.loadFromDB);
+  const loadFavoritesFromDB = usePersonalizedDashboardStore((s) => s.loadFavoritesFromDB);
   const closeAllPanels = usePersonalizedDashboardStore((s) => s.closeAllPanels);
 
   useEffect(() => {
     closeAllPanels();
     loadFromDB();
-  }, [loadFromDB, closeAllPanels]);
+    loadFavoritesFromDB();
+  }, [loadFromDB, loadFavoritesFromDB, closeAllPanels]);
   return (
     <div className="fixed inset-0 overflow-hidden bg-[#041F20]">
       <AlertObserver />

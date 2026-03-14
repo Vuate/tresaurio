@@ -26,6 +26,7 @@ model User {
   apiKeys       ApiKey[]
   dashboard     UserDashboard?
   templates     DashboardTemplate[]
+  favorites     UserFavorite[]
   
     activityLogs  UserActivityLog[]
 }
@@ -189,5 +190,17 @@ model DashboardTemplate {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, name])
+  @@index([userId])
+}
+
+// User's favorited dashboard tools
+model UserFavorite {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  favoritedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
   @@index([userId])
 }

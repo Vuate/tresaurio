@@ -48,8 +48,12 @@ lockedModules: Set<ModuleId>;
   swapSourceId: string | null;
   sizeSourceId: string | null;
 
+  favorites: { type: string; favoritedAt: number }[];
+
   // Templates
   templates: { id: string; name: string; createdAt: string; updatedAt: string }[];
+
+  lastResetAt: number;
 };
 
 type Actions = {
@@ -99,7 +103,12 @@ type Actions = {
   saveTemplate: (name: string) => Promise<void>;
   loadTemplate: (id: string) => Promise<void>;
   deleteTemplate: (id: string) => Promise<void>;
+  clearAllTemplates: () => Promise<void>;
   closeAllPanels: () => void;
+  loadFavoritesFromDB: () => Promise<void>;
+  toggleFavorite: (type: string) => void;
+  clearFavorites: () => void;
+
 };
 
 // Debounces DB save calls — waits 3 seconds after the last change before saving.
@@ -119,7 +128,7 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
     uiBlocked: false,
     swapSourceId: null,
     sizeSourceId: null,
-    zoom: 1,
+    zoom: 0,
     panX: 0,
     panY: 0,
 
@@ -138,7 +147,9 @@ export const usePersonalizedDashboardStore = create<State & Actions>()(
     userMenuOpen: false,
     templatesOpen: false,
     alerts: [],
+    favorites: [],
     templates: [],
+    lastResetAt: 0,
 
 // Toggles the locked state of a module. Locked modules cannot be moved or resized.
 toggleModuleLock: (id) => {
@@ -221,6 +232,7 @@ resetDashboard: async () => {
       panX: centerPanX,
       panY: centerPanY,
       activeModuleId: null,
+      lastResetAt: Date.now(),
     });
     try {
       await fetch("/api/dashboard", {
@@ -371,6 +383,7 @@ resetDashboard: async () => {
       })),
 
 
+    // Opening the user menu automatically closes the notes panel to prevent overlap.
     setUserMenuOpen: (userMenuOpen) => set({ 
       userMenuOpen,
       notesOpen: userMenuOpen ? false : get().notesOpen 
@@ -399,6 +412,41 @@ resetDashboard: async () => {
       set({
         alerts: get().alerts.filter((a) => a.id !== id),
       }),
+
+    // Adds to the front of the favorites list with a timestamp, or removes if already favorited.
+    toggleFavorite: (type) => {
+      const existing = get().favorites.find((f) => f.type === type);
+      const updated = existing
+        ? get().favorites.filter((f) => f.type !== type)
+        : [{ type, favoritedAt: Date.now() }, ...get().favorites];
+      set({ favorites: updated });
+      fetch("/api/dashboard/favorites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ favorites: updated }),
+      }).catch((err) => console.error("[Favorites] Save failed:", err));
+    },
+
+    clearFavorites: () => {
+      set({ favorites: [] });
+      fetch("/api/dashboard/favorites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ favorites: [] }),
+      }).catch((err) => console.error("[Favorites] Clear failed:", err));
+    },
+
+    loadFavoritesFromDB: async () => {
+      try {
+        const res = await fetch("/api/dashboard/favorites");
+        if (!res.ok) return;
+        const { favorites } = await res.json();
+        if (Array.isArray(favorites)) set({ favorites });
+      } catch (err) {
+        console.error("[Favorites] Load failed:", err);
+      }
+    },
+
 
     // DB sync — load (only if localStorage is empty, DB takes over)
 loadFromDB: async () => {
@@ -439,16 +487,30 @@ if (modules && modules.length > 0) {
   const minZoom = calculateMinZoom(viewportW, viewportH);
   const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
   const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
+  const restoredZoom = Math.max(minZoom, layout.zoom ?? minZoom);
+  const scaledWorldW = WORLD_WIDTH * restoredZoom;
+  const scaledWorldH = WORLD_HEIGHT * restoredZoom;
+  const minPanX = viewportW - scaledWorldW;
+  const minPanY = viewportH - scaledWorldH;
+
+  let restoredPanX = layout.panX ?? centerPanX;
+  let restoredPanY = layout.panY ?? centerPanY;
+  restoredPanX = Math.min(0, Math.max(minPanX, restoredPanX));
+  restoredPanY = Math.min(0, Math.max(minPanY, restoredPanY));
+  if (scaledWorldW < viewportW) restoredPanX = (viewportW - scaledWorldW) / 2;
+  if (scaledWorldH < viewportH) restoredPanY = (viewportH - scaledWorldH) / 2;
+
   set({
     modules,
     ...(notes && { notes }),
     ...(alerts && { alerts }),
-    zoom: minZoom,
-    panX: centerPanX,
-    panY: centerPanY,
+    zoom: restoredZoom,
+    panX: restoredPanX,
+    panY: restoredPanY,
     ...(lockedModules && { lockedModules: new Set(lockedModules) }),
     ...(typeof uiBlocked === "boolean" && { uiBlocked }),
   });
+
       console.log("[Dashboard] Loaded from DB");
     }
   } catch (err) {
@@ -459,7 +521,7 @@ if (modules && modules.length > 0) {
     // DB sync — save
 saveToDB: async () => {
   try {
-    const { modules, notes, alerts, zoom, panX, panY, lockedModules, uiBlocked  } = get();
+    const { modules, notes, alerts, zoom, panX, panY, lockedModules, uiBlocked } = get();
     await fetch("/api/dashboard", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -472,8 +534,9 @@ layout: {
           panX, 
           panY,
           lockedModules: Array.from(lockedModules),
-          uiBlocked
+          uiBlocked,
         },
+
       }),
     });
   } catch (err) {
@@ -501,7 +564,7 @@ layout: {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name,
-            layout: { modules, zoom, panX, panY, lockedModules: Array.from(lockedModules), uiBlocked },
+            layout: { modules, zoom, panX, panY, lockedModules: Array.from(lockedModules), uiBlocked, canvasWidth: WORLD_WIDTH, canvasHeight: WORLD_HEIGHT },
           }),
         });
 if (!res.ok) throw new Error("Failed to save template");
@@ -520,7 +583,25 @@ if (!res.ok) throw new Error("Failed to load template");
     const { template } = await res.json();
     if (!template?.layout) return;
 
-    const { modules, lockedModules, uiBlocked  } = template.layout;
+    // If the template was saved on a different canvas size, scale all module positions and sizes proportionally.
+    const { modules: rawModules, lockedModules, uiBlocked, canvasWidth: savedW, canvasHeight: savedH } = template.layout;
+
+    const sourceW = savedW ?? WORLD_WIDTH;
+    const sourceH = savedH ?? WORLD_HEIGHT;
+    const scaleX = WORLD_WIDTH / sourceW;
+    const scaleY = WORLD_HEIGHT / sourceH;
+
+    const modules = rawModules?.map((m: any) => {
+      const newWidth = m.width * scaleX;
+      const newHeight = m.height * scaleY;
+      return {
+        ...m,
+        x: Math.max(0, Math.min(m.x * scaleX, WORLD_WIDTH - newWidth)),
+        y: Math.max(0, Math.min(m.y * scaleY, WORLD_HEIGHT - newHeight)),
+        width: newWidth,
+        height: newHeight,
+      };
+    });
 
     const { topBarHeight, notesBarHeight } = get();
     const viewportW = window.innerWidth;
@@ -555,6 +636,15 @@ if (!res.ok) throw new Error("Failed to load template");
       }
     },
 
+    clearAllTemplates: async () => {
+      const ids = get().templates.map((t) => t.id);
+      for (const id of ids) {
+        await fetch(`/api/dashboard/templates/${id}`, { method: "DELETE" });
+      }
+      set({ templates: [] });
+    },
+
+
     closeAllPanels: () =>
   set({
     sidebarOpen: false,
@@ -564,6 +654,7 @@ if (!res.ok) throw new Error("Failed to load template");
 
   }),
   {
+    // Only these fields are persisted to localStorage. Transient UI state is excluded.
     name: "dashboard-layout",
     partialize: (state) => ({
       modules: state.modules,
@@ -572,9 +663,10 @@ if (!res.ok) throw new Error("Failed to load template");
       zoom: state.zoom,
       panX: state.panX,
       panY: state.panY,
- lockedModules: Array.from(state.lockedModules),
-        uiBlocked: state.uiBlocked,
+      lockedModules: Array.from(state.lockedModules),
+      uiBlocked: state.uiBlocked,
     }),
+
         storage: {
       getItem: (name) => {
         const str = localStorage.getItem(name);
@@ -601,7 +693,7 @@ onRehydrateStorage: () => {
     // Mark hydration as complete
     state?.setHydrated(true);
     
-    // Reset zoom and pan to min values after hydration
+   // Clamp zoom to saved value or minimum (whichever is larger), restore saved pan within valid bounds
     if (state && typeof window !== "undefined") {
       const topBarHeight = state.topBarHeight || 0;
       const notesBarHeight = state.notesBarHeight || 0;
@@ -611,9 +703,15 @@ onRehydrateStorage: () => {
       const centerPanX = (viewportW - WORLD_WIDTH * minZoom) / 2;
       const centerPanY = (viewportH - WORLD_HEIGHT * minZoom) / 2;
       
-      state.zoom = minZoom;
-      state.panX = centerPanX;
-      state.panY = centerPanY;
+      const clampedZoom = Math.max(minZoom, state.zoom ?? minZoom);
+      state.zoom = clampedZoom;
+
+      const scaledW = WORLD_WIDTH * clampedZoom;
+      const scaledH = WORLD_HEIGHT * clampedZoom;
+
+      state.panX = Math.min(0, Math.max(viewportW - scaledW, state.panX ?? centerPanX));
+      state.panY = Math.min(0, Math.max(viewportH - scaledH, state.panY ?? centerPanY));
+
     }
   };
 },
@@ -632,8 +730,8 @@ usePersonalizedDashboardStore.subscribe(
     const changed =
       state.modules !== prevState.modules ||
       state.notes !== prevState.notes ||
-state.alerts !== prevState.alerts ||    
-state.uiBlocked !== prevState.uiBlocked;
+      state.alerts !== prevState.alerts ||
+      state.uiBlocked !== prevState.uiBlocked;
 
     if (changed) {
       debouncedSaveToDB();

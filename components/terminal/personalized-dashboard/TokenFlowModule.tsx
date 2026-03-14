@@ -299,12 +299,11 @@ export default function TokenFlowModule({ instanceId }: Props) {
             onClick={() => setTokenDropdownOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#0b1f1f]
+           bg-[#111318]
               border border-white/10
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
               max-w-[150px]
@@ -338,14 +337,14 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
         w-[160px]
         max-h-[200px]
         overflow-y-auto
-        bg-[#0b1f1f]
-        border border-emerald-500/20
+    bg-[#111318] border border-white/10
+
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
         [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+  [&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -362,8 +361,7 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
             bg-transparent cursor-pointer
             text-white
             transition-colors
-            hover:bg-emerald-500/10
-            hover:text-emerald-400
+  hover:text-[#1A73E8]/65
             flex items-center justify-between
           "
         >
@@ -415,13 +413,10 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+ [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         {loading && data.length === 0 ? (
@@ -578,13 +573,10 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-              [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+ [&::-webkit-scrollbar-thumb]:bg-white/20              [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
+scrollbar-thumb-white/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
@@ -636,10 +628,8 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
                             ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
                             : `
                                 bg-white/10 text-white border-white/10
-                                hover:bg-teal-500/15
-                                hover:border-teal-400/40
-                                hover:text-teal-400
-                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                              hover:text-[#1A73E8]
+
                               `
                         }
                       `}

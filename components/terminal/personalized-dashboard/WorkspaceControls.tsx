@@ -35,6 +35,8 @@ export default function WorkspaceControls() {
   const [mapOpen, setMapOpen] = useState(false);
   const [minimapHeaderHeight, setMinimapHeaderHeight] = useState(32);
   const headerRef = useRef<HTMLDivElement>(null);
+  const justOpenedRef = useRef(false);
+
 
   // Updates responsive sizes whenever the browser window is resized.
     useEffect(() => {
@@ -43,6 +45,7 @@ export default function WorkspaceControls() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Scale factors used to convert world coordinates to minimap pixel positions.
   const MAP_SCALE_X = sizes.mapSize / WORLD_WIDTH;
   const MAP_SCALE_Y = sizes.mapSize / WORLD_HEIGHT;
 
@@ -67,6 +70,20 @@ export default function WorkspaceControls() {
       setMinimapHeaderHeight(rect.height);
     }
   }, [mapOpen]);
+
+  
+// Closes the minimap when the user taps anywhere outside of it on touch devices.
+useEffect(() => {
+  if (!mapOpen) return;
+  const close = (e: TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-minimap]')) return;
+    setMapOpen(false);
+  };
+  window.addEventListener("touchstart", close, true);
+  return () => window.removeEventListener("touchstart", close, true);
+}, [mapOpen]);
+
 
 // Zooms in or out centered on the viewport midpoint and clamps pan to keep the world in bounds.
 const handleZoom = (delta: number) => {
@@ -133,6 +150,7 @@ const alignToActiveWindow = () => {
 // Converts a click on the minimap to world coordinates and pans the canvas to that position.
 const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
   if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+  if (justOpenedRef.current) { justOpenedRef.current = false; return; }
   const rect = e.currentTarget.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top; 
@@ -178,15 +196,24 @@ const bottomOffset = notesBarHeight + (window.innerWidth >= 1536 ? 24 : window.i
 
   return (
 <div
+data-minimap
 className={`fixed right-3 xl:right-4 2xl:right-6 z-50 ${uiBlocked ? "pointer-events-none" : ""}`}
       style={{ bottom: bottomOffset }}
-        onMouseEnter={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; setMapOpen(true); }}
-        onMouseLeave={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; setMapOpen(false); }}
+     onPointerEnter={(e) => { if (e.pointerType !== 'mouse') return; if (usePersonalizedDashboardStore.getState().uiBlocked) return; setMapOpen(true); }}
+onPointerLeave={(e) => { if (e.pointerType !== 'mouse') return; if (usePersonalizedDashboardStore.getState().uiBlocked) return; setMapOpen(false); }}
+
+      onTouchStart={(e) => { 
+        if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+        e.stopPropagation();
+        if (!mapOpen) {
+          justOpenedRef.current = true;
+          setMapOpen(true);
+        }
+      }}
     >
 <div className="flex items-end gap-4 xl:gap-5 2xl:gap-6">
 <div
-  className="relative rounded-xl border border-white/10 bg-[#031A1C]/95 overflow-hidden transition-all duration-300 ease-out"
-  style={{
+className="relative rounded-xl border border-white/10 bg-[#0C0E12] overflow-hidden transition-all duration-300 ease-out"  style={{
     width: mapOpen ? sizes.mapSize : sizes.buttonSize,
     height: mapOpen ? sizes.mapSize : sizes.buttonSize,
   }}
@@ -196,7 +223,7 @@ className={`fixed right-3 xl:right-4 2xl:right-6 z-50 ${uiBlocked ? "pointer-eve
               className="
                 absolute inset-0
                 flex items-center justify-center
-text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
+              text-white text-sm xl:text-base 2xl:text-lg leading-none
                 select-none
                 pointer-events-none
               "
@@ -216,7 +243,7 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
               ref={headerRef}
               className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 flex items-center px-3"
             >
-<span className="text-[11px] xl:text-xs 2xl:text-sm text-white/40 font-bold uppercase select-none pointer-events-none">
+<span className="text-[11px] xl:text-xs 2xl:text-sm text-white/80 font-bold uppercase select-none pointer-events-none">
                 Map
               </span>
             </div>
@@ -228,7 +255,31 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
             right: 0,
             bottom: 0,
           }}
-          onClick={handleMapClick}
+
+      
+      onClick={handleMapClick}
+      onTouchEnd={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (justOpenedRef.current) { justOpenedRef.current = false; return; }
+        const touch = e.changedTouches[0];
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        const canvasX = (x / sizes.mapSize) * WORLD_WIDTH;
+        const canvasY = (y / actualMapHeight) * WORLD_HEIGHT;
+        let newPanX = viewport.w / 2 - canvasX * zoom;
+        let newPanY = viewport.h / 2 - canvasY * zoom;
+        const scaledWorldW = WORLD_WIDTH * zoom;
+        const scaledWorldH = WORLD_HEIGHT * zoom;
+        const minPanX = viewport.w - scaledWorldW;
+        const minPanY = viewport.h - scaledWorldH;
+        newPanX = Math.min(0, Math.max(minPanX, newPanX));
+        newPanY = Math.min(0, Math.max(minPanY, newPanY));
+        if (scaledWorldW < viewport.w) newPanX = (viewport.w - scaledWorldW) / 2;
+        if (scaledWorldH < viewport.h) newPanY = (viewport.h - scaledWorldH) / 2;
+        setPan(newPanX, newPanY);
+      }}
         >
               {modules.map(m => {
                 const moduleMapScaleY = actualMapHeight / WORLD_HEIGHT;
@@ -236,8 +287,8 @@ text-teal-400 text-sm xl:text-base 2xl:text-lg leading-none
                 return (
                   <div
                     key={m.id}
-                    className={`absolute bg-teal-400/30 border border-teal-400 rounded-[2px]
-                      ${m.id === activeModuleId ? 'border-2 bg-teal-400/50' : ''}`}
+            className={`absolute bg-[#1A73E8]/20 border border-[#1A73E8]/60 rounded-[2px]
+              ${m.id === activeModuleId ? 'border-2 bg-[#1A73E8]/40' : ''}`}
                   style={{
                     left: m.x * MAP_SCALE_X,
                           top: m.y * actualMapScaleY,  
@@ -274,8 +325,7 @@ className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
 <ZoomBtn onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; handleZoom(0.1); }} size={sizes.buttonSize}>+</ZoomBtn>
 
 <div
-  className="rounded-lg bg-[#031A1C]/95 border border-white/10 text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-teal-400 flex items-center justify-center select-none pointer-events-none cursor-default"
-  style={{ 
+className="rounded-lg bg-[#0C0E12] border border-white/10 text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-white flex items-center justify-center select-none pointer-events-none cursor-default"  style={{ 
     width: sizes.buttonSize, 
     height: sizes.buttonSize 
   }}
@@ -307,10 +357,10 @@ className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
           onMouseDown={(e) => e.preventDefault()}
     className="
       rounded-lg
-        bg-[#031A1C]/95
+    bg-[#0C0E12]
         border border-white/10
       text-white text-sm xl:text-base 2xl:text-lg
-        hover:bg-teal-400/20
+        hover:bg-white/10
         transition
         select-none
         cursor-pointer

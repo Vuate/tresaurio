@@ -184,12 +184,11 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     onClick={() => setExchangeOpen((v) => !v)}
     className="
       h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-      bg-[#0b1f1f]
+   bg-[#111318]
       border border-white/10
       text-[10px] sm:text-xs text-white
       flex items-center gap-1.5 sm:gap-2
       cursor-pointer
-      hover:bg-white/5
       transition-colors
     "
   >
@@ -217,8 +216,8 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
 className={`
   absolute mt-1 z-[999]
   w-[120px] sm:w-[140px]
-  bg-[#0b1f1f]
-  border border-emerald-500/20
+bg-[#111318] border border-white/10
+
   rounded-lg
   overflow-hidden
   shadow-xl
@@ -239,8 +238,7 @@ className={`
               bg-transparent cursor-pointer
               text-white
               transition-colors
-              hover:text-emerald-400
-                hover:bg-emerald-500/10
+        hover:text-[#1A73E8]/65
             "
           >
             {ex.name}
@@ -256,12 +254,11 @@ className={`
     onClick={() => setMarketOpen((v) => !v)}
     className="
       h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-      bg-[#0b1f1f]
+     bg-[#111318]
       border border-white/10
       text-[10px] sm:text-xs text-white
       flex items-center gap-1.5 sm:gap-2
       cursor-pointer
-      hover:bg-white/5
       transition-colors
     "
   >
@@ -287,8 +284,8 @@ className={`
         className={`
           absolute mt-1 z-[999]
           w-[100px] sm:w-[120px]
-          bg-[#0b1f1f]
-          border border-emerald-500/20
+  bg-[#111318] border border-white/10
+
           rounded-lg
           overflow-hidden
           shadow-xl
@@ -309,8 +306,7 @@ className={`
               bg-transparent cursor-pointer
               text-white
               transition-colors
-              hover:text-emerald-400
-                hover:bg-emerald-500/10
+         hover:text-[#1A73E8]/65
             "
           >
             {mt.name}
@@ -326,12 +322,12 @@ className={`
     onClick={() => setSymbolOpen((v) => !v)}
     className="
       h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-      bg-[#0b1f1f]
+     bg-[#111318]
       border border-white/10
       text-[10px] sm:text-xs text-white
       flex items-center gap-1.5 sm:gap-2
       cursor-pointer
-      hover:bg-white/5
+      
       transition-colors
     "
   >
@@ -357,8 +353,8 @@ className={`
 className={`
   absolute mt-1 z-[999]
   w-[120px] sm:w-[140px]
-  bg-[#0b1f1f]
-  border border-emerald-500/20
+bg-[#111318] border border-white/10
+
   rounded-lg
   overflow-hidden
   shadow-xl
@@ -379,8 +375,7 @@ className={`
               bg-transparent cursor-pointer
               text-white
               transition-colors
-              hover:text-emerald-400
-              hover:bg-emerald-500/10
+     hover:text-[#1A73E8]/65
             "
           >
             {sym}
@@ -402,13 +397,12 @@ className={`
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+      [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+          [&::-webkit-scrollbar-thumb:hover]:bg-white/40
 
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         {loading && (

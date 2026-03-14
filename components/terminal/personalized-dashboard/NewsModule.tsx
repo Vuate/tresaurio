@@ -108,7 +108,8 @@ export default function NewsModule({ instanceId }: Props) {
           <div ref={settingsRef} className="relative">
 <button
   onClick={() => setShowSettings(!showSettings)}
-  className="h-7 px-3 rounded-md bg-[#0b1f1f] border border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors cursor-pointer flex items-center justify-center"
+className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-pointer p-1"
+
   title="Settings"
 >
              <Settings className="w-3.5 h-3.5" />
@@ -117,17 +118,7 @@ export default function NewsModule({ instanceId }: Props) {
 {showSettings && (
   <div
     onWheel={(e) => e.stopPropagation()}
-    className="
-      absolute right-0 mt-1 z-50
-      w-[150px]
-      bg-[#0b1f1f]
-      border border-emerald-500/20
-      rounded
-      shadow-lg
-      p-2
-      space-y-2
-      animate-in fade-in slide-in-from-top-2 duration-200
-    "
+className="absolute right-0 mt-1 z-50 w-[200px] bg-[#111318] border border-white/[0.06] rounded-lg shadow-lg p-2 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200"
   >
     <div>
       <label className="text-white/50 mb-1 block font-medium text-[9px]">
@@ -140,12 +131,11 @@ export default function NewsModule({ instanceId }: Props) {
     onClick={() => setCategoryOpen((v) => !v)}
     className="
       w-full h-7 px-2 rounded-none
-      bg-[#0b1f1f]
-      border border-white/10
+bg-white/[0.04]
+border border-white/[0.06]
       text-white text-[11px]
       flex items-center justify-between
       cursor-pointer
-      hover:bg-white/5
       transition-all
     "
   >
@@ -169,14 +159,14 @@ export default function NewsModule({ instanceId }: Props) {
       w-full
       max-h-[140px]
       overflow-y-auto
-      bg-[#0b1f1f]
-      border border-emerald-500/20
+bg-[#111318]
+border border-white/[0.06]
       rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1
-      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+  [&::-webkit-scrollbar-thumb]:bg-white/20
       [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
@@ -194,8 +184,7 @@ export default function NewsModule({ instanceId }: Props) {
                   bg-transparent cursor-pointer
                   text-white
                   transition-colors
-                  hover:bg-emerald-500/10
-                  hover:text-emerald-400
+           hover:text-[#1A73E8]/65
                 "
               >
                 {cat.name}
@@ -224,13 +213,13 @@ export default function NewsModule({ instanceId }: Props) {
           [&::-webkit-slider-thumb]:w-2.5
           [&::-webkit-slider-thumb]:h-2.5
           [&::-webkit-slider-thumb]:rounded-full
-          [&::-webkit-slider-thumb]:bg-emerald-500
+[&::-webkit-slider-thumb]:bg-white/50
           [&::-webkit-slider-thumb]:cursor-pointer
           [&::-moz-range-thumb]:w-2.5
           [&::-moz-range-thumb]:h-2.5
           [&::-moz-range-thumb]:rounded-full
-          [&::-moz-range-thumb]:bg-emerald-500
-          [&::-moz-range-thumb]:cursor-pointer
+[&::-moz-range-thumb]:bg-white/50          
+[&::-moz-range-thumb]:cursor-pointer
           [&::-moz-range-thumb]:border-0
         "
       />
@@ -252,13 +241,11 @@ export default function NewsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+       [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-2">

@@ -209,12 +209,10 @@ export default function WalletInspectorModule({ instanceId }: Props) {
     onClick={() => setChainDropdownOpen((v) => !v)}
     className="
       h-7 px-3 rounded-md
-      bg-[#0b1f1f]
-      border border-white/10
+bg-[#111318] border border-white/10
       text-white text-xs
       flex items-center gap-1.5
       cursor-pointer
-      hover:bg-white/5
       transition-all
       whitespace-nowrap
     "
@@ -243,14 +241,14 @@ export default function WalletInspectorModule({ instanceId }: Props) {
           w-[140px]
           max-h-[200px]
           overflow-y-auto
-          bg-[#0b1f1f]
-          border border-emerald-500/20
+    bg-[#111318] border border-white/10
+
           rounded-md
           shadow-lg
           animate-in fade-in slide-in-from-top-2 duration-200
 
           [&::-webkit-scrollbar]:w-1.5
-          [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+      [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
           [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -270,8 +268,7 @@ export default function WalletInspectorModule({ instanceId }: Props) {
               bg-transparent cursor-pointer
               text-white
               transition-colors
-              hover:bg-emerald-500/10
-              hover:text-emerald-400
+ hover:text-[#1A73E8]/65
             "
           >
             <div className="font-medium">{chain.name}</div>
@@ -316,13 +313,10 @@ export default function WalletInspectorModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+ [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         {error ? (

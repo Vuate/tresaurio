@@ -20,12 +20,12 @@ export default function Hero() {
       >
         <h1 className="text-3xl lg:text-4xl xl:text-[4rem] font-black leading-tight">
           Manage your treasury anywhere <br />
-          <span className="bg-gradient-to-br from-white to-[#19d8d0] bg-clip-text text-transparent">
-            with Treasurio
+         with <span className="text-[#1A73E8]/65">
+             Treasurio
           </span>
         </h1>
 
-        <p className="mx-auto mt-5 max-w-[520px] text-[16px] text-slate-300">
+        <p className="mx-auto mt-7 max-w-[520px] text-[19px] text-slate-300">
           A high-performance terminal that doesn&apos;t slow you down.
         </p>
 

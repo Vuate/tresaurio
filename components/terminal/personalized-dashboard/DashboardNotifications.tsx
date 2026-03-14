@@ -32,8 +32,8 @@ export default function DashboardNotifications() {
             hover:opacity-90
             ${
               n.type === "success"
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                : "bg-rose-500/10 border-rose-500/30 text-rose-300"
+                ? "bg-[#2B8FE0]/15 border-[#2B8FE0]/35 text-[#19D8D0]"
+                : "bg-[#2B8FE0]/15 border-[#2B8FE0]/35 text-[#19D8D0]"
             }
           `}
         >

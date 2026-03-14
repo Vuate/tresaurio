@@ -152,12 +152,14 @@ document.addEventListener("pointerdown", handleClickOutside);
     className="
       w-full
       flex items-center justify-between
-      bg-[#0b1f1f]
-      border border-emerald-500/20
-      rounded-none
+      bg-white/5
+      border border-white/10
+      rounded-md
       px-3 py-2
       text-white text-xs
-       cursor-pointer
+      cursor-pointer
+      hover:bg-white/8
+      transition-colors
     "
   >
     <span className="truncate">{selectedSymbol}</span>
@@ -179,16 +181,10 @@ document.addEventListener("pointerdown", handleClickOutside);
     className="
       absolute z-50 mt-1
       w-full
-      bg-[#0b1f1f]
-      border border-emerald-500/20
-      rounded-none
-      max-h-[min(72px,30vh)]
-      overflow-y-auto
+    bg-[#1E2025]
+border border-white/10
+      rounded-md
 
-      [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-      [&::-webkit-scrollbar-thumb]:rounded-full
-      [&::-webkit-scrollbar-track]:bg-transparent
     "
   >
     {SYMBOLS.map((s) => (
@@ -205,8 +201,8 @@ document.addEventListener("pointerdown", handleClickOutside);
             text-xs
             text-white
             transition-colors
-          hover:bg-emerald-500/10
-            hover:text-emerald-400
+          hover:text-[#1A73E8]/65
+
             cursor-pointer
           "
                 >
