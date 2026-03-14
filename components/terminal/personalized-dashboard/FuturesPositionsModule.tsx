@@ -884,13 +884,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         )}
       </div>
 
-      <AuthModal
-        open={showAuthModal}
-        mode={authMode}
-        onClose={() => setShowAuthModal(false)}
-        onChange={setAuthMode}
-      />
 
+      {/* Select Connection Modal */}
       <SelectConnectionModal
         open={showSelectModal}
         onClose={() => setShowSelectModal(false)}
@@ -902,9 +897,16 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           setShowSelectModal(false);
         }}
         selectedKeyId={selectedKeyId}
-        exchangeFilter={selectedExchange}
         title="Select Futures Connection"
       />
+
+      <AuthModal
+        open={showAuthModal}
+        mode={authMode}
+        onClose={() => setShowAuthModal(false)}
+        onChange={setAuthMode}
+      />
+
     </div>
   );
 }
