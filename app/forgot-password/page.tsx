@@ -44,9 +44,9 @@ export default function ForgotPasswordPage() {
           {success ? (
             <div className="text-center">
               {/* Success Icon */}
-              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center">
                 <svg
-                  className="w-8 h-8 text-green-400"
+                  className="w-8 h-8 text-[#1A73E8]/65"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -69,9 +69,9 @@ export default function ForgotPasswordPage() {
 
               <Link
                 href="/"
-                className="inline-block w-full bg-white/10 text-white rounded-lg py-3 font-medium hover:bg-white/20 transition"
+                className="inline-block w-full bg-[#1A73E8]/65 text-white rounded-lg py-3 font-medium transition"
               >
-                Back to Login
+                Back
               </Link>
             </div>
           ) : (
@@ -134,7 +134,7 @@ export default function ForgotPasswordPage() {
                   href="/"
                   className="block text-center text-sm text-gray-400 hover:text-white transition"
                 >
-                  Back to login
+                  Back
                 </Link>
               </form>
             </>

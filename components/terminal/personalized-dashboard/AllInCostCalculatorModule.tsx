@@ -360,12 +360,11 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             onClick={() => setTokenOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#0b1f1f]
-              border border-white/10
+bg-[#111318] border border-white/10
+
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
             "
@@ -393,15 +392,14 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
       w-[180px]
       max-h-[200px]
       overflow-y-auto
-      bg-[#0b1f1f]
-      border border-emerald-500/20
-      rounded
+bg-[#111318] border border-white/10
+
+      rounded-md
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-      [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
   >
@@ -418,8 +416,8 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
                     bg-transparent cursor-pointer
                     text-white
                     transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
+                hover:text-[#1A73E8]/65
+
                   "
                 >
                   {t.name} (${t.defaultPrice.toLocaleString()})
@@ -434,12 +432,11 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             onClick={() => setExchangeOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#0b1f1f]
-              border border-white/10
+  bg-[#111318] border border-white/10
+
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
             "
@@ -464,15 +461,14 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
       w-[120px]
       max-h-[160px]
       overflow-y-auto
-      bg-[#0b1f1f]
-      border border-emerald-500/20
-      rounded
+bg-[#111318] border border-white/10
+
+      rounded-md
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-      [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
   >
@@ -489,8 +485,8 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
                     bg-transparent cursor-pointer
                     text-white
                     transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
+              hover:text-[#1A73E8]/65
+
                   "
                 >
                   {ex.name}
@@ -529,13 +525,11 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-2">
@@ -596,15 +590,14 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
       absolute left-0 right-0 mt-1 z-50
       max-h-[200px]
       overflow-y-auto
-      bg-[#0b1f1f]
-      border border-emerald-500/20
+bg-[#111318] border border-white/10
+
       rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-      [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
   >
@@ -629,8 +622,8 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
                           bg-transparent cursor-pointer
                           text-white
                           transition-colors
-                          hover:bg-emerald-500/10
-                          hover:text-emerald-400
+                     hover:text-[#1A73E8]/65
+
                           leading-tight
                         "
                       >
@@ -648,7 +641,7 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setSide("long")}
-                className={`py-1.5 rounded-md text-xs transition-colors ${
+                className={`py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                   side === "long"
                     ? "bg-emerald-500 text-white"
                     : "bg-white/5 text-white/50 hover:bg-white/10"
@@ -658,7 +651,7 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
               </button>
               <button
                 onClick={() => setSide("short")}
-                className={`py-1.5 rounded-md text-xs transition-colors ${
+                className={`py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                   side === "short"
                     ? "bg-red-500 text-white"
                     : "bg-white/5 text-white/50 hover:bg-white/10"
@@ -732,15 +725,15 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
       absolute left-0 right-0 mt-1 z-50
       max-h-[200px]
       overflow-y-auto
-      bg-[#0b1f1f]
-      border border-emerald-500/20
+ bg-[#111318] border border-white/10
+
       rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-      [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-white/20
+       [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
   >
@@ -757,8 +750,8 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
                         bg-transparent cursor-pointer
                         text-white
                         transition-colors
-                        hover:bg-emerald-500/10
-                        hover:text-emerald-400
+                     hover:text-[#1A73E8]/65
+
                       "
                     >
                       {lev}x
@@ -776,7 +769,7 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setFeeType("maker")}
-                className={`py-1.5 rounded-md text-xs transition-colors ${
+                className={`py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                   feeType === "maker"
                     ? "bg-blue-500 text-white"
                     : "bg-white/5 text-white/50 hover:bg-white/10"
@@ -792,7 +785,7 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
               </button>
               <button
                 onClick={() => setFeeType("taker")}
-                className={`py-1.5 rounded-md text-xs transition-colors ${
+                className={`py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                   feeType === "taker"
                     ? "bg-blue-500 text-white"
                     : "bg-white/5 text-white/50 hover:bg-white/10"
@@ -1000,13 +993,11 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+              [&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
+scrollbar-thumb-white/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
@@ -1050,11 +1041,9 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
                         border transition-all duration-150
                         cursor-pointer
                         whitespace-nowrap
-                        bg-white/10 text-white border-white/10
-                        hover:bg-teal-500/15
-                        hover:border-teal-400/40
-                        hover:text-teal-400
-                        hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                      bg-white/10 text-white border-white/10
+                      hover:text-[#1A73E8]
+
                       "
                     >
                       {t.name}

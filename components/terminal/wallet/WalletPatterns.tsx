@@ -53,7 +53,7 @@ export default function WalletPatterns() {
           >
             <Icon
               icon={pattern.icon}
-              className="text-2xl sm:text-3xl lg:text-[32px] mb-2 sm:mb-3 text-teal-400 mx-auto"
+              className="text-2xl sm:text-3xl lg:text-[32px] mb-2 sm:mb-3 text-[#1A73E8]/75 mx-auto"
             />
             
             <div className="text-xs sm:text-sm font-semibold text-white">

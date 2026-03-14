@@ -12,11 +12,11 @@ export default function TradeHero() {
       </Head>
 
       <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 pb-5 sm:pb-7 lg:pb-9 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
-        <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-3 sm:mb-4 lg:mb-5 inline-block animate-float text-teal-400">
+        <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-3 sm:mb-4 lg:mb-5 inline-block animate-float text-[#1A73E8]/65">
           <Icon icon="mdi:briefcase-variant-outline" />
         </div>
 
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-2 sm:mb-3 lg:mb-4 text-teal-400">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-2 sm:mb-3 lg:mb-4 text-white">
           Trade & Portfolio Management
         </h1>
 
@@ -26,16 +26,16 @@ export default function TradeHero() {
         </p>
 
         <div className="flex gap-2 sm:gap-2.5 lg:gap-3 justify-center flex-wrap px-4">
-          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
+          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-white/5 border border-white/20 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-white">
             Spot & Futures
           </span>
-          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
+          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-white/5 border border-white/20 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-white">
             Multi-Exchange
           </span>
-          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
+          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-white/5 border border-white/20 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-white">
             PnL Tracking
           </span>
-          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-teal-500/10 border border-teal-500/30 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-teal-400">
+          <span className="px-2.5 sm:px-3 lg:px-3.5 xl:px-4 py-1 sm:py-1.5 lg:py-2 bg-white/5 border border-white/20 rounded-full text-[10px] sm:text-xs lg:text-sm font-semibold text-white">
             Risk Management
           </span>
         </div>

@@ -16,38 +16,38 @@ export default function Features() {
       >
         <h2 className="mb-[90px] text-center text-[60px] font-semibold">
           Why{" "}
-          <span className="bg-gradient-to-r from-[#19d8d0] to-[#238c7c] bg-clip-text text-transparent">
+          <span className="text-[#1A73E8]/65">
             Treasurio?
           </span>
         </h2>
 
-<div className="
-  grid
-  grid-cols-1
-  sm:grid-cols-2
-  lg:grid-cols-4
-  gap-8
-  xl:gap-12
-">       
+          <div className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-4
+            gap-8
+            xl:gap-12
+          ">       
 
           <div className="relative min-h-[340px] rounded-[28px] p-8
-lg:p-12 text-center transition-all duration-300">
+          lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10 blur-[0.5px]" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
             <div className="relative z-10">
-<div className="mb-8 flex justify-center">
-  <Icon
-    icon="mdi:chart-bar"
-className="
-  w-12 h-12
-  lg:w-14 lg:h-14
-  xl:w-16 xl:h-16
-  text-teal-400
-"  />
-</div>
+          <div className="mb-8 flex justify-center">
+            <Icon
+              icon="mdi:chart-bar"
+          className="
+            w-12 h-12
+            lg:w-14 lg:h-14
+            xl:w-16 xl:h-16
+          text-[#1A73E8]/65
+          "  />
+          </div>
               <h3 className="mb-4 text-lg
-lg:text-[22px] font-semibold text-white">
+          lg:text-[22px] font-semibold text-white">
                 Real-Time Analytics
               </h3>
               <p className="text-[15px] leading-relaxed text-slate-300">
@@ -58,22 +58,23 @@ lg:text-[22px] font-semibold text-white">
           </div>
 
           <div className="relative min-h-[340px] rounded-[28px] p-8
-lg:p-12 text-center transition-all duration-300">
+        lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
             <div className="relative z-10">
-<div className="mb-8 flex justify-center">
-  <Icon
-    icon="mdi:briefcase-variant"
-className="
-  w-12 h-12
-  lg:w-14 lg:h-14
-  xl:w-16 xl:h-16
-  text-teal-400
-"  />
-</div>              <h3 className="mb-4 text-lg
-lg:text-[22px] font-semibold text-white">
+          <div className="mb-8 flex justify-center">
+            <Icon
+              icon="mdi:briefcase-variant"
+          className="
+            w-12 h-12
+            lg:w-14 lg:h-14
+            xl:w-16 xl:h-16
+text-[#1A73E8]/65
+          "  />
+          </div>          
+              <h3 className="mb-4 text-lg
+          lg:text-[22px] font-semibold text-white">
                 Portfolio Management
               </h3>
               <p className="text-[15px] leading-relaxed text-slate-300">
@@ -84,22 +85,22 @@ lg:text-[22px] font-semibold text-white">
           </div>
 
           <div className="relative min-h-[340px] rounded-[28px] p-8
-lg:p-12 text-center transition-all duration-300">
+        lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
             <div className="relative z-10">
-<div className="mb-8 flex justify-center">
-  <Icon
-    icon="mdi:lightning-bolt"
-className="
-  w-12 h-12
-  lg:w-14 lg:h-14
-  xl:w-16 xl:h-16
-  text-teal-400
-"  />
-</div>              <h3 className="mb-4 text-lg
-lg:text-[22px] font-semibold text-white">
+          <div className="mb-8 flex justify-center">
+            <Icon
+              icon="mdi:lightning-bolt"
+          className="
+            w-12 h-12
+            lg:w-14 lg:h-14
+            xl:w-16 xl:h-16
+           text-[#1A73E8]/65
+          "  />
+          </div>              <h3 className="mb-4 text-lg
+          lg:text-[22px] font-semibold text-white">
                 Lightning Fast
               </h3>
               <p className="text-[15px] leading-relaxed text-slate-300">
@@ -110,23 +111,23 @@ lg:text-[22px] font-semibold text-white">
           </div>
 
           <div className="relative min-h-[340px] rounded-[28px] p-8
-lg:p-12 text-center transition-all duration-300">
+          lg:p-12 text-center transition-all duration-300">
             <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#19d8d0]/10 via-transparent to-[#238c7c]/10" />
             <div className="absolute inset-0 rounded-[28px] bg-[#041f20]/90" />
 
             <div className="relative z-10">
-<div className="mb-8 flex justify-center">
-  <Icon
-    icon="mdi:link-variant"
-className="
-  w-12 h-12
-  lg:w-14 lg:h-14
-  xl:w-16 xl:h-16
-  text-teal-400
-"  />
-</div>              
-<h3 className="mb-4 text-lg
-lg:text-[22px] font-semibold text-white">
+            <div className="mb-8 flex justify-center">
+              <Icon
+                icon="mdi:link-variant"
+            className="
+              w-12 h-12
+              lg:w-14 lg:h-14
+              xl:w-16 xl:h-16
+             text-[#1A73E8]/65
+            "  />
+            </div>              
+            <h3 className="mb-4 text-lg
+            lg:text-[22px] font-semibold text-white">
                 Multi-Exchange Connectivity
               </h3>
               <p className="text-[15px] leading-relaxed text-slate-300">

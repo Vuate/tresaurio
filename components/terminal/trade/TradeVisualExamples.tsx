@@ -32,7 +32,7 @@ export default function TradeVisualExamples() {
             <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
               Unrealized PnL
             </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-emerald-400">
+            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
               +$12,890
             </div>
             <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
@@ -100,7 +100,7 @@ export default function TradeVisualExamples() {
             <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
               Unrealized PnL
             </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-emerald-400">
+            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
               +$1,234
             </div>
             <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
@@ -112,7 +112,7 @@ export default function TradeVisualExamples() {
             <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
               Liquidation Risk
             </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-emerald-400">
+            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
               Low
             </div>
             <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">

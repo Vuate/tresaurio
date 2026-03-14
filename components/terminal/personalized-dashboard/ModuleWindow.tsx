@@ -68,6 +68,50 @@ useEffect(() => {
 }, [module.contentZoom]);
 
 const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+const [hoveredBtn, setHoveredBtn] = useState<string | null>(null);
+const closeButtonRef = useRef<HTMLButtonElement>(null);
+const wasTouchRef = useRef(false);
+
+useEffect(() => {
+  const onTouch = () => { wasTouchRef.current = true; };
+  window.addEventListener('touchstart', onTouch, { once: true });
+  return () => window.removeEventListener('touchstart', onTouch);
+}, []);
+
+useEffect(() => {
+  const btn = closeButtonRef.current;
+  if (!btn) return;
+  const onTouch = (e: TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+    removeModule(module.id);
+    useDashboardNotificationStore.getState().push({
+      type: "success",
+      title: "Module Removed",
+      description: `${module.title} removed from dashboard`,
+    });
+  };
+  btn.addEventListener('touchend', onTouch, { passive: false });
+  return () => btn.removeEventListener('touchend', onTouch);
+}, [module.id, module.title, removeModule]);
+
+// Returns inline styles for header buttons — hovered button scales up, others scale down and fade.
+const btnScale = (id: string) => ({
+  transform: (!wasTouchRef.current && hoveredBtn === id)
+    ? 'scale(1.80)'
+    : (!wasTouchRef.current && hoveredBtn !== null)
+      ? 'scale(0.7)'
+      : 'scale(1)',
+  opacity: (!wasTouchRef.current && hoveredBtn !== null && hoveredBtn !== id) ? 0.35 : 1,
+  filter: (!wasTouchRef.current && hoveredBtn === id) ? 'brightness(1.4)' : 'none',
+  transition: 'transform 0.18s ease, opacity 0.18s ease, filter 0.18s ease',
+  zIndex: (!wasTouchRef.current && hoveredBtn === id) ? 999 : 'auto',
+  position: 'relative' as const,
+});
+
+
 
 // Content zoom controls — clamp between 50% and 200%, then persist the new value to the store.
 const zoomIn = useCallback(() => {
@@ -108,20 +152,23 @@ useEffect(() => {
   };
   window.addEventListener("mousedown", close, true);
   window.addEventListener("wheel", close, true);
+    window.addEventListener("touchstart", close, true);
+
   return () => {
     window.removeEventListener("mousedown", close, true);
     window.removeEventListener("wheel", close, true);
+        window.removeEventListener("touchstart", close, true);
+
   };
 }, [contextMenu]);
 
-// Computes the minimum allowed module dimensions based on the current viewport size.
   const minSizes = useMemo(() => {
     const vw = typeof window !== 'undefined' ? window.innerWidth : 1024;
     const vh = typeof window !== 'undefined' ? window.innerHeight : 768;
     
     return {
-      width: vw < 768 ? 200 : vw < 1024 ? 250 : 300,
-      height: vh < 768 ? 150 : vh < 1024 ? 175 : 200,
+      width: 300,
+      height: 200,
     };
   }, []);
 
@@ -132,6 +179,184 @@ useEffect(() => {
     }, 16), // 60fps
     [updateModule]
   );
+
+// Touch drag handler — moves the module and auto-pans the canvas when dragged near screen edges.
+const onDragTouchStart = useCallback((e: React.TouchEvent) => {
+  if (isLocked || usePersonalizedDashboardStore.getState().uiBlocked) return;
+  if (e.touches.length !== 1) return;
+  const target = e.target as HTMLElement;
+  if (target.closest('button, input, textarea, select, [contenteditable]')) return;
+  e.stopPropagation();
+
+  // long press'i iptal et — drag başladı
+  if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }
+
+  setActiveModule(module.id);
+  setIsDraggingWindow(true);
+
+  const touch = e.touches[0];
+  const startX = touch.clientX;
+  const startY = touch.clientY;
+  const startModuleX = module.x;
+  const startModuleY = module.y;
+  let startPanX = panX;
+  let startPanY = panY;
+
+  let currentTouchX = touch.clientX;
+  let currentTouchY = touch.clientY;
+  let animationFrameId: number | null = null;
+  let isDragging = true;
+
+  const animate = () => {
+    if (!isDragging) return;
+    const store = usePersonalizedDashboardStore.getState();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight - topBarHeight - notesBarHeight;
+    const worldW = WORLD_WIDTH * zoom;
+    const worldH = WORLD_HEIGHT * zoom;
+    const canPanHorizontally = worldW > vw;
+    const canPanVertically = worldH > vh;
+    const maxPanX = 0; const minPanX = vw - worldW;
+    const maxPanY = 0; const minPanY = vh - worldH;
+    const mouseDeltaX = currentTouchX - startX;
+    const mouseDeltaY = currentTouchY - startY;
+    const totalPanDeltaX = store.panX - startPanX;
+    const totalPanDeltaY = store.panY - startPanY;
+    const EDGE_THRESHOLD = 30;
+    const canPanLeft = canPanHorizontally && store.panX < maxPanX;
+    const canPanRight = canPanHorizontally && store.panX > minPanX;
+    const canPanUp = canPanVertically && store.panY < maxPanY;
+    const canPanDown = canPanVertically && store.panY > minPanY;
+    const finalWorldDeltaX = (mouseDeltaX - totalPanDeltaX) / zoom;
+    const finalWorldDeltaY = (mouseDeltaY - totalPanDeltaY) / zoom;
+    let newX = Math.max(0, Math.min(WORLD_WIDTH - module.width, startModuleX + finalWorldDeltaX));
+    let newY = Math.max(0, Math.min(WORLD_HEIGHT - module.height, startModuleY + finalWorldDeltaY));
+    let panSpeedX = 0; let panSpeedY = 0;
+    if (currentTouchX < EDGE_THRESHOLD && newX > 0 && canPanLeft) panSpeedX = 10;
+    else if (currentTouchX > vw - EDGE_THRESHOLD && newX < WORLD_WIDTH - module.width && canPanRight) panSpeedX = -10;
+    if (currentTouchY < topBarHeight + EDGE_THRESHOLD && newY > 0 && canPanUp) panSpeedY = 10;
+    else if (currentTouchY > topBarHeight + vh - EDGE_THRESHOLD && newY < WORLD_HEIGHT - module.height && canPanDown) panSpeedY = -10;
+    if (panSpeedX !== 0 || panSpeedY !== 0) {
+      store.setPan(
+        Math.min(maxPanX, Math.max(minPanX, store.panX + panSpeedX)),
+        Math.min(maxPanY, Math.max(minPanY, store.panY + panSpeedY)),
+      );
+    }
+    updateModuleThrottled(module.id, { x: newX, y: newY });
+    animationFrameId = requestAnimationFrame(animate);
+  };
+
+  const onMove = (ev: TouchEvent) => {
+    ev.preventDefault();
+    if (ev.touches.length === 1) {
+      currentTouchX = ev.touches[0].clientX;
+      currentTouchY = ev.touches[0].clientY;
+    }
+  };
+
+  const onEnd = () => {
+    isDragging = false;
+    setIsDraggingWindow(false);
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    window.removeEventListener("touchmove", onMove);
+    window.removeEventListener("touchend", onEnd);
+  };
+
+  window.addEventListener("touchmove", onMove, { passive: false });
+  window.addEventListener("touchend", onEnd);
+  animationFrameId = requestAnimationFrame(animate);
+}, [module.id, module.x, module.y, module.width, module.height, panX, panY, zoom,
+  topBarHeight, notesBarHeight, setActiveModule, updateModuleThrottled, isLocked]);
+
+  // Touch resize handler for all four corners. Enforces min size and auto-pans near screen edges.
+  const onResizeTouchStart = useCallback((e: React.TouchEvent, dir: ResizeDir) => {
+  if (isLocked || usePersonalizedDashboardStore.getState().uiBlocked) return;
+  if (e.touches.length !== 1) return;
+  e.stopPropagation();
+
+  setActiveModule(module.id);
+
+  const touch = e.touches[0];
+  const startX = touch.clientX;
+  const startY = touch.clientY;
+  const startWidth = module.width;
+  const startHeight = module.height;
+  const startLeft = module.x;
+  const startTop = module.y;
+  let startPanX = panX;
+  let startPanY = panY;
+
+  let currentTouchX = touch.clientX;
+  let currentTouchY = touch.clientY;
+  let animationFrameId: number | null = null;
+  let isResizing = true;
+
+  const animate = () => {
+    if (!isResizing) return;
+    const store = usePersonalizedDashboardStore.getState();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight - topBarHeight - notesBarHeight;
+    const worldW = WORLD_WIDTH * zoom; const worldH = WORLD_HEIGHT * zoom;
+    const canPanHorizontally = worldW > vw; const canPanVertically = worldH > vh;
+    const maxPanX = 0; const minPanX = vw - worldW;
+    const maxPanY = 0; const minPanY = vh - worldH;
+    const panDeltaX = store.panX - startPanX;
+    const panDeltaY = store.panY - startPanY;
+    const worldDeltaX = (currentTouchX - startX - panDeltaX) / zoom;
+    const worldDeltaY = (currentTouchY - startY - panDeltaY) / zoom;
+    let newWidth = startWidth; let newHeight = startHeight;
+    let newX = startLeft; let newY = startTop;
+    if (dir.includes("right")) newWidth = startWidth + worldDeltaX;
+    if (dir.includes("left")) { newWidth = startWidth - worldDeltaX; newX = startLeft + worldDeltaX; }
+    if (dir.includes("bottom")) newHeight = startHeight + worldDeltaY;
+    if (dir.includes("top")) { newHeight = startHeight - worldDeltaY; newY = startTop + worldDeltaY; }
+    if (newWidth < minSizes.width) { newWidth = minSizes.width; if (dir.includes("left")) newX = startLeft + startWidth - minSizes.width; }
+    if (newHeight < minSizes.height) { newHeight = minSizes.height; if (dir.includes("top")) newY = startTop + startHeight - minSizes.height; }
+    if (newX < 0) { newWidth += newX; newX = 0; }
+    if (newY < 0) { newHeight += newY; newY = 0; }
+    if (newX + newWidth > WORLD_WIDTH) newWidth = WORLD_WIDTH - newX;
+    if (newY + newHeight > WORLD_HEIGHT) newHeight = WORLD_HEIGHT - newY;
+    const EDGE_THRESHOLD = 30;
+    const canPanLeft = canPanHorizontally && store.panX < maxPanX;
+    const canPanRight = canPanHorizontally && store.panX > minPanX;
+    const canPanUp = canPanVertically && store.panY < maxPanY;
+    const canPanDown = canPanVertically && store.panY > minPanY;
+    let panSpeedX = 0; let panSpeedY = 0;
+    if (currentTouchX < EDGE_THRESHOLD && canPanLeft) panSpeedX = 10;
+    else if (currentTouchX > vw - EDGE_THRESHOLD && canPanRight) panSpeedX = -10;
+    if (currentTouchY < topBarHeight + EDGE_THRESHOLD && canPanUp) panSpeedY = 10;
+    else if (currentTouchY > topBarHeight + vh - EDGE_THRESHOLD && canPanDown) panSpeedY = -10;
+    if (panSpeedX !== 0 || panSpeedY !== 0) {
+      store.setPan(
+        Math.min(maxPanX, Math.max(minPanX, store.panX + panSpeedX)),
+        Math.min(maxPanY, Math.max(minPanY, store.panY + panSpeedY)),
+      );
+    }
+    updateModuleThrottled(module.id, { x: newX, y: newY, width: newWidth, height: newHeight });
+    animationFrameId = requestAnimationFrame(animate);
+  };
+
+  const onMove = (ev: TouchEvent) => {
+    ev.preventDefault();
+    if (ev.touches.length === 1) {
+      currentTouchX = ev.touches[0].clientX;
+      currentTouchY = ev.touches[0].clientY;
+    }
+  };
+
+  const onEnd = () => {
+    isResizing = false;
+    if (animationFrameId !== null) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+    window.removeEventListener("touchmove", onMove);
+    window.removeEventListener("touchend", onEnd);
+  };
+
+  window.addEventListener("touchmove", onMove, { passive: false });
+  window.addEventListener("touchend", onEnd);
+  animationFrameId = requestAnimationFrame(animate);
+}, [module.id, module.width, module.height, module.x, module.y, panX, panY, zoom,
+  topBarHeight, notesBarHeight, minSizes, setActiveModule, updateModuleThrottled, isLocked]);
+  
 
 // Handles drag-to-move using a rAF animation loop. Auto-pans the viewport when dragged near screen edges.
 const onDragMouseDown = useCallback((e: React.MouseEvent) => {
@@ -439,15 +664,16 @@ const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
       data-module-window 
       className={`absolute rounded-2xl border backdrop-blur
         select-none overflow-hidden
-            ${isLocked 
-              ? "border-amber-500/30 bg-[#041F20]/98" 
-              : swapSourceId === module.id
-                ? "border-blue-400 bg-[#041F20]/95"
-                : sizeSourceId === module.id
-                  ? "border-yellow-400 bg-[#041F20]/95"
-                  : isActive 
-                    ? "border-teal-400 bg-[#041F20]/95"
-                    : "border-white/10 bg-[#041F20]/95"
+            ${isLocked
+      ? "border-amber-500/30 bg-[#111318]"
+      : swapSourceId === module.id
+        ? "border-[#1A73E8] bg-[#111318]"
+        : sizeSourceId === module.id
+          ? "border-yellow-400 bg-[#111318]"
+          : isActive
+            ? "border-[#1A73E8]/70 bg-[#111318]"
+            : "border-white/10 bg-[#111318]"
+
             }`}
       style={{
         left: module.x,
@@ -459,8 +685,31 @@ const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
         MozOsxFontSmoothing: "grayscale",
         transform: "translateZ(0)",
       }}
-     onMouseDown={() => { setActiveModule(module.id); }}
-    >
+onMouseDown={() => { setActiveModule(module.id); }}
+onTouchStart={(e) => {
+  setActiveModule(module.id);
+  if (e.touches.length !== 1) return;
+  const touch = e.touches[0];
+  longPressTimerRef.current = setTimeout(() => {
+    setContextMenu({ x: touch.clientX, y: touch.clientY });
+  }, 500);
+  (longPressTimerRef as any)._startX = touch.clientX;
+  (longPressTimerRef as any)._startY = touch.clientY;
+}}
+onTouchMove={(e) => {
+  if (!longPressTimerRef.current) return;
+  const touch = e.touches[0];
+  const dx = touch.clientX - (longPressTimerRef as any)._startX;
+  const dy = touch.clientY - (longPressTimerRef as any)._startY;
+  if (Math.hypot(dx, dy) > 10) {
+    clearTimeout(longPressTimerRef.current);
+    longPressTimerRef.current = null;
+  }
+}}
+onTouchEnd={() => { if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; } }}
+
+
+>
 
 <div
   data-module-header
@@ -470,32 +719,35 @@ const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
     }
   }}
   onMouseDown={onDragMouseDown}
+  onTouchStart={onDragTouchStart}
 className={`flex items-center justify-between px-4 py-2
   border-b border-white/10 ${isLocked ? "cursor-default" : "cursor-move"}`}
 >
 
 <div className="flex items-center gap-2 min-w-0 flex-1">
-<span className="w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.35)] flex-shrink-0" />
+<span className="w-2 h-2 rounded-full bg-[#1A73E8] shadow-[0_0_10px_rgba(26,115,232,0.35)] flex-shrink-0" />
   <div className="text-[12px] font-semibold text-white/90 truncate">
     {module.title}
   </div>
 </div>
 
 <div className="flex gap-2 items-center flex-shrink-0">
-    <button
-onClick={(e) => {
-      e.stopPropagation();
-      if (usePersonalizedDashboardStore.getState().uiBlocked) return;
-      toggleModuleLock(module.id);
-    }}
-
-    className={`h-6 w-6 rounded-md border transition-all cursor-pointer flex items-center justify-center
-      ${isLocked 
-        ? "bg-amber-500/20 border-amber-500/50 text-amber-400" 
-        : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
-      }`}
-    title={isLocked ? "Unlock Module" : "Lock Module"}
-  >
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+    toggleModuleLock(module.id);
+  }}
+  className={`h-6 w-6 rounded-md border cursor-pointer flex items-center justify-center
+    ${isLocked
+      ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
+      : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
+    }`}
+  style={btnScale('lock')}
+  onMouseEnter={() => setHoveredBtn('lock')}
+  onMouseLeave={() => setHoveredBtn(null)}
+  title={isLocked ? "Unlock Module" : "Lock Module"}
+>
     {isLocked ? (
       <Lock className="w-3 h-3" />
     ) : (
@@ -503,31 +755,40 @@ onClick={(e) => {
     )}
   </button>
 
-  <div className="flex items-center gap-1 bg-[#0b1f1f] border border-white/10 rounded-md px-2 py-1">
+  <div className="flex items-center gap-1 bg-white/[0.04] border border-white/10 rounded-md px-2 py-1">
 
 
-    <button
-      onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomOut(); }}
-      className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer"
-      title="Zoom Out"
-    >
+<button
+  onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomOut(); }}
+  className="p-1 hover:bg-white/10 rounded cursor-pointer"
+  style={btnScale('zoomout')}
+  onMouseEnter={() => setHoveredBtn('zoomout')}
+  onMouseLeave={() => setHoveredBtn(null)}
+  title="Zoom Out"
+>
       <ZoomOut className="w-3 h-3 text-white/60 hover:text-white" />
     </button>
     <span className="text-white/60 font-mono text-[9px] min-w-[2rem] text-center">
       {moduleZoom}%
     </span>
-    <button
-      onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomIn(); }}
-      className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer"
-      title="Zoom In"
-    >
+<button
+  onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomIn(); }}
+  className="p-1 hover:bg-white/10 rounded cursor-pointer"
+  style={btnScale('zoomin')}
+  onMouseEnter={() => setHoveredBtn('zoomin')}
+  onMouseLeave={() => setHoveredBtn(null)}
+  title="Zoom In"
+>
       <ZoomIn className="w-3 h-3 text-white/60 hover:text-white" />
     </button>
-    <button
-      onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; resetZoom(); }}
-      className="p-1 hover:bg-white/10 rounded transition-colors cursor-pointer ml-1 border-l border-white/10 pl-1.5"
-      title="Reset Zoom"
-    >
+<button
+  onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; resetZoom(); }}
+  className="p-1 hover:bg-white/10 rounded cursor-pointer ml-1 border-l border-white/10 pl-1.5"
+  style={btnScale('reset')}
+  onMouseEnter={() => setHoveredBtn('reset')}
+  onMouseLeave={() => setHoveredBtn(null)}
+  title="Reset Zoom"
+>
       <RotateCcw className="w-3 h-3 text-white/60 hover:text-white" />
     </button>
   </div>
@@ -540,29 +801,36 @@ onClick={(e) => {
     }}
 className="h-6 w-6 rounded-md border border-white/10 bg-white/5
   text-white/70 hover:bg-white/10 cursor-pointer flex items-center justify-center"
+style={btnScale('minimize')}
+onMouseEnter={() => setHoveredBtn('minimize')}
+onMouseLeave={() => setHoveredBtn(null)}
 title={module.minimized ? "Restore" : "Minimize"}
   >
     {module.minimized ? <Maximize2 className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
   </button>
 
-  <button
-    onClick={() => {
-      if (usePersonalizedDashboardStore.getState().uiBlocked) return;
-      removeModule(module.id);
-      useDashboardNotificationStore.getState().push({
-        type: "success",
-        title: "Module Removed",
-        description: `${module.title} removed from dashboard`,
-      });
-    }}
+<button
+  ref={closeButtonRef}
+  onClick={() => {
+    if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+    removeModule(module.id);
+    useDashboardNotificationStore.getState().push({
+      type: "success",
+      title: "Module Removed",
+      description: `${module.title} removed from dashboard`,
+    });
+  }}
+
 className="h-6 w-6 rounded-md border border-white/10 bg-white/5
   hover:bg-red-500/80 cursor-pointer flex items-center justify-center"
-  title="Remove Module"
+style={btnScale('close')}
+onMouseEnter={() => setHoveredBtn('close')}
+onMouseLeave={() => setHoveredBtn(null)}
+title="Remove Module"
   >
     <X className="w-3 h-3 text-white/70" />
   </button>
 </div>
-
           
         </div>
       </div>
@@ -608,12 +876,11 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
 
               [&::-webkit-scrollbar]:w-2
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+[&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/65
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-              scrollbar-thumb-teal-400/40
+              scrollbar-thumb-[#1A73E8]/30
               scrollbar-track-transparent
             "
             style={{
@@ -629,27 +896,32 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
         </div>
       )}
 
+ 
       {!module.minimized && !isLocked && (
         <>
           <div
             data-module-resize
             onMouseDown={(e) => onResizeMouseDown(e, "top-left")}
-            className="absolute top-0 left-0 w-6 h-6 cursor-nwse-resize"
+            onTouchStart={(e) => onResizeTouchStart(e, "top-left")}
+            className="absolute top-0 left-0 w-6 h-6 md:w-6 md:h-6 cursor-nwse-resize"
           />
           <div
             data-module-resize
             onMouseDown={(e) => onResizeMouseDown(e, "top-right")}
-            className="absolute top-0 right-0 w-6 h-6 cursor-nesw-resize"
+            onTouchStart={(e) => onResizeTouchStart(e, "top-right")}
+            className="absolute top-0 right-0 w-6 h-6 md:w-6 md:h-6 cursor-nesw-resize"
           />
           <div
             data-module-resize
             onMouseDown={(e) => onResizeMouseDown(e, "bottom-left")}
-            className="absolute bottom-0 left-0 w-6 h-6 cursor-nesw-resize"
+            onTouchStart={(e) => onResizeTouchStart(e, "bottom-left")}
+            className="absolute bottom-0 left-0 w-6 h-6 md:w-6 md:h-6 cursor-nesw-resize"
           />
           <div
             data-module-resize
             onMouseDown={(e) => onResizeMouseDown(e, "bottom-right")}
-            className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize"
+            onTouchStart={(e) => onResizeTouchStart(e, "bottom-right")}
+            className="absolute bottom-0 right-0 w-6 h-6 md:w-6 md:h-6 cursor-nwse-resize"
           />
         </>
       )}
@@ -663,7 +935,7 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
             left: Math.max(8, Math.min(contextMenu.x, window.innerWidth - 160 - 8)),
             zIndex: 99999,
           }}
-          className="bg-[#041F20] border border-white/10 rounded-xl shadow-xl p-1.5 flex flex-col gap-1 min-w-[160px]"
+          className="bg-[#0C0E12] border border-white/10 rounded-xl shadow-xl p-1.5 flex flex-col gap-1 min-w-[160px]"
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
         >
@@ -678,7 +950,7 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
             }}
             className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer
               ${swapSourceId === module.id
-                ? "bg-teal-400/25 text-teal-300"
+                ? "bg-[#1A73E8]/20 text-[#1A73E8]"
                 : "text-white/70 hover:bg-white/10"
               }`}
           >
@@ -720,7 +992,7 @@ className="h-6 w-6 rounded-md border border-white/10 bg-white/5
             }}
             className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer
               ${sizeSourceId === module.id
-                ? "bg-teal-400/25 text-teal-300"
+                ? "bg-[#1A73E8]/20 text-[#1A73E8]"
                 : "text-white/70 hover:bg-white/10"
               }`}
           >

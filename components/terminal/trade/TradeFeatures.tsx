@@ -14,7 +14,8 @@ export default function TradeFeatures() {
 
       <div className="features-grid grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
         {/* CARD 1 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1 hover:bg-white/[0.05]">          <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-teal-400">
+<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">      
+    <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
             <Icon icon="mdi:briefcase-variant-outline" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -27,7 +28,7 @@ export default function TradeFeatures() {
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
             [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
+            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
             <li>Multi-exchange support</li>
@@ -38,7 +39,8 @@ export default function TradeFeatures() {
         </div>
 
         {/* CARD 2 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1 hover:bg-white/[0.05]">          <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-teal-400">
+<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">        
+  <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
             <Icon icon="mdi:flash-outline" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -51,7 +53,7 @@ export default function TradeFeatures() {
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
             [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
+            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
             <li>Long/Short position tracking</li>
@@ -62,7 +64,8 @@ export default function TradeFeatures() {
         </div>
 
         {/* CARD 3 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1 hover:bg-white/[0.05]">          <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-teal-400">
+<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">     
+     <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
             <Icon icon="mdi:cash-multiple" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -75,7 +78,7 @@ export default function TradeFeatures() {
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
             [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
+            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
             <li>Realized PnL breakdown</li>
@@ -86,7 +89,8 @@ export default function TradeFeatures() {
         </div>
 
         {/* CARD 4 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1 hover:bg-white/[0.05]">          <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-teal-400">
+<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">    
+      <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
             <Icon icon="mdi:target-account" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -99,7 +103,7 @@ export default function TradeFeatures() {
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
             [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
+            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
             <li>Automatic DCA calculation</li>
@@ -110,7 +114,8 @@ export default function TradeFeatures() {
         </div>
 
         {/* CARD 5 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1 hover:bg-white/[0.05]">          <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-teal-400">
+<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">      
+    <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
             <Icon icon="mdi:shield-alert-outline" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -123,7 +128,7 @@ export default function TradeFeatures() {
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
             [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
+            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
             <li>Risk level scoring</li>
@@ -134,7 +139,8 @@ export default function TradeFeatures() {
         </div>
 
         {/* CARD 6 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1 hover:bg-white/[0.05]">          <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-teal-400">
+<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">       
+   <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
             <Icon icon="mdi:chart-line-variant" />
           </span>
           <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -147,7 +153,7 @@ export default function TradeFeatures() {
           <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
             [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
             [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-emerald-400
+            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
             [&>li]:before:font-bold [&>li]:before:inline-block
             [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
             <li>Win / Loss ratio</li>

@@ -65,16 +65,23 @@ export default function SidebarPanel() {
       }
     };
 
-    const timer = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleKeyDown);
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+const handleTouchOutside = (e: TouchEvent) => {
+  if (e.touches.length > 1) return;
+  const target = e.target as Node;
+  if (sidebarRef.current?.contains(target)) return;
+  toggleSidebar();
+};
+const timer = setTimeout(() => {
+  document.addEventListener("mousedown", handleClickOutside);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("touchstart", handleTouchOutside);
+}, 100);
+return () => {
+  clearTimeout(timer);
+  document.removeEventListener("mousedown", handleClickOutside);
+  document.removeEventListener("keydown", handleKeyDown);
+  document.removeEventListener("touchstart", handleTouchOutside);
+};
   }, [sidebarOpen, toggleSidebar]);
 
   if (!sidebarOpen) return null;
@@ -88,14 +95,15 @@ export default function SidebarPanel() {
         top: topBarHeight + 16,
         maxHeight: availableHeight
       }}
-      className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] overflow-hidden bg-[#041F20]/95 backdrop-blur border border-white/10 rounded-xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] cursor-default"
+className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#0C0E12] border border-white/[0.06] rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
     >
-      <div 
+
+      <div
         ref={headerRef}
-        className="flex items-center justify-between px-4 py-4 border-b border-white/10 bg-[#041F20]/95"
+className="flex items-center justify-between px-3 py-3 border-b border-white/[0.06] select-none bg-[#0C0E12] relative z-10"
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm xl:text-[15px] 2xl:text-base font-bold text-white">Sidebar</span>
+<div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">Sidebar</div>
         </div>
       </div>
 
@@ -103,7 +111,7 @@ export default function SidebarPanel() {
   style={{
     maxHeight: `calc(${availableHeight}px - ${headerHeight}px)`,
   }}
-  className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-teal-400/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70 scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent"
+className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-white/40 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
   onWheel={(e) => {e.stopPropagation();}}
 >
         <div className="space-y-1">
@@ -170,7 +178,7 @@ export default function SidebarPanel() {
 function SidebarSection({ title, children }: { title: string; children: React.ReactNode; }) {
   return (
     <div className="space-y-2">
-      <div className="px-2 text-[10px] xl:text-[10.5px] 2xl:text-[11px] tracking-widest font-bold text-white/40">
+      <div className="px-1 py-1 text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/50 font-bold tracking-wider">
         {title}
       </div>
       <div className="space-y-1">{children}</div>
@@ -180,11 +188,13 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
 
 function SidebarItem({ title, onClick, active }: { title: string; onClick: () => void; active?: boolean; }) {
   return (
-    <button
-      onClick={onClick}
-      className={`w-full text-left rounded-lg px-3 py-2 text-[13px] xl:text-[13.5px] 2xl:text-sm transition border cursor-pointer ${active ? "bg-teal-400/15 border-teal-400/40 text-teal-300" : "bg-white/5 border-white/10 text-white/80 hover:bg-teal-400/10"}`}
-    >
-      {title}
-    </button>
+<button
+  onClick={onClick}
+  className={`w-full text-left rounded-lg px-3 py-2.5 text-[13px] xl:text-[13.5px] 2xl:text-sm transition border cursor-pointer ${active ? "bg-[#1A73E8]/15 border-[#1A73E8]/35 text-white" : "bg-white/[0.03] border-white/[0.06] text-white hover:bg-[#1A73E8]/10 hover:border-[#1A73E8]/25"
+  }`}
+>
+  {title}
+</button>
+
   );
 }

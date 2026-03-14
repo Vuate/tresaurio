@@ -60,7 +60,7 @@ export default function ReportingFeatures() {
             <div className="mb-3 sm:mb-4 lg:mb-5 flex justify-center">
               <Icon
                 icon={feature.icon}
-                className="text-3xl sm:text-4xl lg:text-[44px] text-teal-400"
+                className="text-3xl sm:text-4xl lg:text-[44px] text-[#1A73E8]/65"
               />
             </div>
             

@@ -28,7 +28,7 @@ export default function FreeTierBanner() {
                 rounded-xl xl:rounded-2xl 2xl:rounded-2xl
                 text-sm xl:text-[15px] 2xl:text-base
                 font-semibold text-white
-                bg-gradient-to-br from-[#1FA2FF] via-[#007ADF] to-[#0052D4]
+                bg-gradient-to-br bg-[#1A73E8]
                 transition-all duration-300
                 hover:scale-[1.01]
                 active:scale-100

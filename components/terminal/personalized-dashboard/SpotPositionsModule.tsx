@@ -54,22 +54,6 @@ const ALL_EXCHANGES = [
   "hyperliquid",
 ];
 
-//  Custom Hook: Window Size Check
-function useWindowSizeCheck() {
-  const [isTooSmall, setIsTooSmall] = useState(false);
-
-  useEffect(() => {
-    const checkSize = () => {
-      setIsTooSmall(window.innerWidth < 400 || window.innerHeight < 300);
-    };
-
-    checkSize();
-    window.addEventListener("resize", checkSize);
-    return () => window.removeEventListener("resize", checkSize);
-  }, []);
-
-  return isTooSmall;
-}
 
 // Smart dollar formatter: $193 for large, $0.26 for small, $0.0012 for tiny
 function formatUSD(amount: number): string {
@@ -87,7 +71,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
   const prices = usePriceStore((s) => s.prices);
   const { data: session } = useSession();
 
-  const windowTooSmall = useWindowSizeCheck();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
@@ -551,22 +534,6 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     return (price * qty).toFixed(2);
   }, [formData.entryPrice, formData.quantity]);
 
-  if (windowTooSmall) {
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-[#0a0e1a] rounded-lg p-4">
-        <div className="text-center space-y-2">
-          <div className="text-white/90 font-semibold text-sm">
-            Window Too Small
-          </div>
-          <div className="text-white/50 text-xs">
-            Minimum size: 400x300px
-            <br />
-            Please resize your window
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -586,13 +553,12 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           <button
             onClick={() => setExchangeOpen((v) => !v)}
             className="
-              h-7 px-3 rounded-none
-              bg-[#0b1f1f]
+              h-7 px-3 rounded-md
+             bg-[#111318]
               border border-white/10
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
             "
@@ -622,18 +588,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       className={`
         absolute mt-1 z-50
         w-[120px]
-        max-h-[160px]
-        overflow-y-auto
-        bg-[#0b1f1f]
-        border border-emerald-500/20
-        rounded-none
+    bg-[#111318] border border-white/10
+        rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
-
-        [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-        [&::-webkit-scrollbar-thumb]:rounded-full
-        [&::-webkit-scrollbar-track]:bg-transparent
 
         ${shouldOpenLeft ? 'right-0' : 'left-0'}
       `}
@@ -651,8 +609,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             bg-transparent cursor-pointer
             text-white
             transition-colors
-            hover:bg-emerald-500/10
-            hover:text-emerald-400
+      hover:text-[#1A73E8]/65
             flex items-center justify-between
           "
         >
@@ -714,7 +671,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             <button
               onClick={() => deleteExchangeKey(selectedExchange)}
               className="
-                h-7 px-2 rounded-none
+                h-7 px-2 rounded-md
                 bg-red-500/10 border border-red-500/20
                 text-red-400 text-xs
                 hover:bg-red-500/20
@@ -737,7 +694,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               setShowApiKeyModal(true);
             }}
             className="
-              h-7 px-3 rounded-none
+              h-7 px-3 rounded-md
               bg-blue-500/20 border border-blue-500/30
               text-blue-400 text-xs
               hover:bg-blue-500/30
@@ -845,13 +802,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+ [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         {spotPositions.length === 0 ? (
@@ -1077,13 +1031,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-              [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+ [&::-webkit-scrollbar-thumb]:bg-white/20              [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
+scrollbar-thumb-white/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
@@ -1151,8 +1102,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
                         bg-transparent
                         text-white
                         transition-colors
-                        hover:bg-emerald-500/10
-                        hover:text-emerald-400
+                 hover:text-[#1A73E8]/65
                       "
                         >
                           {ex.toUpperCase()}
@@ -1346,13 +1296,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-              [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+ [&::-webkit-scrollbar-thumb]:bg-white/20              [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
+scrollbar-thumb-white/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
@@ -1423,8 +1370,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               bg-transparent
               text-white
               transition-colors
-               hover:bg-emerald-500/10
-              hover:text-emerald-400
+     hover:text-[#1A73E8]/65
             "
                         >
                           {ex.toUpperCase()}

@@ -1,10 +1,10 @@
 const metrics = [
-  { label: "Total Portfolio", value: "$124,567", color: "text-teal-400" },
-  { label: "24h Change", value: "+$3,245", color: "text-green-500" },
-  { label: "Unrealized PnL", value: "+$12,890", color: "text-teal-400" },
-  { label: "Total Fees (24h)", value: "$89", color: "text-teal-400" },
-  { label: "Best Performer", value: "SOL +12.4%", color: "text-teal-400" },
-  { label: "Market Sentiment", value: "Bullish", color: "text-green-500" },
+  { label: "Total Portfolio", value: "$124,567", color: "text-white" },
+  { label: "24h Change", value: "+$3,245", color: "text-white" },
+  { label: "Unrealized PnL", value: "+$12,890", color: "text-white" },
+  { label: "Total Fees (24h)", value: "$89", color: "text-white" },
+  { label: "Best Performer", value: "SOL +12.4%", color: "text-white" },
+  { label: "Market Sentiment", value: "Bullish", color: "text-white" },
 ];
 
 export default function ReportingExample() {
@@ -19,7 +19,11 @@ export default function ReportingExample() {
         </p>
       </div>
 
-      <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
+<div className="relative bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
+  <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-white rounded-tl-xl sm:rounded-tl-2xl lg:rounded-tl-3xl" />
+  <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-white rounded-tr-xl sm:rounded-tr-2xl lg:rounded-tr-3xl" />
+  <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-white rounded-bl-xl sm:rounded-bl-2xl lg:rounded-bl-3xl" />
+  <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-white rounded-br-xl sm:rounded-br-2xl lg:rounded-br-3xl" />
         <div className="bg-[#041F20]/95 rounded-lg sm:rounded-xl p-4 sm:p-5 lg:p-6 xl:p-8 border border-white/10">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-5 lg:mb-6 pb-3 sm:pb-4 border-b border-white/10 gap-2 sm:gap-0">
             <div>
@@ -46,7 +50,7 @@ export default function ReportingExample() {
             ))}
           </div>
 
-          <div className="mt-4 sm:mt-5 lg:mt-6 p-3 sm:p-4 bg-teal-500/10 rounded-lg border-l-4 border-teal-400">
+          <div className="mt-4 sm:mt-5 lg:mt-6 p-3 sm:p-4 bg-teal-900/10 rounded-lg border-l-4 border-[#1A73E8]">
             <div className="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1">AI INSIGHT</div>
             <div className="text-xs sm:text-sm text-white">
               Portfolio showing strong momentum. SOL accumulation detected.

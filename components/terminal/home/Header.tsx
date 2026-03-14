@@ -40,8 +40,7 @@ export default function Header() {
       <div className="flex justify-between items-end relative z-10">
         <div className="space-y-1.5 xl:space-y-2">
 <h1
-  className="text-6xl xl:text-7xl 2xl:text-8xl font-extrabold bg-gradient-to-r from-white via-[#19D8D0] to-[#238c7c]
-    bg-clip-text text-transparent translate-y-24 xl:translate-y-28 2xl:translate-y-32"
+  className="text-6xl xl:text-7xl 2xl:text-8xl font-extrabold text-white/90 translate-y-24 xl:translate-y-28 2xl:translate-y-32"
 >
   Treasurio
 </h1>

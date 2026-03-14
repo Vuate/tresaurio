@@ -40,22 +40,6 @@ type PriceData = {
   lastUpdate: number;
 };
 
-// 🎯 Custom Hook: Window Size Check
-function useWindowSizeCheck() {
-  const [isTooSmall, setIsTooSmall] = useState(false);
-
-  useEffect(() => {
-    const checkSize = () => {
-      setIsTooSmall(window.innerWidth < 400 || window.innerHeight < 300);
-    };
-
-    checkSize();
-    window.addEventListener("resize", checkSize);
-    return () => window.removeEventListener("resize", checkSize);
-  }, []);
-
-  return isTooSmall;
-}
 
 export default function LivePricesModule({
   instanceId,
@@ -64,7 +48,6 @@ export default function LivePricesModule({
   const exchangeStorageKey = `live-prices-${marketType}-${instanceId}-exchange`;
   const watchlistStorageKey = `live-prices-${marketType}-${instanceId}-watchlist`;
 
-  const windowTooSmall = useWindowSizeCheck();
 
   const [exchange, setExchange] = useState(() => {
     if (typeof window !== "undefined") {
@@ -232,22 +215,7 @@ export default function LivePricesModule({
       ? POPULAR_QUOTE_ASSETS_SPOT
       : POPULAR_QUOTE_ASSETS_FUTURES;
 
-  if (windowTooSmall) {
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-[#0a0e1a] rounded-lg p-4">
-        <div className="text-center space-y-2">
-          <div className="text-white/90 font-semibold text-sm">
-            Window Too Small
-          </div>
-          <div className="text-white/50 text-xs">
-            Minimum size: 400x300px
-            <br />
-            Please resize your window
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   if (!isMounted) {
     return (
@@ -293,12 +261,11 @@ onClick={(e) => {
 }}
             className="
               h-7 px-3 rounded-md
-              bg-[#0b1f1f]
+             bg-[#111318] 
               border border-white/10
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
             "
@@ -323,14 +290,13 @@ onClick={(e) => {
                 w-[120px]
                 max-h-[160px]
                 overflow-y-auto
-                bg-[#0b1f1f]
-                border border-emerald-500/20
+              bg-[#111318] border border-white/10
                 rounded-md
                 shadow-lg
                 animate-in fade-in slide-in-from-top-2 duration-200
 
                 [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+              [&::-webkit-scrollbar-thumb]:bg-white/20
                 [&::-webkit-scrollbar-thumb]:rounded-full
                 [&::-webkit-scrollbar-track]:bg-transparent
               `}
@@ -348,8 +314,7 @@ onClick={(e) => {
                     bg-transparent cursor-pointer
                     text-white
                     transition-colors
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-400
+               hover:text-[#1A73E8]/65
                   "
                 >
                   {ex.name}
@@ -376,13 +341,11 @@ onClick={(e) => {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+    [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-2">
@@ -512,13 +475,11 @@ onClick={(e) => {
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+             [&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
+scrollbar-thumb-white/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
@@ -584,11 +545,9 @@ onClick={(e) => {
                           baseAsset === asset
                             ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
                             : `
-                                bg-white/10 text-white border-white/10
-                                hover:bg-teal-500/15
-                                hover:border-teal-400/40
-                                hover:text-teal-400
-                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                    bg-white/10 text-white border-white/10
+                    hover:text-[#1A73E8]
+
                               `
                         }
                       `}
@@ -617,11 +576,9 @@ onClick={(e) => {
                           quoteAsset === asset
                             ? "bg-emerald-500/30 text-emerald-300 border-emerald-500/50"
                             : `
-                                bg-white/10 text-white border-white/10
-                                hover:bg-teal-500/15
-                                hover:border-teal-400/40
-                                hover:text-teal-400
-                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                  bg-white/10 text-white border-white/10
+                hover:text-[#1A73E8]
+
                               `
                         }
                       `}

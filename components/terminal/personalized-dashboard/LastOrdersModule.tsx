@@ -112,15 +112,13 @@ export default function LastOrdersModule({ instanceId }: Props) {
   <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
     <button
       onClick={refresh}
-      className="text-white/50 hover:text-white transition-colors cursor-pointer p-1"
-      title="Refresh"
+className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-pointer p-1"      title="Refresh"
     >
       <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
     </button>
     <button
       onClick={() => setShowSettings(!showSettings)}
-      className="text-white/50 hover:text-white transition-colors cursor-pointer p-1"
-      title="Settings"
+className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-pointer p-1"      title="Settings"
     >
       <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
     </button>
@@ -128,7 +126,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
 </div>
 
       {showSettings && (
-        <div className="bg-white/5 border border-white/10 rounded-lg p-2 sm:p-2.5 space-y-2 sm:space-y-2.5 flex-shrink-0">
+        <div className="bg-[#111318] border border-white/[0.06] rounded-lg p-2 sm:p-2.5 space-y-2 sm:space-y-2.5 flex-shrink-0">
           {/* Market Type Dropdown */}
           <div ref={marketTypeRef} className="relative">
             <label className="block text-white/60 mb-1 text-[10px] sm:text-xs font-medium">
@@ -136,7 +134,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
             </label>
             <button
               onClick={() => setMarketTypeOpen(!marketTypeOpen)}
-              className="w-full h-7 px-2.5 rounded-lg bg-[#0b1f1f] border border-emerald-500/20 text-white text-[10px] sm:text-xs flex items-center justify-between gap-1.5 cursor-pointer hover:bg-white/5 transition-all"
+              className="w-full h-7 px-2.5 rounded-lg  bg-[#111318] border border-white/[0.06] text-white text-[10px] sm:text-xs flex items-center justify-between gap-1.5 cursor-pointer hover:bg-white/5 transition-all"
             >
               <span className="truncate">
                 {marketTypeOptions.find(o => o.value === settings.filterType)?.label}
@@ -158,10 +156,10 @@ export default function LastOrdersModule({ instanceId }: Props) {
                 <div
                   className={`
                    absolute z-[999] w-full
-                 bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl overflow-hidden
+                  bg-[#111318] border border-white/[0.06] rounded-lg shadow-xl overflow-hidden
                    animate-in fade-in duration-200
-                    [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-                    [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-white/20
+                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-transparent
                     ${shouldOpenLeft ? 'right-0' : 'left-0'}
                     ${shouldOpenUp ? 'bottom-full mb-1' : 'top-full mt-1'}
@@ -174,7 +172,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
                         updateSettings({ filterType: opt.value as any });
                         setMarketTypeOpen(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-[10px] sm:text-xs bg-transparent cursor-pointer text-white transition-colors hover:bg-emerald-500/10 hover:text-emerald-400"
+                      className="w-full px-3 py-2 text-left text-[10px] sm:text-xs bg-transparent cursor-pointer text-white transition-colors hover:text-[#1A73E8]/65"
                     >
                       {opt.label}
                     </button>
@@ -191,7 +189,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
             </label>
             <button
               onClick={() => setOrderSideOpen(!orderSideOpen)}
-              className="w-full h-7 px-2.5 rounded-lg bg-[#0b1f1f] border border-emerald-500/20 text-white text-[10px] sm:text-xs flex items-center justify-between gap-1.5 cursor-pointer hover:bg-white/5 transition-all"
+              className="w-full h-7 px-2.5 rounded-lg  bg-[#111318] border border-white/[0.06] text-white text-[10px] sm:text-xs flex items-center justify-between gap-1.5 cursor-pointer hover:bg-white/5 transition-all"
             >
               <span className="truncate">
                 {orderSideOptions.find(o => o.value === settings.filterSide)?.label}
@@ -213,9 +211,9 @@ export default function LastOrdersModule({ instanceId }: Props) {
                 <div
                   className={`
                    absolute z-[999] w-full
-               bg-[#0b1f1f] border border-emerald-500/20 rounded-lg shadow-xl overflow-hidden
+                bg-[#111318] border border-white/[0.06] rounded-lg shadow-xl overflow-hidden
                  animate-in fade-in duration-200
-                    [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+                    [&::-webkit-scrollbar-thumb]:bg-white/20
                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-transparent
                     ${shouldOpenLeft ? 'right-0' : 'left-0'}
@@ -229,7 +227,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
                         updateSettings({ filterSide: opt.value as any });
                         setOrderSideOpen(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-[10px] sm:text-xs bg-transparent cursor-pointer text-white transition-colors hover:bg-emerald-500/10 hover:text-emerald-400"
+                      className="w-full px-3 py-2 text-left text-[10px] sm:text-xs bg-transparent cursor-pointer text-white transition-colors hover:text-[#1A73E8]/65"
                     >
                       {opt.label}
                     </button>
@@ -266,13 +264,12 @@ export default function LastOrdersModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+   [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+         [&::-webkit-scrollbar-thumb:hover]:bg-white/40
 
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         {error && (

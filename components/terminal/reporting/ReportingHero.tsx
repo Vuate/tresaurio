@@ -18,11 +18,11 @@ export default function ReportingHero() {
       </Head>
 
       <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 pb-5 sm:pb-7 lg:pb-9 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
-        <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-3 sm:mb-4 lg:mb-5 inline-block animate-float text-teal-400">
+        <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-3 sm:mb-4 lg:mb-5 inline-block animate-float text-[#1A73E8]/65">
           <Icon icon="mdi:file-chart-outline" />
         </div>
 
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-2 sm:mb-3 lg:mb-4 text-teal-400">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-2 sm:mb-3 lg:mb-4 text-white">
           Reporting Engine
         </h1>
 
@@ -34,7 +34,7 @@ export default function ReportingHero() {
         <div className="flex flex-col md:flex-row gap-6 sm:gap-8 lg:gap-10 xl:gap-12 justify-center">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-teal-400 mb-1 sm:mb-1.5 lg:mb-2">
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-1 sm:mb-1.5 lg:mb-2">
                 {stat.value}
               </div>
               <div className="text-xs sm:text-sm text-gray-400">

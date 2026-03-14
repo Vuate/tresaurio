@@ -15,7 +15,7 @@ export default function Stats() {
         "
       >
         <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/5 to-white/2 p-12 text-center backdrop-blur-md">
-          <h3 className="mb-3 text-[48px] font-extrabold text-[#19d8d0]">
+          <h3 className="mb-3 text-[48px] font-extrabold text-white">
             15M+
           </h3>
           <p className="text-base text-gray-200 opacity-90">
@@ -24,7 +24,7 @@ export default function Stats() {
         </div>
 
         <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/5 to-white/2 p-12 text-center backdrop-blur-md">
-          <h3 className="mb-3 text-[48px] font-extrabold text-[#19d8d0]">
+          <h3 className="mb-3 text-[48px] font-extrabold text-white">
             25+
           </h3>
           <p className="text-base text-gray-200 opacity-90">
@@ -33,7 +33,7 @@ export default function Stats() {
         </div>
 
         <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/5 to-white/2 p-12 text-center backdrop-blur-md">
-          <h3 className="mb-3 text-[48px] font-extrabold text-[#19d8d0]">
+          <h3 className="mb-3 text-[48px] font-extrabold text-white">
             250+
           </h3>
           <p className="text-base text-gray-200 opacity-90">
@@ -42,7 +42,7 @@ export default function Stats() {
         </div>
 
         <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/5 to-white/2 p-12 text-center backdrop-blur-md">
-          <h3 className="mb-3 text-[48px] font-extrabold text-[#19d8d0]">
+          <h3 className="mb-3 text-[48px] font-extrabold text-white">
             99.9%
           </h3>
           <p className="text-base text-gray-200 opacity-90">

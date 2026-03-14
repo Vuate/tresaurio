@@ -96,10 +96,10 @@ export default function MarketIntelligenceFeatures() {
           >
             <Icon
               icon={feature.icon}
-              className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl mb-2 sm:mb-3 lg:mb-4 text-teal-400"
+              className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl mb-2 sm:mb-3 lg:mb-4 text-[#1A73E8]/65"
             />
 
-            <h3 className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold mb-2 sm:mb-3 text-teal-400">
+            <h3 className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold mb-2 sm:mb-3 text-white">
               {feature.title}
             </h3>
 
@@ -111,7 +111,7 @@ export default function MarketIntelligenceFeatures() {
               {feature.items.map((item, itemIndex) => (
                 <li
                   key={itemIndex}
-                  className="text-xs sm:text-sm lg:text-base text-gray-400 pl-4 sm:pl-5 lg:pl-6 relative before:content-['✓'] before:absolute before:left-0 before:text-green-500 before:font-bold before:inline-block before:w-3 sm:before:w-4 lg:before:w-5 before:text-center"
+                  className="text-xs sm:text-sm lg:text-base text-gray-400 pl-4 sm:pl-5 lg:pl-6 relative before:content-['✓'] before:absolute before:left-0 before:text-[#1A73E8] before:font-bold before:inline-block before:w-3 sm:before:w-4 lg:before:w-5 before:text-center"
                 >
                   {item}
                 </li>

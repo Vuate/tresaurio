@@ -12,10 +12,10 @@ import {
 import { PRICING_TABLE } from "@/data/pricingTable";
 
 function renderCell(value: string) {
-  if (value === "check") return <Check className="text-emerald-400 w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />;
-  if (value === "x") return <X className="text-gray-500 w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />;
-  if (value === "lock") return <Lock className="text-gray-400 w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />;
-  if (value === "plus") return <Plus className="text-teal-300 w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />;
+  if (value === "check") return <Check className="text-[#1A73E8] w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />;
+  if (value === "x") return <X className="text-red-400/60 w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />;
+  if (value === "lock") return <Lock className="text-gray-500 w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />;
+  if (value === "plus") return <Plus className="text-[#1A73E8]/45 w-4 h-4 xl:w-5 xl:h-5 2xl:w-5 2xl:h-5" />;
   return <span className="text-gray-300">–</span>;
 }
 
@@ -34,7 +34,7 @@ export default function ComparisonTable() {
     <section className="w-full pt-8 xl:pt-10 2xl:pt-12 pb-20 xl:pb-24 2xl:pb-28 bg-[#031A1C] text-white">
       <div className="w-full px-0">
         <h2 className="text-3xl xl:text-4xl 2xl:text-5xl font-bold text-center mb-8 xl:mb-10 2xl:mb-12">
-           Compare <span className="text-teal-400">features</span>
+           Compare <span className="text-[#1A73E8]/65">features</span>
         </h2>
 
         <div className="w-full bg-[#041F20] border-t border-white/10">
@@ -116,9 +116,9 @@ export default function ComparisonTable() {
               text-sm xl:text-base 2xl:text-lg
               font-semibold
               text-white
-              bg-black/20
-              border border-white/20
-              hover:bg-white/10
+            bg-[#1A73E8]
+             border border-[#1A73E8]
+            hover:bg-[#1A73E8]/85
               transition-all duration-300
               flex items-center gap-2 xl:gap-2.5 2xl:gap-3
               cursor-pointer

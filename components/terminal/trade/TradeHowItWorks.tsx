@@ -14,7 +14,7 @@ export default function TradeHowItWorks() {
       <div className="steps grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
         {/* STEP 1 */}
         <div className="step rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur">
-          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-teal-400">
+          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-white">
             1
           </div>
           <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -28,7 +28,7 @@ export default function TradeHowItWorks() {
 
         {/* STEP 2 */}
         <div className="step rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur">
-          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-teal-400">
+          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-white">
             2
           </div>
           <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -42,7 +42,7 @@ export default function TradeHowItWorks() {
 
         {/* STEP 3 */}
         <div className="step rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur">
-          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-teal-400">
+          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-white">
             3
           </div>
           <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
@@ -56,7 +56,7 @@ export default function TradeHowItWorks() {
 
         {/* STEP 4 */}
         <div className="step rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur">
-          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-teal-400">
+          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-white">
             4
           </div>
           <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">

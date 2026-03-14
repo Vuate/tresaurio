@@ -52,7 +52,7 @@ export default function WalletTransferFeed() {
               <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-teal-500/10 rounded-lg sm:rounded-xl">
                 <Icon
                   icon={transfer.icon}
-                  className="text-teal-400 text-xl sm:text-2xl"
+                  className="text-white text-xl sm:text-2xl"
                 />
               </div>
 
@@ -79,7 +79,7 @@ export default function WalletTransferFeed() {
               </div>
 
               <div className="text-right">
-                <div className="text-lg sm:text-xl font-bold text-teal-400">
+                <div className="text-lg sm:text-xl font-bold text-white">
                   {transfer.usd}
                 </div>
 

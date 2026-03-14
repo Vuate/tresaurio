@@ -231,11 +231,9 @@ export default function ICOCalendarModule({ instanceId }: Props) {
                 filter === f
                   ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
                   : `
-                      bg-white/10 text-white border-white/10
-                      hover:bg-teal-500/15
-                      hover:border-teal-400/40
-                      hover:text-teal-400
-                      hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                bg-white/10 text-white border-white/10
+                hover:text-[#1A73E8]
+
                     `
               }
             `}
@@ -253,13 +251,12 @@ export default function ICOCalendarModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+      [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
+         [&::-webkit-scrollbar-thumb:hover]:bg-white/40
 
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         {loading && data.length === 0 ? (
