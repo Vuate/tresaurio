@@ -75,7 +75,7 @@ export default function StakingExamples() {
               <div className="text-[10px] sm:text-[11px] uppercase text-gray-400 tracking-wider mb-1.5 sm:mb-2">
                 {card.label}
               </div>
-              <div className="text-xl sm:text-2xl lg:text-[28px] font-extrabold text-teal-400 mb-0.5 sm:mb-1">
+              <div className="text-xl sm:text-2xl lg:text-[28px] font-extrabold text-white mb-0.5 sm:mb-1">
                 {card.value}
               </div>
               <div className="text-xs sm:text-sm text-gray-300">{card.subvalue}</div>

@@ -25,22 +25,6 @@ const EXCHANGES = [
 
 const SYMBOLS = ["BTCUSDT", "ETHUSDT"];
 
-//  Custom Hook: Window Size Check
-function useWindowSizeCheck() {
-  const [isTooSmall, setIsTooSmall] = useState(false);
-
-  useEffect(() => {
-    const checkSize = () => {
-      setIsTooSmall(window.innerWidth < 400 || window.innerHeight < 300);
-    };
-
-    checkSize();
-    window.addEventListener("resize", checkSize);
-    return () => window.removeEventListener("resize", checkSize);
-  }, []);
-
-  return isTooSmall;
-}
 
 // Helper: Fetch with timeout
 const fetchWithTimeout = async (url: string, timeout = 5000): Promise<Response> => {
@@ -138,7 +122,6 @@ const fetchFlowEvents = async (): Promise<FlowEvent[]> => {
 
 export default function ExchangeFlowModule({ instanceId }: Props) {
   const storageKey = `exchange-flow-${instanceId}`;
-  const windowTooSmall = useWindowSizeCheck();
   const contentRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -245,22 +228,7 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
   const totalWithdraw = events.filter(e => e.direction === "withdraw").reduce((sum, e) => sum + e.usdValue, 0);
   const netFlow = totalDeposit - totalWithdraw;
 
-  if (windowTooSmall) {
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-[#0a0e1a] rounded-lg p-4">
-        <div className="text-center space-y-2">
-          <div className="text-white/90 font-semibold text-sm">
-            Window Too Small
-          </div>
-          <div className="text-white/50 text-xs">
-            Minimum size: 400x300px
-            <br />
-            Please resize your window
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   if (!isMounted) {
     return (
@@ -288,12 +256,11 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
             onClick={() => setViewOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#0b1f1f]
+              bg-[#111318]
               border border-white/10
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
             "
@@ -328,8 +295,8 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
         ...(isRightSide ? { right: 0 } : { left: 0 })
       }}
       className="
-        bg-[#0b1f1f]
-        border border-emerald-500/20
+      bg-[#111318] border border-white/10
+
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
@@ -352,8 +319,8 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
             bg-transparent cursor-pointer
             text-white
             transition-colors
-            hover:bg-emerald-500/10
-            hover:text-emerald-400
+          hover:text-[#1A73E8]/65
+
           "
         >
           {option.label}
@@ -457,13 +424,10 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+ [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         {loading ? (

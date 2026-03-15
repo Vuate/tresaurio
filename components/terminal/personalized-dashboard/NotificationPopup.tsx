@@ -51,26 +51,10 @@ export default function NotificationPopup({
 
   if (!show) return null;
 
-  const bgColor =
-    type === "error"
-      ? "bg-[#041F20]/95"
-      : type === "success"
-      ? "bg-[#032D2F]/95"
-      : "bg-[#031A1C]/95";
+const bgColor = "bg-[#2B8FE0]/8";
+const borderColor = "border-[#2B8FE0]/35";
+const iconColor = "text-[#19D8D0]";
 
-  const borderColor =
-    type === "error"
-      ? "border-emerald-500/30"
-      : type === "success"
-      ? "border-emerald-400/40"
-      : "border-teal-400/30";
-
-  const iconColor =
-    type === "error"
-      ? "text-emerald-400"
-      : type === "success"
-      ? "text-emerald-300"
-      : "text-teal-300";
 
   const icon = type === "error" ? <X className="w-4 h-4" /> : type === "success" ? <Check className="w-4 h-4" /> : <Info className="w-4 h-4" />;
 
@@ -104,8 +88,8 @@ export default function NotificationPopup({
               className={`${iconColor} text-2xl font-bold mt-0.5 
                 flex-shrink-0 w-8 h-8 rounded-full 
                 flex items-center justify-center
-                ${type === "error" ? "bg-red-500/20" : 
-                  type === "success" ? "bg-emerald-500/20" : "bg-teal-500/20"}`}
+              ${type === "error" ? "bg-red-500/20" : 
+              type === "success" ? "bg-[#2B8FE0]/20" : "bg-[#2B8FE0]/20"}`}
             >
               {icon}
             </div>
@@ -123,26 +107,14 @@ export default function NotificationPopup({
               onClick={handleClose}
               className="text-white/40 hover:text-white/80 transition cursor-pointer
                 flex-shrink-0 w-6 h-6 flex items-center justify-center
-                rounded hover:bg-white/10"
+                rounded ,"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleClose}
-              className={`px-6 py-2 rounded-lg font-medium text-sm
-                transition-all duration-200 cursor-pointer
-                ${type === "error"
-                  ? "bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
-                  : type === "success"
-                  ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
-                  : "bg-teal-500/20 text-teal-300 hover:bg-teal-500/30"
-                }`}
-            >
-              Okey
-            </button>
+
           </div>
         </div>
       </div>

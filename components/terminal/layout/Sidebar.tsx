@@ -156,13 +156,13 @@ function NavItem({
         transition-all duration-300
         ${
           active
-            ? "bg-[#1a1d24] text-teal-300"
-            : "text-gray-400 hover:bg-[#14171d] hover:text-white"
+            ? "bg-[#1a1d24] text-[#1A73E8]/75"
+            : "text-white/70  hover:text-white"
         }
       `}
     >
       {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2.5px] xl:h-5 xl:w-[3px] 2xl:h-6 2xl:w-1 bg-teal-400 rounded-r" />
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2.5px] xl:h-5 xl:w-[3px] 2xl:h-6 2xl:w-1 bg-[#1A73E8] rounded-r" />
       )}
 
       <div className="flex items-center justify-center w-5 xl:w-[22px] 2xl:w-6 shrink-0">

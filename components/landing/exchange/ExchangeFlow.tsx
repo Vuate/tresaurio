@@ -69,7 +69,7 @@ export default function ExchangeFlow() {
     <section className="pt-[30px] py-[100px] bg-[#031a1c] text-white">
       <h2 className="text-center text-[60px] mb-[75px] font-semibold">
         Exchange{" "}
-        <span className="bg-gradient-to-r from-[#19d8d0] to-[#238c7c] bg-clip-text text-transparent">
+        <span className="text-[#1A73E8]/65">
           Flow
         </span>
       </h2>

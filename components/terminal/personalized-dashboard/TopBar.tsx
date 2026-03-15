@@ -68,15 +68,26 @@ useEffect(() => {
       setShowLockAuth(false);
     }
   };
-  const timer = setTimeout(() => {
-    document.addEventListener("mousedown", handleClick);
-    document.addEventListener("keydown", handleKeyDown);
-  }, 100);
-  return () => {
-    clearTimeout(timer);
-    document.removeEventListener("mousedown", handleClick);
-    document.removeEventListener("keydown", handleKeyDown);
-  };
+const handleTouchClose = (e: TouchEvent) => {
+  if (e.touches.length > 1) return;
+  const target = e.target as Node;
+  const topBar = document.querySelector("[data-topbar]");
+  if (topBar?.contains(target)) return;
+  setConfirmReset(false);
+  setConfirmLock(false);
+  setShowLockAuth(false);
+};
+const timer = setTimeout(() => {
+  document.addEventListener("mousedown", handleClick);
+  document.addEventListener("keydown", handleKeyDown);
+  document.addEventListener("touchstart", handleTouchClose);
+}, 100);
+return () => {
+  clearTimeout(timer);
+  document.removeEventListener("mousedown", handleClick);
+  document.removeEventListener("keydown", handleKeyDown);
+  document.removeEventListener("touchstart", handleTouchClose);
+};
 }, [confirmReset, confirmLock, showLockAuth]);
 
 
@@ -89,8 +100,11 @@ useEffect(() => {
         h-11 sm:h-12 md:h-14
         flex items-center justify-between 
         px-2 sm:px-3 md:px-4 lg:px-6
-        bg-[#031A1C]/95 backdrop-blur
-        border-b border-white/10 select-none"
+bg-[#080A10] backdrop-blur-md
+border-b border-white/[0.07] shadow-[0_1px_0_rgba(255,255,255,0.04),0_4px_24px_rgba(0,0,0,0.65)]
+
+select-none"
+
     >
       <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
 <button
@@ -99,10 +113,8 @@ useEffect(() => {
             min-w-[44px] min-h-[44px]
             w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10
             rounded-lg
-            border border-white/10
-            bg-[#041F20]/90
-            text-teal-300 text-xs sm:text-sm md:text-base
-            hover:bg-teal-400/10
+          text-white/50
+          hover:bg-white/[0.06] hover:text-white/90
             transition cursor-pointer flex-shrink-0"
           title="Back"
         >
@@ -132,19 +144,17 @@ onClick={() => {
 
 
   disabled={uiBlocked}
-  className={`px-2 sm:px-2.5 md:px-3 lg:px-4 
-    py-1 sm:py-1 md:py-1.5 
+  className={`px-2 sm:px-2.5 md:px-3 lg:px-4
+    py-1 sm:py-1 md:py-1.5
     rounded-lg
-    border
-    text-[9px] sm:text-[10px] md:text-xs lg:text-sm 
+    text-[9px] sm:text-[10px] md:text-xs lg:text-sm
     font-semibold
     transition cursor-pointer
     whitespace-nowrap
-${sidebarOpen
-  ? "bg-teal-400/20 border-teal-400/40 text-teal-300"
-  : "bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10"
-}
-
+    ${sidebarOpen
+      ? "bg-[#1A73E8] text-white"
+      : "text-white/55 hover:bg-white/6 hover:text-white/90"
+    }
     `}
 >
   Sidebar
@@ -161,18 +171,17 @@ onClick={() => {
 
   disabled={uiBlocked}
 
-  className={`px-2 sm:px-2.5 md:px-3 lg:px-4 
-    py-1 sm:py-1 md:py-1.5 
+  className={`px-2 sm:px-2.5 md:px-3 lg:px-4
+    py-1 sm:py-1 md:py-1.5
     rounded-lg
-    border
-    text-[9px] sm:text-[10px] md:text-xs lg:text-sm 
+    text-[9px] sm:text-[10px] md:text-xs lg:text-sm
     font-semibold
     transition cursor-pointer
     whitespace-nowrap
     ${
       addToolOpen
-        ? "bg-teal-400/30 border-teal-400/50 text-teal-200"
-        : "bg-teal-400/10 border-teal-400/30 text-teal-300 hover:bg-teal-400/20"
+        ? "bg-[#1A73E8] text-white"
+        : "text-white/55 hover:bg-white/6 hover:text-white/90"
     }`}
 >
   + Add Tool
@@ -192,29 +201,24 @@ onClick={() => {
   className={`px-2 sm:px-2.5 md:px-3 lg:px-4
     py-1 sm:py-1 md:py-1.5
     rounded-lg
-    border
     text-[9px] sm:text-[10px] md:text-xs lg:text-sm
     font-semibold
     transition cursor-pointer
     whitespace-nowrap
     ${
       templatesOpen
-        ? "bg-teal-400/20 border-teal-400/40 text-teal-300"
-        : "bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10"
+        ? "bg-[#1A73E8] text-white"
+        : "text-white/55 hover:bg-white/6 hover:text-white/90"
     }`}
 >
   Templates
 </button>
-
-
 
         </div>
       </div>
 
 
       <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-shrink-0">
-        {/* Reset Dashboard */}
-
 
         {/* Lock Dashboard */}
 <div className="relative">
@@ -250,8 +254,8 @@ onClick={(e) => {
       ${uiBlocked
         ? "bg-amber-400/25 border-amber-400/50 text-amber-300"
         : confirmLock
-          ? "bg-amber-400/20 border-amber-400/40 text-amber-300"
-          : "bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10"
+          ? "bg-[#1A73E8] border-transparent text-white"
+          : "border-transparent text-white/45 hover:bg-white/6 hover:text-white/90"
       }`}
     title={uiBlocked ? "Unlock Dashboard" : "Lock Dashboard"}
   >
@@ -270,25 +274,23 @@ onClick={(e) => {
     </svg>
   </button>
 
-  {/* Auth uyarısı — giriş yapmamış kullanıcı */}
   {showLockAuth && (
-    <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-2.5 rounded-xl bg-[#041F20]/95 backdrop-blur border border-amber-400/30 shadow-lg z-[60]">
-      <p className="text-[10px] sm:text-[11px] text-amber-300 mb-2">
+    <div className="absolute right-0 top-full mt-3 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-3.5 rounded-xl bg-[#0C0E12] border border-[#1A73E8]/35 shadow-lg z-[60]">
+      <p className="text-[11px] sm:text-[12px] text-white/80 mb-3">
         Sign in to use dashboard lock.
       </p>
       <button
         onClick={() => setShowLockAuth(false)}
-        className="w-full px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer"
+        className="w-full px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white bg-[#1A73E8] hover:bg-[#1A73E8]/85 transition cursor-pointer"
       >
         OK
       </button>
     </div>
   )}
 
-  {/* Confirmation dialog — giriş yapmış kullanıcı */}
   {confirmLock && (
-    <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-2.5 rounded-xl bg-[#041F20]/95 backdrop-blur border border-amber-400/30 shadow-lg z-[60]">
-      <p className="text-[10px] sm:text-[11px] text-amber-300 mb-2">
+    <div className="absolute right-0 top-full mt-3 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-3.5 rounded-xl bg-[#0C0E12] border border-[#1A73E8]/35 shadow-lg z-[60]">
+      <p className="text-[11px] sm:text-[12px] text-white/80 mb-3">
         Lock dashboard?
       </p>
       <div className="flex gap-1.5 sm:gap-2">
@@ -300,13 +302,13 @@ onClick={(e) => {
             closeAllPanels();
             notify({ type: "success", title: "Dashboard Locked", description: "Layout is locked." });
           }}
-          className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-amber-300 bg-amber-400/15 border border-amber-400/30 hover:bg-amber-400/25 transition cursor-pointer"
+        className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white bg-[#1A73E8] hover:bg-[#1A73E8]/85 transition cursor-pointer"
         >
           Yes, Lock
         </button>
         <button
           onClick={() => setConfirmLock(false)}
-          className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer"
+          className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white hover:text-white/70 border border-white/10 transition cursor-pointer"
         >
           Cancel
         </button>
@@ -332,8 +334,8 @@ onClick={(e) => {
       w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10
       rounded-lg border transition cursor-pointer
       ${confirmReset
-        ? "bg-red-400/20 border-red-400/40 text-red-300"
-        : "bg-[#041F20]/90 border-white/10 text-teal-300 hover:bg-teal-400/10"
+        ? "bg-[#1A73E8] border-transparent text-white"
+        : "border-transparent text-white/45 hover:bg-white/6 hover:text-white/90"
       }`}
     title="Reset Dashboard"
   >
@@ -352,8 +354,8 @@ onClick={(e) => {
             </svg>
           </button>
 {confirmReset && (
-  <div className="absolute right-0 top-full mt-2 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-2.5 rounded-xl bg-[#041F20]/95 backdrop-blur border border-red-400/30 shadow-lg z-[60]">
-    <p className="text-[10px] sm:text-[11px] text-red-300 mb-2">
+  <div className="absolute right-0 top-full mt-3 w-64 sm:w-72 max-w-[calc(100vw-32px)] p-3.5 rounded-xl bg-[#0C0E12] border border-[#1A73E8]/35 shadow-lg z-[60]">
+    <p className="text-[11px] sm:text-[12px] text-white/80 mb-3">
       Reset dashboard to default? All current modules will be removed.
     </p>
     <div className="flex gap-1.5 sm:gap-2">
@@ -363,13 +365,12 @@ onClick={(e) => {
     await resetDashboard();
     setConfirmReset(false);
   }}
-  className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-red-300 bg-red-400/15 border border-red-400/30 hover:bg-red-400/25 transition cursor-pointer"
->
+    className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white bg-[#1A73E8] hover:bg-[#1A73E8]/85 transition cursor-pointer">
   Yes, Reset
 </button>
       <button
         onClick={() => setConfirmReset(false)}
-        className="flex-1 px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/70 border border-white/10 transition cursor-pointer"
+        className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white hover:text-white/70 border border-white/10 transition cursor-pointer"
       >
         Cancel
       </button>
@@ -394,17 +395,16 @@ onClick={(e) => {
     setShowAuthModal(true);
   }}
   className="group flex items-center gap-1 sm:gap-1.5 md:gap-2 
-    px-2 sm:px-2.5 md:px-3 lg:px-5 
-    py-1 sm:py-1 md:py-1.5 lg:py-2 
-    rounded-lg lg:rounded-xl
-    bg-gradient-to-r from-teal-500/20 to-teal-400/10
-    border border-teal-400/40
-    hover:from-teal-500/30 hover:to-teal-400/20
-    hover:border-teal-400/60
-    transition-all duration-300 cursor-pointer"
+    px-2 sm:px-2.5 md:px-3 lg:px-4 
+    py-1 sm:py-1 md:py-1.5 
+    rounded-lg
+    border border-transparent
+    text-white/55 hover:bg-white/6 hover:text-white/90
+    transition cursor-pointer"
 >
   <svg
-    className="w-3 h-3 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 lg:w-4 lg:h-4 text-teal-400 group-hover:text-teal-300 transition-colors flex-shrink-0"
+    className="w-4 h-4 sm:w-[18px] sm:h-[18px] flex-shrink-0"
+
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -416,8 +416,7 @@ onClick={(e) => {
       d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
     />
   </svg>
-  {/* Mobilde gizli, desktop'ta görünür */}
-  <span className="hidden md:inline text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-semibold text-teal-300 group-hover:text-teal-200 transition-colors whitespace-nowrap">
+    <span className="hidden md:inline text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-semibold whitespace-nowrap">
     Terminal Login
   </span>
 </button>

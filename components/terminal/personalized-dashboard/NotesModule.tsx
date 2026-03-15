@@ -78,13 +78,11 @@ export default function NotesModule() {
 
             [&::-webkit-scrollbar]:w-2
             [&::-webkit-scrollbar-track]:bg-transparent
-            [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+     [&::-webkit-scrollbar-thumb]:bg-white/20
             [&::-webkit-scrollbar-thumb]:rounded-full
-            [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
             scrollbar-thin
-            scrollbar-thumb-teal-400/40
-            scrollbar-track-transparent
+scrollbar-thumb-white/20            scrollbar-track-transparent
           "
         >
           {notes.length === 0 && (
@@ -160,12 +158,12 @@ export default function NotesModule() {
           />
 
           <div className="mt-2 mb-3 flex justify-end">
-            <button
-              onClick={handleSave}
-              className="rounded-md bg-teal-500/20 px-3 py-1 text-xs text-teal-400 hover:bg-teal-500/30 cursor-pointer"
-            >
-              Save Note
-            </button>
+<button
+  onClick={handleSave}
+  className="self-end px-4 py-1.5 rounded-md bg-[#1A73E8] text-white text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"
+>
+  Save Note
+</button>
           </div>
         </div>
       </div>

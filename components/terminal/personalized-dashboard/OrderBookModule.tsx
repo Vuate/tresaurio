@@ -388,12 +388,11 @@ export default function OrderBookModule({
             onClick={() => setExchangeOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#0b1f1f]
+             bg-[#111318]
               border border-white/10
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
             "
@@ -422,14 +421,14 @@ export default function OrderBookModule({
         w-[120px]
         max-h-[160px]
         overflow-y-auto
-        bg-[#0b1f1f]
-        border border-emerald-500/20
+  bg-[#111318] border border-white/10
+
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
         [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
+      [&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -449,8 +448,7 @@ export default function OrderBookModule({
             bg-transparent cursor-pointer
             text-white
             transition-colors
-            hover:bg-emerald-500/10
-            hover:text-emerald-400
+    hover:text-[#1A73E8]/65
           "
         >
           {ex.name}
@@ -479,13 +477,11 @@ export default function OrderBookModule({
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+       [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         {error && (
@@ -677,13 +673,11 @@ export default function OrderBookModule({
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+          [&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
+scrollbar-thumb-white/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
@@ -750,11 +744,9 @@ export default function OrderBookModule({
                           baseAsset === asset
                             ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
                             : `
-                                bg-white/10 text-white border-white/10
-                                hover:bg-teal-500/15
-                                hover:border-teal-400/40
-                                hover:text-teal-400
-                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                              bg-white/10 text-white border-white/10
+                hover:text-[#1A73E8]
+
                               `
                         }
                       `}
@@ -783,11 +775,9 @@ export default function OrderBookModule({
                           quoteAsset === asset
                             ? "bg-emerald-500/30 text-emerald-300 border-emerald-500/50"
                             : `
-                                bg-white/10 text-white border-white/10
-                                hover:bg-teal-500/15
-                                hover:border-teal-400/40
-                                hover:text-teal-400
-                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                              bg-white/10 text-white border-white/10
+              hover:text-[#1A73E8]
+
                               `
                         }
                       `}

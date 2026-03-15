@@ -117,11 +117,11 @@ export default function ReportingCategories() {
             className="bg-[#041F20]/95 border border-white/10 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-5 lg:p-6 xl:p-7 2xl:p-8 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
           >
             <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-              <div className="text-2xl sm:text-3xl lg:text-4xl text-teal-400">
+              <div className="text-2xl sm:text-3xl lg:text-4xl text-[#1A73E8]/65">
                 <Icon icon={category.icon} />
               </div>
               <div className="flex-1">
-                <div className="text-base sm:text-lg lg:text-xl font-bold text-teal-400 mb-0.5 sm:mb-1">
+                <div className="text-base sm:text-lg lg:text-xl font-bold text-white mb-0.5 sm:mb-1">
                   {category.title}
                 </div>
                 <div className="text-[10px] sm:text-xs text-gray-400">{category.count}</div>
@@ -132,7 +132,7 @@ export default function ReportingCategories() {
               {category.modules.map((module, moduleIndex) => (
                 <li
                   key={moduleIndex}
-                  className="py-2 sm:py-2.5 border-b border-white/5 last:border-b-0 text-xs sm:text-sm text-gray-300 flex items-center gap-2 sm:gap-3 before:content-['▸'] before:text-teal-400 before:font-bold"
+                  className="py-2 sm:py-2.5 border-b border-white/5 last:border-b-0 text-xs sm:text-sm text-gray-300 flex items-center gap-2 sm:gap-3 before:content-['▸'] before:text-[#1A73E8]/75 before:font-bold"
                 >
                   {module}
                 </li>

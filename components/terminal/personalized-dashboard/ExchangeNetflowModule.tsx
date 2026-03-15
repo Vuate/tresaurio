@@ -315,12 +315,11 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
             onClick={() => setSymbolDropdownOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#0b1f1f]
+              bg-[#111318] 
               border border-white/10
               text-white text-xs
               flex items-center gap-1.5
               cursor-pointer
-              hover:bg-white/5
               transition-all
               whitespace-nowrap
             "
@@ -354,15 +353,15 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
       }}
       className="
         overflow-y-auto
-        bg-[#0b1f1f]
-        border border-emerald-500/20
+      bg-[#111318] border border-white/10
+
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
         [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-emerald-500/40
-        [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-white/20
+         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
     >
@@ -373,7 +372,6 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
             flex items-center justify-between
             px-3 py-2
             text-xs
-            hover:bg-emerald-500/10
             transition-colors
             group
           "
@@ -386,8 +384,8 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
             className="
               flex-1 text-left
               text-white
-              hover:text-emerald-400
-              cursor-pointer
+           hover:text-[#1A73E8]/65
+               cursor-pointer
             "
           >
             {sym}
@@ -442,10 +440,7 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
                   ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
                   : `
                       bg-white/10 text-white border-white/10
-                      hover:bg-teal-500/15
-                      hover:border-teal-400/40
-                      hover:text-teal-400
-                      hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                      hover:text-[#1A73E8]
                     `
               }
             `}
@@ -463,12 +458,10 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
           overflow-y-auto
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+        [&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-          scrollbar-thin
-          scrollbar-thumb-teal-400/40
-          scrollbar-track-transparent
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40          scrollbar-thin
+scrollbar-thumb-white/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-2">
@@ -643,13 +636,11 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-teal-400/40
+             [&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-              [&::-webkit-scrollbar-thumb:hover]:bg-teal-400/70
-
+[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-              scrollbar-thumb-teal-400/40
-              scrollbar-track-transparent
+scrollbar-thumb-white/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
@@ -702,11 +693,9 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
                           newSymbol === sym
                             ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
                             : `
-                                bg-white/10 text-white border-white/10
-                                hover:bg-teal-500/15
-                                hover:border-teal-400/40
-                                hover:text-teal-400
-                                hover:shadow-[0_0_0_1px_rgba(45,212,191,0.35)]
+                          bg-white/10 text-white border-white/10
+                          hover:text-[#1A73E8]
+
                               `
                         }
                       `}
