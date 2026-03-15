@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
     if (detected.permissions.length > 0) {
       const updated = await updateApiKeyPermissions(
         body.keyId,
+        session.user.id,
         detected.permissions,
       );
       return NextResponse.json({

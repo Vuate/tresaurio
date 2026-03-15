@@ -139,12 +139,21 @@ export async function getDecryptedApiKey(
 }
 
 /**
- * Update API key label
+ * Update API key label (with ownership verification)
  */
 export async function updateApiKeyLabel(
   id: string,
+  userId: string,
   label: string,
 ): Promise<ApiKeyOutput> {
+  const existing = await prisma.apiKey.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+  if (!existing || existing.userId !== userId) {
+    throw new Error("API key not found or unauthorized");
+  }
+
   const updated = await prisma.apiKey.update({
     where: { id },
     data: { label },
@@ -163,12 +172,21 @@ export async function updateApiKeyLabel(
 }
 
 /**
- * Update API key permissions
+ * Update API key permissions (with ownership verification)
  */
 export async function updateApiKeyPermissions(
   id: string,
+  userId: string,
   permissions: string[],
 ): Promise<ApiKeyOutput> {
+  const existing = await prisma.apiKey.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+  if (!existing || existing.userId !== userId) {
+    throw new Error("API key not found or unauthorized");
+  }
+
   const updated = await prisma.apiKey.update({
     where: { id },
     data: { permissions },
@@ -218,16 +236,35 @@ export async function getDecryptedApiKeyById(
 }
 
 /**
- * Delete an API key
+ * Delete an API key (with ownership verification)
  */
-export async function deleteApiKey(id: string): Promise<void> {
+export async function deleteApiKey(id: string, userId: string): Promise<void> {
+  const existing = await prisma.apiKey.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+  if (!existing || existing.userId !== userId) {
+    throw new Error("API key not found or unauthorized");
+  }
+
   await prisma.apiKey.delete({ where: { id } });
 }
 
 /**
- * Deactivate an API key (soft delete)
+ * Deactivate an API key (soft delete, with ownership verification)
  */
-export async function deactivateApiKey(id: string): Promise<void> {
+export async function deactivateApiKey(
+  id: string,
+  userId: string,
+): Promise<void> {
+  const existing = await prisma.apiKey.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+  if (!existing || existing.userId !== userId) {
+    throw new Error("API key not found or unauthorized");
+  }
+
   await prisma.apiKey.update({
     where: { id },
     data: { isActive: false },

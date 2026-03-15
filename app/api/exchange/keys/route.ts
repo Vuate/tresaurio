@@ -122,6 +122,7 @@ export async function POST(request: NextRequest) {
       try {
         finalData = await updateApiKeyPermissions(
           apiKey.id,
+          session.user.id,
           detected.permissions,
         );
         permissionWarnings = detected.warnings;
@@ -175,7 +176,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const updated = await updateApiKeyLabel(body.id, body.label);
+    const updated = await updateApiKeyLabel(body.id, session.user.id, body.label);
 
     return NextResponse.json({
       success: true,
@@ -219,7 +220,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await deleteApiKey(id);
+    await deleteApiKey(id, session.user.id);
 
     return NextResponse.json({
       success: true,
