@@ -169,7 +169,7 @@ export default function ApiKeysSettingsPage() {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+<div className="flex items-center justify-center min-h-screen bg-[#031A1C]">
         <div className="text-white/40 text-sm">Loading...</div>
       </div>
     );
@@ -177,7 +177,7 @@ export default function ApiKeysSettingsPage() {
 
   if (!session?.user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-44px)] md:min-h-[calc(100vh-64px)] bg-[#031A1C] gap-4">
         <Shield className="w-10 h-10 text-white/20" />
         <div className="text-white/60 text-sm">Please sign in to manage API keys.</div>
       </div>
@@ -294,6 +294,7 @@ export default function ApiKeysSettingsPage() {
 
   return (
 <div className="min-h-screen bg-[#031A1C]">
+<div className="min-h-screen bg-[#031A1C] -mt-4 sm:-mt-6 md:mt-0">
 <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-6 sm:pt-14 sm:pb-10 md:pt-10 md:pb-10">
 
       {/* Back nav */}
@@ -634,6 +635,7 @@ export default function ApiKeysSettingsPage() {
         </div>
       )}
     </div>
+        </div>
         </div>
   );
 }
