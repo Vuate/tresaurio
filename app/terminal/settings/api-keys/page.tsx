@@ -294,7 +294,8 @@ export default function ApiKeysSettingsPage() {
 
   return (
 <div className="min-h-screen bg-[#031A1C]">
-<div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<div className="max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-6 sm:pt-14 sm:pb-10 md:pt-10 md:pb-10">
+
       {/* Back nav */}
       <button
         onClick={() => router.back()}

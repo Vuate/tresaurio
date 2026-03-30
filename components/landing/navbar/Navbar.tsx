@@ -221,7 +221,7 @@ export default function Navbar() {
               {/* Mobile Auth Buttons / User Menu */}
               <div className="flex flex-col gap-3 pt-2">
                 {isLoggedIn ? (
-                  <UserMenu variant="mobile" />
+                 <UserMenu variant="mobile" onClose={() => setMobileMenuOpen(false)} />
                 ) : (
                   <>
                     <Button

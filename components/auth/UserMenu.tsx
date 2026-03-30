@@ -18,9 +18,10 @@ import {
 interface UserMenuProps {
   variant?: "default" | "mobile";
   compact?: boolean;
+  onClose?: () => void;
 }
 
-export default function UserMenu({ variant = "default", compact = false }: UserMenuProps) {
+export default function UserMenu({ variant = "default", compact = false, onClose }: UserMenuProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -79,7 +80,7 @@ useEffect(() => {
 
 const menuItems = [
   { icon: User,     label: "Profile",        onClick: () => {}, disabled: true },
-  { icon: Key,      label: "API Keys",       onClick: () => { router.push("/terminal/settings/api-keys"); setOpen(false); setUserMenuOpen(false); }, disabled: false },
+  { icon: Key,      label: "API Keys",       onClick: () => { router.push("/terminal/settings/api-keys"); setOpen(false); setUserMenuOpen(false); onClose?.(); }, disabled: false },
   { icon: Wallet,   label: "Balance",         onClick: () => {}, badge: "Demo", disabled: true },
   { icon: History,  label: "Recent Orders",   onClick: () => {}, disabled: true },
   { icon: Settings, label: "Settings",        onClick: () => {}, disabled: true },
@@ -143,6 +144,7 @@ const menuItems = [
         <button
           onClick={() => {
             signOut({ callbackUrl: "/" });
+            onClose?.();
           }}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 border border-red-500/30 hover:border-red-500/50 transition-all"
         >

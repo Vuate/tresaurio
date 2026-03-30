@@ -16,7 +16,7 @@ export default function TerminalLayout({
         </div>
 
         <div className="flex-1 overflow-x-auto">
-          <main className="min-w-full bg-[#0a0b0f] relative">
+<main className="min-w-full bg-[#0a0b0f] relative pt-4 sm:pt-6 md:pt-0">
             {children}
           </main>
         </div>
