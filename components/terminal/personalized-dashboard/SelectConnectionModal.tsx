@@ -138,11 +138,11 @@ export default function SelectConnectionModal({
             <button
               onClick={handleAddNew}
               className="
-                flex items-center gap-2 px-4 py-2
-                bg-emerald-500/20 border border-emerald-500/30
-                text-emerald-400 text-xs font-medium
-                rounded-md hover:bg-emerald-500/30
-                transition-colors cursor-pointer
+              flex items-center gap-2 px-4 py-2
+            bg-[#1A73E8]/15 border border-[#1A73E8]/30
+            text-[#1A73E8] text-xs font-medium
+              rounded-md hover:bg-[#1A73E8]/25
+              transition-colors cursor-pointer
               "
             >
               <Plus className="w-3.5 h-3.5" />

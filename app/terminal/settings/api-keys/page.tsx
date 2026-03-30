@@ -293,7 +293,8 @@ export default function ApiKeysSettingsPage() {
   const selectedExchangeName = SUPPORTED_EXCHANGES.find((e) => e.id === form.exchange)?.name || form.exchange;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<div className="min-h-screen bg-[#031A1C]">
+<div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       {/* Back nav */}
       <button
         onClick={() => router.back()}
@@ -307,8 +308,8 @@ export default function ApiKeysSettingsPage() {
       <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-              <Key className="w-4 h-4 text-emerald-400" />
+            <div className="w-9 h-9 rounded-lg bg-[#1A73E8]/15 border border-[#1A73E8]/30 flex items-center justify-center">
+              <Key className="w-4 h-4 text-[#1A73E8]" />
             </div>
             API Keys
           </h1>
@@ -322,7 +323,7 @@ export default function ApiKeysSettingsPage() {
             onClick={() => setShowAddForm(true)}
             className="
               flex items-center gap-2 px-4 py-2
-              bg-emerald-500 hover:bg-emerald-600
+             bg-[#1A73E8] hover:bg-[#1A73E8]/85
               text-white text-sm font-medium
               rounded-lg transition-colors cursor-pointer
               shrink-0
@@ -345,7 +346,7 @@ export default function ApiKeysSettingsPage() {
 
       {/* Add key form */}
       {showAddForm && (
-        <div className="mb-6 p-4 bg-white/5 border border-white/10 rounded-lg">
+        <div className="mb-6 p-4 bg-[#041F20]/95 border border-white/10 rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-white font-semibold text-sm">Add New API Key</h3>
             <button
@@ -363,7 +364,7 @@ export default function ApiKeysSettingsPage() {
               <div ref={exchangeDropdownRef} className="relative">
                 <button
                   onClick={() => setExchangeDropdownOpen((v) => !v)}
-                  className="w-full h-9 flex items-center justify-between bg-white/5 border border-white/10 rounded-md px-3 text-white text-xs cursor-pointer hover:bg-white/8 transition-colors"
+                  className="w-full h-9 flex items-center justify-between bg-white/4 border border-white/10 rounded-md px-3 text-white text-xs cursor-pointer hover:bg-[#041F20] hover:border-white/20 transition-colors"
                 >
                   <span>{selectedExchangeName}</span>
                   <span className={`text-white/50 transition-transform ${exchangeDropdownOpen ? "rotate-180" : ""}`}>
@@ -371,7 +372,7 @@ export default function ApiKeysSettingsPage() {
                   </span>
                 </button>
                 {exchangeDropdownOpen && (
-                  <div className="absolute z-50 mt-1 w-full bg-[#0a0e1a] border border-white/10 rounded-md overflow-hidden shadow-lg">
+                  <div className="absolute z-50 mt-1 w-full bg-[#041F20] border border-white/15 rounded-md overflow-hidden shadow-xl">
                     {SUPPORTED_EXCHANGES.map((ex) => (
                       <button
                         key={ex.id}
@@ -379,8 +380,7 @@ export default function ApiKeysSettingsPage() {
                           setForm({ ...form, exchange: ex.id });
                           setExchangeDropdownOpen(false);
                         }}
-                        className="w-full px-3 py-2 text-left text-xs cursor-pointer bg-transparent text-white transition-colors hover:bg-emerald-500/10 hover:text-emerald-400"
-                      >
+                          className={`w-full px-3 py-2 text-left text-xs cursor-pointer transition-colors hover:bg-transparent hover:text-[#1A73E8] ${form.exchange === ex.id ? "bg-[#1A73E8]/15 text-[#1A73E8]" : "bg-transparent text-white/80"}`}                      >
                         {ex.name}
                       </button>
                     ))}
@@ -397,7 +397,7 @@ export default function ApiKeysSettingsPage() {
                 value={form.label}
                 onChange={(e) => setForm({ ...form, label: e.target.value })}
                 placeholder="e.g., Main Trading Account"
-                className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                className="w-full bg-white/4 border border-white/10 rounded-md px-3 py-2 text-white text-xs outline-none focus:border-[#1A73E8]/50 transition-colors"
               />
             </div>
 
@@ -409,7 +409,7 @@ export default function ApiKeysSettingsPage() {
                 value={form.apiKey}
                 onChange={(e) => setForm({ ...form, apiKey: e.target.value })}
                 placeholder="Enter your API key"
-                className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                className="w-full bg-white/4 border border-white/10 rounded-md px-3 py-2 text-white text-xs outline-none focus:border-[#1A73E8]/50 transition-colors"
               />
             </div>
 
@@ -422,7 +422,7 @@ export default function ApiKeysSettingsPage() {
                   value={form.apiSecret}
                   onChange={(e) => setForm({ ...form, apiSecret: e.target.value })}
                   placeholder="Enter your API secret"
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                  className="w-full bg-white/4 border border-white/10 rounded-md px-3 py-2 text-white text-xs outline-none focus:border-[#1A73E8]/50 transition-colors"
                 />
               </div>
             )}
@@ -436,7 +436,7 @@ export default function ApiKeysSettingsPage() {
                   value={form.passphrase}
                   onChange={(e) => setForm({ ...form, passphrase: e.target.value })}
                   placeholder="Enter your passphrase"
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-3 py-2 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                  className="w-full bg-white/4 border border-white/10 rounded-md px-3 py-2 text-white text-xs outline-none focus:border-[#1A73E8]/50 transition-colors"
                 />
               </div>
             )}
@@ -450,7 +450,7 @@ export default function ApiKeysSettingsPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white py-2.5 rounded-md font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
+              className="w-full bg-[#1A73E8] hover:bg-[#1A73E8]/85 disabled:opacity-50 text-white py-2.5 rounded-md font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
             >
               <Key className="w-4 h-4" />
               {saving ? "Connecting..." : "Connect & Save"}
@@ -473,7 +473,7 @@ export default function ApiKeysSettingsPage() {
           </div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1A73E8] hover:bg-[#1A73E8]/85 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Add Your First Key
@@ -518,11 +518,11 @@ export default function ApiKeysSettingsPage() {
                               if (e.key === "Enter") handleSaveLabel(key.id);
                               if (e.key === "Escape") setEditingId(null);
                             }}
-                            className="flex-1 bg-white/10 border border-emerald-500/50 rounded px-2 py-0.5 text-white text-xs outline-none min-w-0"
+                            className="flex-1 bg-white/10 border border-[#1A73E8]/50 rounded px-2 py-0.5 text-white text-xs outline-none min-w-0"
                           />
                           <button
                             onClick={() => handleSaveLabel(key.id)}
-                            className="text-emerald-400 hover:text-emerald-300 cursor-pointer"
+                            className="text-[#1A73E8] hover:text-[#1A73E8]/80 cursor-pointer"
                           >
                             <Check className="w-3.5 h-3.5" />
                           </button>
@@ -633,5 +633,6 @@ export default function ApiKeysSettingsPage() {
         </div>
       )}
     </div>
+        </div>
   );
 }

@@ -69,6 +69,8 @@ const handleTouchOutside = (e: TouchEvent) => {
   if (e.touches.length > 1) return;
   const target = e.target as Node;
   if (sidebarRef.current?.contains(target)) return;
+  const topBar = document.querySelector('[data-topbar]');
+  if (topBar?.contains(target)) return;
   toggleSidebar();
 };
 const timer = setTimeout(() => {
@@ -169,6 +171,16 @@ className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-
             onClick={() => router.push("/terminal/reporting")}
           />
         </SidebarSection>
+
+        {/* SETTINGS */}
+        <SidebarSection title="SETTINGS">
+          <SidebarItem
+            title="API Keys"
+            active={pathname === "/terminal/settings/api-keys"}
+            onClick={() => router.push("/terminal/settings/api-keys")}
+          />
+        </SidebarSection>
+
       </div>
     </div>
   );
