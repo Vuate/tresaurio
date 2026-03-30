@@ -179,7 +179,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Overlay */}
         {mobileMenuOpen && (
-<div className="md:hidden fixed top-16 left-0 w-full bg-[#031A1C] backdrop-blur-2xl border-t border-white/10 z-[100]">
+        <div className="md:hidden fixed top-16 left-0 w-full bg-[#031A1C] backdrop-blur-2xl border-t border-white/10 z-[100] max-h-[calc(100vh-64px)] overflow-y-auto">
             <div className="flex flex-col p-6 gap-4">
               {/* Mobile Navigation */}
               <div className="flex flex-col gap-3 pb-4 border-b border-white/10">
