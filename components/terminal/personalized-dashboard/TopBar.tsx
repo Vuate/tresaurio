@@ -5,7 +5,7 @@ import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStor
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, PanelLeft, Plus, LayoutTemplate } from "lucide-react";
 import AuthModal from "@/components/auth/AuthModal";
 import UserMenu from "@/components/auth/UserMenu";
 
@@ -96,9 +96,9 @@ return () => {
       ref={topBarRef}
       data-topbar
       onMouseDown={(e) => e.preventDefault()}
-      className="fixed top-0 left-0 right-0 z-50 
+      className="fixed top-0 left-0 right-0 z-50
         h-11 sm:h-12 md:h-14
-        flex items-center justify-between 
+        flex items-center justify-between
         px-2 sm:px-3 md:px-4 lg:px-6
 bg-[#080A10] backdrop-blur-md
 border-b border-white/[0.07] shadow-[0_1px_0_rgba(255,255,255,0.04),0_4px_24px_rgba(0,0,0,0.65)]
@@ -110,12 +110,11 @@ select-none"
 <button
   onClick={() => { if (uiBlocked) return; router.back(); }}
   className="flex items-center justify-center
-            min-w-[44px] min-h-[44px]
-            w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10
+            w-8 h-8 sm:w-10 sm:h-10 md:w-10 md:h-10
             rounded-lg
           text-white/50
           hover:bg-white/[0.06] hover:text-white/90
-            transition cursor-pointer flex-shrink-0"
+            transition cursor-pointer shrink-0"
           title="Back"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -125,15 +124,16 @@ select-none"
           <img
             src="/treasurio.png"
             alt="Treasurio Logo"
-            className="h-6 sm:h-7 md:h-8 lg:h-9 w-auto select-none flex-shrink-0"
+            className="h-8 sm:h-9 md:h-10 lg:h-9 w-auto select-none shrink-0"
             draggable={false}
           />
-<span className="hidden sm:inline text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-white leading-none whitespace-nowrap">
+<span className="hidden lg:inline text-xs sm:text-sm md:text-base lg:text-lg font-extrabold text-white leading-none whitespace-nowrap">
             Treasurio
           </span>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 ml-2 sm:ml-3 md:ml-4 lg:ml-6">
+        <div className="flex items-center gap-1 sm:gap-2.5 md:gap-3 lg:gap-4 ml-2 sm:ml-3 md:ml-4 lg:ml-6">
+{/* Sidebar button — icon only on mobile, icon+text on sm+ */}
 <button
 onClick={() => {
     if (uiBlocked) return;
@@ -141,11 +141,12 @@ onClick={() => {
     closeEverything();
     if (!wasOpen) toggleSidebar();
   }}
-
-
   disabled={uiBlocked}
-  className={`px-2 sm:px-2.5 md:px-3 lg:px-4
+  title="Sidebar"
+  className={`flex items-center justify-center gap-1.5
+    px-2 sm:px-2.5 md:px-3 lg:px-4
     py-1 sm:py-1 md:py-1.5
+    min-w-0
     rounded-lg
     text-[9px] sm:text-[10px] md:text-xs lg:text-sm
     font-semibold
@@ -157,9 +158,11 @@ onClick={() => {
     }
     `}
 >
-  Sidebar
+  <PanelLeft className="w-3.5 h-3.5 shrink-0 lg:hidden" />
+  <span className="hidden lg:inline">Sidebar</span>
 </button>
 
+{/* Add Tool button — icon only on mobile, icon+text on sm+ */}
 <button
 onClick={() => {
     if (uiBlocked) return;
@@ -167,12 +170,12 @@ onClick={() => {
     closeEverything();
     if (!wasOpen) toggleAddTool();
   }}
-
-
   disabled={uiBlocked}
-
-  className={`px-2 sm:px-2.5 md:px-3 lg:px-4
+  title="Add Tool"
+  className={`flex items-center justify-center gap-1.5
+    px-2 sm:px-2.5 md:px-3 lg:px-4
     py-1 sm:py-1 md:py-1.5
+    min-w-0
     rounded-lg
     text-[9px] sm:text-[10px] md:text-xs lg:text-sm
     font-semibold
@@ -184,9 +187,11 @@ onClick={() => {
         : "text-white/55 hover:bg-white/6 hover:text-white/90"
     }`}
 >
-  + Add Tool
+  <Plus className="w-3.5 h-3.5 shrink-0 lg:hidden" />
+  <span className="hidden lg:inline">+ Add Tool</span>
 </button>
 
+{/* Templates button — icon only on mobile, icon+text on sm+ */}
 <button
 onClick={() => {
     if (uiBlocked) return;
@@ -194,12 +199,12 @@ onClick={() => {
     closeEverything();
     if (!wasOpen) toggleTemplates();
   }}
-
-
   disabled={uiBlocked}
-
-  className={`px-2 sm:px-2.5 md:px-3 lg:px-4
+  title="Templates"
+  className={`flex items-center justify-center gap-1.5
+    px-2 sm:px-2.5 md:px-3 lg:px-4
     py-1 sm:py-1 md:py-1.5
+    min-w-0
     rounded-lg
     text-[9px] sm:text-[10px] md:text-xs lg:text-sm
     font-semibold
@@ -211,21 +216,22 @@ onClick={() => {
         : "text-white/55 hover:bg-white/6 hover:text-white/90"
     }`}
 >
-  Templates
+  <LayoutTemplate className="w-3.5 h-3.5 shrink-0 lg:hidden" />
+  <span className="hidden lg:inline">Templates</span>
 </button>
 
         </div>
       </div>
 
 
-      <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 flex-shrink-0">
+      <div className="flex items-center gap-0.5 sm:gap-2.5 md:gap-3 shrink-0">
 
         {/* Lock Dashboard */}
 <div className="relative">
   <button
 onClick={(e) => {
       e.stopPropagation();
-      
+
       if (uiBlocked) {
         closeEverything();
         setUIBlocked(false);
@@ -233,14 +239,14 @@ onClick={(e) => {
         notify({ type: "success", title: "Dashboard Unlocked", description: "Layout is unlocked." });
         return;
       }
-      
+
       if (!session?.user) {
         const wasOpen = showLockAuth;
         closeEverything();
         if (!wasOpen) setShowLockAuth(true);
         return;
       }
-      
+
       // Confirmation toggle
       const wasOpen = confirmLock;
       closeEverything();
@@ -248,8 +254,7 @@ onClick={(e) => {
 
     }}
     className={`flex items-center justify-center
-      min-w-[44px] min-h-[44px]
-      w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10
+      w-8 h-auto py-1.5 px-2 lg:w-10 lg:h-10 lg:py-0 lg:px-0
       rounded-lg border transition cursor-pointer
       ${uiBlocked
         ? "bg-amber-400/25 border-amber-400/50 text-amber-300"
@@ -260,7 +265,7 @@ onClick={(e) => {
     title={uiBlocked ? "Unlock Dashboard" : "Lock Dashboard"}
   >
     <svg
-      className="w-4 h-4 sm:w-[18px] sm:h-[18px]"
+      className="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -330,8 +335,7 @@ onClick={(e) => {
 
 
     className={`flex items-center justify-center
-      min-w-[44px] min-h-[44px]
-      w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10
+      w-8 h-auto py-1.5 px-2 lg:w-10 lg:h-10 lg:py-0 lg:px-0
       rounded-lg border transition cursor-pointer
       ${confirmReset
         ? "bg-[#1A73E8] border-transparent text-white"
@@ -340,7 +344,7 @@ onClick={(e) => {
     title="Reset Dashboard"
   >
             <svg
-              className="w-4 h-4 sm:w-[18px] sm:h-[18px]"
+              className="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -381,9 +385,9 @@ onClick={(e) => {
 
         {status === "loading" ? (
 
-          <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-white/10 animate-pulse" />
+          <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-white/10 animate-pulse ml-1.5 lg:ml-0" />
 ) : session?.user ? (
-   <div className="relative" onClick={() => { setConfirmReset(false); setConfirmLock(false); setShowLockAuth(false); }}>
+   <div className="relative ml-1.5 lg:ml-0" onClick={() => { setConfirmReset(false); setConfirmLock(false); setShowLockAuth(false); }}>
        {uiBlocked && <div className="absolute inset-0 z-50 cursor-pointer" />}
        <UserMenu compact />
    </div>
@@ -394,16 +398,17 @@ onClick={(e) => {
     setAuthMode("login");
     setShowAuthModal(true);
   }}
-  className="group flex items-center gap-1 sm:gap-1.5 md:gap-2 
-    px-2 sm:px-2.5 md:px-3 lg:px-4 
-    py-1 sm:py-1 md:py-1.5 
+  className="group flex items-center gap-1 sm:gap-1.5 md:gap-2
+    ml-1.5 lg:ml-0
+    px-2 sm:px-2.5 md:px-3 lg:px-4
+    py-1 sm:py-1 md:py-1.5
     rounded-lg
     border border-transparent
     text-white/55 hover:bg-white/6 hover:text-white/90
     transition cursor-pointer"
 >
   <svg
-    className="w-4 h-4 sm:w-[18px] sm:h-[18px] flex-shrink-0"
+    className="w-3.5 h-3.5 lg:w-4.5 lg:h-4.5 shrink-0"
 
     fill="none"
     viewBox="0 0 24 24"

@@ -116,8 +116,6 @@ export default function Sidebar() {
           active={isActive("/terminal/reporting")}
         />
 
-        <div className="flex-1" />
-
         <SectionLabel label="SETTINGS" />
 
         <NavItem
@@ -149,7 +147,7 @@ function NavItem({
       href={href}
       className={`
         relative flex items-center
-        h-8 xl:h-9 2xl:h-10
+        h-7 xl:h-8 2xl:h-9
         min-w-[48px] xl:min-w-[52px] 2xl:min-w-[56px]
         px-2 xl:px-2.5 2xl:px-3
         rounded-md
@@ -190,7 +188,7 @@ function SectionLabel({ label }: { label: string }) {
   return (
     <div
       className="
-        mt-2.5 xl:mt-3 2xl:mt-3.5
+        mt-1.5 xl:mt-2 2xl:mt-2.5
         px-2 xl:px-2.5 2xl:px-3
         text-[8.5px] xl:text-[9px] 2xl:text-[10px]
         tracking-widest font-semibold
