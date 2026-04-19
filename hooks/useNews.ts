@@ -70,13 +70,12 @@ export function useNews(instanceId: string) {
         limit: settings.limit.toString(),
       });
 
-      // Add category filter
       const categoryFilter = CATEGORY_FILTERS[settings.category];
       if (categoryFilter) {
         params.append("categories", categoryFilter);
       }
 
-      const url = `https://min-api.cryptocompare.com/data/v2/news/?${params.toString()}`;
+      const url = `/api/news?${params.toString()}`;
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -85,32 +84,11 @@ export function useNews(instanceId: string) {
 
       const data = await response.json();
 
-      if (data.Type !== 100 || !data.Data) {
-        throw new Error("Invalid response from CryptoCompare");
+      if (!data.Data || !Array.isArray(data.Data)) {
+        throw new Error("Invalid response from news API");
       }
 
-      const transformedNews: NewsItem[] = data.Data.map(
-        (item: {
-          id: string;
-          title: string;
-          body: string;
-          url: string;
-          source: string;
-          published_on: number;
-          categories: string;
-        }) => ({
-          id: item.id,
-          title: item.title,
-          description: item.body?.substring(0, 150) || "",
-          url: item.url,
-          source: item.source,
-          publishedAt: new Date(item.published_on * 1000).toISOString(),
-          sentiment: "neutral" as const,
-          category: item.categories?.split("|")[0]?.toLowerCase() || "crypto",
-        })
-      );
-
-      setNews(transformedNews);
+      setNews(data.Data as NewsItem[]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch news");
       console.error("News fetch error:", err);
