@@ -14,7 +14,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Treasurio",
+  title: {
+    default: "Treasurio - Professional Crypto Trading Analytics",
+    template: "%s | Treasurio - Professional Crypto Trading Analytics",
+  },
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
