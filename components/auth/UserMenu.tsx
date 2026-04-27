@@ -143,7 +143,7 @@ const menuItems = [
         {/* Logout Button */}
         <button
           onClick={() => {
-            signOut({ callbackUrl: "/" });
+            signOut({ callbackUrl: window.location.href });
             onClose?.();
           }}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 border border-red-500/30 hover:border-red-500/50 transition-all"
@@ -333,7 +333,7 @@ const menuItems = [
           <div className="border-t border-white/10">
             <button
               onClick={() => {
-                signOut({ callbackUrl: "/" });
+                signOut({ callbackUrl: window.location.href });
                 setOpen(false);
                 setUserMenuOpen(false);
               }}

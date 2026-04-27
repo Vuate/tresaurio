@@ -204,3 +204,17 @@ model UserFavorite {
   @@unique([userId, type])
   @@index([userId])
 }
+
+// ==================== LANDING PAGE MODELS ====================
+
+model EarlyAccess {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  telegram  String?
+  message   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
