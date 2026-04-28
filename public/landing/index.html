@@ -1216,17 +1216,17 @@
         }
         .form-grid { grid-template-columns: 1fr; }
         .fg.full { grid-column: span 1; }
-        .team-carousel-wrapper { gap: 8px; }
-        .team-carousel-btn { width: 36px; height: 36px; flex-shrink: 0; }
-        .team-carousel-btn svg { width: 16px; height: 16px; }
+        .team-carousel-wrapper { gap: 10px; }
+        .team-carousel-btn { width: 44px; height: 44px; flex-shrink: 0; }
+        .team-carousel-btn svg { width: 20px; height: 20px; }
     }
     @media (max-width: 560px) {
         .feat-grid { grid-template-columns: 1fr; }
         .stats-grid { grid-template-columns: repeat(2,1fr); }
         .hero-btns .btn { width: 100%; justify-content: center; }
         .container { padding: 0 16px; }
-        .team-carousel-btn { width: 28px; height: 28px; }
-        .team-carousel-btn svg { width: 14px; height: 14px; }
+        .team-carousel-btn { width: 40px; height: 40px; }
+        .team-carousel-btn svg { width: 18px; height: 18px; }
     }
     @media (max-width: 380px) {
         .stats-grid { grid-template-columns: 1fr 1fr; }
@@ -2760,7 +2760,7 @@ function initBars() {
     obs.observe(panel);
 }
 
-// Team Carousel – sürekli akış (haber bandı gibi)
+// Team Carousel – sürekli akış, iki yönlü sonsuz döngü
 (function () {
     var track   = document.getElementById('teamTrack');
     var vp      = document.querySelector('.team-carousel-viewport');
@@ -2769,25 +2769,36 @@ function initBars() {
     var dotsEl  = document.getElementById('teamDots');
 
     var realCards = Array.prototype.slice.call(track.querySelectorAll('.team-card'));
-    var REAL = realCards.length; // 9
-    var SPEED = 0.3;             // px / frame 
+    var REAL  = realCards.length; // 9
+    var SPEED = 0.3;              // px / frame
 
-    // Tüm gerçek kartların kopyasını track'e ekle (seamless döngü)
+    // Başa klon (geri gidince sonsuz), sona klon (ileri gidince sonsuz)
     realCards.forEach(function (c) {
-        var clone = c.cloneNode(true);
-        clone.setAttribute('aria-hidden', 'true');
-        track.appendChild(clone);
+        var cl = c.cloneNode(true); cl.setAttribute('aria-hidden', 'true');
+        track.insertBefore(cl, track.firstChild);
     });
+    realCards.forEach(function (c) {
+        var cl = c.cloneNode(true); cl.setAttribute('aria-hidden', 'true');
+        track.appendChild(cl);
+    });
+    // Track: [9 prepend klon][9 gerçek][9 append klon] = 27 kart
+    // pos normal aralığı: [lw, 2×lw)  →  gerçek kartları gösterir
 
-    var cardW  = 0;
-    var gapPx  = 0;
-    var pos    = 0;   // mevcut kaydırma px
-    var paused = false;
-    var raf    = null;
+    var cardW   = 0;
+    var gapPx   = 0;
+    var pos     = 0;   // layout'ta lw'ye set edilir
+    var paused  = false;
+    var raf     = null;
     var lastDot = -1;
 
-    function getIPV() { return window.innerWidth > 899 ? 3 : 1; }
-    function loopWidth() { return REAL * (cardW + gapPx); } // bir tur mesafesi
+    function getIPV()    { return window.innerWidth > 899 ? 3 : 1; }
+    function loopWidth() { return REAL * (cardW + gapPx); }
+
+    function normalize() {
+        // pos'u [lw, 2×lw) aralığına çeker
+        var lw = loopWidth();
+        if (lw > 0) pos = ((pos % lw) + lw) % lw + lw;
+    }
 
     function layout() {
         var ipv = getIPV();
@@ -2798,9 +2809,7 @@ function initBars() {
         Array.prototype.forEach.call(track.children, function (c) {
             c.style.flex = '0 0 ' + cardW + 'px';
         });
-        // Pozisyonu loopWidth'e göre normalize et
-        var lw = loopWidth();
-        if (lw > 0) pos = pos % lw;
+        normalize();
         applyPos();
     }
 
@@ -2825,20 +2834,17 @@ function initBars() {
         if (!paused) {
             pos += SPEED;
             var lw = loopWidth();
-            if (lw > 0 && pos >= lw) pos -= lw;
+            // pos >= 2×lw → append klon bölgesinden gerçeğe döndür
+            if (lw > 0 && pos >= 2 * lw) pos -= lw;
             applyPos();
         }
         raf = requestAnimationFrame(tick);
     }
 
-    // Buton: anlık pos atlaması + devam
     function jumpBy(dir) {
         var s = getIPV() === 1 ? 1 : 3;
         pos += dir * s * (cardW + gapPx);
-        var lw = loopWidth();
-        if (lw > 0) {
-            pos = ((pos % lw) + lw) % lw;
-        }
+        normalize();
         applyPos();
     }
 
@@ -2847,27 +2853,26 @@ function initBars() {
     prevBtn.disabled = false;
     nextBtn.disabled = false;
 
-    // Dot tıklaması
     Array.prototype.forEach.call(dotsEl.querySelectorAll('.team-dot'), function (d, i) {
         d.addEventListener('click', function () {
-            pos = i * 3 * (cardW + gapPx);
+            var lw = loopWidth();
+            pos = lw + i * 3 * (cardW + gapPx);
             applyPos();
         });
     });
 
     // Desktop: mouse üzerindeyken durdur
-    // Mobil sahte mouseenter'ı engellemek için son touch zamanını takip et
     var lastTouchTime = 0;
     vp.addEventListener('mouseenter', function () {
         if (Date.now() - lastTouchTime > 500) paused = true;
     });
     vp.addEventListener('mouseleave', function () { paused = false; });
 
-    // Mobil: parmakla sürükle → gerçek zamanlı hareket, bırakınca snap
+    // Mobil: parmakla sürükle → gerçek zamanlı, bırakınca snap, iki yönlü sonsuz
     var txStart = 0, tyStart = 0;
     var posAtDragStart = 0;
     var isDragging = false;
-    var dragDir = null; // 'h' = yatay, 'v' = dikey
+    var dragDir    = null;
 
     vp.addEventListener('touchstart', function (e) {
         lastTouchTime = Date.now();
@@ -2884,25 +2889,21 @@ function initBars() {
         var dx = txStart - e.touches[0].clientX;
         var dy = tyStart - e.touches[0].clientY;
 
-        // İlk harekette yönü belirle
         if (dragDir === null) {
-            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5) {
-                dragDir = 'h';
-            } else if (Math.abs(dy) > 5) {
-                dragDir = 'v';
-                isDragging = false;
-                paused = false;
-                return;
-            } else { return; }
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5)      { dragDir = 'h'; }
+            else if (Math.abs(dy) > 5) { dragDir = 'v'; isDragging = false; paused = false; return; }
+            else { return; }
         }
         if (dragDir !== 'h') return;
+        e.preventDefault();
 
-        e.preventDefault(); // yatay sürüklemede sayfa scroll'unu engelle
-
-        var rawPos = posAtDragStart + dx;
-        // Negatife gidince hafif direnç (rubber band)
-        if (rawPos < 0) rawPos = rawPos * 0.25;
-        pos = rawPos;
+        pos = posAtDragStart + dx;
+        // Sınır dışına çok çıkılırsa hafif direnç (klonlar zaten yeter ama garanti için)
+        var lw = loopWidth();
+        if (lw > 0) {
+            if (pos < 0)       pos = pos * 0.15;
+            if (pos > 3 * lw)  pos = 3 * lw + (pos - 3 * lw) * 0.15;
+        }
         track.style.transform = 'translateX(-' + pos + 'px)';
         updateDots();
     }, { passive: false });
@@ -2913,17 +2914,17 @@ function initBars() {
         if (dragDir !== 'h') { dragDir = null; paused = false; return; }
         dragDir = null;
 
-        // En yakın karta snap
         var step = cardW + gapPx;
         if (step > 0) {
-            var idx = Math.round(pos / step);
-            idx = Math.max(0, Math.min(REAL - 1, idx));
-            var snapPos = idx * step;
+            // En yakın karta snap — sınır yok, sonsuz
+            var snapPos = Math.floor((pos + step * 0.3) / step) * step;
             track.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
             pos = snapPos;
             track.style.transform = 'translateX(-' + pos + 'px)';
             setTimeout(function () {
                 track.style.transition = 'none';
+                normalize(); // klon bölgesindeyse sessizce gerçeğe çek
+                track.style.transform = 'translateX(-' + pos + 'px)';
                 paused = false;
             }, 290);
         } else {
