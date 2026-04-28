@@ -2804,6 +2804,7 @@ function initBars() {
         var ipv = getIPV();
         gapPx = ipv > 1 ? 24 : 14;
         cardW = (vp.offsetWidth - gapPx * (ipv - 1)) / ipv;
+        if (ipv === 1) cardW -= 28; // mobilde bir sonraki kart hafifçe görünsün
         track.style.gap        = gapPx + 'px';
         track.style.transition = 'none';
         Array.prototype.forEach.call(track.children, function (c) {
@@ -2917,7 +2918,7 @@ function initBars() {
         var step = cardW + gapPx;
         if (step > 0) {
             // En yakın karta snap — sınır yok, sonsuz
-            var snapPos = Math.floor((pos + step * 0.3) / step) * step;
+            var snapPos = Math.floor((pos + step * 0.1) / step) * step;
             track.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
             pos = snapPos;
             track.style.transform = 'translateX(-' + pos + 'px)';
