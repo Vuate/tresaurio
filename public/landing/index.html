@@ -2918,7 +2918,10 @@ function initBars() {
         var step = cardW + gapPx;
         if (step > 0) {
             // En yakın karta snap — sınır yok, sonsuz
-            var snapPos = Math.floor((pos + step * 0.1) / step) * step;
+            var dragDelta = pos - posAtDragStart;
+            var snapPos = dragDelta >= 0
+                ? Math.floor((pos + step * 0.2) / step) * step   // ileri (sola kaydır)
+                : Math.ceil((pos  - step * 0.2) / step) * step;  // geri  (sağa kaydır)
             track.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
             pos = snapPos;
             track.style.transform = 'translateX(-' + pos + 'px)';
