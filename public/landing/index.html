@@ -2419,20 +2419,8 @@ const ham        = document.getElementById('hamburger');
 const mob        = document.getElementById('mobileMenu');
 const mobOverlay = document.getElementById('mobileMenuOverlay');
 if (ham && mob) {
-    let savedScrollY = 0;
-
-    function lockBodyScroll() {
-        savedScrollY = window.scrollY;
-        document.body.style.position = 'fixed';
-        document.body.style.top      = `-${savedScrollY}px`;
-        document.body.style.width    = '100%';
-    }
-    function unlockBodyScroll() {
-        document.body.style.position = '';
-        document.body.style.top      = '';
-        document.body.style.width    = '';
-        window.scrollTo(0, savedScrollY);
-    }
+    function lockBodyScroll()   { document.documentElement.style.overflow = 'hidden'; }
+    function unlockBodyScroll() { document.documentElement.style.overflow = ''; }
 
     ham.addEventListener('click', () => {
         const o = mob.classList.toggle('open');
@@ -2454,18 +2442,6 @@ if (ham && mob) {
 
     if (mobOverlay) {
         mobOverlay.addEventListener('click', closeMob);
-
-        // Overlay'de parmak → body.top'u değiştirerek sayfayı kaydır
-        let ovTouchY = 0;
-        mobOverlay.addEventListener('touchstart', e => {
-            ovTouchY = e.touches[0].clientY;
-        }, { passive: true });
-        mobOverlay.addEventListener('touchmove', e => {
-            const dy = ovTouchY - e.touches[0].clientY;
-            ovTouchY = e.touches[0].clientY;
-            savedScrollY = Math.max(0, savedScrollY + dy);
-            document.body.style.top = `-${savedScrollY}px`;
-        }, { passive: true });
     }
 }
 
