@@ -365,6 +365,7 @@
         transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
         overflow-y: auto;
+        overscroll-behavior: contain;
         display: flex; flex-direction: column;
     }
     .mobile-menu.open { transform: translateX(0); }
@@ -2414,28 +2415,47 @@ function initNavScroll() {
 // ──────────────────────────────────────────
 // HAMBURGER
 // ──────────────────────────────────────────
-const ham  = document.getElementById('hamburger');
-const mob  = document.getElementById('mobileMenu');
+const ham        = document.getElementById('hamburger');
+const mob        = document.getElementById('mobileMenu');
 const mobOverlay = document.getElementById('mobileMenuOverlay');
 if (ham && mob) {
+    let savedScrollY = 0;
+
+    function lockBodyScroll() {
+        savedScrollY = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top      = `-${savedScrollY}px`;
+        document.body.style.width    = '100%';
+    }
+    function unlockBodyScroll() {
+        document.body.style.position = '';
+        document.body.style.top      = '';
+        document.body.style.width    = '';
+        window.scrollTo(0, savedScrollY);
+    }
+
     ham.addEventListener('click', () => {
         const o = mob.classList.toggle('open');
         ham.classList.toggle('open', o);
         if (mobOverlay) mobOverlay.classList.toggle('open', o);
+        if (o) lockBodyScroll(); else unlockBodyScroll();
     });
+
     function closeMob() {
         mob.classList.remove('open');
         ham.classList.remove('open');
         if (mobOverlay) mobOverlay.classList.remove('open');
+        unlockBodyScroll();
     }
+
     const mobClose = document.getElementById('mobClose');
     if (mobClose) mobClose.addEventListener('click', closeMob);
     mob.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMob));
+
     if (mobOverlay) {
-        // Tıklama → menüyü kapat
         mobOverlay.addEventListener('click', closeMob);
 
-        // Overlay üzerinde kaydırma → sayfayı scroll et
+        // Overlay'de parmak → body.top'u değiştirerek sayfayı kaydır
         let ovTouchY = 0;
         mobOverlay.addEventListener('touchstart', e => {
             ovTouchY = e.touches[0].clientY;
@@ -2443,7 +2463,8 @@ if (ham && mob) {
         mobOverlay.addEventListener('touchmove', e => {
             const dy = ovTouchY - e.touches[0].clientY;
             ovTouchY = e.touches[0].clientY;
-            window.scrollBy(0, dy);
+            savedScrollY = Math.max(0, savedScrollY + dy);
+            document.body.style.top = `-${savedScrollY}px`;
         }, { passive: true });
     }
 }
