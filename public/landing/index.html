@@ -797,12 +797,16 @@
         transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
         z-index: 2;
         outline: none;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
     }
-    .team-carousel-btn:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-        background: var(--primary-dim);
-        transform: scale(1.07);
+    @media (hover: hover) {
+        .team-carousel-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-dim);
+            transform: scale(1.07);
+        }
     }
     .team-carousel-btn:active { transform: scale(0.95); }
     .team-carousel-btn:disabled {
@@ -1838,7 +1842,7 @@
 
         <div class="team-carousel-wrapper">
             <!-- Sol ok -->
-            <button class="team-carousel-btn" id="teamPrev" aria-label="Previous" disabled>
+            <button class="team-carousel-btn" id="teamPrev" aria-label="Previous">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
 
@@ -2427,7 +2431,21 @@ if (ham && mob) {
     const mobClose = document.getElementById('mobClose');
     if (mobClose) mobClose.addEventListener('click', closeMob);
     mob.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMob));
-    if (mobOverlay) mobOverlay.addEventListener('click', closeMob);
+    if (mobOverlay) {
+        // Tıklama → menüyü kapat
+        mobOverlay.addEventListener('click', closeMob);
+
+        // Overlay üzerinde kaydırma → sayfayı scroll et
+        let ovTouchY = 0;
+        mobOverlay.addEventListener('touchstart', e => {
+            ovTouchY = e.touches[0].clientY;
+        }, { passive: true });
+        mobOverlay.addEventListener('touchmove', e => {
+            const dy = ovTouchY - e.touches[0].clientY;
+            ovTouchY = e.touches[0].clientY;
+            window.scrollBy(0, dy);
+        }, { passive: true });
+    }
 }
 
 // ──────────────────────────────────────────
@@ -2742,89 +2760,137 @@ function initBars() {
     obs.observe(panel);
 }
 
-// Team Carousel
+// Team Carousel – sürekli akış (haber bandı gibi)
 (function () {
-    var track    = document.getElementById('teamTrack');
-    var viewport = document.querySelector('.team-carousel-viewport');
-    var prevBtn  = document.getElementById('teamPrev');
-    var nextBtn  = document.getElementById('teamNext');
-    var dotsEl   = document.getElementById('teamDots');
-    var cards    = Array.prototype.slice.call(track.querySelectorAll('.team-card'));
-    var total    = cards.length; // 9
-    var current  = 0;
-    var cardW    = 0;
-    var gapPx    = 0;
+    var track   = document.getElementById('teamTrack');
+    var vp      = document.querySelector('.team-carousel-viewport');
+    var prevBtn = document.getElementById('teamPrev');
+    var nextBtn = document.getElementById('teamNext');
+    var dotsEl  = document.getElementById('teamDots');
+
+    var realCards = Array.prototype.slice.call(track.querySelectorAll('.team-card'));
+    var REAL = realCards.length; // 9
+    var SPEED = 0.3;             // px / frame 
+
+    // Tüm gerçek kartların kopyasını track'e ekle (seamless döngü)
+    realCards.forEach(function (c) {
+        var clone = c.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+    });
+
+    var cardW  = 0;
+    var gapPx  = 0;
+    var pos    = 0;   // mevcut kaydırma px
+    var paused = false;
+    var raf    = null;
+    var lastDot = -1;
 
     function getIPV() { return window.innerWidth > 899 ? 3 : 1; }
+    function loopWidth() { return REAL * (cardW + gapPx); } // bir tur mesafesi
 
-    function layout(instant) {
+    function layout() {
         var ipv = getIPV();
-        gapPx = ipv > 1 ? 24 : 0;
-        cardW = (viewport.offsetWidth - gapPx * (ipv - 1)) / ipv;
-        track.style.gap = gapPx + 'px';
-        cards.forEach(function (c) { c.style.flex = '0 0 ' + cardW + 'px'; });
-        var maxIdx = total - ipv;
-        if (current > maxIdx) current = maxIdx;
-        apply(instant);
+        gapPx = ipv > 1 ? 24 : 14;
+        cardW = (vp.offsetWidth - gapPx * (ipv - 1)) / ipv;
+        track.style.gap        = gapPx + 'px';
+        track.style.transition = 'none';
+        Array.prototype.forEach.call(track.children, function (c) {
+            c.style.flex = '0 0 ' + cardW + 'px';
+        });
+        // Pozisyonu loopWidth'e göre normalize et
+        var lw = loopWidth();
+        if (lw > 0) pos = pos % lw;
+        applyPos();
     }
 
-    function apply(instant) {
-        var ipv = getIPV();
-        var offset = current * (cardW + gapPx);
-        if (instant) {
-            track.style.transition = 'none';
-            track.style.transform  = 'translateX(-' + offset + 'px)';
-            track.offsetHeight; // force reflow
-            track.style.transition = '';
-        } else {
-            track.style.transform = 'translateX(-' + offset + 'px)';
-        }
-        prevBtn.disabled = current === 0;
-        nextBtn.disabled = current >= total - ipv;
-        // 3 dots, active = which group of 3 we're in
-        var activeDot = Math.floor(current / 3);
+    function applyPos() {
+        track.style.transform = 'translateX(-' + pos + 'px)';
+        updateDots();
+    }
+
+    function updateDots() {
+        var step = cardW + gapPx;
+        if (step <= 0) return;
+        var idx = Math.floor(pos / step) % REAL;
+        var dot = Math.min(2, Math.floor(idx / 3));
+        if (dot === lastDot) return;
+        lastDot = dot;
         Array.prototype.forEach.call(dotsEl.querySelectorAll('.team-dot'), function (d, i) {
-            d.classList.toggle('active', i === activeDot);
+            d.classList.toggle('active', i === dot);
         });
     }
 
-    function goTo(idx) {
-        var ipv = getIPV();
-        current = Math.max(0, Math.min(idx, total - ipv));
-        apply(false);
+    function tick() {
+        if (!paused) {
+            pos += SPEED;
+            var lw = loopWidth();
+            if (lw > 0 && pos >= lw) pos -= lw;
+            applyPos();
+        }
+        raf = requestAnimationFrame(tick);
     }
 
-    // Arrow clicks: move by 1 on mobile, by 3 on desktop
-    prevBtn.addEventListener('click', function () {
-        goTo(current - (getIPV() === 1 ? 1 : 3));
-    });
-    nextBtn.addEventListener('click', function () {
-        goTo(current + (getIPV() === 1 ? 1 : 3));
-    });
+    // Buton: anlık pos atlaması + devam
+    function jumpBy(dir) {
+        var s = getIPV() === 1 ? 1 : 3;
+        pos += dir * s * (cardW + gapPx);
+        var lw = loopWidth();
+        if (lw > 0) {
+            pos = ((pos % lw) + lw) % lw;
+        }
+        applyPos();
+    }
 
-    // Dot clicks: dot 0→pos 0, dot 1→pos 3, dot 2→pos 6
+    prevBtn.addEventListener('click', function () { jumpBy(-1); this.blur(); });
+    nextBtn.addEventListener('click', function () { jumpBy(1);  this.blur(); });
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+
+    // Dot tıklaması
     Array.prototype.forEach.call(dotsEl.querySelectorAll('.team-dot'), function (d, i) {
-        d.addEventListener('click', function () { goTo(i * 3); });
+        d.addEventListener('click', function () {
+            pos = i * 3 * (cardW + gapPx);
+            applyPos();
+        });
     });
 
-    // Touch/swipe
+    // Desktop: mouse üzerindeyken durdur
+    // Mobil sahte mouseenter'ı engellemek için son touch zamanını takip et
+    var lastTouchTime = 0;
+    vp.addEventListener('mouseenter', function () {
+        if (Date.now() - lastTouchTime > 500) paused = true;
+    });
+    vp.addEventListener('mouseleave', function () { paused = false; });
+
+    // Mobil: parmak basılıyken durdur, kaldırınca devam et
     var txStart = 0;
-    viewport.addEventListener('touchstart', function (e) {
+    vp.addEventListener('touchstart', function (e) {
+        lastTouchTime = Date.now();
+        paused = true;
         txStart = e.touches[0].clientX;
     }, { passive: true });
-    viewport.addEventListener('touchend', function (e) {
+
+    vp.addEventListener('touchend', function (e) {
+        lastTouchTime = Date.now();
         var dx = e.changedTouches[0].clientX - txStart;
-        if (Math.abs(dx) > 48) goTo(current + (dx < 0 ? (getIPV() === 1 ? 1 : 3) : -(getIPV() === 1 ? 1 : 3)));
+        if (Math.abs(dx) > 48) jumpBy(dx < 0 ? 1 : -1);
+        paused = false;
     }, { passive: true });
 
-    // Resize: recalculate without animation
+    vp.addEventListener('touchcancel', function () {
+        lastTouchTime = Date.now();
+        paused = false;
+    }, { passive: true });
+
     var resizeTimer;
     window.addEventListener('resize', function () {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function () { layout(true); }, 120);
+        resizeTimer = setTimeout(layout, 120);
     });
 
-    layout(true);
+    layout();
+    raf = requestAnimationFrame(tick);
 }());
 </script>
 </body>
