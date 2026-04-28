@@ -2915,25 +2915,9 @@ function initBars() {
         if (dragDir !== 'h') { dragDir = null; paused = false; return; }
         dragDir = null;
 
-        var step = cardW + gapPx;
-        if (step > 0) {
-            // En yakın karta snap — sınır yok, sonsuz
-            var dragDelta = pos - posAtDragStart;
-            var snapPos = dragDelta >= 0
-                ? Math.floor((pos + step * 0.2) / step) * step   // ileri (sola kaydır)
-                : Math.ceil((pos  - step * 0.2) / step) * step;  // geri  (sağa kaydır)
-            track.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
-            pos = snapPos;
-            track.style.transform = 'translateX(-' + pos + 'px)';
-            setTimeout(function () {
-                track.style.transition = 'none';
-                normalize(); // klon bölgesindeyse sessizce gerçeğe çek
-                track.style.transform = 'translateX(-' + pos + 'px)';
-                paused = false;
-            }, 290);
-        } else {
-            paused = false;
-        }
+        // Snap yok — parmak nerede bırakılırsa döngü oradan devam eder
+        normalize();
+        paused = false;
         updateDots();
     }, { passive: true });
 
