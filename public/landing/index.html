@@ -2863,23 +2863,79 @@ function initBars() {
     });
     vp.addEventListener('mouseleave', function () { paused = false; });
 
-    // Mobil: parmak basılıyken durdur, kaldırınca devam et
-    var txStart = 0;
+    // Mobil: parmakla sürükle → gerçek zamanlı hareket, bırakınca snap
+    var txStart = 0, tyStart = 0;
+    var posAtDragStart = 0;
+    var isDragging = false;
+    var dragDir = null; // 'h' = yatay, 'v' = dikey
+
     vp.addEventListener('touchstart', function (e) {
         lastTouchTime = Date.now();
         paused = true;
         txStart = e.touches[0].clientX;
+        tyStart = e.touches[0].clientY;
+        posAtDragStart = pos;
+        isDragging = true;
+        dragDir = null;
     }, { passive: true });
+
+    vp.addEventListener('touchmove', function (e) {
+        if (!isDragging) return;
+        var dx = txStart - e.touches[0].clientX;
+        var dy = tyStart - e.touches[0].clientY;
+
+        // İlk harekette yönü belirle
+        if (dragDir === null) {
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5) {
+                dragDir = 'h';
+            } else if (Math.abs(dy) > 5) {
+                dragDir = 'v';
+                isDragging = false;
+                paused = false;
+                return;
+            } else { return; }
+        }
+        if (dragDir !== 'h') return;
+
+        e.preventDefault(); // yatay sürüklemede sayfa scroll'unu engelle
+
+        var rawPos = posAtDragStart + dx;
+        // Negatife gidince hafif direnç (rubber band)
+        if (rawPos < 0) rawPos = rawPos * 0.25;
+        pos = rawPos;
+        track.style.transform = 'translateX(-' + pos + 'px)';
+        updateDots();
+    }, { passive: false });
 
     vp.addEventListener('touchend', function (e) {
         lastTouchTime = Date.now();
-        var dx = e.changedTouches[0].clientX - txStart;
-        if (Math.abs(dx) > 48) jumpBy(dx < 0 ? 1 : -1);
-        paused = false;
+        isDragging = false;
+        if (dragDir !== 'h') { dragDir = null; paused = false; return; }
+        dragDir = null;
+
+        // En yakın karta snap
+        var step = cardW + gapPx;
+        if (step > 0) {
+            var idx = Math.round(pos / step);
+            idx = Math.max(0, Math.min(REAL - 1, idx));
+            var snapPos = idx * step;
+            track.style.transition = 'transform 0.28s cubic-bezier(0.4,0,0.2,1)';
+            pos = snapPos;
+            track.style.transform = 'translateX(-' + pos + 'px)';
+            setTimeout(function () {
+                track.style.transition = 'none';
+                paused = false;
+            }, 290);
+        } else {
+            paused = false;
+        }
+        updateDots();
     }, { passive: true });
 
     vp.addEventListener('touchcancel', function () {
         lastTouchTime = Date.now();
+        isDragging = false;
+        dragDir = null;
         paused = false;
     }, { passive: true });
 
