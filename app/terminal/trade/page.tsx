@@ -6,7 +6,7 @@ import TradeCTA from "@/components/terminal/trade/TradeCTA";
 
 export default function TradePage() {
   return (
-    <div className="min-h-screen bg-[#031A1C] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <TradeHero />
 
       <div className="w-full mx-auto px-6 py-8">

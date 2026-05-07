@@ -118,11 +118,6 @@ className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-
 >
         <div className="space-y-1">
           <SidebarItem
-            title="Personalized Dashboard"
-            active={pathname === "/personalized-dashboard"}
-            onClick={() => router.push("/personalized-dashboard")}
-          />
-          <SidebarItem
             title="Home"
             active={pathname === "/terminal/home"}
             onClick={() => router.push("/terminal/home")}

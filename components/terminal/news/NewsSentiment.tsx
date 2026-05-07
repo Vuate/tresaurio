@@ -1,70 +1,85 @@
 const sentimentData = [
-  { label: "Bullish Sentiment", value: "68%", width: 68, color: "bullish" },
-  { label: "Neutral Sentiment", value: "18%", width: 18, color: "neutral" },
-  { label: "Bearish Sentiment", value: "14%", width: 14, color: "bearish" },
+  { label: "Bullish Sentiment", value: "68%", width: 68, color: "bullish" as const },
+  { label: "Neutral Sentiment", value: "18%", width: 18, color: "neutral" as const },
+  { label: "Bearish Sentiment", value: "14%", width: 14, color: "bearish" as const },
 ];
 
 export default function NewsSentiment() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Dashboard
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           Market Sentiment Dashboard
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           Overall market sentiment derived from analyzing all news articles
         </p>
       </div>
 
-      <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-          {sentimentData.map((sentiment, index) => (
-            <div
-              key={index}
-              className="bg-[#041F20]/95 rounded-lg sm:rounded-xl p-4 sm:p-5 lg:p-6 text-center"
-            >
-              <div className="text-[11px] sm:text-xs lg:text-sm text-gray-400 mb-2 sm:mb-3">
-                {sentiment.label}
-              </div>
+      <div className="rounded-xl border border-border-sub bg-card p-6 lg:p-8">
+        {/* Panel header */}
+        <div className="flex justify-between items-center mb-6 pb-4 border-b border-border-sub">
+          <div className="text-[0.95rem] font-bold text-foreground">Sentiment Overview</div>
+          <span className="text-[0.72rem] text-[#71717A]">Based on last 24h</span>
+        </div>
 
+        {/* Sentiment metric rows — index.html metric-row pattern */}
+        <div className="flex flex-col gap-5 mb-6">
+          {sentimentData.map((s, i) => (
+            <div key={i} className="flex items-center gap-3">
               <div
-                className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-1.5 sm:mb-2 ${
-                  sentiment.color === "bullish"
-                    ? "text-green-500"
-                    : sentiment.color === "neutral"
-                    ? "text-gray-400"
-                    : "text-red-500"
-                }`}
+                className="text-[0.78rem] font-semibold text-[#71717A] shrink-0"
+                style={{ minWidth: "100px" }}
               >
-                {sentiment.value}
+                {s.label}
               </div>
-
-              <div className="w-full h-1.5 sm:h-2 bg-white/10 rounded overflow-hidden">
+              <div className="flex-1 h-1.25 bg-input rounded-full overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-1000 ${
-                    sentiment.color === "bullish"
-                      ? "bg-green-500"
-                      : sentiment.color === "neutral"
-                      ? "bg-gray-400"
-                      : "bg-red-500"
+                  className={`h-full rounded-full transition-all duration-1200 ${
+                    s.color === "bullish"
+                      ? "bg-emerald-400"
+                      : s.color === "neutral"
+                      ? "bg-[#71717A]"
+                      : "bg-red-400"
                   }`}
-                  style={{ width: `${sentiment.width}%` }}
+                  style={{ width: `${s.width}%` }}
                 />
+              </div>
+              <div
+                className={`text-[0.78rem] font-bold shrink-0 text-right ${
+                  s.color === "bullish"
+                    ? "text-emerald-400"
+                    : s.color === "neutral"
+                    ? "text-[#71717A]"
+                    : "text-red-400"
+                }`}
+                style={{ minWidth: "38px" }}
+              >
+                {s.value}
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 sm:mt-7 lg:mt-8 p-4 sm:p-5 lg:p-6 bg-[#041F20]/95 rounded-lg sm:rounded-xl text-center">
-          <div className="text-xs sm:text-sm text-gray-400 mb-1.5 sm:mb-2">
+        {/* Overall result card */}
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5 text-center">
+          <div
+            className="text-[#71717A] mb-2 uppercase"
+            style={{ fontSize: "0.68rem", letterSpacing: "0.12em", fontWeight: 700 }}
+          >
             Overall Market Sentiment
           </div>
-          <div className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-green-500">
-            BULLISH
-          </div>
-          <div className="text-[11px] sm:text-xs lg:text-sm text-gray-300 mt-1.5 sm:mt-2">
-            Based on 247 news articles in the last 24 hours
-          </div>
+          <div className="text-3xl font-black text-emerald-400 mb-1">BULLISH</div>
+          <div className="text-[0.78rem] text-[#71717A]">Based on 247 news articles in the last 24 hours</div>
         </div>
       </div>
     </section>

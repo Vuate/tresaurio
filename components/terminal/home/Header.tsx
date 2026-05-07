@@ -40,16 +40,16 @@ export default function Header() {
       <div className="flex justify-between items-end relative z-10">
         <div className="space-y-1.5 xl:space-y-2">
 <h1
-  className="text-6xl xl:text-7xl 2xl:text-8xl font-extrabold text-white/90 translate-y-24 xl:translate-y-28 2xl:translate-y-32"
+  className="text-[clamp(1.9rem,8vw,3.75rem)] xl:text-7xl 2xl:text-8xl font-extrabold text-foreground/90 translate-y-[clamp(4rem,calc(2rem+10vw),6rem)] xl:translate-y-28 2xl:translate-y-32"
 >
   Treasurio
 </h1>
 
-          <p className="text-gray-400 text-xs xl:text-sm 2xl:text-[15px] translate-y-[118px] xl:translate-y-[126px] 2xl:translate-y-[134px]">
+          <p className="text-gray-400 text-xs xl:text-sm 2xl:text-[15px] translate-y-[clamp(4.875rem,calc(2.375rem+12.5vw),7.375rem)] xl:translate-y-31.5 2xl:translate-y-33.5">
            Institutional Market Depth • Liquidity • Risk • Data Analytics
           </p>
 
-          <div className="w-40 xl:w-44 2xl:w-48 h-[2.5px] xl:h-[3px] bg-gradient-to-r from-cyan-400/40 to-purple-500/40 rounded-full translate-y-[118px] xl:translate-y-[126px] 2xl:translate-y-[134px]"></div>
+          <div className="w-40 xl:w-44 2xl:w-48 h-[2.5px] xl:h-[3px] bg-gradient-to-r from-cyan-400/40 to-purple-500/40 rounded-full translate-y-[clamp(4.875rem,calc(2.375rem+12.5vw),7.375rem)] xl:translate-y-31.5 2xl:translate-y-33.5"></div>
         </div>
         <div className="flex items-center gap-6 xl:gap-7 2xl:gap-8">
 <div className="relative w-[220px] xl:w-[250px] 2xl:w-[280px] h-[95px] xl:h-[110px] 2xl:h-[125px] scale-[.42] xl:scale-[.47] 2xl:scale-[.52] opacity-40 pointer-events-none -ml-[420px] xl:-ml-[440px] 2xl:-ml-[460px]">

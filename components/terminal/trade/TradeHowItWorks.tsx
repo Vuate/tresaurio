@@ -1,72 +1,115 @@
+const steps = [
+  {
+    number: 1,
+    title: "Exchange Connection",
+    description: "Connect your exchanges (Binance, OKX, Bybit, etc.) via API or manually enter your positions.",
+  },
+  {
+    number: 2,
+    title: "Position Tracking",
+    description: "All your spot and futures positions are automatically loaded to the dashboard. Real-time prices and PnL calculations are updated instantly.",
+  },
+  {
+    number: 3,
+    title: "Analysis & Insights",
+    description: "Analyze your portfolio performance. View your most profitable / losing positions, risk level, and diversification status.",
+  },
+  {
+    number: 4,
+    title: "Optimization",
+    description: "Apply risk management recommendations, set stop-loss levels, and optimize your portfolio allocation.",
+  },
+];
+
 export default function TradeHowItWorks() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16 rounded-xl bg-surface border border-border-sub py-12 lg:py-14 px-6 lg:px-10">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Process
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           How It Works?
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           4 steps to start using Trade &amp; Portfolio Management
         </p>
       </div>
 
-      {/* Steps */}
-      <div className="steps grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-        {/* STEP 1 */}
-        <div className="step rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur">
-          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-white">
-            1
-          </div>
-          <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Exchange Connection
-                      </h3>
-          <p className="step-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Connect your exchanges (Binance, OKX, Bybit, etc.) via API
-            or manually enter your positions.
-          </p>
-        </div>
+      {/* Desktop: 4 steps with arrows */}
+      <div
+        className="items-start hidden xl:grid"
+        style={{ gridTemplateColumns: "1fr 32px 1fr 32px 1fr 32px 1fr" }}
+      >
+        {steps.map((step, i) => (
+          <>
+            <div key={step.number} className="text-center px-5">
+              <div className="w-17 h-17 rounded-[18px] flex items-center justify-center mx-auto mb-5 bg-[#2563EB]/10 border border-[#2563EB]/25">
+                <span className="text-2xl font-black text-[#2563EB]">{step.number}</span>
+              </div>
+              <div
+                className="font-bold uppercase text-[#71717A] mb-2"
+                style={{ fontSize: "0.67rem", letterSpacing: "0.1em" }}
+              >
+                Step 0{step.number}
+              </div>
+              <h3 className="text-[1.05rem] font-bold text-foreground mb-2">{step.title}</h3>
+              <p className="text-[0.875rem] text-[#71717A] leading-[1.7]">{step.description}</p>
+            </div>
 
-        {/* STEP 2 */}
-        <div className="step rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur">
-          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-white">
-            2
-          </div>
-          <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Position Tracking
-          </h3>
-          <p className="step-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            All your spot and futures positions are automatically loaded to the dashboard.
-            Real-time prices and PnL calculations are updated instantly.
-          </p>
-        </div>
+            {i < steps.length - 1 && (
+              <div key={`arrow-${i}`} className="flex items-start justify-center pt-8.5 opacity-35">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
+            )}
+          </>
+        ))}
+      </div>
 
-        {/* STEP 3 */}
-        <div className="step rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur">
-          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-white">
-            3
+      {/* Tablet: 2 column grid */}
+      <div className="hidden sm:grid xl:hidden grid-cols-2 gap-10">
+        {steps.map((step) => (
+          <div key={step.number} className="text-center px-2">
+            <div className="w-17 h-17 rounded-[18px] flex items-center justify-center mx-auto mb-5 bg-[#2563EB]/10 border border-[#2563EB]/25">
+              <span className="text-2xl font-black text-[#2563EB]">{step.number}</span>
+            </div>
+            <div
+              className="font-bold uppercase text-[#71717A] mb-2"
+              style={{ fontSize: "0.67rem", letterSpacing: "0.1em" }}
+            >
+              Step 0{step.number}
+            </div>
+            <h3 className="text-[1.05rem] font-bold text-foreground mb-2">{step.title}</h3>
+            <p className="text-[0.875rem] text-[#71717A] leading-[1.7]">{step.description}</p>
           </div>
-          <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Analysis &amp; Insights
-          </h3>
-          <p className="step-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Analyze your portfolio performance. View your most profitable / losing
-            positions, risk level, and diversification status.
-          </p>
-        </div>
+        ))}
+      </div>
 
-        {/* STEP 4 */}
-        <div className="step rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 lg:p-6 xl:p-7 backdrop-blur">
-          <div className="step-number mb-2 sm:mb-3 lg:mb-4 flex h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 xl:h-11 xl:w-11 items-center justify-center rounded-full bg-teal-400/10 text-sm sm:text-base lg:text-lg xl:text-xl font-extrabold text-white">
-            4
+      {/* Mobile: single column */}
+      <div className="flex flex-col gap-10 sm:hidden">
+        {steps.map((step) => (
+          <div key={step.number} className="text-center px-2">
+            <div className="w-17 h-17 rounded-[18px] flex items-center justify-center mx-auto mb-5 bg-[#2563EB]/10 border border-[#2563EB]/25">
+              <span className="text-2xl font-black text-[#2563EB]">{step.number}</span>
+            </div>
+            <div
+              className="font-bold uppercase text-[#71717A] mb-2"
+              style={{ fontSize: "0.67rem", letterSpacing: "0.1em" }}
+            >
+              Step 0{step.number}
+            </div>
+            <h3 className="text-[1.05rem] font-bold text-foreground mb-2">{step.title}</h3>
+            <p className="text-[0.875rem] text-[#71717A] leading-[1.7]">{step.description}</p>
           </div>
-          <h3 className="step-title text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Optimization
-          </h3>
-          <p className="step-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Apply risk management recommendations, set stop-loss levels,
-            and optimize your portfolio allocation.
-          </p>
-        </div>
+        ))}
       </div>
     </section>
   );

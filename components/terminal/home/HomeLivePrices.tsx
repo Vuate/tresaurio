@@ -125,18 +125,18 @@ if (loading)
       {/* Header */}
       <div className="flex items-end justify-between mb-6">
         <div className="flex items-end gap-4">
-          <div className="h-7 w-48 bg-white/10 rounded-lg" />
-          <div className="h-4 w-12 bg-white/10 rounded-md mb-0.5" />
+          <div className="h-7 w-48 bg-foreground/10 rounded-lg" />
+          <div className="h-4 w-12 bg-foreground/10 rounded-md mb-0.5" />
         </div>
-        <div className="h-4 w-32 bg-white/10 rounded-md" />
+        <div className="h-4 w-32 bg-foreground/10 rounded-md" />
       </div>
 
       {/* Table */}
-      <div className="border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
+      <div className="border border-border-emphasis rounded-xl overflow-hidden divide-y divide-border-sub">
         {/* Header row */}
-        <div className="hidden lg:grid grid-cols-[200px_1fr_160px_100px] px-4 py-2.5 bg-white/[0.02] gap-4">
+        <div className="hidden lg:grid grid-cols-[200px_1fr_160px_100px] px-4 py-2.5 bg-foreground/2 gap-4">
           {["w-10", "w-10", "w-10", "w-10"].map((w, i) => (
-            <div key={i} className={`h-3 ${w} bg-white/10 rounded`} />
+            <div key={i} className={`h-3 ${w} bg-foreground/10 rounded`} />
           ))}
         </div>
 
@@ -148,21 +148,21 @@ if (loading)
           >
             {/* Icon + name */}
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-white/10 rounded-lg shrink-0" />
+              <div className="w-9 h-9 bg-foreground/10 rounded-lg shrink-0" />
               <div className="flex flex-col gap-1.5">
-                <div className="h-3 w-10 bg-white/10 rounded" />
-                <div className="h-2.5 w-14 bg-white/10 rounded" />
+                <div className="h-3 w-10 bg-foreground/10 rounded" />
+                <div className="h-2.5 w-14 bg-foreground/10 rounded" />
               </div>
             </div>
 
             {/* Trend line */}
-            <div className="h-5 w-24 bg-white/10 rounded col-span-2 lg:col-span-1" />
+            <div className="h-5 w-24 bg-foreground/10 rounded col-span-2 lg:col-span-1" />
 
             {/* Price */}
-            <div className="h-4 w-20 bg-white/10 rounded ml-auto" />
+            <div className="h-4 w-20 bg-foreground/10 rounded ml-auto" />
 
             {/* % */}
-            <div className="h-3.5 w-12 bg-white/10 rounded ml-auto" />
+            <div className="h-3.5 w-12 bg-foreground/10 rounded ml-auto" />
           </div>
         ))}
       </div>
@@ -173,7 +173,7 @@ if (loading)
     <div className="w-full mt-60 xl:mt-62 2xl:mt-64">
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 sm:mb-6 xl:mb-7 2xl:mb-8 gap-2 sm:gap-0">
         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-2 sm:gap-4 xl:gap-5 2xl:gap-6">
-          <h2 className="text-lg sm:text-xl md:text-2xl xl:text-[28px] 2xl:text-3xl font-extrabold text-white leading-none">
+          <h2 className="text-lg sm:text-xl md:text-2xl xl:text-[28px] 2xl:text-3xl font-extrabold text-foreground leading-none">
          Live Market Prices
           </h2>
 
@@ -187,14 +187,14 @@ if (loading)
           <p className="text-gray-400 text-[9px] sm:text-[10px] xl:text-[11px] 2xl:text-xs uppercase whitespace-nowrap">
             Last Update:
           </p>
-          <p className="text-white font-semibold text-[10px] sm:text-xs xl:text-[13px] 2xl:text-sm whitespace-nowrap">
+          <p className="text-foreground font-semibold text-[10px] sm:text-xs xl:text-[13px] 2xl:text-sm whitespace-nowrap">
             {time}
           </p>
         </div>
       </div>
 
-      <div className="divide-y divide-white/5 border border-white/10 rounded-lg sm:rounded-xl xl:rounded-2xl 2xl:rounded-2xl overflow-hidden">
-        <div className="hidden lg:grid grid-cols-[200px_minmax(100px,1fr)_160px_100px] xl:grid-cols-[220px_minmax(120px,1fr)_180px_110px] 2xl:grid-cols-[240px_minmax(140px,1fr)_200px_120px] px-4 xl:px-5 2xl:px-6 py-2.5 xl:py-3 bg-white/[0.02] text-[11px] xl:text-xs 2xl:text-xs text-gray-400 uppercase tracking-wider">
+      <div className="divide-y divide-border-sub border border-border-emphasis rounded-lg sm:rounded-xl xl:rounded-2xl 2xl:rounded-2xl overflow-hidden">
+        <div className="hidden lg:grid grid-cols-[200px_minmax(100px,1fr)_160px_100px] xl:grid-cols-[220px_minmax(120px,1fr)_180px_110px] 2xl:grid-cols-[240px_minmax(140px,1fr)_200px_120px] px-4 xl:px-5 2xl:px-6 py-2.5 xl:py-3 bg-foreground/2 text-[11px] xl:text-xs 2xl:text-xs text-[#71717A] uppercase tracking-wider">
           <span>Coin</span>
           <span>Trend</span>
           <span className="text-right">Price</span>
@@ -220,7 +220,7 @@ if (loading)
                 lg:grid-cols-[200px_minmax(100px,1fr)_160px_100px] lg:gap-x-0 lg:px-4 lg:py-3
                 xl:grid-cols-[220px_minmax(120px,1fr)_180px_110px] xl:px-5 xl:py-3.5
                 2xl:grid-cols-[240px_minmax(140px,1fr)_200px_120px] 2xl:px-6 2xl:py-4
-                hover:bg-white/[0.03] transition-all
+                hover:bg-foreground/3 transition-all
                 items-center
               "
             >
@@ -233,7 +233,7 @@ if (loading)
                 />
 
                 <div className="lg:block">
-                  <p className="text-white font-semibold text-xs sm:text-sm lg:text-sm xl:text-[15px] 2xl:text-base leading-none">{name}</p>
+                  <p className="text-foreground font-semibold text-xs sm:text-sm lg:text-sm xl:text-[15px] 2xl:text-base leading-none">{name}</p>
                   <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-[11px] xl:text-xs 2xl:text-xs mt-0.5">{p.symbol}</p>
                 </div>
               </div>
@@ -242,7 +242,7 @@ if (loading)
                 <TrendLine data={trendData[p.symbol]} />
               </div>
 
-              <p className="text-white text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl font-semibold text-right col-span-1 lg:text-right leading-none">
+              <p className="text-foreground text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl font-semibold text-right col-span-1 lg:text-right leading-none">
                 ${Number(p.lastPrice).toLocaleString()}
               </p>
 

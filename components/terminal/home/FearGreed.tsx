@@ -26,7 +26,7 @@ export default function FearGreed() {
   if (loading || !indexData) {
     return (
       <div>
-        <h3 className="text-lg xl:text-xl 2xl:text-2xl font-bold text-white mb-2 xl:mb-2.5 2xl:mb-3">
+        <h3 className="text-lg xl:text-xl 2xl:text-2xl font-bold text-foreground mb-2 xl:mb-2.5 2xl:mb-3">
               Fear & Greed Index
         </h3>
         <p className="text-gray-500 text-sm xl:text-[15px] 2xl:text-base">Loading...</p>
@@ -50,7 +50,7 @@ export default function FearGreed() {
       <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-purple-600/20 via-cyan-500/20 to-transparent blur-3xl pointer-events-none" />
 
       {/* TITLE */}
-      <h3 className="text-xl xl:text-2xl 2xl:text-[28px] font-bold text-white mb-5 xl:mb-6 2xl:mb-7 mt-4 xl:mt-5 2xl:mt-6 relative z-10">
+      <h3 className="text-xl xl:text-2xl 2xl:text-[28px] font-bold text-foreground mb-5 xl:mb-6 2xl:mb-7 mt-4 xl:mt-5 2xl:mt-6 relative z-10">
          Fear & Greed Index
       </h3>
 

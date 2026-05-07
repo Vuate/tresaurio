@@ -1,12 +1,6 @@
 import Head from "next/head";
 import { Icon } from "@iconify/react";
 
-const stats = [
-  { value: "39", label: "Reporting Modules" },
-  { value: "8", label: "Categories" },
-  { value: "∞", label: "Custom Reports" },
-];
-
 export default function ReportingHero() {
   return (
     <>
@@ -17,31 +11,77 @@ export default function ReportingHero() {
         />
       </Head>
 
-      <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 pb-5 sm:pb-7 lg:pb-9 text-center bg-gradient-to-b from-teal-500/5 to-transparent border-b border-white/10">
-        <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-3 sm:mb-4 lg:mb-5 inline-block animate-float text-[#1A73E8]/65">
-          <Icon icon="mdi:file-chart-outline" />
-        </div>
+      <div className="relative px-6 py-16 lg:py-20 text-center overflow-hidden border-b border-border-sub">
+        {/* Grid background */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
+        {/* Radial glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(37,99,235,0.12)_0%,transparent_65%)] pointer-events-none z-0" />
 
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black mb-2 sm:mb-3 lg:mb-4 text-white">
-          Reporting Engine
-        </h1>
+        <div className="relative z-10">
+          {/* Hero badge */}
+          <div className="inline-flex items-center px-4.5 py-1.75 mb-7 bg-surface-overlay border border-border-overlay rounded-full text-[0.78rem] font-medium text-[#71717A]">
+            Professional Crypto Reporting
+          </div>
 
-        <p className="text-sm sm:text-base lg:text-lg xl:text-xl 2xl:text-2xl text-gray-300 max-w-xl lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl mx-auto mb-6 sm:mb-7 lg:mb-8 xl:mb-10 leading-relaxed px-4">
-          Create professional crypto reports with 39 modules across 8 categories. Automated data collection, 
-          AI-powered insights, and customizable templates.
-        </p>
-
-        <div className="flex flex-col md:flex-row gap-6 sm:gap-8 lg:gap-10 xl:gap-12 justify-center">
-          {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-1 sm:mb-1.5 lg:mb-2">
-                {stat.value}
-              </div>
-              <div className="text-xs sm:text-sm text-gray-400">
-                {stat.label}
-              </div>
+          {/* Icon */}
+          <div className="flex justify-center mb-5">
+            <div className="w-17 h-17 flex items-center justify-center rounded-[18px] bg-[#2563EB]/10 border border-[#2563EB]/25">
+              <Icon icon="mdi:file-chart-outline" className="text-3xl text-[#2563EB]" />
             </div>
-          ))}
+          </div>
+
+          {/* Title */}
+          <h1
+            className="font-black leading-[1.08] tracking-[-0.035em] mb-5"
+            style={{ fontSize: "clamp(1.75rem, 9vw, 5rem)" }}
+          >
+            <span className="text-foreground">Reporting </span>
+            <span
+              className="bg-clip-text text-transparent"
+              style={{ backgroundImage: "linear-gradient(135deg, #2563EB 0%, #00C8FF 100%)" }}
+            >
+              Engine
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-[1.05rem] text-[#71717A] leading-[1.75] mb-9 max-w-140 mx-auto px-4">
+            Create professional crypto reports with 39 modules across 8 categories. Automated data collection,
+            AI-powered insights, and customizable templates.
+          </p>
+
+          {/* Stats row */}
+          <div className="flex gap-6 sm:gap-10 justify-center mb-8">
+            {[
+              { value: "39", label: "Reporting Modules" },
+              { value: "8", label: "Categories" },
+              { value: "∞", label: "Custom Reports" },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-xl sm:text-2xl font-black text-[#2563EB]">{stat.value}</div>
+                <div className="text-xs text-[#71717A] mt-0.5">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Feature badges */}
+          <div className="flex gap-2 sm:gap-3 justify-center flex-wrap px-4">
+            {["PDF & Excel Export", "AI-Powered Insights", "Custom Templates", "Scheduled Reports"].map((badge) => (
+              <span
+                key={badge}
+                className="px-3 py-1.5 bg-surface-overlay border border-border-overlay rounded-full text-xs font-medium text-[#71717A]"
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </>

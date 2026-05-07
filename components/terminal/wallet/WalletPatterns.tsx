@@ -1,62 +1,59 @@
 import { Icon } from "@iconify/react";
 
 const patterns = [
-  // === CORE MARKET STRUCTURE ===
   { icon: "material-symbols:trending-up-rounded", name: "Accumulation" },
   { icon: "material-symbols:trending-down-rounded", name: "Distribution" },
-
-  // === WHALE ACTIONS ===
   { icon: "lucide:crosshair", name: "Whale Buy" },
   { icon: "lucide:circle-dollar-sign", name: "Whale Sell" },
-
-  // === EXCHANGE FLOWS ===
   { icon: "lucide:building-2", name: "Exchange Dump" },
   { icon: "material-symbols:swap-horiz-rounded", name: "CEX↔DEX Flow" },
-
-  // === MOMENTUM EVENTS ===
   { icon: "lucide:zap", name: "Flash Accumulation" },
   { icon: "lucide:rocket", name: "Pump Setup" },
-
-  // === SMART MONEY ===
   { icon: "lucide:line-chart", name: "Smart Money Entry" },
   { icon: "lucide:log-out", name: "Smart Money Exit" },
-
-  // === RISK / MANIPULATION ===
   { icon: "lucide:eye", name: "Insider Trading" },
   { icon: "lucide:waves", name: "Whale Wash Trade" },
-
   { icon: "lucide:shuffle", name: "Manipulation" },
   { icon: "lucide:repeat", name: "Fake Volume" },
-
-  // === PSYCHOLOGY ===
   { icon: "lucide:gem", name: "Diamond Hands" },
   { icon: "lucide:brain-circuit", name: "Strategic Hold" },
 ];
 
 export default function WalletPatterns() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16 rounded-xl bg-surface border border-border-sub py-12 lg:py-14 px-6 lg:px-10">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Detection Engine
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           16 Smart Money Patterns
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           Automatically detected smart money behavioral patterns
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-        {patterns.map((pattern, index) => (
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        {patterns.map((pattern, i) => (
           <div
-            key={index}
-            className="bg-[#041F20] border border-white/10 rounded-lg sm:rounded-xl p-4 sm:p-5 text-center transition-all duration-300 hover:border-teal-400 hover:-translate-y-0.5"
+            key={i}
+            className="group rounded-xl border border-border-sub bg-card p-4 text-center transition-all duration-250 hover:-translate-y-0.5 hover:border-[#2563EB]/25 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
           >
             <Icon
               icon={pattern.icon}
-              className="text-2xl sm:text-3xl lg:text-[32px] mb-2 sm:mb-3 text-[#1A73E8]/75 mx-auto"
+              className="text-2xl text-[#2563EB] mx-auto mb-2 group-hover:scale-110 transition-transform duration-250"
             />
-            
-            <div className="text-xs sm:text-sm font-semibold text-white">
+            <div
+              className="font-semibold text-[#71717A] leading-tight group-hover:text-foreground transition-colors duration-250"
+              style={{ fontSize: "0.68rem" }}
+            >
               {pattern.name}
             </div>
           </div>

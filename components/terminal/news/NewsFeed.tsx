@@ -2,27 +2,24 @@ const newsItems = [
   {
     source: "COINDESK",
     time: "5 min ago",
-    title:
-      "SEC Approves Bitcoin Spot ETF Applications from BlackRock and Fidelity",
-    sentiment: "bullish",
+    title: "SEC Approves Bitcoin Spot ETF Applications from BlackRock and Fidelity",
+    sentiment: "bullish" as const,
     sentimentScore: "92/100",
     impact: "+3.8% in 5min",
   },
   {
     source: "BLOOMBERG",
     time: "12 min ago",
-    title:
-      "Ethereum Network Upgrade Successfully Completed, Gas Fees Drop 40%",
-    sentiment: "bullish",
+    title: "Ethereum Network Upgrade Successfully Completed, Gas Fees Drop 40%",
+    sentiment: "bullish" as const,
     sentimentScore: "87/100",
     impact: "+2.1% in 15min",
   },
   {
     source: "COINTELEGRAPH",
     time: "1 hour ago",
-    title:
-      "Major Exchange Reports $50M Security Breach, Trading Temporarily Halted",
-    sentiment: "bearish",
+    title: "Major Exchange Reports $50M Security Breach, Trading Temporarily Halted",
+    sentiment: "bearish" as const,
     sentimentScore: "78/100",
     impact: "-5.2% in 1h",
   },
@@ -30,46 +27,66 @@ const newsItems = [
 
 export default function NewsFeed() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Live Preview
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           Sample News Feed
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           News cards with AI-powered sentiment analysis
         </p>
       </div>
 
-      <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
-          {newsItems.map((news, index) => (
+      <div className="rounded-xl border border-border-sub bg-card p-6 lg:p-8">
+        {/* Panel header */}
+        <div className="flex justify-between items-center mb-5 pb-4 border-b border-border-sub">
+          <div className="text-[0.95rem] font-bold text-foreground">Live News Feed</div>
+          <span
+            className="px-3 py-1 rounded-full font-bold bg-[#2563EB]/15 text-[#2563EB] border border-[#2563EB]/25 uppercase"
+            style={{ fontSize: "0.625rem", letterSpacing: "0.05em" }}
+          >
+            Live
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
+          {newsItems.map((news, i) => (
             <div
-              key={index}
-              className="bg-[#041F20]/95 border border-white/10 rounded-lg sm:rounded-xl p-4 sm:p-5 transition-all duration-300 hover:border-teal-400 hover:-translate-y-0.5"
+              key={i}
+              className="rounded-xl border border-border-sub bg-card-alt p-5 transition-all duration-250 hover:-translate-y-0.5 hover:border-[#2563EB]/25 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
             >
-              <div className="flex justify-between items-center mb-2 sm:mb-3">
-                <div className="text-[10px] sm:text-[11px] text-gray-400 font-semibold">
-                  {news.source}
-                </div>
-                <div className="text-[10px] sm:text-[11px] text-gray-400">{news.time}</div>
-              </div>
-
-              <div className="text-sm sm:text-base font-bold mb-3 sm:mb-4 leading-snug">
-                {news.title}
-              </div>
-
-              <div className="flex gap-2 sm:gap-3">
+              <div className="flex justify-between items-center mb-3">
                 <span
-                  className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-bold ${
+                  className="font-bold text-[#2563EB] tracking-widest"
+                  style={{ fontSize: "0.68rem" }}
+                >
+                  {news.source}
+                </span>
+                <span className="text-[0.72rem] text-[#71717A]">{news.time}</span>
+              </div>
+
+              <p className="text-[0.875rem] font-semibold text-foreground leading-snug mb-4">{news.title}</p>
+
+              <div className="flex gap-2 flex-wrap">
+                <span
+                  className={`px-2.5 py-1 rounded-lg text-[0.72rem] font-bold border ${
                     news.sentiment === "bullish"
-                      ? "bg-green-500/20 text-green-500"
-                      : "bg-red-500/20 text-red-500"
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      : "bg-red-500/10 text-red-400 border-red-500/20"
                   }`}
                 >
-                  {news.sentiment === "bullish" ? "Bullish" : "Bearish"}{" "}
-                  {news.sentimentScore}
+                  {news.sentiment === "bullish" ? "Bullish" : "Bearish"} {news.sentimentScore}
                 </span>
-                <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-bold bg-teal-500/20 text-teal-400">
+                <span className="px-2.5 py-1 rounded-lg text-[0.72rem] font-bold bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20">
                   {news.impact}
                 </span>
               </div>

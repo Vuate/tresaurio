@@ -7,7 +7,7 @@ export default function TerminalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#0a0b0f] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
 
       <div className="flex min-h-[calc(100vh-64px)] pt-11 md:pt-16">
@@ -16,7 +16,7 @@ export default function TerminalLayout({
         </div>
 
         <div className="flex-1 overflow-x-auto">
-<main className="min-w-full bg-[#0a0b0f] relative pt-4 sm:pt-6 md:pt-0">
+<main className="min-w-full bg-background relative pt-4 sm:pt-6 md:pt-0">
             {children}
           </main>
         </div>

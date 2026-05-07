@@ -1,167 +1,110 @@
 import { Icon } from "@iconify/react";
 
+const features = [
+  {
+    icon: "mdi:briefcase-variant-outline",
+    title: "Spot Positions",
+    description: "View all your spot holdings. Track entry prices, current value, and unrealized PnL in real-time.",
+    items: ["Multi-exchange support", "Real-time price updates", "Unrealized PnL calculation", "Portfolio allocation view"],
+    variant: "blue" as const,
+  },
+  {
+    icon: "mdi:flash-outline",
+    title: "Futures Positions",
+    description: "Monitor your open futures positions. View leverage, margin, and liquidation levels.",
+    items: ["Long/Short position tracking", "Leverage and margin view", "Liquidation price calculation", "Funding rate impact"],
+    variant: "neutral" as const,
+  },
+  {
+    icon: "mdi:cash-multiple",
+    title: "PnL Analysis",
+    description: "View your realized and unrealized PnL in detail. Analyze by coin, exchange, or total portfolio returns.",
+    items: ["Realized PnL breakdown", "Unrealized PnL tracking", "Coin-based performance", "Historical return charts"],
+    variant: "neutral" as const,
+  },
+  {
+    icon: "mdi:target-account",
+    title: "DCA Calculation",
+    description: "Combine purchases made at different times to calculate your average entry price.",
+    items: ["Automatic DCA calculation", "Manual purchase entry", "Average price view", "Break-even analysis"],
+    variant: "blue" as const,
+  },
+  {
+    icon: "mdi:shield-alert-outline",
+    title: "Risk Management",
+    description: "Measure your portfolio risk level. Get stop-loss recommendations and optimize position sizing.",
+    items: ["Risk level scoring", "Stop-loss recommendations", "Position sizing calculation", "Diversification analysis"],
+    variant: "neutral" as const,
+  },
+  {
+    icon: "mdi:chart-line-variant",
+    title: "Performance Statistics",
+    description: "Analyze your historical trading performance. View win rate, average returns, and most profitable coins.",
+    items: ["Win / Loss ratio", "Average gain / loss", "Most profitable / losing trades", "Monthly performance report"],
+    variant: "blue" as const,
+  },
+];
+
 export default function TradeFeatures() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Capabilities
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           Key Features
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl text-[0.875rem] leading-[1.7]">
           All your trading and portfolio management tools in one place
         </p>
       </div>
 
-      <div className="features-grid grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
-        {/* CARD 1 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">      
-    <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
-            <Icon icon="mdi:briefcase-variant-outline" />
-          </span>
-          <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Spot Positions
-          </h3>
-          <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            View all your spot holdings. Track entry prices, current value, and
-            unrealized PnL in real-time.
-          </p>
-          <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
-            [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
-            [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
-            [&>li]:before:font-bold [&>li]:before:inline-block
-            [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Multi-exchange support</li>
-            <li>Real-time price updates</li>
-            <li>Unrealized PnL calculation</li>
-            <li>Portfolio allocation view</li>
-          </ul>
-        </div>
-
-        {/* CARD 2 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">        
-  <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
-            <Icon icon="mdi:flash-outline" />
-          </span>
-          <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Futures Positions
-          </h3>
-          <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Monitor your open futures positions. View leverage, margin, and
-            liquidation levels.
-          </p>
-          <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
-            [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
-            [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
-            [&>li]:before:font-bold [&>li]:before:inline-block
-            [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Long/Short position tracking</li>
-            <li>Leverage and margin view</li>
-            <li>Liquidation price calculation</li>
-            <li>Funding rate impact</li>
-          </ul>
-        </div>
-
-        {/* CARD 3 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">     
-     <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
-            <Icon icon="mdi:cash-multiple" />
-          </span>
-          <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            PnL Analysis
-          </h3>
-          <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            View your realized and unrealized PnL in detail. Analyze by coin, exchange, or
-            total portfolio returns.
-          </p>
-          <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
-            [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
-            [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
-            [&>li]:before:font-bold [&>li]:before:inline-block
-            [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Realized PnL breakdown</li>
-            <li>Unrealized PnL tracking</li>
-            <li>Coin-based performance</li>
-            <li>Historical return charts</li>
-          </ul>
-        </div>
-
-        {/* CARD 4 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">    
-      <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
-            <Icon icon="mdi:target-account" />
-          </span>
-          <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            DCA Calculation
-          </h3>
-          <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-         Combine purchases made at different times to calculate your average
-            entry price.
-          </p>
-          <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
-            [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
-            [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
-            [&>li]:before:font-bold [&>li]:before:inline-block
-            [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Automatic DCA calculation</li>
-            <li>Manual purchase entry</li>
-            <li>Average price view</li>
-            <li>Break-even analysis</li>
-          </ul>
-        </div>
-
-        {/* CARD 5 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">      
-    <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
-            <Icon icon="mdi:shield-alert-outline" />
-          </span>
-          <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Risk Management
-          </h3>
-          <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Measure your portfolio risk level. Get stop-loss recommendations and
-            optimize position sizing. 
-          </p>
-          <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
-            [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
-            [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
-            [&>li]:before:font-bold [&>li]:before:inline-block
-            [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Risk level scoring</li>
-            <li>Stop-loss recommendations</li>
-            <li>Position sizing calculation</li>
-            <li>Diversification analysis</li>
-          </ul>
-        </div>
-
-        {/* CARD 6 */}
-<div className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1">       
-   <span className="feature-icon text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-[#1A73E8]/65">
-            <Icon icon="mdi:chart-line-variant" />
-          </span>
-          <h3 className="feature-title mt-2 sm:mt-3 lg:mt-4 text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-white">
-            Performance Statistics
-          </h3>
-          <p className="feature-description mt-1.5 sm:mt-2 lg:mt-2.5 text-xs sm:text-sm lg:text-base text-gray-400 leading-relaxed">
-            Analyze your historical trading performance. View win rate, average returns, and
-            most profitable coins.
-          </p>
-          <ul className="feature-list mt-2.5 sm:mt-3 lg:mt-4 space-y-1 sm:space-y-1.5 lg:space-y-2 text-xs sm:text-sm lg:text-base text-gray-300
-            [&>li]:relative [&>li]:pl-4 sm:[&>li]:pl-5 lg:[&>li]:pl-6
-            [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:top-0
-            [&>li]:before:content-['✓'] [&>li]:before:text-[#1A73E8]
-            [&>li]:before:font-bold [&>li]:before:inline-block
-            [&>li]:before:w-3 sm:[&>li]:before:w-4 lg:[&>li]:before:w-5 [&>li]:before:text-center">
-            <li>Win / Loss ratio</li>
-            <li>Average gain / loss</li>
-            <li>Most profitable / losing trades</li>
-            <li>Monthly performance report</li>
-          </ul>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4.5">
+        {features.map((feature, i) => (
+          <div
+            key={i}
+            className={[
+              "rounded-xl p-7 border transition-all duration-250",
+              "hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(0,0,0,0.3)]",
+              feature.variant === "blue"
+                ? "border-[#2563EB]/20"
+                : "bg-card border-border-sub",
+            ].join(" ")}
+            style={
+              feature.variant === "blue"
+                ? { background: "linear-gradient(145deg, rgba(37,99,235,0.08) 0%, var(--card) 60%)" }
+                : undefined
+            }
+          >
+            <div
+              className={[
+                "w-10.5 h-10.5 rounded-[10px] flex items-center justify-center mb-4",
+                feature.variant === "blue"
+                  ? "bg-[#2563EB]/10 text-[#2563EB]"
+                  : "bg-input text-[#71717A]",
+              ].join(" ")}
+            >
+              <Icon icon={feature.icon} className="text-xl" />
+            </div>
+            <h3 className="text-[0.95rem] font-bold text-foreground mb-2">{feature.title}</h3>
+            <p className="text-[0.845rem] text-[#71717A] leading-[1.65] mb-4">{feature.description}</p>
+            <ul className="space-y-1.5">
+              {feature.items.map((item, j) => (
+                <li key={j} className="flex items-start gap-2 text-[0.845rem] text-[#71717A]">
+                  <span className="text-[#2563EB] font-bold mt-0.5 shrink-0">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </section>
   );

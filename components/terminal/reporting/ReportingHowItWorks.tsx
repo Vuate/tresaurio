@@ -1,22 +1,22 @@
 const steps = [
   {
     number: "1",
-    title: "News Aggregation",
-    description: "We automatically collect news from 50+ news sources and social media. Real-time feed is continuously updated and duplicate news is filtered out.",
+    title: "Configure Your Report",
+    description: "Choose which modules to include. Select from 39 modules across 8 categories and customize your template layout.",
   },
   {
     number: "2",
-    title: "AI Analysis",
-    description: "Each news article is analyzed with AI. Sentiment scoring, token mention detection, and impact prediction are performed. Bullish/Bearish classification happens automatically.",
+    title: "Automatic Data Collection",
+    description: "All data is automatically pulled from exchange APIs, blockchain networks, and news sources in real-time.",
   },
   {
     number: "3",
-    title: "Price Correlation",
-    description: "News is correlated with price changes. Pre/post news price tracking is performed and impact magnitude is calculated. Alerts are sent for high-impact news.",
+    title: "Generate & Export",
+    description: "Your report is generated with AI-powered insights. Export as PDF, Excel, or schedule for automatic delivery.",
   },
 ];
 
-export default function NewsHowItWorks() {
+export default function ReportingHowItWorks() {
   return (
     <section className="mb-12 lg:mb-16 rounded-xl bg-surface border border-border-sub py-12 lg:py-14 px-6 lg:px-10">
       <div className="text-center mb-10">
@@ -33,11 +33,11 @@ export default function NewsHowItWorks() {
           How It Works?
         </h2>
         <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
-          3 steps to start using News Intelligence
+          3 steps to create your professional crypto report
         </p>
       </div>
 
-      {/* index.html how-grid: 1fr arrow 1fr arrow 1fr */}
+      {/* Desktop: 3-column arrow layout */}
       <div
         className="items-start hidden md:grid"
         style={{ gridTemplateColumns: "1fr 32px 1fr 32px 1fr" }}
