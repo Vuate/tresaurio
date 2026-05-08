@@ -24,7 +24,7 @@ export default function Page() {
     loadFavoritesFromDB();
   }, [loadFromDB, loadFavoritesFromDB, closeAllPanels]);
   return (
-    <div className="fixed inset-0 overflow-hidden bg-[#041F20]">
+    <div className="fixed inset-0 overflow-hidden bg-background">
       <AlertObserver />
       <TopBar />
       <AddToolPanel />

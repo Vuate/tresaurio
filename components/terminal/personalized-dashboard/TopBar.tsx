@@ -5,6 +5,7 @@ import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStor
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import { ArrowLeft, PanelLeft, Plus, LayoutTemplate } from "lucide-react";
 import AuthModal from "@/components/auth/AuthModal";
 import UserMenu from "@/components/auth/UserMenu";
@@ -24,6 +25,9 @@ const toggleAddTool = usePersonalizedDashboardStore((s) => s.toggleAddTool);
   const setTopBarHeight = usePersonalizedDashboardStore((s) => s.setTopBarHeight);
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 const [confirmReset, setConfirmReset] = useState(false);
@@ -105,8 +109,8 @@ return () => {
         h-11 sm:h-12 md:h-14
         flex items-center justify-between
         px-2 sm:px-3 md:px-4 lg:px-6
-bg-[#080A10] backdrop-blur-md
-border-b border-white/[0.07] shadow-[0_1px_0_rgba(255,255,255,0.04),0_4px_24px_rgba(0,0,0,0.65)]
+bg-background backdrop-blur-md
+border-b border-border shadow-[0_1px_0_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_0_rgba(255,255,255,0.04),0_4px_24px_rgba(0,0,0,0.65)]
 
 select-none"
 
@@ -117,27 +121,27 @@ select-none"
   className="flex items-center justify-center
             w-8 h-8 sm:w-10 sm:h-10 md:w-10 md:h-10
             rounded-lg
-          text-white/50
-          hover:bg-white/6 hover:text-white/90
+          text-foreground/50
+          hover:bg-foreground/6 hover:text-foreground/90
             transition cursor-pointer shrink-0"
           title="Back"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
 
-        <div className="hidden lg:flex items-center gap-1 sm:gap-1.5 md:gap-2">
+        <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
           <img
             src="/treasurio.png"
             alt="Treasurio Logo"
-            className="h-9 w-auto select-none shrink-0"
+            className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 lg:h-9 lg:w-auto object-contain select-none shrink-0"
             draggable={false}
           />
-          <span className="text-lg font-extrabold text-white leading-none whitespace-nowrap">
+          <span className="hidden md:inline text-lg font-extrabold text-foreground leading-none whitespace-nowrap">
             Treasurio
           </span>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2.5 md:gap-3 lg:gap-4 ml-2 sm:ml-3 md:ml-4 lg:ml-6">
+        <div className="flex items-center gap-1 sm:gap-2.5 md:gap-3 lg:gap-4 sm:ml-2 md:ml-4 lg:ml-6">
 {/* Sidebar button — icon only on mobile, icon+text on sm+ */}
 <button
 onClick={() => {
@@ -159,7 +163,7 @@ onClick={() => {
     whitespace-nowrap
     ${sidebarOpen
       ? "bg-[#1A73E8] text-white"
-      : "text-white/55 hover:bg-white/6 hover:text-white/90"
+      : "text-foreground/55 hover:bg-foreground/6 hover:text-foreground/90"
     }
     `}
 >
@@ -189,7 +193,7 @@ onClick={() => {
     ${
       addToolOpen
         ? "bg-[#1A73E8] text-white"
-        : "text-white/55 hover:bg-white/6 hover:text-white/90"
+        : "text-foreground/55 hover:bg-foreground/6 hover:text-foreground/90"
     }`}
 >
   <Plus className="w-3.5 h-3.5 shrink-0 lg:hidden" />
@@ -218,7 +222,7 @@ onClick={() => {
     ${
       templatesOpen
         ? "bg-[#1A73E8] text-white"
-        : "text-white/55 hover:bg-white/6 hover:text-white/90"
+        : "text-foreground/55 hover:bg-foreground/6 hover:text-foreground/90"
     }`}
 >
   <LayoutTemplate className="w-3.5 h-3.5 shrink-0 lg:hidden" />
@@ -265,7 +269,7 @@ onClick={(e) => {
         ? "bg-amber-400/25 border-amber-400/50 text-amber-300"
         : confirmLock
           ? "bg-[#1A73E8] border-transparent text-white"
-          : "border-transparent text-white/45 hover:bg-white/6 hover:text-white/90"
+          : "border-transparent text-foreground/45 hover:bg-foreground/6 hover:text-foreground/90"
       }`}
     title={uiBlocked ? "Unlock Dashboard" : "Lock Dashboard"}
   >
@@ -285,8 +289,8 @@ onClick={(e) => {
   </button>
 
   {showLockAuth && (
-    <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-[#0C0E12] border border-[#1A73E8]/35 shadow-lg z-60">
-      <p className="text-[11px] sm:text-[12px] text-white/80 mb-3">
+    <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-card border border-[#1A73E8]/35 shadow-lg z-60">
+      <p className="text-[11px] sm:text-[12px] text-foreground/80 mb-3">
         Sign in to use dashboard lock.
       </p>
       <button
@@ -299,8 +303,8 @@ onClick={(e) => {
   )}
 
   {confirmLock && (
-    <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-[#0C0E12] border border-[#1A73E8]/35 shadow-lg z-60">
-      <p className="text-[11px] sm:text-[12px] text-white/80 mb-3">
+    <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-card border border-[#1A73E8]/35 shadow-lg z-60">
+      <p className="text-[11px] sm:text-[12px] text-foreground/80 mb-3">
         Lock dashboard?
       </p>
       <div className="flex gap-1.5 sm:gap-2">
@@ -318,7 +322,7 @@ onClick={(e) => {
         </button>
         <button
           onClick={() => setConfirmLock(false)}
-          className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white hover:text-white/70 border border-white/10 transition cursor-pointer"
+          className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-foreground/70 hover:text-foreground/50 border border-border transition cursor-pointer"
         >
           Cancel
         </button>
@@ -344,7 +348,7 @@ onClick={(e) => {
       rounded-lg border transition cursor-pointer
       ${confirmReset
         ? "bg-[#1A73E8] border-transparent text-white"
-        : "border-transparent text-white/45 hover:bg-white/6 hover:text-white/90"
+        : "border-transparent text-foreground/45 hover:bg-foreground/6 hover:text-foreground/90"
       }`}
     title="Reset Dashboard"
   >
@@ -363,8 +367,8 @@ onClick={(e) => {
             </svg>
           </button>
 {confirmReset && (
-  <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-[#0C0E12] border border-[#1A73E8]/35 shadow-lg z-60">
-    <p className="text-[11px] sm:text-[12px] text-white/80 mb-3">
+  <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-card border border-[#1A73E8]/35 shadow-lg z-60">
+    <p className="text-[11px] sm:text-[12px] text-foreground/80 mb-3">
       Reset dashboard to default? All current modules will be removed.
     </p>
     <div className="flex gap-1.5 sm:gap-2">
@@ -379,7 +383,7 @@ onClick={(e) => {
 </button>
       <button
         onClick={() => setConfirmReset(false)}
-        className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white hover:text-white/70 border border-white/10 transition cursor-pointer"
+        className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-foreground/70 hover:text-foreground/50 border border-border transition cursor-pointer"
       >
         Cancel
       </button>
@@ -400,7 +404,7 @@ onClick={(e) => {
             className={`flex items-center justify-center w-8 h-auto py-1.5 px-2 lg:w-10 lg:h-10 lg:py-0 lg:px-0 rounded-lg border transition cursor-pointer ${
               settingsOpen
                 ? "bg-[#1A73E8] border-transparent text-white"
-                : "border-transparent text-white/45 hover:bg-white/6 hover:text-white/90"
+                : "border-transparent text-foreground/45 hover:bg-foreground/6 hover:text-foreground/90"
             }`}
             title="Settings"
           >
@@ -411,7 +415,7 @@ onClick={(e) => {
           </button>
 
           {settingsOpen && (
-            <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-[#0C0E12] border border-[#1A73E8]/35 shadow-lg z-60">
+            <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-card border border-[#1A73E8]/35 shadow-lg z-60">
               <div className="flex gap-1 mb-2.5">
                 {[
                   { src: "/flag-tr.svg", label: "Türkçe" },
@@ -420,38 +424,41 @@ onClick={(e) => {
                   <button
                     key={label}
                     disabled
-                    className="flex-1 flex items-center justify-center gap-2 px-2.5 py-2 rounded-lg bg-white/4 border border-white/8 cursor-not-allowed opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 px-2.5 py-2 rounded-lg bg-foreground/5 border border-border cursor-not-allowed opacity-60"
                   >
                     <img src={src} alt={label} className="w-5 h-auto rounded-sm shrink-0" />
-                    <span className="text-[0.78rem] font-medium text-white/70">{label}</span>
+                    <span className="text-[0.78rem] font-medium text-foreground/60">{label}</span>
                   </button>
                 ))}
               </div>
               <div className="flex gap-1">
-                {[
-                  { label: "Light", active: false },
-                  { label: "Dark", active: true },
-                  { label: "System", active: false },
-                ].map(({ label, active }) => (
-                  <button
-                    key={label}
-                    disabled
-                    className={`flex-1 py-1.5 rounded-lg text-[0.7rem] font-medium cursor-not-allowed ${
-                      active
-                        ? "bg-white/12 text-white/50 border border-white/12"
-                        : "text-white/20 border border-white/8"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+                {([
+                  { label: "Light", t: "light" },
+                  { label: "Dark",  t: "dark"  },
+                  { label: "System",t: "system"},
+                ] as const).map(({ label, t }) => {
+                  const isActive = mounted && theme === t;
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => setTheme(t)}
+                      className={`flex-1 py-1.5 rounded-lg text-[0.7rem] font-semibold cursor-pointer transition ${
+                        isActive
+                          ? "bg-[#1A73E8]/20 text-[#1A73E8] border border-[#1A73E8]/50"
+                          : "text-foreground/55 border border-border hover:bg-foreground/6 hover:text-foreground/80"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
         </div>
 
         {status === "loading" ? (
-          <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-white/10 animate-pulse ml-1.5 lg:ml-0" />
+          <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-foreground/10 animate-pulse ml-1.5 lg:ml-0" />
         ) : session?.user ? (
           <div className="relative ml-1.5 lg:ml-0" onClick={() => { setConfirmReset(false); setConfirmLock(false); setShowLockAuth(false); setSettingsOpen(false); }}>
             {uiBlocked && <div className="absolute inset-0 z-50 cursor-pointer" />}
@@ -469,7 +476,7 @@ onClick={(e) => {
               px-2 lg:px-4
               py-1 lg:py-1.5
               rounded-lg border border-transparent
-              text-white/55 hover:bg-white/6 hover:text-white/90
+              text-foreground/55 hover:bg-foreground/6 hover:text-foreground/90
               transition cursor-pointer"
             title="Login"
           >

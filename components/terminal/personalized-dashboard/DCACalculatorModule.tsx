@@ -143,7 +143,7 @@ document.addEventListener("pointerdown", handleClickOutside);
   return (
     <div className="space-y-3 text-xs">
       <div>
-        <label className="block text-white/50 mb-1 text-[10px] font-semibold">
+        <label className="block text-muted-foreground mb-1 text-[10px] font-semibold">
           Symbol
         </label>
 <div ref={symbolRef} className="relative">
@@ -152,20 +152,20 @@ document.addEventListener("pointerdown", handleClickOutside);
     className="
       w-full
       flex items-center justify-between
-      bg-white/5
-      border border-white/10
+      bg-input
+      border border-border
       rounded-md
       px-3 py-2
-      text-white text-xs
+      text-foreground text-xs
       cursor-pointer
-      hover:bg-white/8
+      hover:bg-black/8 dark:hover:bg-white/8
       transition-colors
     "
   >
     <span className="truncate">{selectedSymbol}</span>
     <span
   className={`
-    text-white/40
+    text-muted-foreground
     transition-transform
     duration-200
     ${symbolOpen ? "rotate-180" : ""}
@@ -181,8 +181,8 @@ document.addEventListener("pointerdown", handleClickOutside);
     className="
       absolute z-50 mt-1
       w-full
-    bg-[#1E2025]
-border border-white/10
+    bg-card
+border border-border
       rounded-md
 
     "
@@ -199,7 +199,7 @@ border border-white/10
             text-left
             px-3 py-2
             text-xs
-            text-white
+            text-foreground
             transition-colors
           hover:text-[#1A73E8]/65
 
@@ -214,13 +214,13 @@ border border-white/10
           </div>
                 </div>
 
-        <div className="bg-white/5 border border-white/10 rounded p-2">
+        <div className="bg-input border border-border rounded p-2">
           <div className="flex flex-wrap justify-between items-center gap-2">
-            <span className="text-white/50 text-[10px]">
+            <span className="text-muted-foreground text-[10px]">
               Current Price (Live)
             </span>
             <div className="flex items-center gap-2">
-              <span className="text-white font-semibold break-all">
+              <span className="text-foreground font-semibold break-all">
                 ${currentPrice.toLocaleString()}
               </span>
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
@@ -228,8 +228,8 @@ border border-white/10
           </div>
         </div>
 
-          <div className="bg-white/5 border border-white/10 rounded p-3 space-y-2">
-            <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
+          <div className="bg-input border border-border rounded p-3 space-y-2">
+            <div className="flex items-center gap-2 text-muted-foreground font-semibold mb-2">
               <Plus className="w-3 h-3" />
               <span>Add Trade</span>
             </div>
@@ -243,28 +243,28 @@ border border-white/10
                 "
               >
           <div>
-            <label className="block text-white/40 text-[10px] mb-1">
+            <label className="block text-muted-foreground text-[10px] mb-1">
               Quantity
             </label>
             <input
               type="number"
               value={newQty}
               onChange={(e) => setNewQty(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+              className="w-full bg-input border border-border rounded px-2 py-1.5 text-foreground text-xs"
               placeholder="0.5"
               step="0.01"
             />
           </div>
 
           <div>
-            <label className="block text-white/40 text-[10px] mb-1">
+            <label className="block text-muted-foreground text-[10px] mb-1">
               Price
             </label>
             <input
               type="number"
               value={newPrice}
               onChange={(e) => setNewPrice(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-xs"
+              className="w-full bg-input border border-border rounded px-2 py-1.5 text-foreground text-xs"
               placeholder="90000"
               step="100"
             />
@@ -290,7 +290,7 @@ border border-white/10
 
       {trades.length > 0 && (
         <div className="space-y-1">
-          <div className="flex items-center justify-between text-white/40 text-[10px] mb-1">
+          <div className="flex items-center justify-between text-muted-foreground text-[10px] mb-1">
             <span>Trades ({trades.length})</span>
           <button
             onClick={clearAll}
@@ -309,14 +309,14 @@ border border-white/10
 {trades.map((trade, idx) => (
   <div
     key={trade.id}
-    className="bg-white/5 border border-white/10 rounded p-2 flex items-center justify-between gap-2 overflow-hidden"
+    className="bg-input border border-border rounded p-2 flex items-center justify-between gap-2 overflow-hidden"
   >
     <div className="flex-1 min-w-0">
-      <span className="text-white/30 text-[10px]">#{idx + 1}</span>
-      <div className="text-white/70 truncate">
+      <span className="text-muted-foreground text-[10px]">#{idx + 1}</span>
+      <div className="text-muted-foreground truncate">
         {trade.quantity} @ ${trade.price.toLocaleString()}
       </div>
-      <div className="text-white/40 text-[10px] truncate">
+      <div className="text-muted-foreground text-[10px] truncate">
         = ${(trade.quantity * trade.price).toLocaleString()}
       </div>
     </div>
@@ -324,7 +324,7 @@ border border-white/10
     <button
       onClick={() => removeTrade(trade.id)}
       className="
-        text-white/40
+        text-muted-foreground
         cursor-pointer
         transition-all
         p-1
@@ -344,8 +344,8 @@ border border-white/10
 
       {trades.length > 0 && (
         <>
-          <div className="border-t border-white/10 pt-3 space-y-2">
-            <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
+          <div className="border-t border-border pt-3 space-y-2">
+            <div className="flex items-center gap-2 text-muted-foreground font-semibold mb-2">
               <Calculator className="w-3 h-3" />
               <span>DCA Summary</span>
             </div>
@@ -384,15 +384,15 @@ border border-white/10
           </div>
 
           {nextDCAat88k && nextDCAat92k && (
-            <div className="bg-white/5 border border-white/10 rounded p-3 space-y-2">
-              <div className="text-white/50 text-[10px] mb-2">
+            <div className="bg-input border border-border rounded p-3 space-y-2">
+              <div className="text-muted-foreground text-[10px] mb-2">
                 Next DCA Simulation:
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-white/40">If buy @ $88,000:</span>
-                  <span className="text-white/70">
+                  <span className="text-muted-foreground">If buy @ $88,000:</span>
+                  <span className="text-muted-foreground">
                     New Avg: ${nextDCAat88k.newAvgPrice.toLocaleString()}{" "}
                     <span
                       className={
@@ -407,8 +407,8 @@ border border-white/10
                 </div>
 
                 <div className="flex justify-between text-[10px]">
-                  <span className="text-white/40">If buy @ $92,000:</span>
-                  <span className="text-white/70">
+                  <span className="text-muted-foreground">If buy @ $92,000:</span>
+                  <span className="text-muted-foreground">
                     New Avg: ${nextDCAat92k.newAvgPrice.toLocaleString()}{" "}
                     <span
                       className={
@@ -428,7 +428,7 @@ border border-white/10
       )}
 
       {trades.length === 0 && (
-        <div className="text-center text-white/40 py-4 text-[10px]">
+        <div className="text-center text-muted-foreground py-4 text-[10px]">
           Add your first trade to start DCA calculation
         </div>
       )}
@@ -445,7 +445,7 @@ function Row({
 }) {
   return (
     <div className="flex flex-wrap justify-between items-start gap-2">
-      <span className="text-white/50">{label}</span>
+      <span className="text-muted-foreground">{label}</span>
       <span className="text-right break-all">{children}</span>
     </div>
   );

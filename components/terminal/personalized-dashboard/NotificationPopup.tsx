@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, Check, Info } from "lucide-react";
+import { X, Check, Info, AlertCircle } from "lucide-react";
 
 interface NotificationPopupProps {
   show: boolean;
@@ -10,6 +10,27 @@ interface NotificationPopupProps {
   message: string;
   onClose: () => void;
 }
+
+const TYPE_CONFIG = {
+  success: {
+    icon: <Check className="w-4 h-4" />,
+    iconBg: "bg-emerald-500/15 dark:bg-emerald-500/20",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    accentBar: "bg-emerald-500",
+  },
+  error: {
+    icon: <AlertCircle className="w-4 h-4" />,
+    iconBg: "bg-red-500/15 dark:bg-red-500/20",
+    iconColor: "text-red-600 dark:text-red-400",
+    accentBar: "bg-red-500",
+  },
+  info: {
+    icon: <Info className="w-4 h-4" />,
+    iconBg: "bg-blue-500/15 dark:bg-blue-500/20",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    accentBar: "bg-blue-500",
+  },
+};
 
 export default function NotificationPopup({
   show,
@@ -20,10 +41,10 @@ export default function NotificationPopup({
 }: NotificationPopupProps) {
   const [isVisible, setIsVisible] = useState(false);
 
-  // KEYBOARD HANDLER 
+  // KEYBOARD HANDLER
   useEffect(() => {
     if (!show) return;
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter" || e.key === "Escape") {
         e.preventDefault();
@@ -32,7 +53,7 @@ export default function NotificationPopup({
         setTimeout(onClose, 300);
       }
     };
-    
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [show, onClose]);
@@ -51,12 +72,7 @@ export default function NotificationPopup({
 
   if (!show) return null;
 
-const bgColor = "bg-[#2B8FE0]/8";
-const borderColor = "border-[#2B8FE0]/35";
-const iconColor = "text-[#19D8D0]";
-
-
-  const icon = type === "error" ? <X className="w-4 h-4" /> : type === "success" ? <Check className="w-4 h-4" /> : <Info className="w-4 h-4" />;
+  const cfg = TYPE_CONFIG[type];
 
   const handleClose = () => {
     setIsVisible(false);
@@ -66,11 +82,13 @@ const iconColor = "text-[#19D8D0]";
   return (
     <>
       <div
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]
+        className={`fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm z-9998
           transition-opacity duration-300
           ${isVisible ? "opacity-100" : "opacity-0"}`}
         onClick={handleClose}
       />
+
+
 
       <div
         className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]
@@ -78,43 +96,44 @@ const iconColor = "text-[#19D8D0]";
           ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
       >
         <div
-          className={`${bgColor} ${borderColor}
-            backdrop-blur-xl border rounded-xl
-            px-6 py-5 w-[400px] max-w-[90vw]
-            shadow-2xl shadow-black/50 select-none`}
+          className="bg-card border border-border rounded-xl overflow-hidden
+            w-95 max-w-[90vw]
+            shadow-lg shadow-black/15 dark:shadow-black/40 select-none"
         >
-          <div className="flex items-start gap-4">
-            <div
-              className={`${iconColor} text-2xl font-bold mt-0.5 
-                flex-shrink-0 w-8 h-8 rounded-full 
-                flex items-center justify-center
-              ${type === "error" ? "bg-red-500/20" : 
-              type === "success" ? "bg-[#2B8FE0]/20" : "bg-[#2B8FE0]/20"}`}
-            >
-              {icon}
-            </div>
+          {/* Colored accent bar at top */}
+          <div className={`h-0.5 w-full ${cfg.accentBar}`} />
 
-            <div className="flex-1 min-w-0">
-              <div className="text-white font-semibold text-base mb-2">
-                {title}
+          <div className="px-5 py-4">
+            <div className="flex items-start gap-3.5">
+              {/* Icon */}
+              <div
+                className={`${cfg.iconBg} ${cfg.iconColor}
+                  shrink-0 w-8 h-8 rounded-lg
+                  flex items-center justify-center mt-0.5`}
+              >
+                {cfg.icon}
               </div>
-              <div className="text-white/70 text-sm leading-relaxed">
-                {message}
+
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <div className="text-foreground font-semibold text-sm mb-1">
+                  {title}
+                </div>
+                <div className="text-muted-foreground text-xs leading-relaxed">
+                  {message}
+                </div>
               </div>
+
+              {/* Close button */}
+              <button
+                onClick={handleClose}
+                className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer
+                  shrink-0 w-6 h-6 flex items-center justify-center
+                  rounded hover:bg-black/5 dark:hover:bg-white/8"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
-
-            <button
-              onClick={handleClose}
-              className="text-white/40 hover:text-white/80 transition cursor-pointer
-                flex-shrink-0 w-6 h-6 flex items-center justify-center
-                rounded ,"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="mt-4 flex justify-end">
-
           </div>
         </div>
       </div>

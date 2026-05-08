@@ -349,7 +349,7 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
       }`}
     >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+        <span className="font-semibold text-foreground text-xs whitespace-nowrap">
           All-In Cost Calculator
         </span>
 
@@ -360,9 +360,9 @@ export default function AllInCostCalculatorModule({ instanceId }: Props) {
             onClick={() => setTokenOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-bg-[#111318] border border-white/10
+bg-card border border-border
 
-              text-white text-xs
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -375,7 +375,7 @@ bg-[#111318] border border-white/10
             </span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${tokenOpen ? "rotate-180" : ""}
               `}
@@ -392,14 +392,14 @@ bg-[#111318] border border-white/10
       w-[180px]
       max-h-[200px]
       overflow-y-auto
-bg-[#111318] border border-white/10
+bg-card border border-border
 
       rounded-md
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1.5
- [&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
   >
@@ -414,7 +414,7 @@ bg-[#111318] border border-white/10
                     w-full px-3 py-2
                     text-left text-xs
                     bg-transparent cursor-pointer
-                    text-white
+                    text-foreground
                     transition-colors
                 hover:text-[#1A73E8]/65
 
@@ -432,9 +432,9 @@ bg-[#111318] border border-white/10
             onClick={() => setExchangeOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-  bg-[#111318] border border-white/10
+  bg-card border border-border
 
-              text-white text-xs
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -444,7 +444,7 @@ bg-[#111318] border border-white/10
             <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${exchangeOpen ? "rotate-180" : ""}
               `}
@@ -461,14 +461,14 @@ bg-[#111318] border border-white/10
       w-[120px]
       max-h-[160px]
       overflow-y-auto
-bg-[#111318] border border-white/10
+bg-card border border-border
 
       rounded-md
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1.5
- [&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
   >
@@ -483,7 +483,7 @@ bg-[#111318] border border-white/10
                     w-full px-3 py-2
                     text-left text-xs
                     bg-transparent cursor-pointer
-                    text-white
+                    text-foreground
                     transition-colors
               hover:text-[#1A73E8]/65
 
@@ -525,21 +525,21 @@ bg-[#111318] border border-white/10
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-white/20
+          [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-white/70 font-semibold">
+          <div className="flex items-center gap-2 text-muted-foreground font-semibold">
             <Calculator className="w-3 h-3" />
             <span className="text-xs">Position Setup</span>
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
+            <label className="block text-muted-foreground mb-1 text-[10px]">
               VIP Level
             </label>
             <div ref={vipRef} className="relative">
@@ -547,12 +547,12 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 onClick={() => setVipOpen((v) => !v)}
                 className="
                   w-full h-7 px-2 rounded-md
-                  bg-white/5
-                  border border-white/10
-                  text-white text-[10px]
+                  bg-input
+                  border border-border
+                  text-foreground text-[10px]
                   flex items-center justify-between gap-1
                   cursor-pointer
-                  hover:bg-white/10
+                  hover:bg-black/10 dark:hover:bg-white/10
                   transition-all
                   leading-tight
                 "
@@ -574,7 +574,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 </span>
                 <span
                   className={`
-                    text-white/50 text-[10px] shrink-0
+                    text-muted-foreground text-[10px] shrink-0
                     transition-transform duration-200
                     ${vipOpen ? "rotate-180" : ""}
                   `}
@@ -590,14 +590,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
       absolute left-0 right-0 mt-1 z-50
       max-h-[200px]
       overflow-y-auto
-bg-[#111318] border border-white/10
+bg-card border border-border
 
       rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1.5
- [&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20      [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
   >
@@ -620,7 +620,7 @@ bg-[#111318] border border-white/10
                           w-full px-2 py-1.5
                           text-left text-[10px]
                           bg-transparent cursor-pointer
-                          text-white
+                          text-foreground
                           transition-colors
                      hover:text-[#1A73E8]/65
 
@@ -637,14 +637,14 @@ bg-[#111318] border border-white/10
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">Side</label>
+            <label className="block text-muted-foreground mb-1 text-[10px]">Side</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setSide("long")}
                 className={`py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                   side === "long"
-                    ? "bg-emerald-500 text-white"
-                    : "bg-white/5 text-white/50 hover:bg-white/10"
+                    ? "bg-emerald-500 text-foreground"
+                    : "bg-input text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
                 }`}
               >
                 Long
@@ -653,8 +653,8 @@ bg-[#111318] border border-white/10
                 onClick={() => setSide("short")}
                 className={`py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                   side === "short"
-                    ? "bg-red-500 text-white"
-                    : "bg-white/5 text-white/50 hover:bg-white/10"
+                    ? "bg-red-500 text-foreground"
+                    : "bg-input text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
                 }`}
               >
                 Short
@@ -663,33 +663,33 @@ bg-[#111318] border border-white/10
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
+            <label className="block text-muted-foreground mb-1 text-[10px]">
               Entry Price
             </label>
             <input
               type="number"
               value={entryPrice}
               onChange={(e) => setEntryPrice(parseFloat(e.target.value) || 0)}
-              className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
               step="100"
             />
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
+            <label className="block text-muted-foreground mb-1 text-[10px]">
               Quantity ({selectedToken.name})
             </label>
             <input
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(parseFloat(e.target.value) || 0)}
-              className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
               step="0.1"
             />
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
+            <label className="block text-muted-foreground mb-1 text-[10px]">
               Leverage
             </label>
             <div ref={leverageRef} className="relative">
@@ -697,19 +697,19 @@ bg-[#111318] border border-white/10
                 onClick={() => setLeverageOpen((v) => !v)}
                 className="
                   w-full h-7 px-3 rounded-md
-                  bg-white/5
-                  border border-white/10
-                  text-white text-xs
+                  bg-input
+                  border border-border
+                  text-foreground text-xs
                   flex items-center justify-between gap-1.5
                   cursor-pointer
-                  hover:bg-white/10
+                  hover:bg-black/10 dark:hover:bg-white/10
                   transition-all
                 "
               >
                 <span>{leverage}x</span>
                 <span
                   className={`
-                    text-white/50 text-[10px]
+                    text-muted-foreground text-[10px]
                     transition-transform duration-200
                     ${leverageOpen ? "rotate-180" : ""}
                   `}
@@ -725,14 +725,14 @@ bg-[#111318] border border-white/10
       absolute left-0 right-0 mt-1 z-50
       max-h-[200px]
       overflow-y-auto
- bg-[#111318] border border-white/10
+ bg-card border border-border
 
       rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1.5
- [&::-webkit-scrollbar-thumb]:bg-white/20
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
        [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
@@ -748,7 +748,7 @@ bg-[#111318] border border-white/10
                         w-full px-3 py-2
                         text-left text-xs
                         bg-transparent cursor-pointer
-                        text-white
+                        text-foreground
                         transition-colors
                      hover:text-[#1A73E8]/65
 
@@ -763,7 +763,7 @@ bg-[#111318] border border-white/10
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
+            <label className="block text-muted-foreground mb-1 text-[10px]">
               Order Type
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -771,8 +771,8 @@ bg-[#111318] border border-white/10
                 onClick={() => setFeeType("maker")}
                 className={`py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                   feeType === "maker"
-                    ? "bg-blue-500 text-white"
-                    : "bg-white/5 text-white/50 hover:bg-white/10"
+                    ? "bg-blue-500 text-foreground"
+                    : "bg-input text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
                 }`}
               >
                 Maker (
@@ -787,8 +787,8 @@ bg-[#111318] border border-white/10
                 onClick={() => setFeeType("taker")}
                 className={`py-1.5 rounded-md text-xs transition-colors cursor-pointer ${
                   feeType === "taker"
-                    ? "bg-blue-500 text-white"
-                    : "bg-white/5 text-white/50 hover:bg-white/10"
+                    ? "bg-blue-500 text-foreground"
+                    : "bg-input text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
                 }`}
               >
                 Taker (
@@ -810,14 +810,14 @@ bg-[#111318] border border-white/10
                 onChange={(e) => setUseBnb(e.target.checked)}
                 className="w-3 h-3"
               />
-              <label className="text-white/70">
+              <label className="text-muted-foreground">
                 Use BNB for 10% fee discount
               </label>
             </div>
           )}
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
+            <label className="block text-muted-foreground mb-1 text-[10px]">
               Expected Slippage (%)
             </label>
             <input
@@ -826,26 +826,26 @@ bg-[#111318] border border-white/10
               onChange={(e) =>
                 setSlippagePercent(parseFloat(e.target.value) || 0)
               }
-              className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
               step="0.01"
             />
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
+            <label className="block text-muted-foreground mb-1 text-[10px]">
               Funding Rate (% per 8h)
             </label>
             <input
               type="number"
               value={fundingRate}
               onChange={(e) => setFundingRate(parseFloat(e.target.value) || 0)}
-              className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
               step="0.001"
             />
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1 text-[10px]">
+            <label className="block text-muted-foreground mb-1 text-[10px]">
               Holding Period (hours)
             </label>
             <input
@@ -854,14 +854,14 @@ bg-[#111318] border border-white/10
               onChange={(e) =>
                 setHoldingHours(parseFloat(e.target.value) || 0)
               }
-              className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
               step="1"
             />
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-3 space-y-2">
-          <div className="flex items-center gap-2 text-white/70 font-semibold">
+        <div className="border-t border-border pt-3 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground font-semibold">
             <TrendingUp className="w-3 h-3" />
             <span className="text-xs">Cost Breakdown</span>
           </div>
@@ -897,7 +897,7 @@ bg-[#111318] border border-white/10
             ${costs.funding.toFixed(2)} ({costs.fundingPercent.toFixed(4)}%)
           </Row>
 
-          <div className="border-t border-white/10 my-2" />
+          <div className="border-t border-border my-2" />
 
           <Row label="Total Cost">
             <span className="text-red-400 font-semibold">
@@ -924,7 +924,7 @@ bg-[#111318] border border-white/10
 
           {costs.liquidationPrice && (
             <>
-              <div className="border-t border-white/10 my-2" />
+              <div className="border-t border-border my-2" />
               <Row label="Liquidation Price">
                 <span className="text-red-400 font-semibold flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" />$
@@ -947,7 +947,7 @@ bg-[#111318] border border-white/10
           </div>
         )}
 
-        <div className="bg-white/5 border border-white/10 rounded-md p-2 text-[10px] text-white/40">
+        <div className="bg-input border border-border rounded-md p-2 text-[10px] text-muted-foreground">
           {side === "long"
 ? <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Price must reach ${costs.effectivePrice.toLocaleString()} to break even</span>
 : <span className="flex items-center gap-1"><TrendingDown className="w-3 h-3" /> Price must drop to ${costs.effectivePrice.toLocaleString()} to break even</span>
@@ -959,7 +959,7 @@ bg-[#111318] border border-white/10
         <div
           className="
             fixed inset-0
-            bg-[#0a0e1a] z-[100]
+            bg-background z-[100]
             flex flex-col overflow-hidden
             animate-in fade-in slide-in-from-bottom-4 duration-200
           "
@@ -975,13 +975,13 @@ bg-[#111318] border border-white/10
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <span className="text-white font-semibold text-xs whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-border bg-input flex-shrink-0">
+            <span className="text-foreground font-semibold text-xs whitespace-nowrap">
               Add Token
             </span>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+              className="text-muted-foreground hover:text-foreground leading-none cursor-pointer transition-colors text-xl ml-auto"
             >
               ×
             </button>
@@ -993,29 +993,29 @@ bg-[#111318] border border-white/10
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-white/20
+              [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-scrollbar-thumb-white/20              scrollbar-track-transparent
+scrollbar-thumb-foreground/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
               <div>
-                <label className="block text-white/50 mb-1 text-[10px]">
+                <label className="block text-muted-foreground mb-1 text-[10px]">
                   Symbol (e.g., BTCUSDT)
                 </label>
                 <input
                   value={newTokenSymbol}
                   onChange={(e) => setNewTokenSymbol(e.target.value)}
                   placeholder="BTCUSDT"
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                  className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-white/50 mb-1 text-[10px]">
+                <label className="block text-muted-foreground mb-1 text-[10px]">
                   Default Price ($)
                 </label>
                 <input
@@ -1023,12 +1023,12 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                   value={newTokenPrice}
                   onChange={(e) => setNewTokenPrice(e.target.value)}
                   placeholder="95000"
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                  className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-white/50 mb-2 text-[10px]">
+                <label className="block text-muted-foreground mb-2 text-[10px]">
                   Popular Tokens
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -1041,7 +1041,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         border transition-all duration-150
                         cursor-pointer
                         whitespace-nowrap
-                      bg-white/10 text-white border-white/10
+                      bg-black/10 dark:bg-white/10 text-foreground border-border
                       hover:text-[#1A73E8]
 
                       "
@@ -1054,7 +1054,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
 
               <button
                 onClick={addToken}
-                className="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-semibold transition-all cursor-pointer text-xs"
+                className="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 text-foreground rounded-md font-semibold transition-all cursor-pointer text-xs"
               >
                 Add Token
               </button>
@@ -1075,7 +1075,7 @@ function Row({
 }) {
   return (
     <div className="flex justify-between text-xs">
-      <span className="text-white/50">{label}</span>
+      <span className="text-muted-foreground">{label}</span>
       <span>{children}</span>
     </div>
   );

@@ -144,7 +144,7 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
   }, [btcData, ethData, bnbData, solData, xrpData, adaData, dogeData, maticData, linkData]);
 
   const getRSIColor = (rsi: number | null) => {
-    if (rsi === null) return "bg-white/10";
+    if (rsi === null) return "bg-black/10 dark:bg-white/10";
     if (rsi >= 70) return "bg-red-500";
     if (rsi >= 60) return "bg-orange-500";
     if (rsi >= 40) return "bg-yellow-500";
@@ -162,12 +162,12 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
   return (
     <div ref={containerRef} className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
-        <div className="text-[10px] sm:text-xs text-white/60">
-          <span className="font-semibold text-white/90">
+        <div className="text-[10px] sm:text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">
             <span className="hidden xs:inline">RSI Heatmap</span>
             <span className="xs:hidden">RSI</span>
           </span>
-          <span className="text-white/40"> • </span>
+          <span className="text-muted-foreground"> • </span>
           <span className="text-emerald-400">LIVE</span>
         </div>
 
@@ -177,9 +177,9 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
               onClick={() => setExchangeOpen((v) => !v)}
               className="
                 h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-               bg-[#111318]
-                border border-white/10
-                text-[10px] sm:text-xs text-white
+               bg-card
+                border border-border
+                text-[10px] sm:text-xs text-foreground
                 flex items-center gap-1.5 sm:gap-2
                 cursor-pointer
                 transition-colors
@@ -190,7 +190,7 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
               </span>
               <span
                 className={`
-                  text-white/50
+                  text-muted-foreground
                   transition-transform duration-200
                   ${exchangeOpen ? "rotate-180" : ""}
                 `}
@@ -205,7 +205,7 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
     className="
       absolute right-0 mt-1 z-[999]
       w-[120px] sm:w-[140px]
-    bg-[#111318] border border-white/10
+    bg-secondary border border-border
       rounded-lg
       shadow-xl
       origin-top-right
@@ -224,7 +224,7 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
                       w-full px-2.5 sm:px-3 py-1.5 sm:py-2
                       text-left text-[10px] sm:text-xs
                       bg-transparent cursor-pointer
-                      text-white
+                      text-foreground
                       transition-colors
                     hover:text-[#1A73E8]/65
                     "
@@ -249,9 +249,9 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
               cursor-pointer
               ${
                 timeframe === tf
-                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                   : `
-              bg-white/10 text-white border-white/10
+              bg-secondary text-muted-foreground border-border
           hover:text-[#1A73E8]
 
                     `
@@ -271,21 +271,21 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-        [&::-webkit-scrollbar-thumb]:bg-white/20
+        [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-1.5 sm:space-y-2">
           {allData.map((data) => (
             <div
               key={data.symbol}
-              className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-colors"
             >
               <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                <div className="font-semibold text-white text-[10px] sm:text-xs truncate">
+                <div className="font-semibold text-foreground text-[10px] sm:text-xs truncate">
                   {data.symbol.replace("USDT", "")}
                 </div>
                 <div
@@ -302,9 +302,9 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
                 <div className="flex-1 min-w-0">
-                  <div className="h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-1.5 sm:h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                     {data.loading ? (
-                      <div className="h-full bg-white/20 animate-pulse" />
+                      <div className="h-full bg-black/15 dark:bg-white/20 animate-pulse" />
                     ) : (
                       <div
                         className={`h-full ${getRSIColor(data.rsi)} transition-all`}
@@ -313,14 +313,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     )}
                   </div>
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-white w-8 sm:w-10 text-right flex-shrink-0">
+                <div className="text-xs sm:text-sm font-bold text-foreground w-8 sm:w-10 text-right flex-shrink-0">
                   {data.loading ? "..." : data.rsi?.toFixed(0) || "N/A"}
                 </div>
               </div>
 
               <div className="flex justify-between items-center text-[9px] sm:text-[10px]">
-                <span className="text-white/60 truncate">{getRSILabel(data.rsi)}</span>
-                <span className="text-white/60 flex-shrink-0 ml-2">
+                <span className="text-muted-foreground truncate">{getRSILabel(data.rsi)}</span>
+                <span className="text-muted-foreground flex-shrink-0 ml-2">
                   $
                   {data.price.toLocaleString(undefined, {
                     minimumFractionDigits: 2,

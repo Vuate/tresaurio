@@ -167,7 +167,7 @@ export default function RewardCalendarModule({ instanceId }: Props) {
       case "farming":
         return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
       default:
-        return "text-white/60 bg-white/5 border-white/10";
+        return "text-muted-foreground bg-input border-border";
     }
   };
 
@@ -202,12 +202,12 @@ export default function RewardCalendarModule({ instanceId }: Props) {
   return (
     <div ref={containerRef} className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       <div className="relative z-50 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
-        <div className="text-[10px] sm:text-xs text-white/60 whitespace-nowrap">
-          <span className="font-semibold text-white/90">
+        <div className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap">
+          <span className="font-semibold text-foreground">
             <span className="hidden xs:inline">Reward Calendar</span>
             <span className="xs:hidden">Rewards</span>
           </span>
-          <span className="text-white/40"> • </span>
+          <span className="text-muted-foreground"> • </span>
           <span className="text-emerald-400">LIVE</span>
         </div>
 
@@ -229,9 +229,9 @@ export default function RewardCalendarModule({ instanceId }: Props) {
               whitespace-nowrap
               ${
                 filter === f
-                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                   : `
-                  bg-white/10 text-white border-white/10
+                  bg-secondary text-muted-foreground border-border
           hover:text-[#1A73E8]
 
                     `
@@ -251,15 +251,15 @@ export default function RewardCalendarModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-  [&::-webkit-scrollbar-thumb]:bg-white/20
+  [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {loading && rewards.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-white/40 text-[10px] sm:text-xs">
+          <div className="flex items-center justify-center h-full text-muted-foreground text-[10px] sm:text-xs">
             <div className="flex flex-col items-center gap-2">
               <div className="animate-spin text-lg sm:text-xl">⏳</div>
               <span>Loading rewards...</span>
@@ -267,7 +267,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           </div>
         ) : filteredRewards.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-center text-white/40">
+            <div className="text-center text-muted-foreground">
               <div className="text-2xl sm:text-4xl mb-2">📭</div>
               <div className="text-[10px] sm:text-sm">No rewards scheduled</div>
             </div>
@@ -282,13 +282,13 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               return (
                 <div
                   key={reward.id}
-                  className="px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
+                  className="px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-colors"
                 >
                   <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="flex-shrink-0 text-white/60">
+                    <span className="flex-shrink-0 text-muted-foreground">
                       {getTypeIcon(reward.type)}
                     </span>
-                    <div className="font-semibold text-white text-xs sm:text-sm leading-tight">
+                    <div className="font-semibold text-foreground text-xs sm:text-sm leading-tight">
                       {reward.token}
                     </div>
                   </div>
@@ -301,23 +301,23 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     </span>
                   </div>
 
-                  <div className="text-[9px] sm:text-[10px] text-white/60 leading-tight mb-2">
+                  <div className="text-[9px] sm:text-[10px] text-muted-foreground leading-tight mb-2">
                     {new Date(reward.date).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                     })}
-                    <span className={`ml-1 ${daysUntil <= 3 ? "text-yellow-400 font-semibold" : "text-white/40"}`}>
+                    <span className={`ml-1 ${daysUntil <= 3 ? "text-yellow-400 font-semibold" : "text-muted-foreground"}`}>
                       ({daysUntil}d)
                     </span>
                   </div>
 
                   <div className="mb-2">
-                    <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 leading-tight">Amount</div>
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 leading-tight">Amount</div>
                     <div className="text-sm sm:text-base font-bold text-emerald-400 leading-tight">
                       +{reward.amount.toLocaleString()} {reward.token}
                     </div>
                     {price > 0 && (
-                      <div className="text-[9px] sm:text-[10px] text-white/40 leading-tight mt-0.5">
+                      <div className="text-[9px] sm:text-[10px] text-muted-foreground leading-tight mt-0.5">
                         ≈ ${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                       </div>
                     )}
@@ -325,7 +325,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
                   {reward.apr > 0 && (
                     <div className="mb-1.5">
-                      <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 leading-tight">APR</div>
+                      <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 leading-tight">APR</div>
                       <div className="text-xs sm:text-sm font-semibold text-blue-400 leading-tight">
                         {reward.apr}%
                       </div>
@@ -333,8 +333,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   )}
 
                   {reward.protocol && (
-                    <div className="pt-1.5 border-t border-white/5">
-                      <div className="text-[9px] sm:text-[10px] text-white/40 leading-tight">
+                    <div className="pt-1.5 border-t border-border">
+                      <div className="text-[9px] sm:text-[10px] text-muted-foreground leading-tight">
                         📍 {reward.protocol}
                       </div>
                     </div>
@@ -346,17 +346,17 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         )}
       </div>
 
-      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
+      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-border bg-input rounded-lg">
         <div className="flex flex-wrap justify-between items-center gap-x-4 gap-y-2">
           <div className="flex-1 min-w-[100px]">
-            <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 sm:mb-1 leading-tight">Total Upcoming</div>
-            <div className="text-xs sm:text-sm font-semibold text-white leading-tight">
+            <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1 leading-tight">Total Upcoming</div>
+            <div className="text-xs sm:text-sm font-semibold text-foreground leading-tight">
               {filteredRewards.length} rewards
             </div>
           </div>
           {totalValue > 0 && (
             <div className="text-right flex-shrink-0">
-              <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 sm:mb-1 leading-tight">Est. Value</div>
+              <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1 leading-tight">Est. Value</div>
               <div className="text-xs sm:text-sm font-bold text-emerald-400 leading-tight">
                 ${totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
               </div>

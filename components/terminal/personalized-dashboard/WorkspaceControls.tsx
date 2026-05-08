@@ -213,7 +213,7 @@ onPointerLeave={(e) => { if (e.pointerType !== 'mouse') return; if (usePersonali
     >
 <div className="flex items-end gap-4 xl:gap-5 2xl:gap-6">
 <div
-className="relative rounded-xl border border-white/10 bg-[#0C0E12] overflow-hidden transition-all duration-300 ease-out"  style={{
+className="relative rounded-xl border border-border bg-card overflow-hidden transition-all duration-300 ease-out"  style={{
     width: mapOpen ? sizes.mapSize : sizes.buttonSize,
     height: mapOpen ? sizes.mapSize : sizes.buttonSize,
   }}
@@ -223,7 +223,7 @@ className="relative rounded-xl border border-white/10 bg-[#0C0E12] overflow-hidd
               className="
                 absolute inset-0
                 flex items-center justify-center
-              text-white text-sm xl:text-base 2xl:text-lg leading-none
+              text-foreground text-sm xl:text-base 2xl:text-lg leading-none
                 select-none
                 pointer-events-none
               "
@@ -241,9 +241,9 @@ className="relative rounded-xl border border-white/10 bg-[#0C0E12] overflow-hidd
           >
             <div 
               ref={headerRef}
-              className="absolute top-0 left-0 right-0 h-8 border-b border-white/10 flex items-center px-3"
+              className="absolute top-0 left-0 right-0 h-8 border-b border-border flex items-center px-3"
             >
-<span className="text-[11px] xl:text-xs 2xl:text-sm text-white/80 font-bold uppercase select-none pointer-events-none">
+<span className="text-[11px] xl:text-xs 2xl:text-sm text-foreground/80 font-bold uppercase select-none pointer-events-none">
                 Map
               </span>
             </div>
@@ -300,7 +300,7 @@ className="relative rounded-xl border border-white/10 bg-[#0C0E12] overflow-hidd
               })}
 
             <div
-              className="absolute border-2 border-white bg-white/5 rounded-[2px]"
+              className="absolute border-2 border-foreground/50 bg-foreground/5 rounded-[2px]"
               style={{
                 left: Math.max(0, Math.min(sizes.mapSize - viewportW, viewportX)),
                 top: Math.max(
@@ -325,7 +325,7 @@ className="flex flex-col gap-2 xl:gap-2.5 2xl:gap-3 select-none"
 <ZoomBtn onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; handleZoom(0.1); }} size={sizes.buttonSize}>+</ZoomBtn>
 
 <div
-className="rounded-lg bg-[#0C0E12] border border-white/10 text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-white flex items-center justify-center select-none pointer-events-none cursor-default"  style={{ 
+className="rounded-lg bg-card border border-border text-[10px] xl:text-[11px] 2xl:text-xs font-bold text-foreground flex items-center justify-center select-none pointer-events-none cursor-default"  style={{ 
     width: sizes.buttonSize, 
     height: sizes.buttonSize 
   }}
@@ -357,10 +357,10 @@ className="rounded-lg bg-[#0C0E12] border border-white/10 text-[10px] xl:text-[1
           onMouseDown={(e) => e.preventDefault()}
     className="
       rounded-lg
-    bg-[#0C0E12]
-        border border-white/10
-      text-white text-sm xl:text-base 2xl:text-lg
-        hover:bg-white/10
+    bg-card
+        border border-border
+      text-foreground text-sm xl:text-base 2xl:text-lg
+        hover:bg-foreground/10
         transition
         select-none
         cursor-pointer

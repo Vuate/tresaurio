@@ -97,15 +97,15 @@ return () => {
         top: topBarHeight + 16,
         maxHeight: availableHeight
       }}
-className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#0C0E12] border border-white/[0.06] rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
+className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-card border border-border rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
     >
 
       <div
         ref={headerRef}
-className="flex items-center justify-between px-3 py-3 border-b border-white/[0.06] select-none bg-[#0C0E12] relative z-10"
+className="flex items-center justify-between px-3 py-3 border-b border-border select-none bg-card relative z-10"
       >
         <div className="flex items-center gap-2">
-<div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">Sidebar</div>
+<div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">Sidebar</div>
         </div>
       </div>
 
@@ -113,7 +113,7 @@ className="flex items-center justify-between px-3 py-3 border-b border-white/[0.
   style={{
     maxHeight: `calc(${availableHeight}px - ${headerHeight}px)`,
   }}
-className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-white/40 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/40 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
   onWheel={(e) => {e.stopPropagation();}}
 >
         <div className="space-y-1">
@@ -185,7 +185,7 @@ className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-
 function SidebarSection({ title, children }: { title: string; children: React.ReactNode; }) {
   return (
     <div className="space-y-2">
-      <div className="px-1 py-1 text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/50 font-bold tracking-wider">
+      <div className="px-1 py-1 text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-muted-foreground font-bold tracking-wider">
         {title}
       </div>
       <div className="space-y-1">{children}</div>
@@ -197,7 +197,7 @@ function SidebarItem({ title, onClick, active }: { title: string; onClick: () =>
   return (
 <button
   onClick={onClick}
-  className={`w-full text-left rounded-lg px-3 py-2.5 text-[13px] xl:text-[13.5px] 2xl:text-sm transition border cursor-pointer ${active ? "bg-[#1A73E8]/15 border-[#1A73E8]/35 text-white" : "bg-white/[0.03] border-white/[0.06] text-white hover:bg-[#1A73E8]/10 hover:border-[#1A73E8]/25"
+  className={`w-full text-left rounded-lg px-3 py-2.5 text-[13px] xl:text-[13.5px] 2xl:text-sm transition border cursor-pointer ${active ? "bg-[#1A73E8]/15 border-[#1A73E8]/35 text-foreground" : "bg-foreground/3 border-border text-foreground hover:bg-[#1A73E8]/10 hover:border-[#1A73E8]/25"
   }`}
 >
   {title}

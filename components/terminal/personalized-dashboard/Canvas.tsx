@@ -383,10 +383,10 @@ useEffect(() => {
         top: topBarHeight || 0,
         bottom: notesBarHeight || 0,
       cursor: "grab",
-      backgroundColor: "#0a0b0f",
+      backgroundColor: "var(--background)",
       backgroundImage: `
-        linear-gradient(rgba(255,255,255,0.09) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.09) 1px, transparent 1px)
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)
       `,
       backgroundSize: "30px 30px",
     }}

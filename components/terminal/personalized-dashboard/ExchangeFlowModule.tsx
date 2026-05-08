@@ -233,7 +233,7 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
   if (!isMounted) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="text-white/40 text-xs">Loading...</div>
+        <div className="text-muted-foreground text-xs">Loading...</div>
       </div>
     );
   }
@@ -241,11 +241,11 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
   return (
     <div ref={containerRef} className="h-full flex flex-col">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+        <span className="font-semibold text-foreground text-xs whitespace-nowrap">
           Exchange Flow (24h)
         </span>
         
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
@@ -256,9 +256,9 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
             onClick={() => setViewOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#111318]
-              border border-white/10
-              text-white text-xs
+              bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -270,7 +270,7 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
             </span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${viewOpen ? "rotate-180" : ""}
               `}
@@ -295,7 +295,7 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
         ...(isRightSide ? { right: 0 } : { left: 0 })
       }}
       className="
-      bg-[#111318] border border-white/10
+      bg-card border border-border
 
         rounded-md
         shadow-lg
@@ -317,7 +317,7 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
             w-full px-3 py-2
             text-left text-xs
             bg-transparent cursor-pointer
-            text-white
+            text-foreground
             transition-colors
           hover:text-[#1A73E8]/65
 
@@ -338,8 +338,8 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
           disabled={refreshing}
           className="
             h-7 w-7 rounded-md
-        bg-white/5 border border-white/10
-         text-white/50 hover:bg-white/10
+        bg-input border border-border
+         text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10
             transition-all flex items-center justify-center
             cursor-pointer
             disabled:opacity-50 disabled:cursor-not-allowed
@@ -424,18 +424,18 @@ export default function ExchangeFlowModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {loading ? (
-          <div className="text-xs text-white/40 text-center py-8">
+          <div className="text-xs text-muted-foreground text-center py-8">
             Loading flow data...
           </div>
         ) : filteredEvents.length === 0 ? (
-          <div className="text-xs text-white/40 text-center py-8">
+          <div className="text-xs text-muted-foreground text-center py-8">
             No flow data available
           </div>
         ) : (
@@ -477,21 +477,21 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     </span>
 
                     {/* Separator */}
-                    <span className="text-white/30 text-[10px] shrink-0">•</span>
+                    <span className="text-muted-foreground text-[10px] shrink-0">•</span>
 
                     {/* Exchange */}
-                    <span className="text-white/50 text-[10px] whitespace-nowrap shrink-0">
+                    <span className="text-muted-foreground text-[10px] whitespace-nowrap shrink-0">
                       {e.exchange}
                     </span>
                   </div>
 
                   {/* Middle Row - USD Value (can wrap with break-all) */}
-                  <div className="text-white font-mono text-xs break-all mb-1">
+                  <div className="text-foreground font-mono text-xs break-all mb-1">
                     ${(e.usdValue / 1000000).toFixed(1)}M
                   </div>
 
                   {/* Bottom Row - Amount (can wrap with break-all) */}
-                  <div className="text-white/50 text-[10px] font-mono break-all">
+                  <div className="text-muted-foreground text-[10px] font-mono break-all">
                     {e.amount.toLocaleString(undefined, { 
                       maximumFractionDigits: 2,
                       minimumFractionDigits: 2 

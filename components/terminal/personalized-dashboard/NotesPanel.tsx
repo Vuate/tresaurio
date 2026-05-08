@@ -196,8 +196,8 @@ useEffect(() => {
       <div
         ref={notesPanelRef}
         className="fixed bottom-0 left-0 right-0 z-40
-        bg-[#080A10] backdrop-blur-md
-          border-t border-white/[0.07]"
+        bg-background backdrop-blur-md
+          border-t border-border"
         style={{
           height: notesOpen ? notesHeight : headerHeight,
         }}
@@ -230,16 +230,16 @@ useEffect(() => {
           className="px-6 xl:px-8 2xl:px-12 flex items-center justify-between cursor-pointer select-none"
           style={{ height: headerHeight }}
         >
-          <div className="flex items-center gap-2 xl:gap-2.5 2xl:gap-3 text-sm xl:text-[15px] 2xl:text-base font-semibold text-white">
+          <div className="flex items-center gap-2 xl:gap-2.5 2xl:gap-3 text-sm xl:text-[15px] 2xl:text-base font-semibold text-foreground">
             <Icon
               icon="material-symbols:note-alt-outline"
-              className="text-white w-[1.1em] h-[1.1em] xl:w-[1.15em] xl:h-[1.15em] 2xl:w-[1.2em] 2xl:h-[1.2em]"
+              className="text-foreground w-[1.1em] h-[1.1em] xl:w-[1.15em] xl:h-[1.15em] 2xl:w-[1.2em] 2xl:h-[1.2em]"
             />
             Notes
           </div>
 
           <div
-            className={`text-white/60 transition-transform duration-300 text-base xl:text-lg 2xl:text-xl
+            className={`text-foreground/60 transition-transform duration-300 text-base xl:text-lg 2xl:text-xl
               ${!notesOpen ? "rotate-180" : ""}`}
           >
             ▲
@@ -252,7 +252,7 @@ useEffect(() => {
             style={{ height: `calc(100% - ${headerHeight}px)` }} 
           >
             <div className="flex flex-col w-1/2 gap-2 xl:gap-2.5 2xl:gap-3">
-              <div className="flex-1 rounded-lg overflow-hidden border border-white/10 bg-black/30">
+              <div className="flex-1 rounded-lg overflow-hidden border border-border bg-foreground/4">
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -265,20 +265,20 @@ useEffect(() => {
                   placeholder="Write your trading notes…"
                   className="w-full h-full resize-none
                     bg-transparent
-                    p-3 xl:p-3.5 2xl:p-4 
+                    p-3 xl:p-3.5 2xl:p-4
                     pr-4 xl:pr-5 2xl:pr-6
-                    text-xs xl:text-[13px] 2xl:text-sm text-white
+                    text-xs xl:text-[13px] 2xl:text-sm text-foreground
                     focus:outline-none
                     
                     [&::-webkit-scrollbar]:w-2
                     [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-white/20
+          [&::-webkit-scrollbar-thumb]:bg-foreground/20
                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-thumb]:cursor-pointer
-               [&::-webkit-scrollbar-thumb:hover]:bg-white/40
+               [&::-webkit-scrollbar-thumb:hover]:bg-foreground/40
                     
                     scrollbar-thin
-               scrollbar-thumb-white/20
+               scrollbar-thumb-foreground/20
                     scrollbar-track-transparent
                   "
                 />
@@ -303,24 +303,24 @@ useEffect(() => {
 
                 [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:bg-transparent
-               [&::-webkit-scrollbar-thumb]:bg-white/20
+               [&::-webkit-scrollbar-thumb]:bg-foreground/20
                 [&::-webkit-scrollbar-thumb]:rounded-full
                 [&::-webkit-scrollbar-thumb]:cursor-pointer
-            [&::-webkit-scrollbar-thumb:hover]:bg-white/40
+            [&::-webkit-scrollbar-thumb:hover]:bg-foreground/40
 
                 scrollbar-thin
-                scrollbar-thumb-white/20
+                scrollbar-thumb-foreground/20
                 scrollbar-track-transparent
               ">
                 {notes.length === 0 && (
-                  <div className="text-xs xl:text-[13px] 2xl:text-sm text-white/40">No notes yet</div>
+                  <div className="text-xs xl:text-[13px] 2xl:text-sm text-foreground/40">No notes yet</div>
                 )}
 
                 {notes.map((n) => (
                   <div
                     key={n.id}
-            className="rounded-lg border border-white/[0.06]
-              bg-white/[0.03] px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-white/80
+            className="rounded-lg border border-border
+              bg-foreground/3 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-foreground/80
               relative group"
                   >
                     <button
@@ -343,7 +343,7 @@ useEffect(() => {
                       ✕
                     </button>
 
-                    <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-white/40 mb-1 xl:mb-1.5 2xl:mb-2">
+                    <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-foreground/40 mb-1 xl:mb-1.5 2xl:mb-2">
                       {new Date(n.createdAt).toLocaleString()}
                     </div>
                     

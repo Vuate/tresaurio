@@ -191,11 +191,11 @@ export default function WalletInspectorModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col relative">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs">
+        <span className="font-semibold text-foreground text-xs">
           Wallet Inspector
         </span>
         
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -209,8 +209,8 @@ export default function WalletInspectorModule({ instanceId }: Props) {
     onClick={() => setChainDropdownOpen((v) => !v)}
     className="
       h-7 px-3 rounded-md
-bg-[#111318] border border-white/10
-      text-white text-xs
+bg-card border border-border
+      text-foreground text-xs
       flex items-center gap-1.5
       cursor-pointer
       transition-all
@@ -220,7 +220,7 @@ bg-[#111318] border border-white/10
     <span>{selectedChainData?.name}</span>
     <span
       className={`
-        text-white/50 text-[10px]
+        text-muted-foreground text-[10px]
         transition-transform duration-200
         ${chainDropdownOpen ? "rotate-180" : ""}
       `}
@@ -241,14 +241,14 @@ bg-[#111318] border border-white/10
           w-[140px]
           max-h-[200px]
           overflow-y-auto
-    bg-[#111318] border border-white/10
+    bg-secondary border border-border
 
           rounded-md
           shadow-lg
           animate-in fade-in slide-in-from-top-2 duration-200
 
           [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-thumb]:bg-white/20
+      [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
           [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -266,13 +266,13 @@ bg-[#111318] border border-white/10
               w-full px-3 py-2
               text-left text-xs
               bg-transparent cursor-pointer
-              text-white
+              text-foreground
               transition-colors
  hover:text-[#1A73E8]/65
             "
           >
             <div className="font-medium">{chain.name}</div>
-            <div className="text-[9px] text-white/60">{chain.explorer}</div>
+            <div className="text-[9px] text-muted-foreground">{chain.explorer}</div>
           </button>
         ))}
       </div>
@@ -294,12 +294,12 @@ bg-[#111318] border border-white/10
               ? "Enter address (T...)"
               : "Enter address"
           }
-          className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder:text-white/40"
+          className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors placeholder:text-muted-foreground"
         />
         <button
           onClick={handleInspect}
           disabled={!address || inspecting}
-          className="w-full py-1.5 rounded-md bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white font-semibold transition-all cursor-pointer text-xs"
+          className="w-full py-1.5 rounded-md bg-blue-500 hover:bg-blue-600 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed text-foreground font-semibold transition-all cursor-pointer text-xs"
         >
           {inspecting ? "Inspecting..." : "Inspect Wallet"}
         </button>
@@ -313,10 +313,10 @@ bg-[#111318] border border-white/10
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {error ? (
@@ -327,22 +327,22 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         ) : !walletData ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <div className="text-4xl mb-2">👛</div>
-            <div className="text-sm text-white/40 px-4">
+            <div className="text-sm text-muted-foreground px-4">
               Enter a wallet address to inspect
             </div>
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
-              <div className="text-[10px] text-white/60 mb-1">Address</div>
-              <div className="text-xs font-mono text-white break-all leading-relaxed">
+            <div className="px-3 py-2 rounded-md bg-input border border-border">
+              <div className="text-[10px] text-muted-foreground mb-1">Address</div>
+              <div className="text-xs font-mono text-foreground break-all leading-relaxed">
                 {walletData.address}
               </div>
             </div>
 
             <div className="px-3 py-2 rounded-md bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20">
-              <div className="text-[10px] text-white/60 mb-1">Total Value</div>
-              <div className="text-xl sm:text-2xl font-bold text-white font-mono break-words">
+              <div className="text-[10px] text-muted-foreground mb-1">Total Value</div>
+              <div className="text-xl sm:text-2xl font-bold text-foreground font-mono break-words">
                 ${totalValue.toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2
@@ -350,12 +350,12 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               </div>
             </div>
 
-            <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
+            <div className="px-3 py-2 rounded-md bg-input border border-border">
               <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1">
-                <span className="text-xs text-white/60 whitespace-nowrap">
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
                   {walletData.label || selectedChainData?.short} Balance
                 </span>
-                <span className="text-xs font-bold text-white font-mono whitespace-nowrap">
+                <span className="text-xs font-bold text-foreground font-mono whitespace-nowrap">
                   {walletData.balance.toFixed(4)} {walletData.label || selectedChainData?.short}
                 </span>
               </div>
@@ -363,24 +363,24 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
             {walletData.tokens.length > 0 && (
               <div>
-                <div className="text-xs font-semibold text-white/90 mb-1.5 px-1">
+                <div className="text-xs font-semibold text-foreground mb-1.5 px-1">
                   Token Holdings
                 </div>
                 <div className="space-y-1.5">
                   {walletData.tokens.map((token) => (
                     <div
                       key={token.symbol}
-                      className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
+                      className="px-3 py-2 rounded-md bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-all"
                     >
                       <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 mb-1">
-                        <div className="font-semibold text-white text-xs whitespace-nowrap">
+                        <div className="font-semibold text-foreground text-xs whitespace-nowrap">
                           {token.symbol}
                         </div>
-                        <div className="text-xs font-bold text-white font-mono whitespace-nowrap">
+                        <div className="text-xs font-bold text-foreground font-mono whitespace-nowrap">
                           ${token.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
                       </div>
-                      <div className="text-[10px] text-white/60 break-words">
+                      <div className="text-[10px] text-muted-foreground break-words">
                         {token.amount.toLocaleString('en-US')} tokens
                       </div>
                     </div>
@@ -390,15 +390,15 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             )}
 
             <div className="grid grid-cols-2 gap-2">
-              <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
-                <div className="text-[10px] text-white/60 mb-1">NFTs</div>
-                <div className="text-base sm:text-lg font-bold text-white break-words">
+              <div className="px-3 py-2 rounded-md bg-input border border-border">
+                <div className="text-[10px] text-muted-foreground mb-1">NFTs</div>
+                <div className="text-base sm:text-lg font-bold text-foreground break-words">
                   {walletData.nfts}
                 </div>
               </div>
-              <div className="px-3 py-2 rounded-md bg-white/5 border border-white/10">
-                <div className="text-[10px] text-white/60 mb-1">TX (24h)</div>
-                <div className="text-base sm:text-lg font-bold text-white break-words">
+              <div className="px-3 py-2 rounded-md bg-input border border-border">
+                <div className="text-[10px] text-muted-foreground mb-1">TX (24h)</div>
+                <div className="text-base sm:text-lg font-bold text-foreground break-words">
                   {walletData.transactions24h}
                 </div>
               </div>

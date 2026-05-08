@@ -78,15 +78,15 @@ export default function NotesModule() {
 
             [&::-webkit-scrollbar]:w-2
             [&::-webkit-scrollbar-track]:bg-transparent
-     [&::-webkit-scrollbar-thumb]:bg-white/20
+     [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
             [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
             scrollbar-thin
-scrollbar-thumb-white/20            scrollbar-track-transparent
+scrollbar-thumb-foreground/20            scrollbar-track-transparent
           "
         >
           {notes.length === 0 && (
-            <div className="text-xs text-white/40">
+            <div className="text-xs text-muted-foreground">
               No notes yet
             </div>
           )}
@@ -94,7 +94,7 @@ scrollbar-thumb-white/20            scrollbar-track-transparent
           {notes.map((n) => (
             <div
               key={n.id}
-              className="rounded-lg border border-white/10 bg-white/5 p-2 pr-8 relative overflow-hidden"
+              className="rounded-lg border border-border bg-input p-2 pr-8 relative overflow-hidden"
             >
               <button
                 onClick={(e) => {
@@ -119,15 +119,15 @@ scrollbar-thumb-white/20            scrollbar-track-transparent
               </button>
 
               <div className="flex flex-col gap-0.5 min-w-0 pr-1">
-                <div className="text-[10px] text-white/40 truncate">
+                <div className="text-[10px] text-muted-foreground truncate">
                   {new Date(n.createdAt).toLocaleDateString("tr-TR")}
                 </div>
-                <div className="text-[10px] text-white/40 truncate">
+                <div className="text-[10px] text-muted-foreground truncate">
                   {new Date(n.createdAt).toLocaleTimeString("tr-TR")}
                 </div>
               </div>
               
-              <div className="mt-1.5 text-xs text-white/80 break-words whitespace-pre-wrap overflow-hidden">
+              <div className="mt-1.5 text-xs text-foreground break-words whitespace-pre-wrap overflow-hidden">
                 {n.text}
               </div>
             </div>
@@ -140,7 +140,7 @@ scrollbar-thumb-white/20            scrollbar-track-transparent
               h-[44px]
               resize-none
               rounded-lg
-              border border-white/10
+              border border-border
               bg-transparent
               p-2
               text-xs
@@ -160,7 +160,7 @@ scrollbar-thumb-white/20            scrollbar-track-transparent
           <div className="mt-2 mb-3 flex justify-end">
 <button
   onClick={handleSave}
-  className="self-end px-4 py-1.5 rounded-md bg-[#1A73E8] text-white text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"
+  className="self-end px-4 py-1.5 rounded-md bg-[#1A73E8] text-foreground text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"
 >
   Save Note
 </button>

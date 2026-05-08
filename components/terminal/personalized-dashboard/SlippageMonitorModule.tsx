@@ -135,18 +135,18 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
       case "low":
         return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
       default:
-        return "text-white/60 bg-white/5 border-white/10";
+        return "text-muted-foreground bg-input border-border";
     }
   };
 
   return (
     <div className="h-full flex flex-col relative">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+        <span className="font-semibold text-foreground text-xs whitespace-nowrap">
           Slippage Monitor
         </span>
 
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
 
         {status && (
           <span
@@ -177,8 +177,8 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
             onClick={() => setMarketType("spot")}
             className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap cursor-pointer  ${
               marketType === "spot"
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
+                ? "bg-blue-500 text-foreground"
+                : "bg-secondary text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
             }`}
           >
             Spot
@@ -187,8 +187,8 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
             onClick={() => setMarketType("futures")}
             className={`h-7 px-3 rounded-md text-xs font-medium transition-all whitespace-nowrap cursor-pointer  ${
               marketType === "futures"
-                ? "bg-blue-500 text-white"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
+                ? "bg-blue-500 text-foreground"
+                : "bg-secondary text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
             }`}
           >
             Futures
@@ -198,11 +198,11 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
         <div ref={exchangeRef} className="relative">
           <button
             onClick={() => setExchangeOpen((v) => !v)}
-            className="h-7 px-3 rounded-md bg-[#111318] border border-white/10 text-white text-xs flex items-center gap-1.5 cursor-pointer hover:bg-white/5 transition-all whitespace-nowrap"
+            className="h-7 px-3 rounded-md bg-card border border-border text-foreground text-xs flex items-center gap-1.5 cursor-pointer hover:bg-input transition-all whitespace-nowrap"
           >
             <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
             <span
-              className={`text-white/50 text-[10px] transition-transform duration-200 ${
+              className={`text-muted-foreground text-[10px] transition-transform duration-200 ${
                 exchangeOpen ? "rotate-180" : ""
               }`}
             >
@@ -233,14 +233,14 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
       }}
       className="
         overflow-y-auto
-         bg-[#111318]
-       border border-white/[0.06]
+         bg-secondary
+       border border-border
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
         
         [&::-webkit-scrollbar]:w-1.5
-    [&::-webkit-scrollbar-thumb]:bg-white/20
+    [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -252,7 +252,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
             setExchange(ex.id as Exchange);
             setExchangeOpen(false);
           }}
-          className="w-full px-3 py-2 text-left text-xs bg-transparent cursor-pointer text-white transition-colors  hover:text-[#1A73E8]/65"
+          className="w-full px-3 py-2 text-left text-xs bg-transparent cursor-pointer text-foreground transition-colors  hover:text-[#1A73E8]/65"
         >
           {ex.name}
         </button>
@@ -266,28 +266,28 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
 
       <div
         ref={contentRef}
-        className="flex-1 min-h-0 px-3 pb-3 overflow-y-auto space-y-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent  [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-white/40 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+        className="flex-1 min-h-0 px-3 pb-3 overflow-y-auto space-y-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent  [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
       >
         <div>
-          <label className="text-[10px] text-white/50 mb-1 block">Symbol</label>
+          <label className="text-[10px] text-muted-foreground mb-1 block">Symbol</label>
           <input
             type="text"
             value={symbol}
             onChange={(e) => setSymbol(e.target.value.toUpperCase())}
             placeholder="BTCUSDT"
-            className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+            className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
           />
         </div>
 
         <div>
-          <label className="text-[10px] text-white/50 mb-1 block">Order Type</label>
+          <label className="text-[10px] text-muted-foreground mb-1 block">Order Type</label>
           <div className="flex gap-2">
             <button
               onClick={() => setOrderType("buy")}
               className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer  ${
                 orderType === "buy"
-                  ? "bg-emerald-500 text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10"
+                  ? "bg-emerald-500 text-foreground"
+                  : "bg-secondary text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
               }`}
             >
               Buy
@@ -296,8 +296,8 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
               onClick={() => setOrderType("sell")}
               className={`flex-1 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer  ${
                 orderType === "sell"
-                  ? "bg-red-500 text-white"
-                  : "bg-white/5 text-white/60 hover:bg-white/10"
+                  ? "bg-red-500 text-foreground"
+                  : "bg-secondary text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
               }`}
             >
               Sell
@@ -306,21 +306,21 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
         </div>
 
         <div>
-          <label className="text-[10px] text-white/50 mb-1 block">Order Size (USDT)</label>
+          <label className="text-[10px] text-muted-foreground mb-1 block">Order Size (USDT)</label>
           <input
             type="number"
             value={orderSize}
             onChange={(e) => setOrderSize(e.target.value)}
             placeholder="10000"
-            className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+            className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
           />
         </div>
 
         {loading && (
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
-              <div className="w-6 h-6 border-2 border-white/20 border-t-blue-400 rounded-full animate-spin mx-auto mb-2"></div>
-              <div className="text-[10px] text-white/60">Loading order book...</div>
+              <div className="w-6 h-6 border-2 border-border border-t-blue-400 rounded-full animate-spin mx-auto mb-2"></div>
+              <div className="text-[10px] text-muted-foreground">Loading order book...</div>
             </div>
           </div>
         )}
@@ -345,11 +345,11 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
 
         {!loading && !error && slippageData && (
           <div className="space-y-2 pt-1">
-            <div className="bg-white/5 rounded-md p-2 border border-white/10">
-              <div className="text-[10px] text-white/50 mb-0.5 leading-tight">
+            <div className="bg-input rounded-md p-2 border border-border">
+              <div className="text-[10px] text-muted-foreground mb-0.5 leading-tight">
                 {orderType === "buy" ? "Best Ask" : "Best Bid"} Price
               </div>
-              <div className="text-sm font-bold text-white leading-tight break-all">
+              <div className="text-sm font-bold text-foreground leading-tight break-all">
                 $
                 {slippageData.basePrice.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -370,11 +370,11 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            <div className="bg-white/5 rounded-md p-2 border border-white/10">
-              <div className="text-[10px] text-white/50 mb-0.5 leading-tight">
+            <div className="bg-input rounded-md p-2 border border-border">
+              <div className="text-[10px] text-muted-foreground mb-0.5 leading-tight">
                 Effective Price
               </div>
-              <div className="text-sm font-bold text-white leading-tight break-all">
+              <div className="text-sm font-bold text-foreground leading-tight break-all">
                 $
                 {slippageData.effectivePrice.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -399,9 +399,9 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
               </div>
             </div>
 
-            <div className="bg-white/5 rounded-md p-2 border border-white/10">
+            <div className="bg-input rounded-md p-2 border border-border">
               <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
-                <span className="text-[10px] text-white/50 leading-tight">Market Impact</span>
+                <span className="text-[10px] text-muted-foreground leading-tight">Market Impact</span>
                 <span
                   className={`text-[10px] px-1.5 py-0.5 rounded font-medium border ${getImpactColor(
                     slippageData.impact
@@ -410,7 +410,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
                   {slippageData.impact.toUpperCase()}
                 </span>
               </div>
-              <div className="text-[10px] text-white/50 leading-tight break-all">
+              <div className="text-[10px] text-muted-foreground leading-tight break-all">
                 Liquidity: $
                 {(slippageData.liquidityDepth / 1000000).toFixed(2)}M
               </div>

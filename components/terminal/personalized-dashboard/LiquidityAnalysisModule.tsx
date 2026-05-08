@@ -152,14 +152,14 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       {/* Header */}
       <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0 flex-wrap">
-        <div className="text-[10px] sm:text-xs text-white/60">
-          <span className="font-semibold text-white/90">
+        <div className="text-[10px] sm:text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">
             <span className="hidden xs:inline">Liquidity Analysis</span>
             <span className="xs:hidden">Liquidity</span>
           </span>
-          <span className="text-white/40"> • </span>
-          <span className="text-white/70">{symbol}</span>
-          <span className="text-white/40"> • </span>
+          <span className="text-muted-foreground"> • </span>
+          <span className="text-muted-foreground">{symbol}</span>
+          <span className="text-muted-foreground"> • </span>
           <span
             className={
               status === "connected"
@@ -184,9 +184,9 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     onClick={() => setExchangeOpen((v) => !v)}
     className="
       h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-   bg-[#111318]
-      border border-white/10
-      text-[10px] sm:text-xs text-white
+   bg-card
+      border border-border
+      text-[10px] sm:text-xs text-foreground
       flex items-center gap-1.5 sm:gap-2
       cursor-pointer
       transition-colors
@@ -197,7 +197,7 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
     </span>
     <span
       className={`
-        text-white/50
+        text-muted-foreground
         transition-transform duration-200
         ${exchangeOpen ? "rotate-180" : ""}
       `}
@@ -216,7 +216,7 @@ export default function LiquidityAnalysisModule({ instanceId }: Props) {
 className={`
   absolute mt-1 z-[999]
   w-[120px] sm:w-[140px]
-bg-[#111318] border border-white/10
+bg-secondary border border-border
 
   rounded-lg
   overflow-hidden
@@ -236,7 +236,7 @@ bg-[#111318] border border-white/10
               w-full px-2.5 sm:px-3 py-1.5 sm:py-2
               text-left text-[10px] sm:text-xs
               bg-transparent cursor-pointer
-              text-white
+              text-foreground
               transition-colors
         hover:text-[#1A73E8]/65
             "
@@ -254,9 +254,9 @@ bg-[#111318] border border-white/10
     onClick={() => setMarketOpen((v) => !v)}
     className="
       h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-     bg-[#111318]
-      border border-white/10
-      text-[10px] sm:text-xs text-white
+     bg-card
+      border border-border
+      text-[10px] sm:text-xs text-foreground
       flex items-center gap-1.5 sm:gap-2
       cursor-pointer
       transition-colors
@@ -265,7 +265,7 @@ bg-[#111318] border border-white/10
     <span>{MARKET_TYPES.find((m) => m.id === marketType)?.name}</span>
     <span
       className={`
-        text-white/50
+        text-muted-foreground
         transition-transform duration-200
         ${marketOpen ? "rotate-180" : ""}
       `}
@@ -284,7 +284,7 @@ bg-[#111318] border border-white/10
         className={`
           absolute mt-1 z-[999]
           w-[100px] sm:w-[120px]
-  bg-[#111318] border border-white/10
+  bg-secondary border border-border
 
           rounded-lg
           overflow-hidden
@@ -304,7 +304,7 @@ bg-[#111318] border border-white/10
               w-full px-2.5 sm:px-3 py-1.5 sm:py-2
               text-left text-[10px] sm:text-xs
               bg-transparent cursor-pointer
-              text-white
+              text-foreground
               transition-colors
          hover:text-[#1A73E8]/65
             "
@@ -322,9 +322,9 @@ bg-[#111318] border border-white/10
     onClick={() => setSymbolOpen((v) => !v)}
     className="
       h-7 sm:h-8 px-2 sm:px-3 rounded-lg
-     bg-[#111318]
-      border border-white/10
-      text-[10px] sm:text-xs text-white
+     bg-card
+      border border-border
+      text-[10px] sm:text-xs text-foreground
       flex items-center gap-1.5 sm:gap-2
       cursor-pointer
       
@@ -334,7 +334,7 @@ bg-[#111318] border border-white/10
     <span>{symbol}</span>
     <span
       className={`
-        text-white/50
+        text-muted-foreground
         transition-transform duration-200
         ${symbolOpen ? "rotate-180" : ""}
       `}
@@ -353,7 +353,7 @@ bg-[#111318] border border-white/10
 className={`
   absolute mt-1 z-[999]
   w-[120px] sm:w-[140px]
-bg-[#111318] border border-white/10
+bg-secondary border border-border
 
   rounded-lg
   overflow-hidden
@@ -373,7 +373,7 @@ bg-[#111318] border border-white/10
               w-full px-2.5 sm:px-3 py-1.5 sm:py-2
               text-left text-[10px] sm:text-xs
               bg-transparent cursor-pointer
-              text-white
+              text-foreground
               transition-colors
      hover:text-[#1A73E8]/65
             "
@@ -397,19 +397,19 @@ bg-[#111318] border border-white/10
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-      [&::-webkit-scrollbar-thumb]:bg-white/20
+      [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb:hover]:bg-white/40
+          [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
 
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {loading && (
-          <div className="px-2 sm:px-3 py-6 sm:py-8 rounded-lg bg-white/5 border border-white/10">
+          <div className="px-2 sm:px-3 py-6 sm:py-8 rounded-lg bg-input border border-border">
             <div className="flex flex-col items-center justify-center gap-2">
               <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-400"></div>
-              <div className="text-[9px] sm:text-[10px] text-white/60">Loading liquidity data...</div>
+              <div className="text-[9px] sm:text-[10px] text-muted-foreground">Loading liquidity data...</div>
             </div>
           </div>
         )}
@@ -434,11 +434,11 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           <>
             <div className="px-2 sm:px-3 py-2 sm:py-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20">
               <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                <div className="text-white/50 text-[9px] sm:text-[10px]">Liquidity Score</div>
+                <div className="text-muted-foreground text-[9px] sm:text-[10px]">Liquidity Score</div>
                 <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
               </div>
               <div className="flex items-baseline gap-1.5 sm:gap-2">
-                <div className="text-xl sm:text-2xl font-bold text-white">
+                <div className="text-xl sm:text-2xl font-bold text-foreground">
                   {liquidityData.liquidityScore.toFixed(0)}
                 </div>
                 <div
@@ -455,7 +455,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   {liquidityData.rating}
                 </div>
               </div>
-              <div className="mt-1.5 sm:mt-2 h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden">
+              <div className="mt-1.5 sm:mt-2 h-1.5 sm:h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
                   style={{ width: `${liquidityData.liquidityScore}%` }}
@@ -464,50 +464,50 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             </div>
 
             <div className="space-y-1.5 sm:space-y-2">
-              <div className="text-white/50 text-[9px] sm:text-[10px] font-semibold uppercase px-1">
+              <div className="text-muted-foreground text-[9px] sm:text-[10px] font-semibold uppercase px-1">
                 Volume Analysis
               </div>
 
 <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
-  <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10 overflow-hidden">
-    <div className="text-white/50 text-[9px] sm:text-[10px] mb-1">Bid Volume</div>
+  <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border overflow-hidden">
+    <div className="text-muted-foreground text-[9px] sm:text-[10px] mb-1">Bid Volume</div>
     <div className="text-emerald-400 font-semibold font-mono text-[10px] sm:text-xs break-all">
       ${(liquidityData.bidVolume / 1000000).toFixed(2)}M
     </div>
   </div>
 
-  <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10 overflow-hidden">
-    <div className="text-white/50 text-[9px] sm:text-[10px] mb-1">Ask Volume</div>
+  <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border overflow-hidden">
+    <div className="text-muted-foreground text-[9px] sm:text-[10px] mb-1">Ask Volume</div>
     <div className="text-red-400 font-semibold font-mono text-[10px] sm:text-xs break-all">
       ${(liquidityData.askVolume / 1000000).toFixed(2)}M
     </div>
   </div>
 </div>
 
-              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
-                <div className="text-white/50 text-[9px] sm:text-[10px]">Total Volume</div>
-                <div className="text-white font-semibold font-mono text-[10px] sm:text-xs">
+              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border">
+                <div className="text-muted-foreground text-[9px] sm:text-[10px]">Total Volume</div>
+                <div className="text-foreground font-semibold font-mono text-[10px] sm:text-xs">
                   ${(liquidityData.totalVolume / 1000000).toFixed(2)}M
                 </div>
               </div>
 
-              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
+              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border">
                 <div className="flex justify-between items-center mb-1.5 sm:mb-2">
-                  <div className="text-white/50 text-[9px] sm:text-[10px]">
+                  <div className="text-muted-foreground text-[9px] sm:text-[10px]">
                     Order Book Imbalance
                   </div>
                   <div
                     className={`text-[9px] sm:text-[10px] font-semibold ${
                       Math.abs(liquidityData.imbalance) > 10
                         ? "text-yellow-400"
-                        : "text-white/70"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {liquidityData.imbalance > 0 ? "+" : ""}
                     {liquidityData.imbalance.toFixed(2)}%
                   </div>
                 </div>
-                <div className="h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden flex">
+                <div className="h-1.5 sm:h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden flex">
                   <div
                     className="bg-emerald-500 transition-all"
                     style={{ width: `${50 + liquidityData.imbalance / 2}%` }}
@@ -517,7 +517,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     style={{ width: `${50 - liquidityData.imbalance / 2}%` }}
                   />
                 </div>
-                <div className="flex justify-between text-[8px] sm:text-[9px] text-white/40 mt-1">
+                <div className="flex justify-between text-[8px] sm:text-[9px] text-muted-foreground mt-1">
                   <span>Buy Pressure</span>
                   <span>Sell Pressure</span>
                 </div>
@@ -525,18 +525,18 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             </div>
 
             <div className="space-y-1.5 sm:space-y-2">
-              <div className="text-white/50 text-[9px] sm:text-[10px] font-semibold uppercase px-1">
+              <div className="text-muted-foreground text-[9px] sm:text-[10px] font-semibold uppercase px-1">
                 Market Depth
               </div>
 
-              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
+              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border">
                 <div className="flex justify-between items-center mb-1">
-                  <div className="text-white/50 text-[9px] sm:text-[10px]">±1% Depth</div>
-                  <div className="text-white font-mono text-[10px] sm:text-[11px]">
+                  <div className="text-muted-foreground text-[9px] sm:text-[10px]">±1% Depth</div>
+                  <div className="text-foreground font-mono text-[10px] sm:text-[11px]">
                     ${(liquidityData.depth1pct / 1000000).toFixed(2)}M
                   </div>
                 </div>
-                <div className="h-1 sm:h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-1 sm:h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-blue-500 transition-all"
                     style={{
@@ -549,14 +549,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 </div>
               </div>
 
-              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
+              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border">
                 <div className="flex justify-between items-center mb-1">
-                  <div className="text-white/50 text-[9px] sm:text-[10px]">±5% Depth</div>
-                  <div className="text-white font-mono text-[10px] sm:text-[11px]">
+                  <div className="text-muted-foreground text-[9px] sm:text-[10px]">±5% Depth</div>
+                  <div className="text-foreground font-mono text-[10px] sm:text-[11px]">
                     ${(liquidityData.depth5pct / 1000000).toFixed(2)}M
                   </div>
                 </div>
-                <div className="h-1 sm:h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className="h-1 sm:h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-purple-500 transition-all"
                     style={{
@@ -569,9 +569,9 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 </div>
               </div>
 
-              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
+              <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border">
                 <div className="flex justify-between items-center">
-                  <div className="text-white/50 text-[9px] sm:text-[10px]">Spread</div>
+                  <div className="text-muted-foreground text-[9px] sm:text-[10px]">Spread</div>
                   <div
                     className={`font-mono text-[10px] sm:text-[11px] ${
                       liquidityData.spread < 0.03
@@ -585,7 +585,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               </div>
             </div>
 
-            <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-white/5 border border-white/10">
+            <div className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-input border border-border">
               <div className="flex items-start gap-1.5 sm:gap-2">
                 {liquidityData.rating === "Excellent" ||
                 liquidityData.rating === "Good" ? (
@@ -594,10 +594,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-400 mt-0.5 shrink-0" />
                 )}
                 <div className="min-w-0">
-                  <div className="text-white text-[9px] sm:text-[10px] font-semibold mb-0.5 sm:mb-1">
+                  <div className="text-foreground text-[9px] sm:text-[10px] font-semibold mb-0.5 sm:mb-1">
                     Analysis
                   </div>
-                  <div className="text-white/60 text-[9px] sm:text-[10px] leading-relaxed">
+                  <div className="text-muted-foreground text-[9px] sm:text-[10px] leading-relaxed">
                     {liquidityData.rating === "Excellent" &&
                       "Excellent liquidity with tight spreads. Ideal for large orders with minimal slippage."}
                     {liquidityData.rating === "Good" &&

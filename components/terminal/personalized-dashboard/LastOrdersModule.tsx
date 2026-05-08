@@ -56,7 +56,7 @@ export default function LastOrdersModule({ instanceId }: Props) {
       case "short":
         return "text-red-400 bg-red-500/10";
       default:
-        return "text-white/60 bg-white/5";
+        return "text-muted-foreground bg-input";
     }
   };
 
@@ -95,15 +95,15 @@ export default function LastOrdersModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
 <div className="relative z-50 flex flex-wrap items-center gap-x-2 gap-y-1.5 flex-shrink-0">
-  <div className="text-[10px] sm:text-xs text-white/60 flex items-center gap-1.5 sm:gap-2">
-    <span className="font-semibold text-white/90">
+  <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+    <span className="font-semibold text-foreground">
       <span className="hidden xs:inline">Last Orders</span>
       <span className="xs:hidden">Orders</span>
     </span>
     {loading && (
       <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
     )}
-    <span className="text-white/40"> • </span>
+    <span className="text-muted-foreground"> • </span>
     <span className="text-emerald-400">LIVE</span>
   </div>
 
@@ -126,20 +126,20 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
 </div>
 
       {showSettings && (
-        <div className="bg-[#111318] border border-white/[0.06] rounded-lg p-2 sm:p-2.5 space-y-2 sm:space-y-2.5 flex-shrink-0">
+        <div className="bg-card border border-border rounded-lg p-2 sm:p-2.5 space-y-2 sm:space-y-2.5 flex-shrink-0">
           {/* Market Type Dropdown */}
           <div ref={marketTypeRef} className="relative">
-            <label className="block text-white/60 mb-1 text-[10px] sm:text-xs font-medium">
+            <label className="block text-muted-foreground mb-1 text-[10px] sm:text-xs font-medium">
               Market Type
             </label>
             <button
               onClick={() => setMarketTypeOpen(!marketTypeOpen)}
-              className="w-full h-7 px-2.5 rounded-lg  bg-[#111318] border border-white/[0.06] text-white text-[10px] sm:text-xs flex items-center justify-between gap-1.5 cursor-pointer hover:bg-white/5 transition-all"
+              className="w-full h-7 px-2.5 rounded-lg  bg-card border border-border text-foreground text-[10px] sm:text-xs flex items-center justify-between gap-1.5 cursor-pointer hover:bg-input transition-all"
             >
               <span className="truncate">
                 {marketTypeOptions.find(o => o.value === settings.filterType)?.label}
               </span>
-              <span className={`text-white/50 text-[10px] shrink-0 transition-transform duration-200 ${marketTypeOpen ? "rotate-180" : ""}`}>
+              <span className={`text-muted-foreground text-[10px] shrink-0 transition-transform duration-200 ${marketTypeOpen ? "rotate-180" : ""}`}>
                 ▾
               </span>
             </button>
@@ -156,9 +156,9 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
                 <div
                   className={`
                    absolute z-[999] w-full
-                  bg-[#111318] border border-white/[0.06] rounded-lg shadow-xl overflow-hidden
+                  bg-card border border-border rounded-lg shadow-xl overflow-hidden
                    animate-in fade-in duration-200
- [&::-webkit-scrollbar-thumb]:bg-white/20
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
                      [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-transparent
                     ${shouldOpenLeft ? 'right-0' : 'left-0'}
@@ -172,7 +172,7 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
                         updateSettings({ filterType: opt.value as any });
                         setMarketTypeOpen(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-[10px] sm:text-xs bg-transparent cursor-pointer text-white transition-colors hover:text-[#1A73E8]/65"
+                      className="w-full px-3 py-2 text-left text-[10px] sm:text-xs bg-transparent cursor-pointer text-foreground transition-colors hover:text-[#1A73E8]/65"
                     >
                       {opt.label}
                     </button>
@@ -184,17 +184,17 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
 
           {/* Order Side Dropdown */}
           <div ref={orderSideRef} className="relative">
-            <label className="block text-white/60 mb-1 text-[10px] sm:text-xs font-medium">
+            <label className="block text-muted-foreground mb-1 text-[10px] sm:text-xs font-medium">
               Order Side
             </label>
             <button
               onClick={() => setOrderSideOpen(!orderSideOpen)}
-              className="w-full h-7 px-2.5 rounded-lg  bg-[#111318] border border-white/[0.06] text-white text-[10px] sm:text-xs flex items-center justify-between gap-1.5 cursor-pointer hover:bg-white/5 transition-all"
+              className="w-full h-7 px-2.5 rounded-lg  bg-card border border-border text-foreground text-[10px] sm:text-xs flex items-center justify-between gap-1.5 cursor-pointer hover:bg-input transition-all"
             >
               <span className="truncate">
                 {orderSideOptions.find(o => o.value === settings.filterSide)?.label}
               </span>
-              <span className={`text-white/50 text-[10px] shrink-0 transition-transform duration-200 ${orderSideOpen ? "rotate-180" : ""}`}>
+              <span className={`text-muted-foreground text-[10px] shrink-0 transition-transform duration-200 ${orderSideOpen ? "rotate-180" : ""}`}>
                 ▾
               </span>
             </button>
@@ -211,9 +211,9 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
                 <div
                   className={`
                    absolute z-[999] w-full
-                bg-[#111318] border border-white/[0.06] rounded-lg shadow-xl overflow-hidden
+                bg-card border border-border rounded-lg shadow-xl overflow-hidden
                  animate-in fade-in duration-200
-                    [&::-webkit-scrollbar-thumb]:bg-white/20
+                    [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-transparent
                     ${shouldOpenLeft ? 'right-0' : 'left-0'}
@@ -227,7 +227,7 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
                         updateSettings({ filterSide: opt.value as any });
                         setOrderSideOpen(false);
                       }}
-                      className="w-full px-3 py-2 text-left text-[10px] sm:text-xs bg-transparent cursor-pointer text-white transition-colors hover:text-[#1A73E8]/65"
+                      className="w-full px-3 py-2 text-left text-[10px] sm:text-xs bg-transparent cursor-pointer text-foreground transition-colors hover:text-[#1A73E8]/65"
                     >
                       {opt.label}
                     </button>
@@ -238,7 +238,7 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
           </div>
 
           <div>
-            <label className="block text-white/60 mb-1 text-[10px] sm:text-xs font-medium">
+            <label className="block text-muted-foreground mb-1 text-[10px] sm:text-xs font-medium">
               Show: {settings.limit} orders
             </label>
             <input
@@ -264,12 +264,12 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-   [&::-webkit-scrollbar-thumb]:bg-white/20
+   [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-         [&::-webkit-scrollbar-thumb:hover]:bg-white/40
+         [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
 
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {error && (
@@ -286,7 +286,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         )}
 
         {!error && orders.length === 0 && !loading && (
-          <div className="text-center py-6 sm:py-8 text-white/40">
+          <div className="text-center py-6 sm:py-8 text-muted-foreground">
             <div className="text-2xl sm:text-4xl mb-1 sm:mb-2">📭</div>
             <div className="text-[10px] sm:text-xs">No orders yet</div>
             <div className="text-[9px] sm:text-[10px] mt-0.5 sm:mt-1">
@@ -300,11 +300,11 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             {orders.map((order) => (
               <div
                 key={order.id}
-                className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
+                className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-colors"
               >
                 <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1 mb-1.5 sm:mb-2">
                   <div className="flex flex-wrap items-center gap-1.5 min-w-0">
-                    <span className="font-medium text-white text-[10px] sm:text-xs whitespace-nowrap">
+                    <span className="font-medium text-foreground text-[10px] sm:text-xs whitespace-nowrap">
                       {order.symbol}
                     </span>
                     <span
@@ -312,46 +312,46 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     >
                       {getSideBadge(order.side, order.type)}
                     </span>
-                    <span className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded bg-white/10 text-white/60 whitespace-nowrap">
+                    <span className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded bg-secondary text-muted-foreground whitespace-nowrap">
                       {order.type.toUpperCase()}
                     </span>
                   </div>
-                  <span className="text-[9px] sm:text-[10px] text-white/40 whitespace-nowrap shrink-0">
+                  <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
                     {formatTime(order.timestamp)}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 xs:grid-cols-2 gap-1.5 text-[10px] sm:text-[11px]">
                   <div className="flex flex-wrap items-center gap-1 min-w-0">
-                    <span className="text-white/60 whitespace-nowrap">Price:</span>
-                    <span className="text-white font-medium whitespace-nowrap ml-auto">
+                    <span className="text-muted-foreground whitespace-nowrap">Price:</span>
+                    <span className="text-foreground font-medium whitespace-nowrap ml-auto">
                       ${order.price.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1 min-w-0">
-                    <span className="text-white/60 whitespace-nowrap">Qty:</span>
-                    <span className="text-white font-medium whitespace-nowrap ml-auto">
+                    <span className="text-muted-foreground whitespace-nowrap">Qty:</span>
+                    <span className="text-foreground font-medium whitespace-nowrap ml-auto">
                       {order.quantity.toFixed(4)}
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1 min-w-0">
-                    <span className="text-white/60 whitespace-nowrap">Total:</span>
-                    <span className="text-white font-medium whitespace-nowrap ml-auto">
+                    <span className="text-muted-foreground whitespace-nowrap">Total:</span>
+                    <span className="text-foreground font-medium whitespace-nowrap ml-auto">
                       ${order.total.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-1 min-w-0">
-                    <span className="text-white/60 whitespace-nowrap">Fee:</span>
-                    <span className="text-white whitespace-nowrap ml-auto">
+                    <span className="text-muted-foreground whitespace-nowrap">Fee:</span>
+                    <span className="text-foreground whitespace-nowrap ml-auto">
                       ${order.fee?.toFixed(2) || "0.00"}
                     </span>
                   </div>
                 </div>
 
                 {order.pnl !== undefined && (
-                  <div className="mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 border-t border-white/10">
+                  <div className="mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 border-t border-border">
                     <div className="flex flex-wrap items-center gap-1 text-[10px] sm:text-[11px]">
-                      <span className="text-white/60 whitespace-nowrap">PnL:</span>
+                      <span className="text-muted-foreground whitespace-nowrap">PnL:</span>
                       <span
                         className={`font-medium whitespace-nowrap ml-auto ${order.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
                       >
@@ -374,7 +374,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
       </div>
 
       <div className="flex-shrink-0 text-center">
-        <span className="text-[9px] sm:text-[10px] text-white/40">
+        <span className="text-[9px] sm:text-[10px] text-muted-foreground">
           Order history from last 7 days
         </span>
       </div>

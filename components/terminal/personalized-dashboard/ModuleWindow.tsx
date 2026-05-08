@@ -665,14 +665,14 @@ const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
       className={`absolute rounded-2xl border backdrop-blur
         select-none overflow-hidden
             ${isLocked
-      ? "border-amber-500/30 bg-[#111318]"
+      ? "border-amber-500/30 bg-card"
       : swapSourceId === module.id
-        ? "border-[#1A73E8] bg-[#111318]"
+        ? "border-[#1A73E8] bg-card"
         : sizeSourceId === module.id
-          ? "border-yellow-400 bg-[#111318]"
+          ? "border-yellow-400 bg-card"
           : isActive
-            ? "border-[#1A73E8]/70 bg-[#111318]"
-            : "border-white/10 bg-[#111318]"
+            ? "border-[#1A73E8]/70 bg-card"
+            : "border-border bg-card"
 
             }`}
       style={{
@@ -721,12 +721,12 @@ onTouchEnd={() => { if (longPressTimerRef.current) { clearTimeout(longPressTimer
   onMouseDown={onDragMouseDown}
   onTouchStart={onDragTouchStart}
 className={`flex items-center justify-between px-4 py-2
-  border-b border-white/10 ${isLocked ? "cursor-default" : "cursor-move"}`}
+  border-b border-border ${isLocked ? "cursor-default" : "cursor-move"}`}
 >
 
 <div className="flex items-center gap-2 min-w-0 flex-1">
 <span className="w-2 h-2 rounded-full bg-[#1A73E8] shadow-[0_0_10px_rgba(26,115,232,0.35)] flex-shrink-0" />
-  <div className="text-[12px] font-semibold text-white/90 truncate">
+  <div className="text-[12px] font-semibold text-foreground truncate">
     {module.title}
   </div>
 </div>
@@ -741,7 +741,7 @@ className={`flex items-center justify-between px-4 py-2
   className={`h-6 w-6 rounded-md border cursor-pointer flex items-center justify-center
     ${isLocked
       ? "bg-amber-500/20 border-amber-500/50 text-amber-400"
-      : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
+      : "bg-input border-border text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
     }`}
   style={btnScale('lock')}
   onMouseEnter={() => setHoveredBtn('lock')}
@@ -755,41 +755,41 @@ className={`flex items-center justify-between px-4 py-2
     )}
   </button>
 
-  <div className="flex items-center gap-1 bg-white/[0.04] border border-white/10 rounded-md px-2 py-1">
+  <div className="flex items-center gap-1 bg-input border border-border rounded-md px-2 py-1">
 
 
 <button
   onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomOut(); }}
-  className="p-1 hover:bg-white/10 rounded cursor-pointer"
+  className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded cursor-pointer"
   style={btnScale('zoomout')}
   onMouseEnter={() => setHoveredBtn('zoomout')}
   onMouseLeave={() => setHoveredBtn(null)}
   title="Zoom Out"
 >
-      <ZoomOut className="w-3 h-3 text-white/60 hover:text-white" />
+      <ZoomOut className="w-3 h-3 text-muted-foreground hover:text-foreground" />
     </button>
-    <span className="text-white/60 font-mono text-[9px] min-w-[2rem] text-center">
+    <span className="text-muted-foreground font-mono text-[9px] min-w-[2rem] text-center">
       {moduleZoom}%
     </span>
 <button
   onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; zoomIn(); }}
-  className="p-1 hover:bg-white/10 rounded cursor-pointer"
+  className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded cursor-pointer"
   style={btnScale('zoomin')}
   onMouseEnter={() => setHoveredBtn('zoomin')}
   onMouseLeave={() => setHoveredBtn(null)}
   title="Zoom In"
 >
-      <ZoomIn className="w-3 h-3 text-white/60 hover:text-white" />
+      <ZoomIn className="w-3 h-3 text-muted-foreground hover:text-foreground" />
     </button>
 <button
   onClick={() => { if (usePersonalizedDashboardStore.getState().uiBlocked) return; resetZoom(); }}
-  className="p-1 hover:bg-white/10 rounded cursor-pointer ml-1 border-l border-white/10 pl-1.5"
+  className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded cursor-pointer ml-1 border-l border-border pl-1.5"
   style={btnScale('reset')}
   onMouseEnter={() => setHoveredBtn('reset')}
   onMouseLeave={() => setHoveredBtn(null)}
   title="Reset Zoom"
 >
-      <RotateCcw className="w-3 h-3 text-white/60 hover:text-white" />
+      <RotateCcw className="w-3 h-3 text-muted-foreground hover:text-foreground" />
     </button>
   </div>
 
@@ -799,8 +799,8 @@ className={`flex items-center justify-between px-4 py-2
       if (usePersonalizedDashboardStore.getState().uiBlocked) return;
       updateModule(module.id, { minimized: !module.minimized });
     }}
-className="h-6 w-6 rounded-md border border-white/10 bg-white/5
-  text-white/70 hover:bg-white/10 cursor-pointer flex items-center justify-center"
+className="h-6 w-6 rounded-md border border-border bg-input
+  text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10 cursor-pointer flex items-center justify-center"
 style={btnScale('minimize')}
 onMouseEnter={() => setHoveredBtn('minimize')}
 onMouseLeave={() => setHoveredBtn(null)}
@@ -821,14 +821,14 @@ title={module.minimized ? "Restore" : "Minimize"}
     });
   }}
 
-className="h-6 w-6 rounded-md border border-white/10 bg-white/5
+className="h-6 w-6 rounded-md border border-border bg-input
   hover:bg-red-500/80 cursor-pointer flex items-center justify-center"
 style={btnScale('close')}
 onMouseEnter={() => setHoveredBtn('close')}
 onMouseLeave={() => setHoveredBtn(null)}
 title="Remove Module"
   >
-    <X className="w-3 h-3 text-white/70" />
+    <X className="w-3 h-3 text-muted-foreground" />
   </button>
 </div>
           
@@ -867,7 +867,7 @@ title="Remove Module"
          onWheel={(e) => e.stopPropagation()}
       className="
         h-full overflow-auto p-4
-              text-white/80 leading-relaxed
+              text-foreground leading-relaxed
 
               [&_*]:select-none
               [&_input]:select-text
@@ -876,9 +876,9 @@ title="Remove Module"
 
               [&::-webkit-scrollbar]:w-2
               [&::-webkit-scrollbar-track]:bg-transparent
-[&::-webkit-scrollbar-thumb]:bg-white/20
+[&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
               scrollbar-thumb-[#1A73E8]/30
               scrollbar-track-transparent
@@ -935,7 +935,7 @@ title="Remove Module"
             left: Math.max(8, Math.min(contextMenu.x, window.innerWidth - 160 - 8)),
             zIndex: 99999,
           }}
-          className="bg-[#0C0E12] border border-white/10 rounded-xl shadow-xl p-1.5 flex flex-col gap-1 min-w-[160px]"
+          className="bg-background border border-border rounded-xl shadow-xl p-1.5 flex flex-col gap-1 min-w-[160px]"
           onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
         >
@@ -951,7 +951,7 @@ title="Remove Module"
             className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer
               ${swapSourceId === module.id
                 ? "bg-[#1A73E8]/20 text-[#1A73E8]"
-                : "text-white/70 hover:bg-white/10"
+                : "text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
               }`}
           >
             <ArrowLeftRight className="w-3 h-3" />
@@ -975,7 +975,7 @@ title="Remove Module"
               if (isLocked) toggleModuleLock(newId);
               useDashboardNotificationStore.getState().push({ type: "success", title: "Module Duplicated", description: `${module.title} duplicated` });
             }}
-            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] text-white/70 hover:bg-white/10 transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer"
           >
             <Copy className="w-3 h-3" />
             Duplicate Module
@@ -993,7 +993,7 @@ title="Remove Module"
             className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer
               ${sizeSourceId === module.id
                 ? "bg-[#1A73E8]/20 text-[#1A73E8]"
-                : "text-white/70 hover:bg-white/10"
+                : "text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
               }`}
           >
             <Scaling className="w-3 h-3" />

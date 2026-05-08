@@ -86,7 +86,7 @@ export default function NewsModule({ instanceId }: Props) {
       case "negative":
         return "text-red-400";
       default:
-        return "text-white/60";
+        return "text-muted-foreground";
     }
   };
 
@@ -95,9 +95,9 @@ export default function NewsModule({ instanceId }: Props) {
   return (
     <div ref={containerRef} className="h-full flex flex-col relative">
       <div className="flex items-center justify-between gap-2 px-3 py-2 flex-shrink-0">
-        <div className="text-white/60 text-xs flex-1">
-          <span className="font-semibold text-white/90">Crypto News</span>
-          <span className="text-white/40"> • </span>
+        <div className="text-muted-foreground text-xs flex-1">
+          <span className="font-semibold text-foreground">Crypto News</span>
+          <span className="text-muted-foreground"> • </span>
           <span className="text-emerald-400">LIVE</span>
         </div>
 
@@ -118,10 +118,10 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
 {showSettings && (
   <div
     onWheel={(e) => e.stopPropagation()}
-className="absolute right-0 mt-1 z-50 w-[200px] bg-[#111318] border border-white/[0.06] rounded-lg shadow-lg p-2 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200"
+className="absolute right-0 mt-1 z-50 w-[200px] bg-secondary border border-border rounded-lg shadow-lg p-2 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200"
   >
     <div>
-      <label className="text-white/50 mb-1 block font-medium text-[9px]">
+      <label className="text-muted-foreground mb-1 block font-medium text-[9px]">
         Category
       </label>
       
@@ -131,9 +131,9 @@ className="absolute right-0 mt-1 z-50 w-[200px] bg-[#111318] border border-white
     onClick={() => setCategoryOpen((v) => !v)}
     className="
       w-full h-7 px-2 rounded-none
-bg-white/[0.04]
-border border-white/[0.06]
-      text-white text-[11px]
+bg-input
+border border-border
+      text-foreground text-[11px]
       flex items-center justify-between
       cursor-pointer
       transition-all
@@ -142,7 +142,7 @@ border border-white/[0.06]
     <span>{selectedCategory?.name || "All News"}</span>
     <span
       className={`
-        text-white/50 text-[9px]
+        text-muted-foreground text-[9px]
         transition-transform duration-200
         ${categoryOpen ? "rotate-180" : ""}
       `}
@@ -159,14 +159,14 @@ border border-white/[0.06]
       w-full
       max-h-[140px]
       overflow-y-auto
-bg-[#111318]
-border border-white/[0.06]
+bg-secondary
+border border-border
       rounded-none
       shadow-lg
       animate-in fade-in slide-in-from-top-2 duration-200
 
       [&::-webkit-scrollbar]:w-1
-  [&::-webkit-scrollbar-thumb]:bg-white/20
+  [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
       [&::-webkit-scrollbar-thumb]:rounded-full
       [&::-webkit-scrollbar-track]:bg-transparent
     "
@@ -182,7 +182,7 @@ border border-white/[0.06]
                   w-full px-2 py-1.5
                   text-left text-[11px]
                   bg-transparent cursor-pointer
-                  text-white
+                  text-foreground
                   transition-colors
            hover:text-[#1A73E8]/65
                 "
@@ -196,7 +196,7 @@ border border-white/[0.06]
     </div>
 
     <div>
-      <label className="text-white/50 mb-1 block font-medium text-[9px]">
+      <label className="text-muted-foreground mb-1 block font-medium text-[9px]">
         Items: {settings.limit}
       </label>
       <input
@@ -208,22 +208,22 @@ border border-white/[0.06]
         onChange={(e) =>
           updateSettings({ limit: parseInt(e.target.value) })
         }
-        className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer
+        className="w-full h-1 bg-black/10 dark:bg-secondary rounded-full appearance-none cursor-pointer
           [&::-webkit-slider-thumb]:appearance-none
           [&::-webkit-slider-thumb]:w-2.5
           [&::-webkit-slider-thumb]:h-2.5
           [&::-webkit-slider-thumb]:rounded-full
-[&::-webkit-slider-thumb]:bg-white/50
+[&::-webkit-slider-thumb]:bg-foreground/50
           [&::-webkit-slider-thumb]:cursor-pointer
           [&::-moz-range-thumb]:w-2.5
           [&::-moz-range-thumb]:h-2.5
           [&::-moz-range-thumb]:rounded-full
-[&::-moz-range-thumb]:bg-white/50          
+[&::-moz-range-thumb]:bg-foreground/50          
 [&::-moz-range-thumb]:cursor-pointer
           [&::-moz-range-thumb]:border-0
         "
       />
-      <div className="flex justify-between text-[8px] text-white/40 mt-0.5">
+      <div className="flex justify-between text-[8px] text-muted-foreground mt-0.5">
         <span>5</span>
         <span>50</span>
       </div>
@@ -241,11 +241,11 @@ border border-white/[0.06]
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-       [&::-webkit-scrollbar-thumb]:bg-white/20
+       [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-2">
@@ -262,7 +262,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           )}
 
           {!error && news.length === 0 && !loading && (
-            <div className="text-center py-8 text-white/40 text-xs">
+            <div className="text-center py-8 text-muted-foreground text-xs">
               No news available.
             </div>
           )}
@@ -275,23 +275,23 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all group"
+                  className="block px-3 py-2 rounded-md bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-all group"
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] text-white/60 font-medium truncate">
+                    <span className="text-[10px] text-muted-foreground font-medium truncate">
                       {item.source}
                     </span>
-                    <span className="text-[10px] text-white/40 flex-shrink-0 ml-2">
+                    <span className="text-[10px] text-muted-foreground flex-shrink-0 ml-2">
                       {formatTime(item.publishedAt)}
                     </span>
                   </div>
 
-                  <h4 className="text-xs font-semibold text-white group-hover:text-emerald-400 transition-colors line-clamp-2 mb-1.5">
+                  <h4 className="text-xs font-semibold text-foreground group-hover:text-emerald-400 transition-colors line-clamp-2 mb-1.5">
                     {item.title}
                   </h4>
 
                   {item.description && (
-                    <p className="text-[10px] text-white/60 line-clamp-2 mb-1.5">
+                    <p className="text-[10px] text-muted-foreground line-clamp-2 mb-1.5">
                       {item.description}
                     </p>
                   )}
@@ -309,7 +309,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                       </span>
                     )}
                     {item.category && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/60">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">
                         {item.category}
                       </span>
                     )}

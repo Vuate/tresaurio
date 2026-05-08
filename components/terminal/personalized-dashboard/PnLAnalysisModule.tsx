@@ -17,12 +17,12 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
-        <div className="text-[10px] sm:text-xs text-white/60">
-          <span className="font-semibold text-white/90">
+        <div className="text-[10px] sm:text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">
             <span className="hidden xs:inline">PnL Analysis</span>
             <span className="xs:hidden">PnL</span>
           </span>
-          <span className="text-white/40"> • </span>
+          <span className="text-muted-foreground"> • </span>
           <span className="text-emerald-400">LIVE</span>
         </div>
       </div>
@@ -38,9 +38,9 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
               cursor-pointer
               ${
                 timeframe === tf
-                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                   : `
-                bg-white/10 text-white border-white/10
+                bg-secondary text-muted-foreground border-border
               hover:text-[#1A73E8]
 
                     `
@@ -53,7 +53,7 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
       </div>
 
       <div className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 rounded-lg p-2.5 sm:p-3 border border-emerald-500/20 overflow-hidden">
-        <div className="text-[10px] sm:text-xs text-white/60 mb-1">Total PnL</div>
+        <div className="text-[10px] sm:text-xs text-muted-foreground mb-1">Total PnL</div>
         <div className="flex flex-col gap-1 min-w-0">
           <div
             className={`text-2xl sm:text-3xl font-bold truncate ${
@@ -82,17 +82,17 @@ export default function PnLAnalysisModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-    [&::-webkit-scrollbar-thumb]:bg-white/20
+    [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {/* Empty State */}
         {pnl.totalInvestment === 0 ? (
-          <div className="text-center py-6 sm:py-8 text-white/40">
-<div className="mb-1 sm:mb-2 flex justify-center"><BarChart2 className="w-6 h-6 sm:w-8 sm:h-8 text-white/40" /></div>
+          <div className="text-center py-6 sm:py-8 text-muted-foreground">
+<div className="mb-1 sm:mb-2 flex justify-center"><BarChart2 className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" /></div>
             <div className="text-[10px] sm:text-xs">No positions yet</div>
             <div className="text-[9px] sm:text-[10px] mt-0.5 sm:mt-1">
               Add positions to see PnL analysis
@@ -102,18 +102,18 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           <>
             {/* Breakdown */}
             <div className="space-y-1.5 sm:space-y-2">
-              <div className="text-[10px] sm:text-xs font-medium text-white/80 px-1">
+              <div className="text-[10px] sm:text-xs font-medium text-foreground px-1">
                 Breakdown
               </div>
-              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
+              <div className="bg-input rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="text-white/60 text-[10px] sm:text-xs truncate">Realized</span>
+                  <span className="text-muted-foreground text-[10px] sm:text-xs truncate">Realized</span>
                   <span className="text-emerald-400 font-medium text-[10px] sm:text-xs truncate">
                     +${pnl.realized.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="text-white/60 text-[10px] sm:text-xs truncate">Unrealized</span>
+                  <span className="text-muted-foreground text-[10px] sm:text-xs truncate">Unrealized</span>
                   <span
                     className={`font-medium text-[10px] sm:text-xs truncate ${
                       pnl.totalUnrealized >= 0 ? "text-emerald-400" : "text-red-400"
@@ -123,9 +123,9 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     {pnl.totalUnrealized.toFixed(2)}
                   </span>
                 </div>
-                <div className="h-px bg-white/10 my-1 sm:my-1.5" />
+                <div className="h-px bg-black/10 dark:bg-white/10 my-1 sm:my-1.5" />
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="text-white/80 font-medium text-[10px] sm:text-xs truncate">Today's PnL</span>
+                  <span className="text-foreground font-medium text-[10px] sm:text-xs truncate">Today's PnL</span>
                   <span
                     className={`font-bold text-[10px] sm:text-xs truncate ${
                       pnl.todayPnL >= 0 ? "text-emerald-400" : "text-red-400"
@@ -139,14 +139,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
             {/* By Market */}
             <div className="space-y-1.5 sm:space-y-2">
-              <div className="text-[10px] sm:text-xs font-medium text-white/80 px-1">
+              <div className="text-[10px] sm:text-xs font-medium text-foreground px-1">
                 By Market
               </div>
-              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
+              <div className="bg-input rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
                 <div className="flex flex-col gap-1 min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-400 flex-shrink-0" />
-                    <span className="text-white/60 text-[10px] sm:text-xs truncate">Spot</span>
+                    <span className="text-muted-foreground text-[10px] sm:text-xs truncate">Spot</span>
                   </div>
                   <div className="pl-3.5 sm:pl-4 space-y-0.5">
                     <div
@@ -159,18 +159,18 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                       {pnl.spotUnrealized >= 0 ? "+" : ""}$
                       {pnl.spotUnrealized.toFixed(2)}
                     </div>
-                    <div className="text-[9px] sm:text-[10px] text-white/40 truncate">
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate">
                       ${pnl.spotValue.toFixed(2)} value
                     </div>
                   </div>
                 </div>
 
-                <div className="h-px bg-white/10" />
+                <div className="h-px bg-black/10 dark:bg-white/10" />
 
                 <div className="flex flex-col gap-1 min-w-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple-400 flex-shrink-0" />
-                    <span className="text-white/60 text-[10px] sm:text-xs truncate">Futures</span>
+                    <span className="text-muted-foreground text-[10px] sm:text-xs truncate">Futures</span>
                   </div>
                   <div className="pl-3.5 sm:pl-4 space-y-0.5">
                     <div
@@ -183,7 +183,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                       {pnl.futuresUnrealized >= 0 ? "+" : ""}$
                       {pnl.futuresUnrealized.toFixed(2)}
                     </div>
-                    <div className="text-[9px] sm:text-[10px] text-white/40 truncate">
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate">
                       ${pnl.futuresMargin.toFixed(2)} margin
                     </div>
                   </div>
@@ -193,25 +193,25 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
             {/* Portfolio Value */}
             <div className="space-y-1.5 sm:space-y-2">
-              <div className="text-[10px] sm:text-xs font-medium text-white/80 px-1">
+              <div className="text-[10px] sm:text-xs font-medium text-foreground px-1">
                 Portfolio Overview
               </div>
-              <div className="bg-white/5 rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
+              <div className="bg-input rounded-lg p-2 sm:p-2.5 space-y-1.5 sm:space-y-2 overflow-hidden">
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="text-white/60 text-[10px] sm:text-xs truncate">Total Investment</span>
-                  <span className="text-white font-medium text-[10px] sm:text-xs truncate">
+                  <span className="text-muted-foreground text-[10px] sm:text-xs truncate">Total Investment</span>
+                  <span className="text-foreground font-medium text-[10px] sm:text-xs truncate">
                     ${pnl.totalInvestment.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="text-white/60 text-[10px] sm:text-xs truncate">Current Value</span>
-                  <span className="text-white font-medium text-[10px] sm:text-xs truncate">
+                  <span className="text-muted-foreground text-[10px] sm:text-xs truncate">Current Value</span>
+                  <span className="text-foreground font-medium text-[10px] sm:text-xs truncate">
                     ${pnl.totalValue.toFixed(2)}
                   </span>
                 </div>
-                <div className="h-px bg-white/10 my-1 sm:my-1.5" />
+                <div className="h-px bg-black/10 dark:bg-white/10 my-1 sm:my-1.5" />
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="text-white/80 font-medium text-[10px] sm:text-xs truncate">Net PnL</span>
+                  <span className="text-foreground font-medium text-[10px] sm:text-xs truncate">Net PnL</span>
                   <span
                     className={`font-bold text-base sm:text-lg truncate ${
                       pnl.totalUnrealized >= 0 ? "text-emerald-400" : "text-red-400"

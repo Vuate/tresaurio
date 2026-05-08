@@ -86,7 +86,7 @@ export default function SelectConnectionModal({
     <div
       className="
         fixed inset-0
-        bg-[#0a0e1a] z-[100]
+        bg-background z-[100]
         flex flex-col overflow-hidden
         animate-in fade-in slide-in-from-bottom-4 duration-200
       "
@@ -96,12 +96,12 @@ export default function SelectConnectionModal({
       onWheel={(e) => e.stopPropagation()}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-        <Key className="w-4 h-4 text-white shrink-0" />
-        <span className="text-white font-semibold text-xs flex-1">{title}</span>
+      <div className="flex items-center gap-3 px-3 py-2 border-b border-border bg-input flex-shrink-0">
+        <Key className="w-4 h-4 text-foreground shrink-0" />
+        <span className="text-foreground font-semibold text-xs flex-1">{title}</span>
         <button
           onClick={onClose}
-          className="text-white/50 hover:text-white transition-colors cursor-pointer shrink-0"
+          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
         >
           <X className="w-4 h-4" />
         </button>
@@ -120,18 +120,18 @@ export default function SelectConnectionModal({
       >
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="text-white/40 text-xs">Loading connections...</div>
+            <div className="text-muted-foreground text-xs">Loading connections...</div>
           </div>
         ) : filteredKeys.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 gap-4">
-            <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-              <Key className="w-5 h-5 text-white/30" />
+            <div className="w-12 h-12 rounded-full bg-input border border-border flex items-center justify-center">
+              <Key className="w-5 h-5 text-muted-foreground" />
             </div>
             <div className="text-center">
-              <div className="text-white/60 text-sm font-medium mb-1">
+              <div className="text-muted-foreground text-sm font-medium mb-1">
                 No API Keys Found
               </div>
-              <div className="text-white/40 text-xs max-w-[240px]">
+              <div className="text-muted-foreground text-xs max-w-[240px]">
                 Add your exchange API keys in Settings to connect your accounts.
               </div>
             </div>
@@ -175,8 +175,8 @@ export default function SelectConnectionModal({
                     ${isSelected
                       ? "bg-emerald-500/15 border-emerald-500/40"
                       : isHovered
-                        ? "bg-white/8 border-white/20"
-                        : "bg-white/5 border-white/10"
+                        ? "bg-black/8 dark:bg-white/8 border-border"
+                        : "bg-input border-border"
                     }
                   `}
                 >
@@ -184,7 +184,7 @@ export default function SelectConnectionModal({
                     <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded text-[10px] uppercase font-semibold shrink-0">
                       {key.exchange}
                     </span>
-                    <span className="text-white text-xs font-medium truncate flex-1">
+                    <span className="text-foreground text-xs font-medium truncate flex-1">
                       {maskKey(key.label, key.exchange)}
                     </span>
                     {isSelected && (
@@ -197,7 +197,7 @@ export default function SelectConnectionModal({
                       const style = PERM_STYLE[perm];
                       if (!style) {
                         return (
-                          <span key={perm} className="px-1 py-0.5 rounded text-[9px] bg-white/10 text-white/50">
+                          <span key={perm} className="px-1 py-0.5 rounded text-[9px] bg-secondary text-muted-foreground">
                             {perm}
                           </span>
                         );
@@ -218,8 +218,8 @@ export default function SelectConnectionModal({
                         <ShieldAlert className="w-2 h-2" />
                       </span>
                     )}
-                    <span className="text-white/30 text-[9px]">·</span>
-                    <span className="text-white/40 text-[9px]">
+                    <span className="text-muted-foreground text-[9px]">·</span>
+                    <span className="text-muted-foreground text-[9px]">
                       {formatLastUsed(key.lastUsedAt)}
                     </span>
                   </div>
@@ -231,15 +231,15 @@ export default function SelectConnectionModal({
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-white/10 flex-shrink-0 flex items-center gap-2">
+      <div className="p-3 border-t border-border flex-shrink-0 flex items-center gap-2">
         <button
           onClick={handleAddNew}
           className="
             flex-1 flex items-center justify-center gap-2
             h-9 rounded-md
-            bg-white/5 border border-white/10
-            text-white/60 text-xs font-medium
-            hover:bg-white/10 hover:text-white
+            bg-input border border-border
+            text-muted-foreground text-xs font-medium
+            hover:bg-black/10 dark:hover:bg-secondary hover:text-foreground
             transition-colors cursor-pointer
           "
         >

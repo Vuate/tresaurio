@@ -20,8 +20,8 @@ function Row({
   const positive = value >= 0;
 
   return (
-    <div className="flex flex-col gap-1 px-2 py-1.5 rounded-lg bg-white/5 border border-white/10 min-w-0 overflow-hidden">
-      <span className="text-xs text-white/50 whitespace-nowrap truncate">{label}</span>
+    <div className="flex flex-col gap-1 px-2 py-1.5 rounded-lg bg-input border border-border min-w-0 overflow-hidden">
+      <span className="text-xs text-muted-foreground whitespace-nowrap truncate">{label}</span>
       <div className={`font-mono text-sm font-semibold flex items-center gap-1 min-w-0 ${
           positive ? "text-emerald-400" : "text-red-400"
         }`}>
@@ -47,9 +47,9 @@ function Row({
 
 function InfoRow({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex flex-col gap-1 px-2 py-1.5 rounded-lg bg-white/5 border border-white/10 min-w-0 overflow-hidden">
-      <span className="text-xs text-white/50 whitespace-nowrap truncate">{label}</span>
-      <span className="font-mono text-sm font-semibold text-white truncate">
+    <div className="flex flex-col gap-1 px-2 py-1.5 rounded-lg bg-input border border-border min-w-0 overflow-hidden">
+      <span className="text-xs text-muted-foreground whitespace-nowrap truncate">{label}</span>
+      <span className="font-mono text-sm font-semibold text-foreground truncate">
         ${value.toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
@@ -76,13 +76,13 @@ export default function PnLOverviewModule({ instanceId }: Props) {
 
   return (
     <div className="space-y-3 text-xs overflow-hidden">
-      <div className="bg-white/5 border border-white/10 rounded-lg p-2.5 space-y-2 min-w-0 overflow-hidden">
-        <div className="text-white/40 text-[10px] font-semibold uppercase truncate">
+      <div className="bg-input border border-border rounded-lg p-2.5 space-y-2 min-w-0 overflow-hidden">
+        <div className="text-muted-foreground text-[10px] font-semibold uppercase truncate">
           Portfolio Overview
         </div>
         <div className="flex flex-col gap-1 min-w-0">
-          <span className="text-white/50 text-xs whitespace-nowrap truncate">Total Value</span>
-          <span className="text-white text-lg font-bold truncate">
+          <span className="text-muted-foreground text-xs whitespace-nowrap truncate">Total Value</span>
+          <span className="text-foreground text-lg font-bold truncate">
             ${totalValue.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -90,8 +90,8 @@ export default function PnLOverviewModule({ instanceId }: Props) {
           </span>
         </div>
         <div className="flex flex-col gap-1 min-w-0">
-          <span className="text-white/50 text-xs whitespace-nowrap truncate">Total Invested</span>
-          <span className="text-white/70 text-sm truncate">
+          <span className="text-muted-foreground text-xs whitespace-nowrap truncate">Total Invested</span>
+          <span className="text-muted-foreground text-sm truncate">
             ${totalInvestment.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -108,7 +108,7 @@ export default function PnLOverviewModule({ instanceId }: Props) {
       />
 
       <div className="space-y-2 overflow-hidden">
-        <div className="text-white/40 text-[10px] font-semibold uppercase px-1 truncate">
+        <div className="text-muted-foreground text-[10px] font-semibold uppercase px-1 truncate">
           Breakdown
         </div>
         <Row label="Spot PnL" value={spotUnrealized} />
@@ -116,7 +116,7 @@ export default function PnLOverviewModule({ instanceId }: Props) {
       </div>
 
       <div className="space-y-2 overflow-hidden">
-        <div className="text-white/40 text-[10px] font-semibold uppercase px-1 truncate">
+        <div className="text-muted-foreground text-[10px] font-semibold uppercase px-1 truncate">
           Details
         </div>
         <InfoRow label="Spot Investment" value={spotInvestment} />
@@ -125,7 +125,7 @@ export default function PnLOverviewModule({ instanceId }: Props) {
       </div>
 
       <div className="space-y-2 overflow-hidden">
-        <div className="text-white/40 text-[10px] font-semibold uppercase px-1 truncate">
+        <div className="text-muted-foreground text-[10px] font-semibold uppercase px-1 truncate">
           Coming Soon
         </div>
         <Row label="Today PnL" value={todayPnL} />
