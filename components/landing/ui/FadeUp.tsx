@@ -6,14 +6,16 @@ interface FadeUpProps {
   children: React.ReactNode;
   className?: string;
   delay?: "d1" | "d2" | "d3" | "d4";
+  as?: keyof React.JSX.IntrinsicElements;
 }
 
-export function FadeUp({ children, className = "", delay }: FadeUpProps) {
-  const ref = useFadeUp<HTMLDivElement>();
+export function FadeUp({ children, className = "", delay, as: Tag = "div" }: FadeUpProps) {
+  const ref = useFadeUp<HTMLElement>();
   const cls = ["fade-up", delay, className].filter(Boolean).join(" ");
+  const Component = Tag as React.ElementType;
   return (
-    <div ref={ref} className={cls}>
+    <Component ref={ref} className={cls}>
       {children}
-    </div>
+    </Component>
   );
 }
