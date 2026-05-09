@@ -19,3 +19,7 @@ export type { OrderHistory } from "./useLastOrders";
 
 export { useExchangeKeys } from "./useExchangeKeys";
 export type { ExchangeConnection, RefreshPermissionsResult } from "./useExchangeKeys";
+
+export { useFadeUp } from "./useFadeUp";
+export { useCounter } from "./useCounter";
+export { useInView } from "./useInView";

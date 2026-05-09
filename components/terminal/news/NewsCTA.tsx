@@ -22,7 +22,7 @@ export default function NewsCTA() {
           </p>
           <Link
             href="/personalized-dashboard"
-            className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1a7ee8] px-6 py-3 rounded-lg text-foreground font-semibold text-[0.9rem] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(37,99,235,0.38)]"
+            className="inline-flex items-center gap-2 bg-[#2563EB] border border-[#2563EB] hover:bg-[#1a55d5] hover:border-[#1a55d5] px-6 py-3 rounded-lg text-white font-semibold text-[0.9rem] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(37,99,235,0.38)] active:translate-y-0 active:shadow-none"
           >
             Go to Personalized Dashboard
             <svg

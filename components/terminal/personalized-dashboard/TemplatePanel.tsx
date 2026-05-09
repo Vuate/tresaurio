@@ -4,6 +4,7 @@ import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStor
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import AuthModal from "@/components/auth/AuthModal";
 
 export default function TemplatePanel() {
   const {
@@ -41,6 +42,8 @@ export default function TemplatePanel() {
   const [confirmOverwrite, setConfirmOverwrite] = useState(false);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [clearingAll, setClearingAll] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   const effectiveNotesHeight = notesOpen
     ? notesBarHeight
@@ -81,7 +84,14 @@ export default function TemplatePanel() {
     }
   }, [templatesOpen]);
 
-   useEffect(() => {
+  useEffect(() => {
+    if (!templatesOpen) {
+      setShowAuthModal(false);
+      setAuthMode("login");
+    }
+  }, [templatesOpen]);
+
+  useEffect(() => {
     if (!lastResetAt) return;
     setTemplateName("");
     setConfirmLoadId(null);
@@ -233,20 +243,34 @@ const handleDelete = async (id: string) => {
 
   if (!session?.user) {
     return (
-<div
-  ref={panelRef}
-  style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
-className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w-[320px] bg-card border border-border rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
->
-<div ref={headerRef} className="px-3 py-3 border-b border-border">
-          <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">
-            Templates
+      <>
+        <div
+          ref={panelRef}
+          style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
+          className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w-[320px] bg-card border border-border rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
+        >
+          <div ref={headerRef} className="px-3 py-3 border-b border-border">
+            <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">
+              Templates
+            </div>
+          </div>
+          <div className="p-4 text-sm text-muted-foreground">
+            <button
+              onClick={() => { setAuthMode("login"); setShowAuthModal(true); }}
+              className="text-[#2563EB] underline cursor-pointer font-medium"
+            >
+              Sign in
+            </button>
+            {" "}to use templates.
           </div>
         </div>
-        <div className="p-4 text-center">
-          <p className="text-sm text-muted-foreground">Sign in to use templates.</p>
-        </div>
-      </div>
+        <AuthModal
+          open={showAuthModal}
+          mode={authMode}
+          onClose={() => setShowAuthModal(false)}
+          onChange={(m) => setAuthMode(m)}
+        />
+      </>
     );
   }
 

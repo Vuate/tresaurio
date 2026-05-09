@@ -57,20 +57,6 @@ export default function MarketIntelligenceHero() {
             Compare exchanges and find the cheapest option.
           </p>
 
-          {/* Stats row */}
-          <div className="flex gap-6 sm:gap-10 justify-center mb-8">
-            {[
-              { value: "$22K+", label: "Annual Savings" },
-              { value: "4-in-1", label: "Cost Analysis" },
-              { value: "Real-Time", label: "Data" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-xl sm:text-2xl font-black text-[#2563EB]">{stat.value}</div>
-                <div className="text-xs text-[#71717A] mt-0.5">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
           {/* Feature badges */}
           <div className="flex gap-2 sm:gap-3 justify-center flex-wrap px-4">
             {["Total Cost Calculator", "Exchange Comparison", "Market Efficiency", "Execution Quality"].map((badge) => (

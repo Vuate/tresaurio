@@ -118,11 +118,13 @@ export default function UserMenu({ variant = "default", compact = false, onClose
           >
             <item.icon className="w-4 h-4 shrink-0" />
             <span className="flex-1 text-left">{item.label}</span>
-            {item.badge && (
+            {item.badge ? (
               <span className="px-2 py-0.5 text-[0.65rem] font-semibold bg-teal-500/15 text-teal-400 rounded">
                 {item.badge}
               </span>
-            )}
+            ) : item.disabled ? (
+              <span className="text-[0.65rem] text-foreground/35">Soon</span>
+            ) : null}
           </button>
         ))}
 
@@ -235,7 +237,7 @@ export default function UserMenu({ variant = "default", compact = false, onClose
                 key={i}
                 disabled={item.disabled}
                 onClick={item.disabled ? undefined : item.onClick}
-                title={item.disabled ? "Coming Soon" : undefined}
+                title={undefined}
                 className={`
                   w-full flex items-center transition-colors
                   ${item.disabled
@@ -250,11 +252,13 @@ export default function UserMenu({ variant = "default", compact = false, onClose
               >
                 <item.icon className={`text-[#71717A] shrink-0 ${compact ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"}`} />
                 <span className="flex-1 text-left font-medium">{item.label}</span>
-                {item.badge && (
+                {item.badge ? (
                   <span className={`font-semibold bg-teal-500/20 text-teal-400 rounded shrink-0 ${compact ? "px-1.5 py-0.5 text-[9px] sm:text-[10px]" : "px-2 py-0.5 text-[10px]"}`}>
                     {item.badge}
                   </span>
-                )}
+                ) : item.disabled ? (
+                  <span className="text-[0.65rem] text-foreground/35 shrink-0">Soon</span>
+                ) : null}
               </button>
             ))}
           </div>

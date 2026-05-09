@@ -8,6 +8,7 @@ import { useDashboardNotificationStore } from "@/store/dashboardNotificationStor
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Search, Star } from "lucide-react";
 import { useSession } from "next-auth/react";
+import AuthModal from "@/components/auth/AuthModal";
 
 
 const MAX_SELECT = 10;
@@ -46,6 +47,8 @@ export default function AddToolPanel() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   const effectiveNotesHeight = notesOpen ? notesBarHeight : (
     typeof window !== 'undefined'
@@ -83,6 +86,13 @@ export default function AddToolPanel() {
   }, [addToolOpen]);
 
     useEffect(() => {
+    if (!addToolOpen) {
+      setShowAuthModal(false);
+      setAuthMode("login");
+    }
+  }, [addToolOpen]);
+
+  useEffect(() => {
     if (!lastResetAt) return;
     setSearch("");
     setSelectMode(false);
@@ -250,6 +260,13 @@ export default function AddToolPanel() {
 
 
   return (
+    <>
+    <AuthModal
+      open={showAuthModal}
+      mode={authMode}
+      onClose={() => setShowAuthModal(false)}
+      onChange={(m) => setAuthMode(m)}
+    />
     <div
       ref={panelRef}
       style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
@@ -348,8 +365,14 @@ export default function AddToolPanel() {
           {showFavorites ? (
             <>
               {!isLoggedIn ? (
-                <div className="px-1 py-10 text-center text-sm text-muted-foreground">
-                  Sign in to use favorites
+                <div className="px-1 py-6 text-sm text-muted-foreground text-center">
+                  <button
+                    onClick={() => { setAuthMode("login"); setShowAuthModal(true); }}
+                    className="text-[#2563EB] underline cursor-pointer font-medium"
+                  >
+                    Sign in
+                  </button>
+                  {" "}to use favorites.
                 </div>
               ) : (
                 <>
@@ -475,5 +498,6 @@ export default function AddToolPanel() {
         </div>
       </div>
     </div>
+    </>
   );
 }

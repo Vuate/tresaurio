@@ -74,8 +74,8 @@ export default function AuthModal({
           max-w-[360px] xl:max-w-[380px] 2xl:max-w-[400px]
           z-10
           rounded-lg xl:rounded-xl 2xl:rounded-2xl
-          border border-white/10
-          bg-[#0d0f14]
+          border border-border
+          bg-card
           p-5 xl:p-5.5 2xl:p-6
           shadow-2xl
           outline-none
@@ -93,10 +93,10 @@ export default function AuthModal({
               />
             </div>
             <div>
-              <span className="text-base xl:text-[17px] 2xl:text-lg font-semibold block text-gray-100">
+              <span className="text-base xl:text-[17px] 2xl:text-lg font-semibold block text-foreground">
                 Treasurio
               </span>
-              <span className="text-[9px] xl:text-[9.5px] 2xl:text-[10px] text-gray-500 block">
+              <span className="text-[9px] xl:text-[9.5px] 2xl:text-[10px] text-muted-foreground block">
                 Terminal
               </span>
             </div>
@@ -104,7 +104,7 @@ export default function AuthModal({
 
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition -mt-1 cursor-pointer"
+            className="text-muted-foreground hover:text-foreground transition -mt-1 cursor-pointer"
             aria-label="Close"
           >
             <svg
@@ -124,39 +124,39 @@ export default function AuthModal({
         </div>
 
         {/* TABS */}
-        <div className="flex gap-1 mb-4 xl:mb-4.5 2xl:mb-5 bg-white/5 rounded-lg p-1">
+        <div className="flex gap-1 mb-4 xl:mb-4.5 2xl:mb-5 bg-foreground/5 rounded-lg p-1">
           <button
             onClick={() => onChange("login")}
             className={`
-              flex-1 
+              flex-1
               py-1.5 xl:py-1.5 2xl:py-1.5
               text-xs xl:text-[13px] 2xl:text-sm
               font-medium rounded-md transition-all cursor-pointer
               ${
                 mode === "login"
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-foreground/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }
             `}
           >
-                   Log In
+            Log In
           </button>
 
           <button
             onClick={() => onChange("signup")}
             className={`
-              flex-1 
+              flex-1
               py-1.5 xl:py-1.5 2xl:py-1.5
               text-xs xl:text-[13px] 2xl:text-sm
               font-medium rounded-md transition-all cursor-pointer
               ${
                 mode === "signup"
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-foreground/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }
             `}
           >
-      Sign Up  
+            Sign Up
           </button>
         </div>
 
@@ -169,7 +169,7 @@ export default function AuthModal({
 
         {/* FOOTER */}
         <div className="mt-3.5 xl:mt-3.75 2xl:mt-4 text-center">
-          <p className="text-[11px] xl:text-[11.5px] 2xl:text-xs text-gray-500">
+          <p className="text-[11px] xl:text-[11.5px] 2xl:text-xs text-muted-foreground">
             {mode === "login"
              ? "Don't have an account? "
               : "Already have an account? "}
@@ -177,7 +177,7 @@ export default function AuthModal({
               onClick={() =>
                 onChange(mode === "login" ? "signup" : "login")
               }
-              className="text-white hover:underline cursor-pointer"
+              className="text-foreground hover:underline cursor-pointer"
             >
          {mode === "login" ? "Sign up" : "Log in"}
             </button>

@@ -57,20 +57,6 @@ export default function WalletHero() {
             exchange in/out flows, and market manipulation signals.
           </p>
 
-          {/* Stats row */}
-          <div className="flex gap-6 sm:gap-10 justify-center mb-8">
-            {[
-              { value: "16", label: "Pattern Types" },
-              { value: ">$1M", label: "Whale Alerts" },
-              { value: "Real-Time", label: "Tracking" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-xl sm:text-2xl font-black text-[#2563EB]">{stat.value}</div>
-                <div className="text-xs text-[#71717A] mt-0.5">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
           {/* Feature badges */}
           <div className="flex gap-2 sm:gap-3 justify-center flex-wrap px-4">
             {["Real-Time Tracking", "Whale Alerts", "Smart Money Analysis", "16 Pattern Detection"].map((badge) => (

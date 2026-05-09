@@ -290,15 +290,15 @@ onClick={(e) => {
 
   {showLockAuth && (
     <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-card border border-[#1A73E8]/35 shadow-lg z-60">
-      <p className="text-[11px] sm:text-[12px] text-foreground/80 mb-3">
-        Sign in to use dashboard lock.
+      <p className="text-[11px] sm:text-[12px] text-foreground/80">
+        <button
+          onClick={() => { setShowLockAuth(false); setAuthMode("login"); setShowAuthModal(true); }}
+          className="text-[#2563EB] underline cursor-pointer font-medium"
+        >
+          Sign in
+        </button>
+        {" "}to use dashboard lock.
       </p>
-      <button
-        onClick={() => setShowLockAuth(false)}
-        className="w-full px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white bg-[#1A73E8] hover:bg-[#1A73E8]/85 transition cursor-pointer"
-      >
-        OK
-      </button>
     </div>
   )}
 
@@ -445,7 +445,7 @@ onClick={(e) => {
                       className={`flex-1 py-1.5 rounded-lg text-[0.7rem] font-semibold cursor-pointer transition ${
                         isActive
                           ? "bg-[#1A73E8]/20 text-[#1A73E8] border border-[#1A73E8]/50"
-                          : "text-foreground/55 border border-border hover:bg-foreground/6 hover:text-foreground/80"
+                          : "text-foreground/55 border border-border hover:bg-[#1A73E8]/10 hover:text-[#1A73E8]/80 hover:border-[#1A73E8]/30"
                       }`}
                     >
                       {label}
@@ -483,7 +483,7 @@ onClick={(e) => {
             <svg className="w-3.5 h-3.5 lg:w-4 lg:h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
             </svg>
-            <span className="hidden lg:inline text-sm font-semibold whitespace-nowrap">Login</span>
+            <span className="hidden lg:inline text-sm font-semibold whitespace-nowrap">Sign in</span>
           </button>
         )}
       </div>

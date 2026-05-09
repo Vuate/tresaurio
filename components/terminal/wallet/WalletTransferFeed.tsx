@@ -51,7 +51,7 @@ export default function WalletTransferFeed() {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border-sub bg-card p-6 lg:p-8">
+      <div className="rounded-xl border border-border-sub bg-card p-3 sm:p-6 lg:p-8">
         {/* Panel header */}
         <div className="flex justify-between items-center gap-3 mb-5 pb-4 border-b border-border-sub flex-wrap">
           <div className="text-[0.95rem] font-bold text-foreground">Live Transfer Feed</div>
@@ -67,34 +67,37 @@ export default function WalletTransferFeed() {
           {transfers.map((transfer, i) => (
             <div
               key={i}
-              className="flex items-start gap-3 rounded-xl border border-border-sub bg-card-alt p-4 lg:p-5 transition-all duration-250 hover:-translate-y-0.5 hover:border-[#2563EB]/25 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
+              className="flex items-start gap-2 sm:gap-3 rounded-xl border border-border-sub bg-card-alt p-3 sm:p-4 lg:p-5 transition-all duration-250 hover:-translate-y-0.5 hover:border-[#2563EB]/25 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
             >
               {/* Icon box */}
-              <div className="w-10 h-10 shrink-0 flex items-center justify-center rounded-[10px] bg-[#2563EB]/10 border border-[#2563EB]/20">
-                <Icon icon={transfer.icon} className="text-xl text-[#2563EB]" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center rounded-[10px] bg-[#2563EB]/10 border border-[#2563EB]/20">
+                <Icon icon={transfer.icon} className="text-base sm:text-xl text-[#2563EB]" />
               </div>
 
-              {/* Content + right */}
+              {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2 flex-wrap">
-                  <div className="min-w-0">
-                    <span
-                      className={`inline-block px-2.5 py-0.5 rounded-lg font-bold uppercase mb-1 border whitespace-nowrap ${
-                        transfer.badgeType === "inflow"
-                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                          : "bg-red-500/10 text-red-400 border-red-500/20"
-                      }`}
-                      style={{ fontSize: "0.625rem", letterSpacing: "0.05em" }}
-                    >
-                      {transfer.type}
-                    </span>
-                    <div className="text-[0.9rem] font-bold text-foreground">{transfer.amount}</div>
-                    <div className="text-[0.72rem] text-[#71717A] font-mono truncate">{transfer.address}</div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-[0.95rem] font-bold text-foreground">{transfer.usd}</div>
-                    <div className="text-[0.72rem] text-[#71717A]">{transfer.time}</div>
-                  </div>
+                {/* Badge */}
+                <span
+                  className={`inline-block px-2 py-0.5 rounded-lg font-bold uppercase mb-1.5 border whitespace-nowrap ${
+                    transfer.badgeType === "inflow"
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      : "bg-red-500/10 text-red-400 border-red-500/20"
+                  }`}
+                  style={{ fontSize: "0.575rem", letterSpacing: "0.03em" }}
+                >
+                  {transfer.type}
+                </span>
+
+                {/* Amount + USD */}
+                <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                  <span className="text-[0.85rem] sm:text-[0.9rem] font-bold text-foreground">{transfer.amount}</span>
+                  <span className="text-[0.85rem] sm:text-[0.95rem] font-bold text-foreground shrink-0">{transfer.usd}</span>
+                </div>
+
+                {/* Address + Time */}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[0.68rem] sm:text-[0.72rem] text-[#71717A] font-mono break-all">{transfer.address}</span>
+                  <span className="text-[0.68rem] sm:text-[0.72rem] text-[#71717A] shrink-0">{transfer.time}</span>
                 </div>
               </div>
             </div>

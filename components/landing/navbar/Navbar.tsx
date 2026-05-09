@@ -20,7 +20,7 @@ type NavItem = {
 const aboutItems: NavItem[] = [
   {
     label: "Who Is It For?",
-    href: "#",
+    href: "#who-is-it-for",
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -32,22 +32,22 @@ const aboutItems: NavItem[] = [
   },
   {
     label: "Why Treasurio?",
-    href: "#",
+    href: "#why-treasurio",
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <polyline points="9 12 11 14 15 10"/>
       </svg>
     ),
   },
   {
     label: "Team",
-    href: "#",
+    href: "#team",
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="7" width="20" height="14" rx="2"/>
-        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-        <line x1="12" y1="12" x2="12" y2="16"/>
-        <line x1="10" y1="14" x2="14" y2="14"/>
+        <circle cx="8" cy="7" r="3.5"/>
+        <circle cx="16" cy="7" r="3.5"/>
+        <path d="M2 21c0-3.87 2.69-7 6-7h8c3.31 0 6 3.13 6 7"/>
       </svg>
     ),
   },
@@ -92,8 +92,8 @@ const appItems: NavItem[] = [
     disabled: true,
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
       </svg>
     ),
   },
@@ -110,6 +110,23 @@ const appItems: NavItem[] = [
   },
 ];
 
+function scrollToSection(id: string, router: ReturnType<typeof import("next/navigation").useRouter>) {
+  const sectionId = id.replace("#", "");
+  if (window.location.pathname === "/") {
+    const el = document.getElementById(sectionId);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  } else {
+    router.push(`/#${sectionId}`);
+  }
+}
+
+const desktopNavMap: Record<string, string> = {
+  Platform: "dashboard-preview",
+  "How It Works": "how-it-works",
+  Features: "features",
+  Contact: "early-access",
+};
+
 function DropdownMenu({ items, onClose }: { items: NavItem[]; onClose: () => void }) {
   const router = useRouter();
   return (
@@ -121,7 +138,11 @@ function DropdownMenu({ items, onClose }: { items: NavItem[]; onClose: () => voi
             disabled={item.disabled}
             onClick={() => {
               if (!item.disabled) {
-                router.push(item.href);
+                if (item.href.startsWith("#")) {
+                  scrollToSection(item.href, router);
+                } else {
+                  router.push(item.href);
+                }
                 onClose();
               }
             }}
@@ -159,6 +180,7 @@ export default function Navbar() {
 
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const [lang, setLang] = useState<"TR" | "EN">("EN");
   const { theme, setTheme } = useTheme();
 
   const isLoggedIn = status === "authenticated" && session?.user;
@@ -193,16 +215,16 @@ export default function Navbar() {
   }, [aboutOpen, appOpen]);
 
   const btnLogin = `
-    px-5 md:px-6 py-2 md:py-2.5 text-sm font-semibold rounded-lg
+    px-3.5 lg:px-4 xl:px-5 py-2 text-sm font-semibold rounded-lg
     bg-[#2563EB] text-white border border-[#2563EB]
     transition-all duration-200 cursor-pointer shrink-0
     hover:bg-[#1a55d5] hover:border-[#1a55d5]
-    hover:-translate-y-0.5 hover:shadow-[0_4px_18px_rgba(37,99,235,0.45)]
-    active:translate-y-0 active:shadow-none
+    hover:-translate-y-0.5
+    active:translate-y-0
   `;
 
   const btnSignup = `
-    px-5 md:px-6 py-2 md:py-2.5 text-sm font-semibold rounded-lg
+    px-3.5 lg:px-4 xl:px-5 py-2 text-sm font-semibold rounded-lg
     bg-transparent text-foreground border border-[#2563EB]/40
     transition-all duration-200 cursor-pointer shrink-0
     hover:bg-[#2563EB]/10 hover:border-[#2563EB]/70
@@ -217,7 +239,7 @@ export default function Navbar() {
           fixed top-0 left-0 z-100
           w-full
           h-16 md:h-20
-          px-4 sm:px-6 md:px-8 lg:px-12
+          px-4 sm:px-6 md:px-8 lg:px-6 xl:px-12
           flex items-center justify-between
           transition-transform duration-300
           ${hideNavbar ? "-translate-y-full" : "translate-y-0"}
@@ -240,10 +262,13 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Nav */}
-        <ul className="hidden lg:flex items-stretch justify-center gap-5.5 list-none flex-1 self-stretch">
+        <ul className="hidden lg:flex items-stretch justify-center gap-3 xl:gap-5.5 list-none flex-1 self-stretch">
           {(["Platform", "How It Works", "Features"] as const).map((label) => (
             <li key={label} className="flex items-center">
-              <button className="inline-flex items-center leading-none text-[0.855rem] font-medium text-foreground/60 hover:text-foreground transition-colors duration-200 cursor-pointer">
+              <button
+                onClick={() => scrollToSection(desktopNavMap[label], router)}
+                className="inline-flex items-center leading-none whitespace-nowrap text-[0.855rem] font-medium text-foreground/60 hover:text-foreground transition-colors duration-200 cursor-pointer"
+              >
                 {label}
               </button>
             </li>
@@ -253,7 +278,7 @@ export default function Navbar() {
           <li className="relative flex items-center" ref={aboutRef}>
             <button
               onClick={() => { setAboutOpen(!aboutOpen); setAppOpen(false); }}
-              className={`inline-flex items-center leading-none gap-1 text-[0.855rem] font-medium transition-colors duration-200 cursor-pointer ${
+              className={`inline-flex items-center leading-none whitespace-nowrap gap-1 text-[0.855rem] font-medium transition-colors duration-200 cursor-pointer ${
                 aboutOpen ? "text-foreground" : "text-foreground/60 hover:text-foreground"
               }`}
             >
@@ -272,7 +297,10 @@ export default function Navbar() {
           </li>
 
           <li className="flex items-center">
-            <button className="inline-flex items-center leading-none text-[0.855rem] font-medium text-foreground/60 hover:text-foreground transition-colors duration-200 cursor-pointer">
+            <button
+              onClick={() => scrollToSection(desktopNavMap["Contact"], router)}
+              className="inline-flex items-center leading-none whitespace-nowrap text-[0.855rem] font-medium text-foreground/60 hover:text-foreground transition-colors duration-200 cursor-pointer"
+            >
               Contact
             </button>
           </li>
@@ -281,7 +309,7 @@ export default function Navbar() {
           <li className="relative flex items-center" ref={appRef}>
             <button
               onClick={() => { setAppOpen(!appOpen); setAboutOpen(false); }}
-              className={`inline-flex items-center leading-none gap-1 text-[0.855rem] font-medium transition-colors duration-200 cursor-pointer ${
+              className={`inline-flex items-center leading-none whitespace-nowrap gap-1 text-[0.855rem] font-medium transition-colors duration-200 cursor-pointer ${
                 appOpen ? "text-foreground" : "text-foreground/60 hover:text-foreground"
               }`}
             >
@@ -301,25 +329,39 @@ export default function Navbar() {
         </ul>
 
         {/* Desktop Right — dokunulmadı */}
-        <div className="hidden lg:flex items-center gap-3 shrink-0">
+        <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
+          {/* Lang Toggle */}
+          <div className="flex items-center rounded-lg border border-border-sub overflow-hidden">
+            {(["TR", "EN"] as const).map((l) => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className={`px-3 py-1.5 text-xs font-semibold transition-all duration-150 cursor-pointer ${
+                  lang === l
+                    ? "bg-[#2563EB] text-white"
+                    : "bg-transparent text-foreground/50 hover:text-foreground"
+                }`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
           <ThemeToggle />
+          <Button
+            onClick={() => router.push("/personalized-dashboard")}
+            className={btnLogin}
+          >
+            Start Free
+          </Button>
           {isLoggedIn ? (
             <UserMenu />
           ) : (
-            <>
-              <Button
-                onClick={() => { setAuthMode("login"); setAuthOpen(true); }}
-                className={btnLogin}
-              >
-                LOG IN
-              </Button>
-              <Button
-                onClick={() => { setAuthMode("signup"); setAuthOpen(true); }}
-                className={btnSignup}
-              >
-                SIGN UP
-              </Button>
-            </>
+            <Button
+              onClick={() => { setAuthMode("login"); setAuthOpen(true); }}
+              className={btnSignup}
+            >
+              Sign In
+            </Button>
           )}
         </div>
 
@@ -366,6 +408,7 @@ export default function Navbar() {
               {(["Platform", "How It Works", "Features", "Contact"] as const).map((label) => (
                 <button
                   key={label}
+                  onClick={() => { scrollToSection(desktopNavMap[label], router); setMobileMenuOpen(false); }}
                   className="text-left text-foreground/70 font-medium py-3 border-b border-border-sub hover:text-foreground transition cursor-pointer text-[0.9rem]"
                 >
                   {label}
@@ -379,6 +422,7 @@ export default function Navbar() {
               {aboutItems.map((item) => (
                 <button
                   key={item.label}
+                  onClick={() => { scrollToSection(item.href, router); setMobileMenuOpen(false); }}
                   className="text-left text-foreground/65 font-medium py-2.5 border-b border-border-sub w-full hover:text-foreground transition cursor-pointer text-[0.875rem]"
                 >
                   {item.label}
@@ -429,8 +473,23 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Tema */}
-            <div className="px-5 pb-6 pt-3 border-t border-border-sub">
+            {/* Lang + Tema */}
+            <div className="px-5 pb-6 pt-3 border-t border-border-sub flex flex-col gap-3">
+              <div className="flex items-center rounded-lg border border-border-sub overflow-hidden self-start">
+                {(["TR", "EN"] as const).map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => setLang(l)}
+                    className={`px-4 py-2 text-xs font-semibold transition-all duration-150 cursor-pointer ${
+                      lang === l
+                        ? "bg-[#2563EB] text-white"
+                        : "bg-transparent text-foreground/50 hover:text-foreground"
+                    }`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
               <div className="flex items-center gap-2">
                 {(["light", "dark", "system"] as const).map((t) => (
                   <button

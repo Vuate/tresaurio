@@ -71,17 +71,6 @@ export default function ReportingHero() {
             ))}
           </div>
 
-          {/* Feature badges */}
-          <div className="flex gap-2 sm:gap-3 justify-center flex-wrap px-4">
-            {["PDF & Excel Export", "AI-Powered Insights", "Custom Templates", "Scheduled Reports"].map((badge) => (
-              <span
-                key={badge}
-                className="px-3 py-1.5 bg-surface-overlay border border-border-overlay rounded-full text-xs font-medium text-[#71717A]"
-              >
-                {badge}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </>

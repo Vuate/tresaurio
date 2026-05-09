@@ -1,5 +1,6 @@
 import Navbar from "@/components/landing/navbar/Navbar";
 import Sidebar from "@/components/terminal/layout/Sidebar";
+import { ScrollRestorer } from "@/components/terminal/layout/ScrollRestorer";
 
 export default function TerminalLayout({
   children,
@@ -8,6 +9,7 @@ export default function TerminalLayout({
 }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <ScrollRestorer />
       <Navbar />
 
       <div className="flex min-h-[calc(100vh-64px)] pt-11 md:pt-16">

@@ -667,9 +667,9 @@ const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
             ${isLocked
       ? "border-amber-500/30 bg-card"
       : swapSourceId === module.id
-        ? "border-[#1A73E8] bg-card"
+        ? "border-blue-500 dark:border-blue-400 bg-card"
         : sizeSourceId === module.id
-          ? "border-yellow-400 bg-card"
+          ? "border-emerald-500 dark:border-emerald-400 bg-card"
           : isActive
             ? "border-[#1A73E8]/70 bg-card"
             : "border-border bg-card"
@@ -840,19 +840,19 @@ title="Remove Module"
       style={{
         top: headerHeight,
         background: swapSourceId === module.id && sizeSourceId === module.id
-          ? "color-mix(in srgb, rgb(59 130 246 / 0.1), rgb(234 179 8 / 0.1))"
+          ? "color-mix(in srgb, rgb(59 130 246 / 0.08), rgb(16 185 129 / 0.08))"
           : swapSourceId === module.id
-            ? "rgb(59 130 246 / 0.1)"
-            : "rgb(234 179 8 / 0.1)"
+            ? "rgb(59 130 246 / 0.08)"
+            : "rgb(16 185 129 / 0.08)"
       }}
     >
     {swapSourceId === module.id && (
-      <span className="text-blue-300 text-xs font-semibold bg-blue-500/20 px-3 py-1.5 rounded-lg border border-blue-400/30">
+      <span className="text-blue-600 dark:text-blue-300 text-xs font-semibold bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 dark:border-blue-400/30">
         Click another module to swap
       </span>
     )}
     {sizeSourceId === module.id && (
-      <span className="text-yellow-300 text-xs font-semibold bg-yellow-500/20 px-3 py-1.5 rounded-lg border border-yellow-400/30">
+      <span className="text-emerald-600 dark:text-emerald-300 text-xs font-semibold bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 dark:border-emerald-400/30">
         Click another module to apply size
       </span>
     )}
@@ -950,7 +950,7 @@ title="Remove Module"
             }}
             className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer
               ${swapSourceId === module.id
-                ? "bg-[#1A73E8]/20 text-[#1A73E8]"
+                ? "bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300"
                 : "text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
               }`}
           >
@@ -992,7 +992,7 @@ title="Remove Module"
             }}
             className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer
               ${sizeSourceId === module.id
-                ? "bg-[#1A73E8]/20 text-[#1A73E8]"
+                ? "bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300"
                 : "text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
               }`}
           >

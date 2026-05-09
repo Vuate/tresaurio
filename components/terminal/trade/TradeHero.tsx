@@ -52,24 +52,10 @@ export default function TradeHero() {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[1.05rem] text-[#71717A] leading-[1.75] mb-9 max-w-140 mx-auto px-4">
+          <p className="text-[1.05rem] text-[#71717A] leading-[1.75] mb-6 max-w-140 mx-auto px-4">
             Manage your spot and futures trades on a single dashboard. Track your open positions,
             calculate PnL, and analyze your portfolio performance.
           </p>
-
-          {/* Stats row */}
-          <div className="flex gap-6 sm:gap-10 justify-center mb-8">
-            {[
-              { value: "10+", label: "Exchanges" },
-              { value: "Real-Time", label: "PnL Tracking" },
-              { value: "360°", label: "Portfolio View" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-xl sm:text-2xl font-black text-[#2563EB]">{stat.value}</div>
-                <div className="text-xs text-[#71717A] mt-0.5">{stat.label}</div>
-              </div>
-            ))}
-          </div>
 
           {/* Feature badges */}
           <div className="flex gap-2 sm:gap-3 justify-center flex-wrap px-4">

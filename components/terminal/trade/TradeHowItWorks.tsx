@@ -74,41 +74,73 @@ export default function TradeHowItWorks() {
         ))}
       </div>
 
-      {/* Tablet: 2 column grid */}
-      <div className="hidden sm:grid xl:hidden grid-cols-2 gap-10">
-        {steps.map((step) => (
-          <div key={step.number} className="text-center px-2">
-            <div className="w-17 h-17 rounded-[18px] flex items-center justify-center mx-auto mb-5 bg-[#2563EB]/10 border border-[#2563EB]/25">
-              <span className="text-2xl font-black text-[#2563EB]">{step.number}</span>
-            </div>
-            <div
-              className="font-bold uppercase text-[#71717A] mb-2"
-              style={{ fontSize: "0.67rem", letterSpacing: "0.1em" }}
-            >
-              Step 0{step.number}
-            </div>
-            <h3 className="text-[1.05rem] font-bold text-foreground mb-2">{step.title}</h3>
-            <p className="text-[0.875rem] text-[#71717A] leading-[1.7]">{step.description}</p>
-          </div>
-        ))}
+      {/* Tablet: 2x2 with arrows */}
+      <div className="hidden sm:block xl:hidden">
+        <div className="grid items-start" style={{ gridTemplateColumns: "1fr 32px 1fr" }}>
+          {steps.slice(0, 2).map((step, i) => (
+            <>
+              <div key={step.number} className="text-center px-5">
+                <div className="w-17 h-17 rounded-[18px] flex items-center justify-center mx-auto mb-5 bg-[#2563EB]/10 border border-[#2563EB]/25">
+                  <span className="text-2xl font-black text-[#2563EB]">{step.number}</span>
+                </div>
+                <div className="font-bold uppercase text-[#71717A] mb-2" style={{ fontSize: "0.67rem", letterSpacing: "0.1em" }}>Step 0{step.number}</div>
+                <h3 className="text-[1.05rem] font-bold text-foreground mb-2">{step.title}</h3>
+                <p className="text-[0.875rem] text-[#71717A] leading-[1.7]">{step.description}</p>
+              </div>
+              {i === 0 && (
+                <div className="flex items-start justify-center pt-8.5 opacity-35">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              )}
+            </>
+          ))}
+        </div>
+        <div className="py-5" />
+        <div className="grid items-start" style={{ gridTemplateColumns: "1fr 32px 1fr" }}>
+          {steps.slice(2).map((step, i) => (
+            <>
+              <div key={step.number} className="text-center px-5">
+                <div className="w-17 h-17 rounded-[18px] flex items-center justify-center mx-auto mb-5 bg-[#2563EB]/10 border border-[#2563EB]/25">
+                  <span className="text-2xl font-black text-[#2563EB]">{step.number}</span>
+                </div>
+                <div className="font-bold uppercase text-[#71717A] mb-2" style={{ fontSize: "0.67rem", letterSpacing: "0.1em" }}>Step 0{step.number}</div>
+                <h3 className="text-[1.05rem] font-bold text-foreground mb-2">{step.title}</h3>
+                <p className="text-[0.875rem] text-[#71717A] leading-[1.7]">{step.description}</p>
+              </div>
+              {i === 0 && (
+                <div className="flex items-start justify-center pt-8.5 opacity-35">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              )}
+            </>
+          ))}
+        </div>
       </div>
 
-      {/* Mobile: single column */}
-      <div className="flex flex-col gap-10 sm:hidden">
-        {steps.map((step) => (
-          <div key={step.number} className="text-center px-2">
-            <div className="w-17 h-17 rounded-[18px] flex items-center justify-center mx-auto mb-5 bg-[#2563EB]/10 border border-[#2563EB]/25">
-              <span className="text-2xl font-black text-[#2563EB]">{step.number}</span>
+      {/* Mobile: single column with arrows */}
+      <div className="flex flex-col sm:hidden">
+        {steps.map((step, i) => (
+          <>
+            <div key={step.number} className="text-center px-2">
+              <div className="w-17 h-17 rounded-[18px] flex items-center justify-center mx-auto mb-5 bg-[#2563EB]/10 border border-[#2563EB]/25">
+                <span className="text-2xl font-black text-[#2563EB]">{step.number}</span>
+              </div>
+              <div className="font-bold uppercase text-[#71717A] mb-2" style={{ fontSize: "0.67rem", letterSpacing: "0.1em" }}>Step 0{step.number}</div>
+              <h3 className="text-[1.05rem] font-bold text-foreground mb-2">{step.title}</h3>
+              <p className="text-[0.875rem] text-[#71717A] leading-[1.7]">{step.description}</p>
             </div>
-            <div
-              className="font-bold uppercase text-[#71717A] mb-2"
-              style={{ fontSize: "0.67rem", letterSpacing: "0.1em" }}
-            >
-              Step 0{step.number}
-            </div>
-            <h3 className="text-[1.05rem] font-bold text-foreground mb-2">{step.title}</h3>
-            <p className="text-[0.875rem] text-[#71717A] leading-[1.7]">{step.description}</p>
-          </div>
+            {i < steps.length - 1 && (
+              <div key={`arrow-mob-${i}`} className="flex justify-center py-5 opacity-35">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            )}
+          </>
         ))}
       </div>
     </section>
