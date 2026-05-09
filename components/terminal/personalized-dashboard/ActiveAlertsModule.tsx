@@ -59,7 +59,7 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
               <div className="flex-1 min-w-[10px]"></div>
 
               {/* Status - Always Waiting */}
-              <span className="text-[11px] font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 text-teal-400">
+              <span className="text-[11px] font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 text-teal-600 dark:text-teal-400">
                 <Bell className="w-3 h-3" />
                 <span>Waiting</span>
               </span>
@@ -94,7 +94,7 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
 
             {/* Info Rows - Fully Responsive */}
             <div className="space-y-0.5">
-              <div className="text-[11px] text-muted-foreground break-words leading-tight">
+              <div className="text-[11px] text-foreground/70 dark:text-foreground/60 break-words leading-tight">
                 {a.condition === "above" ? "Above" : "Below"} $
                 {a.target.toLocaleString()}
               </div>

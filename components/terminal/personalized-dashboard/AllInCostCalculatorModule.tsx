@@ -498,7 +498,7 @@ bg-card border border-border
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+          className="h-7 px-3 rounded-md bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
         >
           <Plus className="w-3 h-3" />
           Add
@@ -508,7 +508,7 @@ bg-card border border-border
         {tokens.length > 1 && (
           <button
             onClick={() => removeToken(selectedToken.symbol)}
-            className="h-7 px-3 rounded-md bg-red-500/20 border border-red-500/30 text-red-300 hover:bg-red-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+            className="h-7 px-3 rounded-md bg-red-500/15 dark:bg-red-500/20 border border-red-500/50 dark:border-red-500/30 text-red-600 dark:text-red-300 hover:bg-red-500/25 dark:hover:bg-red-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
           >
             <X className="w-3 h-3" />
             Remove

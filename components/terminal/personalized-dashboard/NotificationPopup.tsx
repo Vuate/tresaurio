@@ -14,9 +14,9 @@ interface NotificationPopupProps {
 const TYPE_CONFIG = {
   success: {
     icon: <Check className="w-4 h-4" />,
-    iconBg: "bg-emerald-500/15 dark:bg-emerald-500/20",
-    iconColor: "text-emerald-600 dark:text-emerald-400",
-    accentBar: "bg-emerald-500",
+    iconBg: "bg-[#1A73E8]/15 dark:bg-[#1A73E8]/20",
+    iconColor: "text-[#1A73E8]",
+    accentBar: "bg-[#1A73E8]",
   },
   error: {
     icon: <AlertCircle className="w-4 h-4" />,

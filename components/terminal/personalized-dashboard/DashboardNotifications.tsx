@@ -18,9 +18,9 @@ export default function DashboardNotifications() {
 
   const variants = {
     success: {
-      card: "bg-card border border-border border-l-[3px] border-l-emerald-500 shadow-[0_8px_28px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_28px_rgba(0,0,0,0.45)]",
-      dot:  "bg-emerald-500",
-      title:"text-emerald-500",
+      card: "bg-card border border-border border-l-[3px] border-l-[#1A73E8] shadow-[0_8px_28px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_28px_rgba(0,0,0,0.45)]",
+      dot:  "bg-[#1A73E8]",
+      title:"text-[#1A73E8]",
     },
     error: {
       card: "bg-card border border-border border-l-[3px] border-l-red-500 shadow-[0_8px_28px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_28px_rgba(0,0,0,0.45)]",

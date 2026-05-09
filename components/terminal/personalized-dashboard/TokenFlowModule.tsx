@@ -391,7 +391,7 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
           {selectedTokens.map((token) => (
             <span
               key={token}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] border border-blue-500/30"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 text-[10px] border border-blue-500/50 dark:border-blue-500/30"
             >
               {token}
               <button
@@ -599,7 +599,7 @@ scrollbar-thumb-foreground/20              scrollbar-track-transparent
                   <button
                     onClick={addToken}
                     disabled={!newToken.trim()}
-                    className="px-3 py-1.5 bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/25 dark:hover:bg-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
+                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed text-foreground rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>

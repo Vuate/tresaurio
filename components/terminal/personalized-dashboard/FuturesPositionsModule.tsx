@@ -577,7 +577,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
               }
               setShowSelectModal(true);
             }}
-            className="h-7 px-2.5 sm:px-3 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-lg text-xs hover:bg-blue-500/30 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+            className="h-7 px-2.5 sm:px-3 bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 rounded-lg text-xs hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
           >
             <Key className="w-3 h-3" />
             <span>Connect</span>
@@ -693,7 +693,7 @@ scrollbar-thumb-foreground/20          scrollbar-track-transparent
 
             <button
               onClick={addManualPosition}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-foreground py-2 rounded-lg transition text-xs font-semibold cursor-pointer"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-foreground py-2 rounded-lg transition text-xs font-semibold cursor-pointer"
             >
               Add Position
             </button>

@@ -603,9 +603,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             }}
             className="
               h-7 px-3 rounded-md
-              bg-blue-500/20 border border-blue-500/30
-              text-blue-400 text-xs
-              hover:bg-blue-500/30
+              bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30
+              text-blue-600 dark:text-blue-300 text-xs
+              hover:bg-blue-500/25 dark:hover:bg-blue-500/30
               transition-all
               flex items-center gap-1.5
               cursor-pointer
@@ -687,9 +687,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           onClick={() => setShowAddModal(true)}
           className="
             w-full py-2 rounded-md
-            bg-blue-500/20 border border-blue-500/30
-            text-blue-300 text-xs font-medium
-            hover:bg-blue-500/30
+            bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30
+            text-blue-600 dark:text-blue-300 text-xs font-medium
+            hover:bg-blue-500/25 dark:hover:bg-blue-500/30
             transition-all
             flex items-center justify-center gap-1.5
             cursor-pointer
