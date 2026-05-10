@@ -25,25 +25,26 @@ export function Footer() {
             <div>
               <h4 className="text-xs font-bold tracking-[0.15em] uppercase text-foreground mb-4">Product</h4>
               <ul className="flex flex-col gap-3">
-                <li><Link href="#dashboard-preview" className="text-sm text-muted-foreground hover:text-brand transition-colors">Platform</Link></li>
-                <li><Link href="#how-it-works" className="text-sm text-muted-foreground hover:text-brand transition-colors">How It Works</Link></li>
-                <li><Link href="#features" className="text-sm text-muted-foreground hover:text-brand transition-colors">Features</Link></li>
+                <li><Link href="/terminal/home" className="text-sm text-muted-foreground hover:text-brand transition-colors">Terminal</Link></li>
+                <li><Link href="/personalized-dashboard" className="text-sm text-muted-foreground hover:text-brand transition-colors">Personalized Dashboard</Link></li>
+                <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-brand transition-colors">Pricing</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold tracking-[0.15em] uppercase text-foreground mb-4">About</h4>
+              <h4 className="text-xs font-bold tracking-[0.15em] uppercase text-foreground mb-4">Company</h4>
               <ul className="flex flex-col gap-3">
-                <li><Link href="#who-is-it-for" className="text-sm text-muted-foreground hover:text-brand transition-colors">Who Is It For?</Link></li>
-                <li><Link href="#why-treasurio" className="text-sm text-muted-foreground hover:text-brand transition-colors">Why Treasurio?</Link></li>
-                <li><Link href="#team" className="text-sm text-muted-foreground hover:text-brand transition-colors">Team</Link></li>
+                <li><Link href="/#how-it-works" className="text-sm text-muted-foreground hover:text-brand transition-colors">How It Works</Link></li>
+                <li><Link href="/#who-is-it-for" className="text-sm text-muted-foreground hover:text-brand transition-colors">Who Is It For?</Link></li>
+                <li><Link href="/#why-treasurio" className="text-sm text-muted-foreground hover:text-brand transition-colors">Why Treasurio?</Link></li>
+                <li><Link href="/#team" className="text-sm text-muted-foreground hover:text-brand transition-colors">Team</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="text-xs font-bold tracking-[0.15em] uppercase text-foreground mb-4">Connect</h4>
               <ul className="flex flex-col gap-3">
-                <li><Link href="#early-access" className="text-sm text-muted-foreground hover:text-brand transition-colors">Contact</Link></li>
+                <li><Link href="/#early-access" className="text-sm text-muted-foreground hover:text-brand transition-colors">Contact</Link></li>
                 <li className="flex items-center gap-2">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground flex-shrink-0">
                     <rect x="2" y="4" width="20" height="16" rx="2" />
