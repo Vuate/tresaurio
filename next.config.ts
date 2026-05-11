@@ -20,7 +20,8 @@ const cspDirectives = [
   // next/font/google self-hosts at build time — no external font CDN needed.
   "font-src 'self'",
   // Google OAuth profile pictures; data: for SVG/canvas; blob: for exports.
-  "img-src 'self' data: blob: https://*.googleusercontent.com",
+  // s2.coinmarketcap.com: coin logo images in HomeLivePrices.
+  "img-src 'self' data: blob: https://*.googleusercontent.com https://s2.coinmarketcap.com",
   [
     "connect-src 'self'",
     // Binance REST + data mirror
@@ -43,6 +44,10 @@ const cspDirectives = [
     "wss://ws.okx.com:8443",
     "wss://stream.bybit.com",
     "wss://ws-feed.exchange.coinbase.com",
+    // @iconify/react fetches icon JSON on-demand from these three CDNs.
+    "https://api.iconify.design",
+    "https://api.simplesvg.com",
+    "https://api.unisvg.com",
     // Next.js HMR websocket (dev only)
     ...(isDev ? ["ws://localhost:*", "ws://127.0.0.1:*"] : []),
   ].join(" "),
