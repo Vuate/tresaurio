@@ -553,10 +553,10 @@ export default function Navbar() {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Button
-                      onClick={() => { setAuthMode("signup"); setAuthOpen(true); handleDrawerClose(); }}
+                      onClick={() => { router.push("/personalized-dashboard"); handleDrawerClose(); }}
                       className="w-full bg-[#2563EB] text-white border border-[#2563EB] hover:bg-[#1a55d5] hover:border-[#1a55d5] py-2.5 rounded-xl font-semibold cursor-pointer transition-all duration-200 text-sm"
                     >
-                      Get Started Free
+                      Start Free
                     </Button>
                     <Button
                       onClick={() => { setAuthMode("login"); setAuthOpen(true); handleDrawerClose(); }}
