@@ -112,12 +112,17 @@ export default function Sidebar() {
 
         <SectionLabel label="SETTINGS" />
 
-        <NavItem
-          href="/terminal/settings/api-keys"
-          icon={<Icon icon="mdi:key-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
-          label="API Keys"
-          active={isActive("/terminal/settings/api-keys")}
-        />
+        <div className="relative opacity-40">
+          <NavItem
+            href="/terminal/settings/api-keys"
+            icon={<Icon icon="mdi:key-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+            label="API Keys"
+            active={false}
+            soon
+          />
+          <div className="absolute inset-0 cursor-not-allowed" />
+        </div>
+
       </div>
     </aside>
   );

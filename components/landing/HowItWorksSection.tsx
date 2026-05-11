@@ -1,3 +1,4 @@
+import React from "react";
 import { FadeUp } from "@/components/landing/ui/FadeUp";
 import { SectionHead } from "@/components/landing/ui/SectionHead";
 
@@ -69,8 +70,8 @@ export function HowItWorksSection() {
 
         <div className="how-grid">
           {steps.map((step, i) => (
-            <>
-              <FadeUp key={step.num} delay={stepDelay[i.toString()]}>
+            <React.Fragment key={step.num}>
+              <FadeUp delay={stepDelay[i.toString()]}>
                 <div className="flex flex-col pt-2">
                   <div className={iconClass[step.color]}>{step.icon}</div>
                   <div className="text-xs font-bold tracking-[0.15em] uppercase text-muted-foreground mb-2">
@@ -82,7 +83,7 @@ export function HowItWorksSection() {
               </FadeUp>
 
               {i < steps.length - 1 && (
-                <FadeUp key={`arrow-${i}`} delay={stepDelay[(i + 1).toString()]}>
+                <FadeUp delay={stepDelay[(i + 1).toString()]}>
                   <div className="how-arrow">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9 18 15 12 9 6" />
@@ -90,7 +91,7 @@ export function HowItWorksSection() {
                   </div>
                 </FadeUp>
               )}
-            </>
+            </React.Fragment>
           ))}
         </div>
       </div>
