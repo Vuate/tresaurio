@@ -89,13 +89,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // Ready for SRI hash generation once Turbopack supports it.
-    // Currently a no-op with the Turbopack bundler (Next.js 16 default).
-    sri: {
-      algorithm: "sha384",
-    },
-  },
+  // experimental.sri removed: Turbopack (Next.js 16 default) does not support
+  // this option and Vercel treats the unsupported-config warning as a fatal
+  // build error. Re-add once Turbopack ships native SRI hash generation.
   async headers() {
     return [
       {
