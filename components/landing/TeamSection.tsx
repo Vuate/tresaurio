@@ -32,8 +32,7 @@ export function TeamSection() {
   const rafRef = useRef<number | null>(null);
   const pausedRef = useRef(false);
   const lastTouchRef = useRef(0);
-  const touchStartRef = useRef({ x: 0, y: 0, pos: 0 });
-  const dirLockRef = useRef<"h" | "v" | null>(null);
+  const touchStartRef = useRef({ x: 0, pos: 0 });
   const loopWidthRef = useRef(0);
   const cardWRef = useRef(0);
   const visibleCountRef = useRef(1);
@@ -143,24 +142,12 @@ export function TeamSection() {
     const onTouchStart = (e: TouchEvent) => {
       lastTouchRef.current = Date.now();
       pausedRef.current = true;
-      dirLockRef.current = null;
-      touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, pos: posRef.current };
+      touchStartRef.current = { x: e.touches[0].clientX, pos: posRef.current };
     };
 
     const onTouchMove = (e: TouchEvent) => {
       const dx = touchStartRef.current.x - e.touches[0].clientX;
-      const dy = touchStartRef.current.y - e.touches[0].clientY;
-
-      if (!dirLockRef.current) {
-        dirLockRef.current = Math.abs(dx) > Math.abs(dy) ? "h" : "v";
-      }
-      if (dirLockRef.current === "v") return;
-
-      e.preventDefault();
-      const lw = loopWidthRef.current;
-      let newPos = touchStartRef.current.pos + dx;
-      if (newPos < 0 || newPos > 3 * lw) newPos = touchStartRef.current.pos + dx * 0.15;
-      posRef.current = newPos;
+      posRef.current = touchStartRef.current.pos + dx;
       normalize();
       updateDot();
       if (trackRef.current) {
@@ -170,16 +157,14 @@ export function TeamSection() {
 
     const onTouchEnd = () => {
       setTimeout(() => { pausedRef.current = false; }, 80);
-      dirLockRef.current = null;
     };
 
     const onTouchCancel = () => {
       pausedRef.current = false;
-      dirLockRef.current = null;
     };
 
     track.addEventListener("touchstart", onTouchStart, { passive: true });
-    track.addEventListener("touchmove", onTouchMove, { passive: false });
+    track.addEventListener("touchmove", onTouchMove, { passive: true });
     track.addEventListener("touchend", onTouchEnd, { passive: true });
     track.addEventListener("touchcancel", onTouchCancel, { passive: true });
 
@@ -191,6 +176,7 @@ export function TeamSection() {
       track.removeEventListener("touchend", onTouchEnd);
       track.removeEventListener("touchcancel", onTouchCancel);
     };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -225,6 +211,7 @@ export function TeamSection() {
           <div
             ref={trackRef}
             className="team-carousel-track"
+            style={{ touchAction: "pan-y" }}
             onMouseEnter={() => { if (Date.now() - lastTouchRef.current > 500) pausedRef.current = true; }}
             onMouseLeave={() => { pausedRef.current = false; }}
           >
