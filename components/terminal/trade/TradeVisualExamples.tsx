@@ -1,125 +1,84 @@
+const spotStats = [
+  { label: "Total Value", value: "$124,567", sub: "≈ 2.83 BTC", color: "text-foreground" },
+  { label: "Unrealized PnL", value: "+$12,890", sub: "+11.5% return", color: "text-emerald-400" },
+  { label: "Best Performance", value: "SOL", sub: "+42.3% return", color: "text-[#2563EB]" },
+  { label: "Total Coins", value: "12", sub: "across 5 exchanges", color: "text-foreground" },
+];
+
+const futuresStats = [
+  { label: "Open Positions", value: "3", sub: "2 Long, 1 Short", color: "text-foreground" },
+  { label: "Total Margin", value: "$8,450", sub: "Average 5x leverage", color: "text-foreground" },
+  { label: "Unrealized PnL", value: "+$1,234", sub: "+14.6% gain", color: "text-emerald-400" },
+  { label: "Liquidation Risk", value: "Low", sub: "Nearest: -18%", color: "text-emerald-400" },
+];
+
+function StatGrid({ title, stats }: { title: string; stats: typeof spotStats }) {
+  return (
+    <div>
+      <h3 className="text-[1.05rem] font-bold text-foreground mb-4 flex items-center gap-2">
+        <span className="w-1 h-5 bg-[#2563EB] rounded-full inline-block shrink-0" />
+        {title}
+      </h3>
+      <div className="grid gap-3 grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-4">
+        {stats.map((s) => (
+          <div
+            key={s.label}
+            className="rounded-xl border border-border-sub bg-card-alt p-4 hover:border-[#2563EB]/25 transition-colors duration-250"
+          >
+            <div
+              className="text-[#71717A] mb-1 uppercase"
+              style={{ fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.06em" }}
+            >
+              {s.label}
+            </div>
+            <div className={`text-lg font-extrabold ${s.color}`}>{s.value}</div>
+            <div className="text-[0.72rem] text-[#71717A] mt-0.5">{s.sub}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function TradeVisualExamples() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Preview
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           Sample Dashboard View
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           Examples of how you can view your portfolio tools
         </p>
       </div>
 
-      <div className="visual-example">
-        <h3 className="mb-4 sm:mb-5 lg:mb-6 text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-white">
-          Spot Portfolio Summary
-        </h3>
-
-        <div className="example-grid grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="example-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 lg:p-5 xl:p-6">
-            <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
-              Total Value
-            </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
-              $124,567
-            </div>
-            <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
-              ≈ 2.83 BTC
-            </div>
+      <div className="rounded-xl border border-border-sub p-6 lg:p-8 space-y-8 bg-card">
+        {/* Panel header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-5 border-b border-border-sub gap-2">
+          <div>
+            <div className="text-[0.95rem] font-bold text-foreground">Portfolio Overview</div>
+            <div className="text-[0.72rem] text-[#71717A] mt-0.5">Live data — refreshed every 30s</div>
           </div>
-
-          <div className="example-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 lg:p-5 xl:p-6">
-            <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
-              Unrealized PnL
-            </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
-              +$12,890
-            </div>
-            <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
-              +11.5% return
-            </div>
-          </div>
-
-          <div className="example-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 lg:p-5 xl:p-6">
-            <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
-              Best Performance
-            </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
-              SOL
-            </div>
-            <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
-              +42.3% return
-            </div>
-          </div>
-
-          <div className="example-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 lg:p-5 xl:p-6">
-            <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
-              Total Coins
-            </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
-              12
-            </div>
-            <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
-              across 5 exchanges
-            </div>
-          </div>
+          <span
+            className="px-3 py-1 rounded-full font-bold bg-[#2563EB]/15 text-[#2563EB] border border-[#2563EB]/25 uppercase"
+            style={{ fontSize: "0.625rem", letterSpacing: "0.05em" }}
+          >
+            Live
+          </span>
         </div>
-      </div>
 
-      <div className="visual-example mt-5 sm:mt-6 lg:mt-7 xl:mt-8">
-        <h3 className="mb-4 sm:mb-5 lg:mb-6 text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-white">
-          Futures Positions
-        </h3>
-
-        <div className="example-grid grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="example-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 lg:p-5 xl:p-6">
-            <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
-              Open Positions
-            </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
-              3
-            </div>
-            <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
-              2 Long, 1 Short
-            </div>
-          </div>
-
-          <div className="example-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 lg:p-5 xl:p-6">
-            <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
-              Total Margin
-            </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
-              $8,450
-            </div>
-            <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
-              Average 5x leverage
-            </div>
-          </div>
-
-          <div className="example-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 lg:p-5 xl:p-6">
-            <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
-              Unrealized PnL
-            </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
-              +$1,234
-            </div>
-            <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
-              +14.6% gain
-            </div>
-          </div>
-
-          <div className="example-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 lg:p-5 xl:p-6">
-            <div className="example-label text-[10px] sm:text-xs lg:text-sm text-gray-400">
-              Liquidation Risk
-            </div>
-            <div className="example-value mt-1 sm:mt-1.5 lg:mt-2 text-lg sm:text-xl lg:text-2xl xl:text-3xl font-extrabold text-white">
-              Low
-            </div>
-            <div className="example-subvalue mt-0.5 sm:mt-1 text-[10px] sm:text-xs lg:text-sm text-gray-500">
-              Nearest: -18%
-            </div>
-          </div>
-        </div>
+        <StatGrid title="Spot Portfolio Summary" stats={spotStats} />
+        <div className="border-t border-border-sub" />
+        <StatGrid title="Futures Positions" stats={futuresStats} />
       </div>
     </section>
   );

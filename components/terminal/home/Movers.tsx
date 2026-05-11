@@ -45,7 +45,7 @@ export default function Movers() {
 
   if (loading) {
     return (
-      <div className="p-4 sm:p-5 md:p-6 xl:p-7 2xl:p-8 rounded-xl sm:rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl bg-[#0E121A] border border-white/10 shadow-xl">
+      <div className="p-4 sm:p-5 md:p-6 xl:p-7 2xl:p-8 rounded-xl sm:rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl bg-card border border-border-emphasis shadow-xl">
         <h3 className="text-base sm:text-lg xl:text-xl 2xl:text-2xl font-bold mb-3 sm:mb-4 xl:mb-5 2xl:mb-6">Top Movers</h3>
         <p className="text-gray-500 text-xs sm:text-sm xl:text-[15px] 2xl:text-base">Loading...</p>
       </div>
@@ -58,7 +58,7 @@ export default function Movers() {
         relative 
         p-4 sm:p-5 md:p-6 xl:p-7 2xl:p-8
         rounded-xl sm:rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
-        bg-[#05070A]/95 border border-white/5 
+        bg-background/95 border border-border-sub
         backdrop-blur-2xl overflow-hidden
         shadow-[0_0_45px_-8px_rgba(0,0,0,0.8)]
         transition-all duration-500
@@ -74,16 +74,16 @@ export default function Movers() {
         blur-3xl pointer-events-none
       " />
 
-      <h3 className="text-base sm:text-lg xl:text-xl 2xl:text-2xl font-semibold text-white mb-4 sm:mb-5 md:mb-6 xl:mb-7 2xl:mb-8 relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2.5 xl:gap-3">
+      <h3 className="text-base sm:text-lg xl:text-xl 2xl:text-2xl font-semibold text-foreground mb-4 sm:mb-5 md:mb-6 xl:mb-7 2xl:mb-8 relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2.5 xl:gap-3">
         <span>Top Movers</span>
         <div className="
           px-2.5 sm:px-3 xl:px-3.5 2xl:px-4
           py-0.5 xl:py-1 2xl:py-1
           rounded-lg xl:rounded-xl 2xl:rounded-xl
           backdrop-blur-xl 
-          bg-white/5 
-          border border-white/10 
-          text-white/90 
+          bg-input
+          border border-border
+          text-foreground/90
           text-[10px] sm:text-xs xl:text-[13px] 2xl:text-sm
           font-medium
           shadow-[0_0_15px_rgba(255,255,255,0.15)]
@@ -129,9 +129,9 @@ function Row({ coin, loser }: any) {
         relative flex justify-between items-center 
         py-2.5 sm:py-3 xl:py-3.5 2xl:py-4
         px-2 sm:px-2.5 xl:px-3 2xl:px-3
-        border-b border-white/5 
+        border-b border-border-sub
         group transition-all duration-300
-        hover:bg-white/[0.035]
+        hover:bg-foreground/[0.035]
         hover:shadow-[0_0_16px_rgba(0,255,255,0.20)]
         hover:scale-[1.015]
         rounded-lg xl:rounded-xl 2xl:rounded-xl
@@ -141,7 +141,7 @@ function Row({ coin, loser }: any) {
       <div
         className="
           absolute inset-0 
-          bg-gradient-to-r from-white/0 via-white/5 to-white/0
+          bg-gradient-to-r from-foreground/0 via-foreground/5 to-foreground/0
           opacity-0 group-hover:opacity-100
           -translate-x-[120%] group-hover:translate-x-[120%]
           transition-all duration-700
@@ -155,7 +155,7 @@ function Row({ coin, loser }: any) {
           className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 xl:w-11 xl:h-11 2xl:w-12 2xl:h-12 rounded-lg xl:rounded-xl object-cover flex-shrink-0"
         />
 
-        <span className="font-medium text-white text-xs sm:text-sm xl:text-[15px] 2xl:text-base tracking-wide">
+        <span className="font-medium text-foreground text-xs sm:text-sm xl:text-[15px] 2xl:text-base tracking-wide">
           {coin.name}
         </span>
       </div>

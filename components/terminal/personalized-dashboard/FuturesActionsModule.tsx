@@ -167,11 +167,11 @@ export default function FuturesActionsModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-       <span className="font-semibold text-white/90 text-xs whitespace-nowrap flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-white/60" />
+       <span className="font-semibold text-foreground text-xs whitespace-nowrap flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-muted-foreground" />
               Futures Actions
        </span>
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         <span
           className={`text-xs font-semibold whitespace-nowrap ${
             side === "long" ? "text-emerald-400" : "text-red-400"
@@ -187,9 +187,9 @@ export default function FuturesActionsModule({ instanceId }: Props) {
             onClick={() => setExchangeOpen((v) => !v)}
             className="
               h-7 px-3 rounded-lg
-              bg-[#111318]
-              border border-white/10
-              text-white text-xs
+              bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -199,7 +199,7 @@ export default function FuturesActionsModule({ instanceId }: Props) {
             <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${exchangeOpen ? "rotate-180" : ""}
               `}
@@ -220,14 +220,14 @@ export default function FuturesActionsModule({ instanceId }: Props) {
                   w-[120px]
                   max-h-[160px]
                   overflow-y-auto
-           bg-[#111318] border border-white/10
+           bg-card border border-border
 
                   rounded-lg
                   shadow-lg
                   animate-in fade-in slide-in-from-top-2 duration-200
 
                   [&::-webkit-scrollbar]:w-1.5
-                   [&::-webkit-scrollbar-thumb]:bg-white/20
+                   [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
                   [&::-webkit-scrollbar-thumb]:rounded-full
                   [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -245,7 +245,7 @@ export default function FuturesActionsModule({ instanceId }: Props) {
                       w-full px-3 py-2
                       text-left text-xs
                       bg-transparent cursor-pointer
-                      text-white
+                      text-foreground
                       transition-colors
                  hover:text-[#1A73E8]/65
 
@@ -269,11 +269,11 @@ export default function FuturesActionsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-     [&::-webkit-scrollbar-thumb]:bg-white/20
+     [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-3">
@@ -288,8 +288,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 flex items-center justify-center gap-1
                 ${
                   side === "long"
-                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-                    : "bg-white/10 text-white/60 hover:bg-white/15 border border-white/10"
+                    ? "bg-emerald-500 text-foreground shadow-lg shadow-emerald-500/20"
+                    : "bg-secondary text-muted-foreground hover:bg-black/10 dark:hover:bg-white/15 border border-border"
                 }
               `}
             >
@@ -305,8 +305,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 flex items-center justify-center gap-1
                 ${
                   side === "short"
-                    ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
-                    : "bg-white/10 text-white/60 hover:bg-white/15 border border-white/10"
+                    ? "bg-red-500 text-foreground shadow-lg shadow-red-500/20"
+                    : "bg-secondary text-muted-foreground hover:bg-black/10 dark:hover:bg-white/15 border border-border"
                 }
               `}
             >
@@ -316,7 +316,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+            <label className="block text-muted-foreground mb-1.5 font-medium text-[10px]">
               Symbol
             </label>
             <input
@@ -324,14 +324,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               value={symbol}
               onChange={(e) => setSymbol(e.target.value.toUpperCase())}
               placeholder="BTCUSDT"
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+              className="w-full bg-input border border-border rounded-lg px-2.5 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-foreground/30"
             />
           </div>
 
           {/* Quantity & Price */}
           <div className="grid grid-cols-1 gap-2">
             <div>
-              <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+              <label className="block text-muted-foreground mb-1.5 font-medium text-[10px]">
                 Quantity
               </label>
               <input
@@ -340,12 +340,12 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="0.5"
                 step="0.001"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+                className="w-full bg-input border border-border rounded-lg px-2.5 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-foreground/30"
               />
             </div>
 
             <div>
-              <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+              <label className="block text-muted-foreground mb-1.5 font-medium text-[10px]">
                 Entry Price
               </label>
               <input
@@ -354,7 +354,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="45000"
                 step="0.01"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+                className="w-full bg-input border border-border rounded-lg px-2.5 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-foreground/30"
               />
             </div>
           </div>
@@ -362,9 +362,9 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           {/* Calculations */}
           {quantity && price && (
             <div className="space-y-2">
-              <div className="bg-white/5 border border-white/10 rounded-lg p-2.5">
-                <div className="text-white/50 text-[10px] mb-0.5 font-medium">Margin Required</div>
-                <div className="text-lg font-bold text-white">
+              <div className="bg-input border border-border rounded-lg p-2.5">
+                <div className="text-muted-foreground text-[10px] mb-0.5 font-medium">Margin Required</div>
+                <div className="text-lg font-bold text-foreground">
                   ${marginRequired.toFixed(2)}
                 </div>
               </div>
@@ -376,7 +376,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     : "bg-emerald-500/10 border-emerald-500/20"
                 }`}
               >
-                <div className="text-white/50 text-[10px] mb-0.5 font-medium">
+                <div className="text-muted-foreground text-[10px] mb-0.5 font-medium">
                   Liquidation Price
                 </div>
                 <div
@@ -389,7 +389,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               </div>
 
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2.5">
-                <div className="text-white/50 text-[10px] mb-0.5 font-medium">Position Size</div>
+                <div className="text-muted-foreground text-[10px] mb-0.5 font-medium">Position Size</div>
                 <div className="text-lg font-bold text-blue-400">
                   ${positionSize.toFixed(2)}
                 </div>
@@ -408,8 +408,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
               ${
                 side === "long"
-                  ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
-                  : "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20"
+                  ? "bg-emerald-500 hover:bg-emerald-600 text-foreground shadow-lg shadow-emerald-500/20"
+                  : "bg-red-500 hover:bg-red-600 text-foreground shadow-lg shadow-red-500/20"
               }
             `}
           >
@@ -426,8 +426,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             )}
           </button>
 
-          <div className="pt-3 border-t border-white/10">
-            <div className="text-white/50 text-[10px] mb-2 font-medium">Quick Presets</div>
+          <div className="pt-3 border-t border-border">
+            <div className="text-muted-foreground text-[10px] mb-2 font-medium">Quick Presets</div>
             <div className="grid grid-cols-2 gap-1.5">
               {QUICK_SYMBOL_PRESETS.map((preset) => (
                 <button
@@ -441,7 +441,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     py-1.5 px-2 rounded-lg text-[10px] font-semibold
                     border transition-all duration-150
                     cursor-pointer
-bg-white/10 text-white border-white/10
+bg-secondary text-foreground border-border
 hover:text-[#1A73E8]
 
                     truncate
@@ -464,7 +464,7 @@ hover:text-[#1A73E8]
         </div>
 
 <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-  <label className="text-white/70 text-[10px] font-semibold">
+  <label className="text-muted-foreground text-[10px] font-semibold">
     Leverage
   </label>
   <input
@@ -474,7 +474,7 @@ hover:text-[#1A73E8]
     value={leverageInput}
     onChange={(e) => handleLeverageInputChange(e.target.value)}
     onBlur={handleLeverageInputBlur}
-    className="w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white text-xs outline-none text-right focus:border-blue-500/50 transition-colors shrink-0"
+    className="w-14 bg-input border border-border rounded-lg px-2 py-1 text-foreground text-xs outline-none text-right focus:border-blue-500/50 transition-colors shrink-0"
   />
 </div>
 
@@ -488,7 +488,7 @@ hover:text-[#1A73E8]
         />
 
         <div>
-          <div className="text-white/50 text-[10px] mb-1.5 font-medium">Quick</div>
+          <div className="text-muted-foreground text-[10px] mb-1.5 font-medium">Quick</div>
           <div className="grid grid-cols-3 gap-1">
             {QUICK_LEVERAGE_PRESETS.map((preset) => (
               <button
@@ -504,9 +504,9 @@ hover:text-[#1A73E8]
                   truncate
                   ${
                     leverage === preset.value
-                      ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                      ? "bg-[#1A73E8] text-white border-[#1A73E8]"
                       : `
-                          bg-white/10 text-white border-white/10
+                          bg-secondary text-foreground border-border
                         hover:text-[#1A73E8]
 
                         `

@@ -213,11 +213,11 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+        <span className="font-semibold text-foreground text-xs whitespace-nowrap">
           Whale Alerts
         </span>
         
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         <span className={`text-xs whitespace-nowrap ${connected ? "text-emerald-400" : "text-red-400"}`}>
           {connected ? "LIVE" : "OFFLINE"}
@@ -231,9 +231,9 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
               onClick={() => setExchangeOpen((v) => !v)}
               className="
                 h-7 px-3 rounded-md
-            bg-[#111318] border border-white/10
+            bg-card border border-border
 
-                text-white text-xs
+                text-foreground text-xs
                 flex items-center gap-1.5
                 cursor-pointer
                 transition-all
@@ -243,7 +243,7 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
               <span>{EXCHANGES.find(e => e.id === exchange)?.name}</span>
               <span
                 className={`
-                  text-white/50 text-[10px]
+                  text-muted-foreground text-[10px]
                   transition-transform duration-200
                   ${exchangeOpen ? "rotate-180" : ""}
                 `}
@@ -258,7 +258,7 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
                 className="
                   absolute left-0 mt-1 z-50
                   w-[120px]
-            bg-[#111318] border border-white/10
+            bg-secondary border border-border
               
                   rounded-md
                   shadow-lg
@@ -276,7 +276,7 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
                       w-full px-3 py-2
                       text-left text-xs
                       bg-transparent cursor-pointer
-                      text-white
+                      text-foreground
                       transition-colors
               hover:text-[#1A73E8]/65
                     "
@@ -293,9 +293,9 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
               onClick={() => setMinValueOpen((v) => !v)}
               className="
                 h-7 px-3 rounded-md
-          bg-[#111318] border border-white/10
+          bg-card border border-border
 
-                text-white text-xs
+                text-foreground text-xs
                 flex items-center gap-1.5
                 cursor-pointer
                 transition-all
@@ -305,7 +305,7 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
               <span>{minValueOptions.find(o => o.value === minValue)?.label}</span>
               <span
                 className={`
-                  text-white/50 text-[10px]
+                  text-muted-foreground text-[10px]
                   transition-transform duration-200
                   ${minValueOpen ? "rotate-180" : ""}
                 `}
@@ -320,7 +320,7 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
                 className="
                   absolute right-0 mt-1 z-50
                   w-[100px]
-            bg-[#111318] border border-white/10
+            bg-secondary border border-border
 
                   rounded-md
                   shadow-lg
@@ -338,7 +338,7 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
                       w-full px-3 py-2
                       text-left text-xs
                       bg-transparent cursor-pointer
-                      text-white
+                      text-foreground
                       transition-colors
              hover:text-[#1A73E8]/65
                     "
@@ -360,15 +360,15 @@ export default function WhaleAlertsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20
+scrollbar-thumb-foreground/20
           scrollbar-track-transparent
         "
       >
         {data.length === 0 ? (
-          <div className="text-center py-8 text-white/40 text-xs">
+          <div className="text-center py-8 text-muted-foreground text-xs">
             {connected ? "Waiting for whale trades..." : "Connecting..."}
           </div>
         ) : (
@@ -395,17 +395,17 @@ scrollbar-thumb-white/20
                     <span className={`text-[10px] font-semibold whitespace-nowrap ${isIn ? "text-emerald-400" : "text-red-400"}`}>
                       {isIn ? "BUY" : "SELL"}
                     </span>
-                    <span className="text-white/30 text-[10px]">•</span>
-                    <span className="text-[10px] text-white/40 whitespace-nowrap">{formatTime(t.timestamp)}</span>
-                    <span className="text-white/30 text-[10px]">•</span>
-                    <span className="text-[10px] text-white/50 whitespace-nowrap">{t.exchange}</span>
+                    <span className="text-muted-foreground text-[10px]">•</span>
+                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">{formatTime(t.timestamp)}</span>
+                    <span className="text-muted-foreground text-[10px]">•</span>
+                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">{t.exchange}</span>
                   </div>
 
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <div className="text-xs font-mono text-white break-all">
+                    <div className="text-xs font-mono text-foreground break-all">
                       {t.amount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {t.symbol}
                     </div>
-                    <div className="text-[10px] text-white/50 break-all">
+                    <div className="text-[10px] text-muted-foreground break-all">
                       ${t.usdValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     </div>
                   </div>

@@ -26,35 +26,31 @@ export default function UserMenu({ variant = "default", compact = false, onClose
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-    const setUserMenuOpen = usePersonalizedDashboardStore((s) => s.setUserMenuOpen);
-    const closeAllPanels = usePersonalizedDashboardStore((s) => s.closeAllPanels);
+  const setUserMenuOpen = usePersonalizedDashboardStore((s) => s.setUserMenuOpen);
+  const closeAllPanels = usePersonalizedDashboardStore((s) => s.closeAllPanels);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setUserMenuOpen(false);
+      }
+    };
+    const handleTouchOutside = (e: TouchEvent) => {
+      if (e.touches.length > 1) return;
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleTouchOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleTouchOutside);
+    };
+  }, []);
 
-  // Close menu on outside click
-useEffect(() => {
-  const handleClickOutside = (e: MouseEvent) => {
-    if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-      setOpen(false);
-      setUserMenuOpen(false);
-    }
-  };
-  const handleTouchOutside = (e: TouchEvent) => {
-    if (e.touches.length > 1) return;
-    if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-      setOpen(false);
-      setUserMenuOpen(false);
-    }
-  };
-  document.addEventListener("mousedown", handleClickOutside);
-  document.addEventListener("touchstart", handleTouchOutside);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-    document.removeEventListener("touchstart", handleTouchOutside);
-  };
-}, []);
-
-
-  // Close on escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -78,77 +74,66 @@ useEffect(() => {
         .slice(0, 2)
     : user.email?.charAt(0).toUpperCase() || "U";
 
-const menuItems = [
-  { icon: User,     label: "Profile",        onClick: () => {}, disabled: true },
-  { icon: Key,      label: "API Keys",       onClick: () => { router.push("/terminal/settings/api-keys"); setOpen(false); setUserMenuOpen(false); onClose?.(); }, disabled: false },
-  { icon: Wallet,   label: "Balance",         onClick: () => {}, badge: "Demo", disabled: true },
-  { icon: History,  label: "Recent Orders",   onClick: () => {}, disabled: true },
-  { icon: Settings, label: "Settings",        onClick: () => {}, disabled: true },
-];
-
+  const menuItems = [
+    { icon: User,     label: "Profile",       onClick: () => {}, disabled: true },
+    { icon: Key,      label: "API Keys",      onClick: () => { router.push("/terminal/settings/api-keys"); setOpen(false); setUserMenuOpen(false); onClose?.(); }, disabled: false },
+    { icon: Wallet,   label: "Balance",        onClick: () => {}, badge: "Demo", disabled: true },
+    { icon: History,  label: "Recent Orders",  onClick: () => {}, disabled: true },
+    { icon: Settings, label: "Settings",       onClick: () => {}, disabled: true },
+  ];
 
   // ========================================
-  // MOBILE VARIANT - Navbar mobile menu için
+  // MOBILE VARIANT
   // ========================================
   if (variant === "mobile") {
     return (
-      <div className="w-full space-y-3">
-        {/* User Info Header - Always Visible */}
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+      <div className="w-full">
+        {/* User Info */}
+        <div className="flex items-center gap-3 py-3 mb-1">
           {user.image ? (
-            <img
-              src={user.image}
-              alt={user.name || "Avatar"}
-              className="w-11 h-11 rounded-full object-cover border-2 border-teal-400/30"
-            />
+            <img src={user.image} alt={user.name || "Avatar"} className="w-11 h-11 rounded-full object-cover" />
           ) : (
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-base font-bold border-2 border-teal-400/30">
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white text-base font-bold shrink-0">
               {initials}
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate">
-              {user.name || "User"}
-            </p>
-            <p className="text-xs text-gray-400 truncate">{user.email}</p>
+            <p className="text-[0.9rem] font-semibold text-foreground truncate">{user.name || "User"}</p>
+            <p className="text-xs text-foreground/45 truncate">{user.email}</p>
           </div>
         </div>
 
-        {/* Menu Items - Full Width Buttons */}
-        <div className="space-y-2">
-          {menuItems.map((item, i) => (
-<button
-  key={i}
-  disabled={item.disabled}
-  onClick={item.disabled ? undefined : item.onClick}
-  title={item.disabled ? "Coming Soon" : undefined}
-  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all border border-white/10
-    ${item.disabled
-      ? "opacity-40 cursor-not-allowed text-gray-400"
-      : "text-gray-300 hover:bg-white/5 hover:text-white hover:border-white/20"
-    }`}
->
+        {/* Menu Items */}
+        {menuItems.map((item, i) => (
+          <button
+            key={i}
+            disabled={item.disabled}
+            onClick={item.disabled ? undefined : item.onClick}
+            title={item.disabled ? "Coming Soon" : undefined}
+            className={`w-full flex items-center gap-3 py-3 border-t border-border-sub text-[0.875rem] font-medium transition-colors ${
+              item.disabled
+                ? "opacity-35 cursor-not-allowed text-foreground/50"
+                : "text-foreground/65 hover:text-foreground cursor-pointer"
+            }`}
+          >
+            <item.icon className="w-4 h-4 shrink-0" />
+            <span className="flex-1 text-left">{item.label}</span>
+            {item.badge ? (
+              <span className="px-2 py-0.5 text-[0.65rem] font-semibold bg-teal-500/15 text-teal-400 rounded">
+                {item.badge}
+              </span>
+            ) : item.disabled ? (
+              <span className="text-[0.65rem] text-foreground/35">Soon</span>
+            ) : null}
+          </button>
+        ))}
 
-              <item.icon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-              <span className="flex-1 text-left font-medium">{item.label}</span>
-              {item.badge && (
-                <span className="px-2 py-1 text-[10px] font-semibold bg-teal-500/20 text-teal-300 rounded flex-shrink-0">
-                  {item.badge}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Logout Button */}
+        {/* Logout */}
         <button
-          onClick={() => {
-            signOut({ callbackUrl: window.location.href });
-            onClose?.();
-          }}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 border border-red-500/30 hover:border-red-500/50 transition-all"
+          onClick={() => { signOut({ callbackUrl: window.location.href }); onClose?.(); }}
+          className="w-full flex items-center gap-3 py-3 border-t border-border-sub text-[0.875rem] font-medium text-red-400 hover:text-red-300 transition-colors cursor-pointer mt-1"
         >
-          <LogOut className="w-4 h-4 flex-shrink-0" />
+          <LogOut className="w-4 h-4 shrink-0" />
           <span>Log Out</span>
         </button>
       </div>
@@ -156,130 +141,89 @@ const menuItems = [
   }
 
   // ========================================
-  // DEFAULT VARIANT - Dropdown menu
+  // DEFAULT VARIANT - Dropdown
   // ========================================
   return (
     <div ref={menuRef} className="relative">
-      {/* Avatar Button - Responsive */}
-<button
-  onClick={() => {
-    const newState = !open;
-    setOpen(newState);
-    setUserMenuOpen(newState);
-    if (newState) {
-      closeAllPanels();
-    }
-  }}
-  className={`
-    flex items-center 
-    ${compact 
-      ? "gap-1.5 sm:gap-2 px-2 sm:px-2.5 md:px-3 py-1 sm:py-1.5" 
-      : "gap-2 sm:gap-2.5 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2"
-    }
-    rounded-lg sm:rounded-xl 
-    bg-white/5 border border-white/10 
-    hover:bg-white/10 hover:border-white/20 
-    transition-all cursor-pointer
-  `}
->
+      {/* Avatar Button */}
+      <button
+        onClick={() => {
+          const newState = !open;
+          setOpen(newState);
+          setUserMenuOpen(newState);
+          if (newState) closeAllPanels();
+        }}
+        className={`
+          flex items-center
+          ${compact
+            ? "gap-1.5 sm:gap-2 px-2 sm:px-2.5 md:px-3 py-1 sm:py-1.5"
+            : "gap-2 sm:gap-2.5 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2"
+          }
+          rounded-lg sm:rounded-xl
+          bg-input border border-border
+          hover:bg-foreground/8 hover:border-border-emphasis
+          transition-all cursor-pointer
+        `}
+      >
         {user.image ? (
           <img
             src={user.image}
             alt={user.name || "Avatar"}
-            className={`
-              rounded-full object-cover
-              ${compact 
-                ? "w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" 
-                : "w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9"
-              }
-            `}
+            className={`rounded-full object-cover ${compact ? "w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" : "w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9"}`}
           />
         ) : (
-          <div 
-            className={`
-              rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 
-              flex items-center justify-center text-white font-medium
-              ${compact 
-                ? "w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-xs sm:text-sm" 
-                : "w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 text-sm sm:text-base"
-              }
-            `}
+          <div
+            className={`rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white font-medium
+              ${compact ? "w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-xs sm:text-sm" : "w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 text-sm sm:text-base"}`}
           >
             {initials}
           </div>
         )}
-        
-        {/* Username - Hidden on very small screens */}
-        <span className={`
-          hidden sm:block text-gray-300 truncate
-          ${compact 
-            ? "text-xs sm:text-sm max-w-[80px] md:max-w-[100px]" 
-            : "text-sm md:text-base max-w-[100px] md:max-w-[120px]"
-          }
-        `}>
+
+        <span className={`text-foreground/80 truncate hidden lg:block ${compact ? "text-xs sm:text-sm max-w-20 md:max-w-25" : "text-sm md:text-base max-w-25 md:max-w-30"}`}>
           {user.name?.split(" ")[0] || user.email?.split("@")[0]}
         </span>
 
         <ChevronDown
-          className={`
-            text-gray-400 transition-transform flex-shrink-0
-            ${compact ? "w-3 h-3 sm:w-3.5 sm:h-3.5" : "w-3.5 h-3.5 sm:w-4 sm:h-4"}
-            ${open ? "rotate-180" : ""}
-          `}
+          className={`text-[#71717A] transition-transform shrink-0 hidden lg:block ${compact ? "w-3 h-3 sm:w-3.5 sm:h-3.5" : "w-3.5 h-3.5 sm:w-4 sm:h-4"} ${open ? "rotate-180" : ""}`}
         />
       </button>
 
-      {/* Dropdown Menu - Responsive Width */}
+      {/* Dropdown */}
       {open && (
         <div className={`
-          absolute right-0 top-full mt-4 
-          bg-[#0d0f14] border border-white/10 rounded-xl shadow-2xl 
-          overflow-hidden z-[200]
-          ${compact 
-            ? "w-[min(240px,calc(100vw-16px))] sm:w-[260px] md:w-[280px]" 
-            : "w-[min(256px,calc(100vw-16px))] sm:w-64 md:w-72"
+          fixed
+          right-2 sm:right-3 md:right-4 lg:right-6
+          bg-card border border-border rounded-xl shadow-2xl
+          overflow-y-auto z-[200]
+          max-h-[calc(100vh-64px)]
+          ${compact
+            ? "top-13 sm:top-14 md:top-16 w-52 sm:w-60 md:w-64 max-w-[calc(100vw-16px)]"
+            : "top-18 md:top-22 w-56 sm:w-64 md:w-72 max-w-[calc(100vw-16px)]"
           }
         `}>
           {/* User Info Header */}
-          <div className={`
-            border-b border-white/10 bg-white/[0.02]
-            ${compact ? "px-3 sm:px-4 py-2.5 sm:py-3" : "px-3.5 sm:px-4 py-3 sm:py-3.5"}
-          `}>
+          <div className={`border-b border-border bg-foreground/2 ${compact ? "px-3 sm:px-4 py-2.5 sm:py-3" : "px-3.5 sm:px-4 py-3 sm:py-3.5"}`}>
             <div className="flex items-center gap-2 sm:gap-3">
               {user.image ? (
                 <img
                   src={user.image}
                   alt={user.name || "Avatar"}
-                  className={`
-                    rounded-full object-cover
-                    ${compact ? "w-9 h-9 sm:w-10 sm:h-10" : "w-10 h-10 sm:w-11 sm:h-11"}
-                  `}
+                  className={`rounded-full object-cover ${compact ? "w-9 h-9 sm:w-10 sm:h-10" : "w-10 h-10 sm:w-11 sm:h-11"}`}
                 />
               ) : (
-                <div 
-                  className={`
-                    rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 
-                    flex items-center justify-center text-white font-medium
-                    ${compact 
-                      ? "w-9 h-9 sm:w-10 sm:h-10 text-sm" 
-                      : "w-10 h-10 sm:w-11 sm:h-11 text-base"
-                    }
-                  `}
+                <div
+                  className={`rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white font-medium
+                    ${compact ? "w-9 h-9 sm:w-10 sm:h-10 text-sm" : "w-10 h-10 sm:w-11 sm:h-11 text-base"}`}
                 >
                   {initials}
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className={`
-                  font-semibold text-white truncate
-                  ${compact ? "text-xs sm:text-sm" : "text-sm"}
-                `}>
+                <p className={`font-semibold text-foreground truncate ${compact ? "text-xs sm:text-sm" : "text-sm"}`}>
                   {user.name || "User"}
                 </p>
-                <p className={`
-                  text-gray-500 truncate
-                  ${compact ? "text-[10px] sm:text-xs" : "text-xs"}
-                `}>
+                <p className={`text-[#71717A] truncate ${compact ? "text-[10px] sm:text-xs" : "text-xs"}`}>
                   {user.email}
                 </p>
               </div>
@@ -289,48 +233,38 @@ const menuItems = [
           {/* Menu Items */}
           <div className="py-1">
             {menuItems.map((item, i) => (
-<button
-  key={i}
-  disabled={item.disabled}
-  onClick={item.disabled ? undefined : item.onClick}
-  title={item.disabled ? "Coming Soon" : undefined}
-  className={`
-    w-full flex items-center transition-colors
-    ${item.disabled
-      ? "opacity-40 cursor-not-allowed text-gray-400"
-      : "text-gray-300 hover:text-white cursor-pointer"
-    }
-    ${compact 
-      ? "gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm" 
-      : "gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-2.5 text-sm"
-    }
-  `}
->
-
-                <item.icon 
-                  className={`
-                    text-gray-500 flex-shrink-0
-                    ${compact ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"}
-                  `} 
-                />
+              <button
+                key={i}
+                disabled={item.disabled}
+                onClick={item.disabled ? undefined : item.onClick}
+                title={undefined}
+                className={`
+                  w-full flex items-center transition-colors
+                  ${item.disabled
+                    ? "opacity-40 cursor-not-allowed text-[#71717A]"
+                    : "text-foreground/70 hover:text-foreground hover:bg-foreground/4 cursor-pointer"
+                  }
+                  ${compact
+                    ? "gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm"
+                    : "gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-2.5 text-sm"
+                  }
+                `}
+              >
+                <item.icon className={`text-[#71717A] shrink-0 ${compact ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"}`} />
                 <span className="flex-1 text-left font-medium">{item.label}</span>
-                {item.badge && (
-                  <span className={`
-                    font-semibold bg-teal-500/20 text-teal-400 rounded flex-shrink-0
-                    ${compact 
-                      ? "px-1.5 py-0.5 text-[9px] sm:text-[10px]" 
-                      : "px-2 py-0.5 text-[10px]"
-                    }
-                  `}>
+                {item.badge ? (
+                  <span className={`font-semibold bg-teal-500/20 text-teal-400 rounded shrink-0 ${compact ? "px-1.5 py-0.5 text-[9px] sm:text-[10px]" : "px-2 py-0.5 text-[10px]"}`}>
                     {item.badge}
                   </span>
-                )}
+                ) : item.disabled ? (
+                  <span className="text-[0.65rem] text-foreground/35 shrink-0">Soon</span>
+                ) : null}
               </button>
             ))}
           </div>
 
           {/* Logout */}
-          <div className="border-t border-white/10">
+          <div className="border-t border-border">
             <button
               onClick={() => {
                 signOut({ callbackUrl: window.location.href });
@@ -338,21 +272,16 @@ const menuItems = [
                 setUserMenuOpen(false);
               }}
               className={`
-                w-full flex items-center text-red-400 
-                hover:text-red-300
+                w-full flex items-center text-red-400
+                hover:text-red-300 hover:bg-red-500/5
                 transition-colors cursor-pointer
-                ${compact 
-                  ? "gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm" 
+                ${compact
+                  ? "gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm"
                   : "gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-2.5 text-sm"
                 }
               `}
             >
-              <LogOut 
-                className={`
-                  flex-shrink-0
-                  ${compact ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"}
-                `} 
-              />
+              <LogOut className={`shrink-0 ${compact ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"}`} />
               <span className="font-medium">Log Out</span>
             </button>
           </div>

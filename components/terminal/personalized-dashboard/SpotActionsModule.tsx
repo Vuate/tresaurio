@@ -95,13 +95,13 @@ export default function SpotActionsModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-<span className="font-semibold text-white/90 text-xs whitespace-nowrap flex items-center gap-1.5">
-  <Coins className="w-3.5 h-3.5 text-white/60" />
+<span className="font-semibold text-foreground text-xs whitespace-nowrap flex items-center gap-1.5">
+  <Coins className="w-3.5 h-3.5 text-muted-foreground" />
   Spot Actions
 </span>
 
 
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
 
         <span
           className={`text-xs font-semibold whitespace-nowrap ${
@@ -118,9 +118,9 @@ export default function SpotActionsModule({ instanceId }: Props) {
             onClick={() => setExchangeOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-             bg-[#111318]
-              border border-white/10
-              text-white text-xs
+             bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -130,7 +130,7 @@ export default function SpotActionsModule({ instanceId }: Props) {
             <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${exchangeOpen ? "rotate-180" : ""}
               `}
@@ -151,13 +151,13 @@ export default function SpotActionsModule({ instanceId }: Props) {
                   w-[120px]
                   max-h-[160px]
                   overflow-y-auto
-                  bg-[#111318] border border-white/10
+                  bg-secondary border border-border
                   rounded-md
                   shadow-lg
                   animate-in fade-in slide-in-from-top-2 duration-200
 
                   [&::-webkit-scrollbar]:w-1.5
- [&::-webkit-scrollbar-thumb]:bg-white/20
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
                   [&::-webkit-scrollbar-thumb]:rounded-full
                   [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -175,7 +175,7 @@ export default function SpotActionsModule({ instanceId }: Props) {
                       w-full px-3 py-2
                       text-left text-xs
                       bg-transparent cursor-pointer
-                      text-white
+                      text-foreground
                       transition-colors
                  hover:text-[#1A73E8]/65
                     "
@@ -197,10 +197,10 @@ export default function SpotActionsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-3">
@@ -215,8 +215,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 flex items-center justify-center gap-1.5
                 ${
                   action === "buy"
-                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-                    : "bg-white/10 text-white/60 hover:bg-white/15 border border-white/10"
+                    ? "bg-emerald-500 text-foreground shadow-lg shadow-emerald-500/20"
+                    : "bg-secondary text-muted-foreground hover:bg-black/15 dark:hover:bg-white/15 border border-border"
                 }
               `}
             >
@@ -232,8 +232,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 flex items-center justify-center gap-1.5
                 ${
                   action === "sell"
-                    ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
-                    : "bg-white/10 text-white/60 hover:bg-white/15 border border-white/10"
+                    ? "bg-red-500 text-foreground shadow-lg shadow-red-500/20"
+                    : "bg-secondary text-muted-foreground hover:bg-black/15 dark:hover:bg-white/15 border border-border"
                 }
               `}
             >
@@ -243,7 +243,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           </div>
 
           <div>
-            <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+            <label className="block text-muted-foreground mb-1.5 font-medium text-[10px]">
               Symbol
             </label>
             <input
@@ -251,13 +251,13 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               value={symbol}
               onChange={(e) => setSymbol(e.target.value.toUpperCase())}
               placeholder="BTCUSDT"
-              className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+              className="w-full bg-input border border-border rounded-md px-2.5 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-muted-foreground"
             />
           </div>
 
           <div className="grid grid-cols-1 gap-2">
             <div>
-              <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+              <label className="block text-muted-foreground mb-1.5 font-medium text-[10px]">
                 Quantity
               </label>
               <input
@@ -266,12 +266,12 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="0.5"
                 step="0.001"
-                className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+                className="w-full bg-input border border-border rounded-md px-2.5 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-muted-foreground"
               />
             </div>
 
             <div>
-              <label className="block text-white/50 mb-1.5 font-medium text-[10px]">
+              <label className="block text-muted-foreground mb-1.5 font-medium text-[10px]">
                 Price (USDT)
               </label>
               <input
@@ -280,14 +280,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="45000"
                 step="0.01"
-                className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-white/30"
+                className="w-full bg-input border border-border rounded-md px-2.5 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors placeholder-muted-foreground"
               />
             </div>
           </div>
 
           {quantity && price && (
-            <div className="bg-white/5 border border-white/10 rounded-md p-3">
-              <div className="text-white/50 text-[10px] mb-1 font-medium">Total Cost</div>
+            <div className="bg-input border border-border rounded-md p-3">
+              <div className="text-muted-foreground text-[10px] mb-1 font-medium">Total Cost</div>
               <div
                 className={`text-xl font-bold break-words ${
                   action === "buy" ? "text-emerald-400" : "text-red-400"
@@ -309,8 +309,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               disabled:opacity-50 disabled:cursor-not-allowed
               ${
                 action === "buy"
-                  ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
-                  : "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20"
+                  ? "bg-emerald-500 hover:bg-emerald-600 text-foreground shadow-lg shadow-emerald-500/20"
+                  : "bg-red-500 hover:bg-red-600 text-foreground shadow-lg shadow-red-500/20"
               }
             `}
           >
@@ -327,8 +327,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             )}
           </button>
 
-          <div className="pt-3 border-t border-white/10">
-            <div className="text-white/50 text-[10px] mb-2 font-medium">Quick Presets</div>
+          <div className="pt-3 border-t border-border">
+            <div className="text-muted-foreground text-[10px] mb-2 font-medium">Quick Presets</div>
             <div className="grid grid-cols-2 gap-1.5">
               {QUICK_PRESETS.map((preset) => (
                 <button
@@ -342,7 +342,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     border transition-all duration-150
                     cursor-pointer
                     whitespace-nowrap
-                  bg-white/10 text-white border-white/10
+                  bg-secondary text-foreground border-border
                   hover:text-[#1A73E8]
 
                   `}
@@ -355,7 +355,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
           {/* Info Message */}
           <div className="text-center pt-2">
-            <div className="text-white/40 text-[10px] break-words">
+            <div className="text-muted-foreground text-[10px] break-words">
               This will add a position to your portfolio
             </div>
           </div>

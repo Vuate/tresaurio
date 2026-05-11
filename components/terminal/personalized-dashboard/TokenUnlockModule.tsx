@@ -202,7 +202,7 @@ export default function TokenUnlockModule({ instanceId }: Props) {
       case "public":
         return "text-emerald-400 bg-emerald-500/10";
       default:
-        return "text-white/60 bg-white/5";
+        return "text-muted-foreground bg-input";
     }
   };
 
@@ -218,12 +218,12 @@ export default function TokenUnlockModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
-        <div className="text-[10px] sm:text-xs text-white/60">
-          <span className="font-semibold text-white/90">
+        <div className="text-[10px] sm:text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">
             <span className="hidden xs:inline">Token Unlocks</span>
             <span className="xs:hidden">Unlocks</span>
           </span>
-          <span className="text-white/40"> • </span>
+          <span className="text-muted-foreground"> • </span>
           <span className="text-emerald-400">LIVE</span>
         </div>
       </div>
@@ -239,9 +239,9 @@ export default function TokenUnlockModule({ instanceId }: Props) {
               cursor-pointer
               ${
                 sortBy === sort
-                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                   : `
-                  bg-white/10 text-white border-white/10
+                  bg-secondary text-foreground border-border
                   hover:text-[#1A73E8]
 
                     `
@@ -261,14 +261,14 @@ export default function TokenUnlockModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {loading && data.length === 0 ? (
-          <div className="text-center py-6 sm:py-8 text-white/40 text-[9px] sm:text-[10px]">
+          <div className="text-center py-6 sm:py-8 text-muted-foreground text-[9px] sm:text-[10px]">
             Loading unlock data...
           </div>
         ) : (
@@ -279,14 +279,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             return (
               <div
                 key={unlock.id}
-                className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
+                className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-colors"
               >
                 <div className="flex items-start justify-between mb-1.5 sm:mb-2">
                   <div className="min-w-0">
-                    <div className="font-semibold text-white text-[10px] sm:text-xs truncate">
+                    <div className="font-semibold text-foreground text-[10px] sm:text-xs truncate">
                       {unlock.token}
                     </div>
-                    <div className="text-[9px] sm:text-[10px] text-white/40">
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground">
                       {unlock.symbol}
                     </div>
                   </div>
@@ -301,15 +301,15 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
                 <div className="space-y-1 sm:space-y-1.5">
                   <div className="flex justify-between text-[10px] sm:text-[11px]">
-                    <span className="text-white/60">Date</span>
-                    <span className="font-medium text-white flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-muted-foreground">Date</span>
+                    <span className="font-medium text-foreground flex items-center gap-1.5 sm:gap-2">
                       {new Date(unlock.date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                       })}
                       <span
                         className={`text-[9px] sm:text-[10px] ${
-                          daysUntil <= 7 ? "text-yellow-400" : "text-white/40"
+                          daysUntil <= 7 ? "text-yellow-400" : "text-muted-foreground"
                         }`}
                       >
                         ({daysUntil}d)
@@ -318,14 +318,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   </div>
 
                   <div className="flex justify-between text-[10px] sm:text-[11px]">
-                    <span className="text-white/60">Amount</span>
-                    <span className="font-medium text-white">
+                    <span className="text-muted-foreground">Amount</span>
+                    <span className="font-medium text-foreground">
                       {(unlock.amount / 1000000).toFixed(1)}M {unlock.symbol}
                     </span>
                   </div>
 
                   <div className="flex justify-between text-[10px] sm:text-[11px]">
-                    <span className="text-white/60">Supply Impact</span>
+                    <span className="text-muted-foreground">Supply Impact</span>
                     <span
                       className={`font-bold ${
                         unlock.percentage > 5 ? "text-red-400" : "text-yellow-400"
@@ -336,8 +336,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   </div>
 
                   <div className="flex justify-between text-[10px] sm:text-[11px]">
-                    <span className="text-white/60">Value</span>
-                    <span className="font-medium text-white">
+                    <span className="text-muted-foreground">Value</span>
+                    <span className="font-medium text-foreground">
                       $
                       {value > 1000000000
                         ? (value / 1000000000).toFixed(2) + "B"

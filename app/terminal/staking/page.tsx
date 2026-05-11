@@ -6,7 +6,7 @@ import StakingCTA from "@/components/terminal/staking/StakingCTA";
 
 export default function StakingPage() {
   return (
-    <div className="min-h-screen bg-[#031A1C] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <StakingHero />
 
       <div className="w-full mx-auto px-6 py-8">

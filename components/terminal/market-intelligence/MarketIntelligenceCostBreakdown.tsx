@@ -7,59 +7,64 @@ const costItems = [
 
 export default function MarketIntelligenceCostBreakdown() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Example
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           All-in Cost Example
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           Cost breakdown for a $100,000 BTC trade
         </p>
       </div>
 
-      {/* Visual Example Container */}
-      <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
-        <h3 className="text-base sm:text-lg mb-4 sm:mb-5 lg:mb-6 text-white">
-          Binance - BTC/USDT Perpetual
-        </h3>
+      <div className="rounded-xl border border-border-sub bg-card p-6 lg:p-8">
+        <div className="flex items-center gap-2 mb-5 pb-4 border-b border-border-sub">
+          <span className="w-1 h-5 bg-[#2563EB] rounded-full inline-block shrink-0" />
+          <span className="text-[0.95rem] font-bold text-foreground">Binance — BTC/USDT Perpetual</span>
+        </div>
 
-        {/* Cost Breakdown Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          {costItems.map((item, index) => (
+        <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+          {costItems.map((item) => (
             <div
-              key={index}
-              className="bg-[#041F20]/95 rounded-lg sm:rounded-xl p-4 sm:p-5 text-center"
+              key={item.label}
+              className="rounded-xl border border-border-sub bg-card-alt p-4 hover:border-[#2563EB]/25 transition-colors duration-250"
             >
-              <div className="text-[10px] sm:text-xs text-gray-400 mb-1.5 sm:mb-2">{item.label}</div>
-              <div className="text-xl sm:text-2xl font-extrabold text-white mb-0.5 sm:mb-1">
-                {item.value}
+              <div
+                className="text-[#71717A] mb-1 uppercase"
+                style={{ fontSize: "0.68rem", letterSpacing: "0.08em", fontWeight: 600 }}
+              >
+                {item.label}
               </div>
-              <div className="text-xs sm:text-[13px] text-gray-300">{item.percent}</div>
+              <div className="text-xl font-extrabold text-foreground mb-0.5">{item.value}</div>
+              <div className="text-[0.72rem] text-[#71717A]">{item.percent}</div>
             </div>
           ))}
         </div>
 
-        {/* All-in Cost Summary */}
-        <div className="mt-6 sm:mt-7 lg:mt-8 p-4 sm:p-5 lg:p-6 bg-[#041F20]/95 rounded-lg sm:rounded-xl border-2 border-[#1A73E8]">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-5 lg:gap-6">
-            {/* All-in Cost */}
-            <div>
-              <div className="text-xs sm:text-sm text-gray-400">ALL-IN COST</div>
-              <div className="text-2xl sm:text-3xl lg:text-[32px] font-extrabold text-white mt-1.5 sm:mt-2">
-                $62 (0.062%)
-              </div>
+        <div className="rounded-xl border border-[#2563EB]/40 bg-[#2563EB]/5 p-5 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div>
+            <div
+              className="uppercase text-[#71717A] mb-1 font-bold"
+              style={{ fontSize: "0.68rem", letterSpacing: "0.08em" }}
+            >
+              ALL-IN COST
             </div>
-
-            {/* Annual Savings */}
-            <div className="text-center md:text-right">
-              <div className="text-xs sm:text-[13px] text-gray-300">
-                Annual Savings Potential
-              </div>
-              <div className="text-xl sm:text-2xl font-bold text-[#1A73E8] mt-0.5 sm:mt-1">
-                $22,680
-              </div>
+            <div className="text-3xl font-extrabold text-foreground">
+              $62 <span className="text-lg font-semibold text-[#71717A]">(0.062%)</span>
             </div>
+          </div>
+          <div className="text-center md:text-right">
+            <div className="text-[0.72rem] text-[#71717A] mb-1">Annual Savings Potential</div>
+            <div className="text-2xl font-bold text-[#2563EB]">$22,680</div>
           </div>
         </div>
       </div>

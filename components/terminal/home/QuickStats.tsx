@@ -29,10 +29,10 @@ export default function QuickStats() {
         {[1, 2, 3, 4].map((n) => (
           <div
             key={n}
-            className="bg-[#0F121A] border border-white/10 p-5 xl:p-5.5 2xl:p-6 rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl animate-pulse"
+            className="bg-card border border-border-emphasis p-5 xl:p-5.5 2xl:p-6 rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl animate-pulse"
           >
-            <div className="h-3.5 xl:h-4 w-20 xl:w-22 2xl:w-24 bg-white/10 rounded mb-2.5 xl:mb-3"></div>
-            <div className="h-5 xl:h-5.5 2xl:h-6 w-16 xl:w-18 2xl:w-20 bg-white/20 rounded"></div>
+            <div className="h-3.5 xl:h-4 w-20 xl:w-22 2xl:w-24 bg-foreground/10 rounded mb-2.5 xl:mb-3"></div>
+            <div className="h-5 xl:h-5.5 2xl:h-6 w-16 xl:w-18 2xl:w-20 bg-foreground/20 rounded"></div>
           </div>
         ))}
       </div>
@@ -61,7 +61,7 @@ function StatCard({ label, value }: any) {
         relative 
         p-5 xl:p-5.5 2xl:p-6
         rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
-        bg-[#0C0F14]/80 border border-white/5 
+        bg-card/80 border border-border-sub
         backdrop-blur-xl
         overflow-hidden
         shadow-[0_0_25px_-8px_rgba(0,0,0,0.6)]
@@ -83,7 +83,7 @@ function StatCard({ label, value }: any) {
       <div
         className="
           absolute inset-0 rounded-2xl xl:rounded-[28px] 2xl:rounded-3xl
-          ring-1 ring-white/5 
+          ring-1 ring-border-sub
           pointer-events-none
         "
       />
@@ -92,7 +92,7 @@ function StatCard({ label, value }: any) {
         {label}
       </p>
 
-      <p className="text-3xl xl:text-4xl 2xl:text-4xl font-bold text-white tracking-tight relative z-10">
+      <p className="text-3xl xl:text-4xl 2xl:text-4xl font-bold text-foreground tracking-tight relative z-10">
         {value}
       </p>
     </div>

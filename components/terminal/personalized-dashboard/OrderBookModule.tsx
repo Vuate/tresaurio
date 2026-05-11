@@ -334,18 +334,18 @@ export default function OrderBookModule({
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs">
+        <span className="font-semibold text-foreground text-xs">
           Order Book ({marketType === "spot" ? "Spot" : "Futures"})
         </span>
         
         {/* Separator */}
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         {/* Symbol */}
-        <span className="text-white/70 text-xs whitespace-nowrap">{symbol}</span>
+        <span className="text-muted-foreground text-xs whitespace-nowrap">{symbol}</span>
         
         {/* Separator */}
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         {/* Status */}
         <span
@@ -388,9 +388,9 @@ export default function OrderBookModule({
             onClick={() => setExchangeOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-             bg-[#111318]
-              border border-white/10
-              text-white text-xs
+             bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -400,7 +400,7 @@ export default function OrderBookModule({
             <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${exchangeOpen ? "rotate-180" : ""}
               `}
@@ -421,14 +421,14 @@ export default function OrderBookModule({
         w-[120px]
         max-h-[160px]
         overflow-y-auto
-  bg-[#111318] border border-white/10
+  bg-secondary border border-border
 
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
         [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-thumb]:bg-white/20
+      [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -446,7 +446,7 @@ export default function OrderBookModule({
             w-full px-3 py-2
             text-left text-xs
             bg-transparent cursor-pointer
-            text-white
+            text-foreground
             transition-colors
     hover:text-[#1A73E8]/65
           "
@@ -461,7 +461,7 @@ export default function OrderBookModule({
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+          className="h-7 px-3 rounded-md bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
         >
           <Plus className="w-3 h-3" />
           Add
@@ -477,11 +477,11 @@ export default function OrderBookModule({
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-       [&::-webkit-scrollbar-thumb]:bg-white/20
+       [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {error && (
@@ -498,10 +498,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         )}
 
         {!error && bids.length === 0 && asks.length === 0 && (
-          <div className="px-3 py-8 rounded-lg bg-white/5 border border-white/10">
+          <div className="px-3 py-8 rounded-lg bg-input border border-border">
             <div className="flex flex-col items-center justify-center gap-2">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
-              <div className="text-xs text-white/60">
+              <div className="text-xs text-muted-foreground">
                 Connecting to {(exchange as string).toUpperCase()}...
               </div>
             </div>
@@ -513,7 +513,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold">
               <div>
                 <div className="text-red-400 mb-1">SELL (Asks)</div>
-                    <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-white/40 overflow-hidden">
+                    <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-muted-foreground overflow-hidden">
                       <div className="truncate">Price</div>
                       <div className="text-right truncate">Qty</div>
                       <div className="text-right truncate hidden sm:block">Total</div>
@@ -522,7 +522,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               <div>
                 <div className="text-emerald-400 mb-1 text-right">BUY (Bids)</div>
-                    <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-white/40 overflow-hidden">
+                    <div className="grid grid-cols-[1.2fr_1fr] sm:grid-cols-[1.2fr_1fr_1fr] text-muted-foreground overflow-hidden">
                       <div className="truncate">Price</div>
                       <div className="text-right truncate">Qty</div>
                       <div className="text-right truncate hidden sm:block">Total</div>
@@ -550,10 +550,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                           <div className="text-red-300 whitespace-nowrap overflow-hidden text-ellipsis">
                             {fmt.price(r.price)}
                           </div>
-                          <div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+                          <div className="text-right text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">
                             {fmt.qty(r.qty)}
                           </div>
-                          <div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+                          <div className="text-right text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
                             {fmt.total(r.total)}
                           </div>
                         </div>
@@ -578,10 +578,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                         <div className="text-emerald-300 whitespace-nowrap overflow-hidden text-ellipsis">
                           {fmt.price(r.price)}
                         </div>
-                        <div className="text-right text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+                        <div className="text-right text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">
                           {fmt.qty(r.qty)}
                         </div>
-                        <div className="text-right text-white/60 whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+                        <div className="text-right text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
                           {fmt.total(r.total)}
                         </div>
                       </div>
@@ -591,17 +591,17 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               </div>
             </div>
 
-            <div className="py-2 border-y border-white/10 space-y-2">
+            <div className="py-2 border-y border-border space-y-2">
               <div className="flex items-center justify-between">
-                <div className="text-[11px] text-white/40">Mid</div>
+                <div className="text-[11px] text-muted-foreground">Mid</div>
                 <div className="text-sm font-semibold text-teal-300">
                   {mid ? fmt.price(mid) : "—"}
                 </div>
               </div>
 
               <div className="flex items-center justify-between text-[11px]">
-                <div className="text-white/40">Spread</div>
-                <div className="text-white/70">
+                <div className="text-muted-foreground">Spread</div>
+                <div className="text-muted-foreground">
                   {spread
                     ? `${spread.value.toFixed(getDecimals.priceDecimals)} (${spread.pct.toFixed(4)}%)`
                     : "—"}
@@ -609,12 +609,12 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               </div>
 
               <div className="space-y-1 pt-1">
-                <div className="flex justify-between text-[11px] text-white/40">
+                <div className="flex justify-between text-[11px] text-muted-foreground">
                   <span>Buy</span>
                   <span>Sell</span>
                 </div>
 
-                <div className="h-2 w-full rounded bg-white/10 overflow-hidden flex">
+                <div className="h-2 w-full rounded bg-black/10 dark:bg-secondary overflow-hidden flex">
                   <div
                     className="bg-emerald-500"
                     style={{ width: `${balance.bidPct}%` }}
@@ -625,7 +625,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   />
                 </div>
 
-                <div className="flex justify-between text-[11px] text-white/60">
+                <div className="flex justify-between text-[11px] text-muted-foreground">
                   <span>{balance.bidPct.toFixed(1)}%</span>
                   <span>{balance.askPct.toFixed(1)}%</span>
                 </div>
@@ -639,7 +639,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         <div 
           className="
             fixed inset-0
-            bg-[#0a0e1a] z-[100]
+            bg-background z-[100]
             flex flex-col overflow-hidden
             animate-in fade-in slide-in-from-bottom-4 duration-200
           "
@@ -655,13 +655,13 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <span className="text-white font-semibold text-xs whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-border bg-input flex-shrink-0">
+            <span className="text-foreground font-semibold text-xs whitespace-nowrap">
               Add Pair ({marketType === "spot" ? "Spot" : "Futures"})
             </span>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+              className="text-muted-foreground hover:text-foreground leading-none cursor-pointer transition-colors text-xl ml-auto"
             >
               ×
             </button>
@@ -673,18 +673,18 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-white/20
+          [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-scrollbar-thumb-white/20              scrollbar-track-transparent
+scrollbar-thumb-foreground/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
               {/* Custom Pair Input */}
               <div className="space-y-2">
-                <label className="block text-white/50 font-medium text-[10px]">
+                <label className="block text-muted-foreground font-medium text-[10px]">
                   Add Custom Pair
                 </label>
                 <div className="flex flex-wrap items-center gap-2">
@@ -694,10 +694,10 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       value={baseAsset}
                       onChange={(e) => setBaseAsset(e.target.value.toUpperCase())}
                       placeholder="Base (e.g. BTC)"
-                      className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                      className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                     />
                   </div>
-                  <div className="text-white/40 font-bold text-xs shrink-0">/</div>
+                  <div className="text-muted-foreground font-bold text-xs shrink-0">/</div>
                   <div className="flex-1 min-w-[140px]">
                     <input
                       type="text"
@@ -707,18 +707,18 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         e.key === "Enter" && addSymbol(baseAsset, quoteAsset)
                       }
                       placeholder="Quote (e.g. USDT)"
-                      className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                      className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                     />
                   </div>
                   <button
                     onClick={() => addSymbol(baseAsset, quoteAsset)}
                     disabled={!baseAsset || !quoteAsset}
-                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
+                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed text-foreground rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <div className="text-white/40 text-[10px]">
+                <div className="text-muted-foreground text-[10px]">
                   💡 Example: BTC / USDT ={" "}
                   {exchange === "okx" || exchange === "coinbase"
                     ? "BTC-USDT"
@@ -727,7 +727,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
               </div>
 
               <div>
-                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                <label className="block text-muted-foreground mb-2 font-medium text-[10px]">
                   Popular Base Assets
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -742,9 +742,9 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         whitespace-nowrap
                         ${
                           baseAsset === asset
-                            ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                            ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                             : `
-                              bg-white/10 text-white border-white/10
+                              bg-secondary text-foreground border-border
                 hover:text-[#1A73E8]
 
                               `
@@ -758,7 +758,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
               </div>
 
               <div>
-                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                <label className="block text-muted-foreground mb-2 font-medium text-[10px]">
                   Popular Quote Assets
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -773,9 +773,9 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         whitespace-nowrap
                         ${
                           quoteAsset === asset
-                            ? "bg-emerald-500/30 text-emerald-300 border-emerald-500/50"
+                            ? "bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-600 dark:text-emerald-300 border-emerald-500/40 dark:border-emerald-500/50"
                             : `
-                              bg-white/10 text-white border-white/10
+                              bg-secondary text-foreground border-border
               hover:text-[#1A73E8]
 
                               `

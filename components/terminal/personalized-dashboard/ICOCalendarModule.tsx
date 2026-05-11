@@ -183,9 +183,9 @@ export default function ICOCalendarModule({ instanceId }: Props) {
       case "upcoming":
         return "text-blue-400 bg-blue-500/10";
       case "ended":
-        return "text-white/40 bg-white/5";
+        return "text-muted-foreground bg-input";
       default:
-        return "text-white/60 bg-white/5";
+        return "text-muted-foreground bg-input";
     }
   };
 
@@ -208,12 +208,12 @@ export default function ICOCalendarModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       <div className="relative z-50 flex items-center justify-between gap-2 flex-shrink-0">
-        <div className="text-[10px] sm:text-xs text-white/60">
-          <span className="font-semibold text-white/90">
+        <div className="text-[10px] sm:text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">
             <span className="hidden xs:inline">ICO Calendar</span>
             <span className="xs:hidden">ICO</span>
           </span>
-          <span className="text-white/40"> • </span>
+          <span className="text-muted-foreground"> • </span>
           <span className="text-emerald-400">LIVE</span>
         </div>
       </div>
@@ -229,9 +229,9 @@ export default function ICOCalendarModule({ instanceId }: Props) {
               cursor-pointer
               ${
                 filter === f
-                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                   : `
-                bg-white/10 text-white border-white/10
+                bg-secondary text-muted-foreground border-border
                 hover:text-[#1A73E8]
 
                     `
@@ -251,20 +251,20 @@ export default function ICOCalendarModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-      [&::-webkit-scrollbar-thumb]:bg-white/20
+      [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-         [&::-webkit-scrollbar-thumb:hover]:bg-white/40
+         [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
 
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {loading && data.length === 0 ? (
-          <div className="text-center py-6 sm:py-8 text-white/40 text-[9px] sm:text-[10px]">
+          <div className="text-center py-6 sm:py-8 text-muted-foreground text-[9px] sm:text-[10px]">
             Loading ICO data...
           </div>
         ) : filteredICOs.length === 0 ? (
-          <div className="text-center py-6 sm:py-8 text-white/40 text-[9px] sm:text-[10px]">
+          <div className="text-center py-6 sm:py-8 text-muted-foreground text-[9px] sm:text-[10px]">
             No ICOs found
           </div>
         ) : (
@@ -275,14 +275,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             return (
               <div
                 key={ico.id}
-                className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
+                className="px-2 sm:px-3 py-2 sm:py-2 rounded-lg bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-colors"
               >
             <div className="flex items-center justify-between gap-1 mb-1.5 sm:mb-2">
               <div className="min-w-0 flex-1 overflow-hidden">
-                <div className="font-semibold text-white text-[10px] sm:text-xs truncate">
+                <div className="font-semibold text-foreground text-[10px] sm:text-xs truncate">
                   {ico.name}
                 </div>
-                <div className="text-[9px] sm:text-[10px] text-white/40 truncate">
+                <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate">
                   {ico.symbol} • {ico.chain}
                 </div>
               </div>
@@ -295,14 +295,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 <div className="space-y-1 sm:space-y-1.5">
                   {ico.price > 0 && (
                     <div className="flex justify-between text-[10px] sm:text-[11px]">
-                      <span className="text-white/60">Price</span>
-                      <span className="font-medium text-white">${ico.price}</span>
+                      <span className="text-muted-foreground">Price</span>
+                      <span className="font-medium text-foreground">${ico.price}</span>
                     </div>
                   )}
 
                   <div className="flex justify-between text-[10px] sm:text-[11px]">
-                    <span className="text-white/60">Date</span>
-                    <span className="font-medium text-white flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-muted-foreground">Date</span>
+                    <span className="font-medium text-foreground flex items-center gap-1.5 sm:gap-2">
                       {new Date(ico.date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -311,7 +311,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                         className={`text-[9px] sm:text-[10px] ${
                           isUpcoming && daysLabel <= 7 
                             ? "text-yellow-400" 
-                            : "text-white/40"
+                            : "text-muted-foreground"
                         }`}
                       >
                         ({isUpcoming ? `${daysLabel}d` : `${daysLabel}d ago`})
@@ -322,23 +322,23 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   {ico.raised > 0 && (
                     <>
                       <div className="flex justify-between text-[10px] sm:text-[11px]">
-                        <span className="text-white/60">Raised</span>
-                        <span className="font-medium text-white">
+                        <span className="text-muted-foreground">Raised</span>
+                        <span className="font-medium text-foreground">
                           ${(ico.raised / 1000000).toFixed(1)}M
                         </span>
                       </div>
 
                       {ico.target !== ico.raised && (
                         <div className="flex justify-between text-[10px] sm:text-[11px]">
-                          <span className="text-white/60">Target</span>
-                          <span className="font-medium text-white">
+                          <span className="text-muted-foreground">Target</span>
+                          <span className="font-medium text-foreground">
                             ${(ico.target / 1000000).toFixed(1)}M
                           </span>
                         </div>
                       )}
 
                       <div className="pt-1 sm:pt-1.5">
-                        <div className="h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-1.5 sm:h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all"
                             style={{
@@ -346,7 +346,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                             }}
                           />
                         </div>
-                        <div className="text-[9px] sm:text-[10px] text-right text-white/60 mt-0.5 sm:mt-1">
+                        <div className="text-[9px] sm:text-[10px] text-right text-muted-foreground mt-0.5 sm:mt-1">
                           {getProgressPercent(ico.raised, ico.target).toFixed(0)}%
                         </div>
                       </div>
@@ -354,7 +354,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   )}
 
                   {ico.category && (
-                    <div className="text-[9px] sm:text-[10px] text-white/40 pt-0.5">
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground pt-0.5">
                       {ico.category}
                     </div>
                   )}

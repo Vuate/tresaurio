@@ -8,7 +8,7 @@ import MarketIntelligenceCTA from "@/components/terminal/market-intelligence/Mar
 
 export default function MarketIntelligencePage() {
   return (
-    <div className="min-h-screen bg-[#031A1C] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <MarketIntelligenceHero />
 
       <div className="w-full mx-auto px-6 py-8">

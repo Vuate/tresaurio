@@ -154,13 +154,13 @@ useEffect(() => {
   return (
     <div className="space-y-3 text-xs">
       <div className="space-y-2">
-        <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
+        <div className="flex items-center gap-2 text-muted-foreground font-semibold mb-2">
           <DollarSign className="w-3 h-3" />
           <span>Fee Configuration</span>
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             Exchange
           </label>
 
@@ -169,9 +169,9 @@ useEffect(() => {
     onClick={() => setExchangeOpen(v => !v)}
     className="
       w-full flex justify-between items-center
-      bg-white/5 border border-white/10
+      bg-input border border-border
       rounded-none px-3 py-1.5
-      text-white text-xs cursor-pointer
+      text-foreground text-xs cursor-pointer
     "
   >
     {exchange.toUpperCase()}
@@ -182,14 +182,14 @@ useEffect(() => {
     <div
       className="
         absolute z-50 mt-1 w-full
-bg-[#1E2025]
-border border-white/10
+bg-secondary
+border border-border
         rounded-none
         max-h-[72px]
         overflow-y-auto
 
         [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-white/20
+        [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -219,7 +219,7 @@ border border-white/10
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             Current VIP Level
           </label>
 
@@ -229,9 +229,9 @@ border border-white/10
     onClick={() => setVipOpen(v => !v)}
     className="
       w-full flex justify-between items-center
-      bg-white/5 border border-white/10
+      bg-input border border-border
       rounded-none px-3 py-1.5
-      text-white text-xs cursor-pointer
+      text-foreground text-xs cursor-pointer
     "
   >
     VIP {currentVip}
@@ -242,14 +242,14 @@ border border-white/10
     <div
       className="
         absolute z-50 mt-1 w-full
-bg-[#1E2025]
-border border-white/10
+bg-secondary
+border border-border
         rounded-none
         max-h-[72px]
         overflow-y-auto
 
         [&::-webkit-scrollbar]:w-1.5
-        [&::-webkit-scrollbar-thumb]:bg-white/20
+        [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -281,20 +281,20 @@ border border-white/10
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             30D Volume ($)
           </label>
           <input
             type="number"
             value={monthlyVolume}
             onChange={(e) => setMonthlyVolume(parseFloat(e.target.value) || 0)}
-            className="w-full bg-white/5 border border-white/10 rounded-none px-3 py-1.5 text-white"
+            className="w-full bg-input border border-border rounded-none px-3 py-1.5 text-foreground"
             step="100000"
           />
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             Maker Ratio (%)
           </label>
           <input
@@ -305,19 +305,19 @@ border border-white/10
                 Math.min(100, Math.max(0, parseFloat(e.target.value) || 0))
               )
             }
-            className="w-full bg-white/5 border border-white/10 rounded-none px-3 py-1.5 text-white"
+            className="w-full bg-input border border-border rounded-none px-3 py-1.5 text-foreground"
             min="0"
             max="100"
             step="5"
           />
-          <div className="mt-1 text-[10px] text-white/30">
+          <div className="mt-1 text-[10px] text-muted-foreground">
             Taker: {100 - makerRatio}%
           </div>
         </div>
       </div>
 
-      <div className="border-t border-white/10 pt-3 space-y-2">
-        <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
+      <div className="border-t border-border pt-3 space-y-2">
+        <div className="flex items-center gap-2 text-muted-foreground font-semibold mb-2">
           <Award className="w-3 h-3" />
           <span>Fee Analysis</span>
         </div>
@@ -332,7 +332,7 @@ border border-white/10
           ${analysis.takerVolume.toLocaleString()} ({analysis.takerRatio}%)
         </Row>
 
-        <div className="border-t border-white/10 my-2" />
+        <div className="border-t border-border my-2" />
 
         <Row label="Maker Fees">${analysis.makerFees.toFixed(2)}</Row>
 
@@ -356,8 +356,8 @@ border border-white/10
       </div>
 
       {analysis.nextVip !== null && (
-        <div className="border-t border-white/10 pt-3 space-y-2">
-          <div className="flex items-center gap-2 text-white/70 font-semibold mb-2">
+        <div className="border-t border-border pt-3 space-y-2">
+          <div className="flex items-center gap-2 text-muted-foreground font-semibold mb-2">
             <TrendingDown className="w-3 h-3" />
             <span>Optimization</span>
           </div>
@@ -429,7 +429,7 @@ function Row({
 }) {
   return (
     <div className="flex justify-between">
-      <span className="text-white/50">{label}</span>
+      <span className="text-muted-foreground">{label}</span>
       <span>{children}</span>
     </div>
   );

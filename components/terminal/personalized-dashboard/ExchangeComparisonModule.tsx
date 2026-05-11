@@ -160,11 +160,11 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+        <span className="font-semibold text-foreground text-xs whitespace-nowrap">
           Price Comparison
         </span>
         
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
@@ -175,9 +175,9 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
             onClick={() => setSymbolOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#111318]
-              border border-white/10
-              text-white text-xs
+              bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -187,7 +187,7 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
             <span>{symbol.replace("USDT", "")}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${symbolOpen ? "rotate-180" : ""}
               `}
@@ -211,7 +211,7 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
         ...(isRightSide ? { right: 0 } : { left: 0 })
       }}
       className="
-     bg-[#111318] border border-white/10
+     bg-card border border-border
 
         rounded-md
         shadow-lg
@@ -229,7 +229,7 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
             w-full px-3 py-2
             text-left text-xs
             bg-transparent cursor-pointer
-            text-white
+            text-foreground
             transition-colors
           hover:text-[#1A73E8]/65
 
@@ -254,11 +254,11 @@ export default function ExchangeComparisonModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-white/20
+          [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {err && (
@@ -268,7 +268,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         )}
 
         {loading && data.length === 0 ? (
-          <div className="text-white/40 text-center py-8 text-xs">Loading prices...</div>
+          <div className="text-muted-foreground text-center py-8 text-xs">Loading prices...</div>
         ) : (
           <div className="space-y-2">
             {data.map((item, idx) => {
@@ -284,7 +284,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                       ? "bg-emerald-500/5 border-emerald-500/20 hover:bg-emerald-500/10" 
                       : isWorst
                       ? "bg-red-500/5 border-red-500/20 hover:bg-red-500/10"
-                      : "bg-white/5 border-white/10 hover:bg-white/10"
+                      : "bg-input border-border hover:bg-black/10 dark:hover:bg-white/10"
                     }
                   `}
                 >
@@ -292,16 +292,16 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     <span
                       className={`
                         w-2 h-2 rounded-full shrink-0
-                        ${isBest ? "bg-emerald-400" : isWorst ? "bg-red-400" : "bg-white/30"}
+                        ${isBest ? "bg-emerald-400" : isWorst ? "bg-red-400" : "bg-foreground/30"}
                       `}
                     />
-                    <span className="text-white/80 text-xs font-medium">
+                    <span className="text-foreground text-xs font-medium">
                       {item.exchange}
                     </span>
                   </div>
 
                   <div className="space-y-1">
-                    <div className="font-semibold text-white font-mono text-sm break-all">
+                    <div className="font-semibold text-foreground font-mono text-sm break-all">
                       ${item.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                     <div className={`text-[10px] font-medium ${item.diff >= 0 ? "text-emerald-400" : "text-red-400"}`}>
@@ -316,9 +316,9 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
       </div>
 
       {data.length >= 2 && (
-        <div className="px-3 pb-3 pt-2 border-t border-white/10 flex-shrink-0 space-y-2">
+        <div className="px-3 pb-3 pt-2 border-t border-border flex-shrink-0 space-y-2">
           <div className="flex flex-wrap items-center justify-between gap-2 px-2">
-            <span className="text-white/50 text-xs whitespace-nowrap">Max Spread</span>
+            <span className="text-muted-foreground text-xs whitespace-nowrap">Max Spread</span>
             <span className={`font-bold text-sm whitespace-nowrap ${spread > 0.1 ? "text-yellow-400" : "text-emerald-400"}`}>
               {spread.toFixed(4)}%
             </span>

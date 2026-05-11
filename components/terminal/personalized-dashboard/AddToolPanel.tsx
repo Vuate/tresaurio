@@ -8,6 +8,7 @@ import { useDashboardNotificationStore } from "@/store/dashboardNotificationStor
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Search, Star } from "lucide-react";
 import { useSession } from "next-auth/react";
+import AuthModal from "@/components/auth/AuthModal";
 
 
 const MAX_SELECT = 10;
@@ -46,6 +47,8 @@ export default function AddToolPanel() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   const effectiveNotesHeight = notesOpen ? notesBarHeight : (
     typeof window !== 'undefined'
@@ -83,6 +86,13 @@ export default function AddToolPanel() {
   }, [addToolOpen]);
 
     useEffect(() => {
+    if (!addToolOpen) {
+      setShowAuthModal(false);
+      setAuthMode("login");
+    }
+  }, [addToolOpen]);
+
+  useEffect(() => {
     if (!lastResetAt) return;
     setSearch("");
     setSelectMode(false);
@@ -220,9 +230,9 @@ export default function AddToolPanel() {
   const getCardClass = (type: string) => {
     const isSelected = selectMode && selectedTypes.includes(type);
     const isDisabled = selectMode && atLimit && !isSelected;
-    if (isDisabled) return "w-full text-left rounded-lg px-3 py-2.5 pr-9 border transition opacity-40 cursor-not-allowed bg-white/[0.03] border-white/[0.06]";
-    if (isSelected) return "w-full text-left rounded-lg px-3 py-2.5 pr-9 border transition cursor-pointer bg-[#1A73E8]/20 border-[#1A73E8]/50";
-    return "w-full text-left rounded-lg px-3 py-2.5 pr-9 border transition cursor-pointer bg-white/[0.03] hover:bg-[#1A73E8]/10 border-white/[0.06] hover:border-[#1A73E8]/25";
+    if (isDisabled) return "w-full text-left rounded-lg px-3 py-2.5 pr-9 border transition opacity-40 cursor-not-allowed bg-foreground/3 border-border";
+    if (isSelected) return "w-full text-left rounded-lg px-3 py-2.5 pr-9 border transition cursor-pointer bg-[#1A73E8]/20 border-[#1A73E8]/50 text-foreground";
+    return "w-full text-left rounded-lg px-3 py-2.5 pr-9 border transition cursor-pointer bg-foreground/3 hover:bg-[#1A73E8]/10 border-border hover:border-[#1A73E8]/25 text-foreground";
   };
 
   const renderCardActions = (type: string, inFav: boolean) => {
@@ -250,16 +260,23 @@ export default function AddToolPanel() {
 
 
   return (
+    <>
+    <AuthModal
+      open={showAuthModal}
+      mode={authMode}
+      onClose={() => setShowAuthModal(false)}
+      onChange={(m) => setAuthMode(m)}
+    />
     <div
       ref={panelRef}
       style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
-      className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#0C0E12] border border-white/[0.06] rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
+      className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-card border border-border rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
     >
       <div
         ref={headerRef}
-        className="flex items-center justify-between px-3 py-3 border-b border-white/[0.06] select-none bg-[#0C0E12] relative z-10"
+        className="flex items-center justify-between px-3 py-3 border-b border-border select-none bg-card relative z-10"
       >
-        <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">Add Tool</div>
+        <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">Add Tool</div>
         <button
           onClick={() => {
             const next = !showFavorites;
@@ -275,7 +292,7 @@ export default function AddToolPanel() {
           className={`text-[11px] xl:text-[11.5px] 2xl:text-xs font-semibold px-2.5 py-1 rounded-md border transition cursor-pointer ${
             showFavorites
               ? "bg-yellow-400/15 border-yellow-400/40 text-yellow-300"
-              : "bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white"
+              : "bg-input border-border text-foreground/50 hover:text-foreground"
           }`}
         >
           Favorites{favorites.length > 0 ? ` (${favorites.length})` : ""}
@@ -285,7 +302,7 @@ export default function AddToolPanel() {
       <div
         ref={scrollRef}
         style={{ height: `calc(${availableHeight}px - ${headerHeight}px)` }}
-        className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-white/40 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+        className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/40 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
         onScroll={(e) => {
           const top = (e.currentTarget as HTMLDivElement).scrollTop;
           if (showFavorites) savedScrollFavorites.current = top;
@@ -293,21 +310,21 @@ export default function AddToolPanel() {
         }}
         onWheel={(e) => { e.stopPropagation(); }}
       >
-        <div className="sticky top-0 z-20 px-3 pt-3 pb-2 bg-[#0C0E12] border-b border-white/[0.06]">
+        <div className="sticky top-0 z-20 px-3 pt-3 pb-2 bg-card border-b border-border">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30 pointer-events-none" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-foreground/30 pointer-events-none" />
             <input
               ref={searchRef}
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search tools..."
-              className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg pl-7 pr-7 py-1.5 text-[12px] xl:text-[12.5px] 2xl:text-xs text-white placeholder-white/30 outline-none focus:border-[#1A73E8] transition"
+              className="w-full bg-input border border-border rounded-lg pl-7 pr-7 py-1.5 text-[12px] xl:text-[12.5px] 2xl:text-xs text-foreground placeholder-foreground/30 outline-none focus:border-[#1A73E8] transition"
             />
             {search && (
               <button
                 onClick={() => { setSearch(""); searchRef.current?.focus(); }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-white/30 hover:text-white/70 transition cursor-pointer leading-none"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-foreground/30 hover:text-foreground/70 transition cursor-pointer leading-none"
               >
                 ✕
               </button>
@@ -324,9 +341,9 @@ export default function AddToolPanel() {
               }}
               className={`flex-1 text-[11px] xl:text-[11.5px] 2xl:text-xs font-semibold py-1.5 rounded-lg border transition cursor-pointer ${
                 !selectMode
-                  ? "bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white"
+                  ? "bg-input border-border text-foreground/50 hover:text-foreground"
                   : selectedTypes.length === 0
-                  ? "bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white"
+                  ? "bg-input border-border text-foreground/50 hover:text-foreground"
                   : "bg-[#1A73E8]/20 border-[#1A73E8]/50 text-[#4A9EFF] hover:bg-[#1A73E8]/30"
               }`}
             >
@@ -335,7 +352,7 @@ export default function AddToolPanel() {
             {selectMode && selectedTypes.length > 0 && (
               <button
                 onClick={() => setSelectedTypes([])}
-                className="px-2.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-white/40 hover:text-white/70 hover:bg-white/[0.08] transition cursor-pointer text-[11px]"
+                className="px-2.5 py-1.5 rounded-lg border border-border bg-input text-foreground/40 hover:text-foreground/70 hover:bg-foreground/8 transition cursor-pointer text-[11px]"
                 title="Clear selection"
               >
                 ✕
@@ -348,8 +365,14 @@ export default function AddToolPanel() {
           {showFavorites ? (
             <>
               {!isLoggedIn ? (
-                <div className="px-1 py-10 text-center text-sm text-white/50">
-                  Sign in to use favorites
+                <div className="px-1 py-6 text-sm text-muted-foreground text-center">
+                  <button
+                    onClick={() => { setAuthMode("login"); setShowAuthModal(true); }}
+                    className="text-[#2563EB] underline cursor-pointer font-medium"
+                  >
+                    Sign in
+                  </button>
+                  {" "}to use favorites.
                 </div>
               ) : (
                 <>
@@ -357,7 +380,7 @@ export default function AddToolPanel() {
                     <div className="mb-2">
                       {confirmClear ? (
                         <div className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2">
-                          <span className="flex-1 text-[13px] text-white/60">Remove all favorites?</span>
+                          <span className="flex-1 text-[13px] text-foreground/60">Remove all favorites?</span>
                           <button
                             onClick={() => { clearFavorites(); setConfirmClear(false); }}
                             className="text-[11px] font-semibold px-2 py-0.5 rounded bg-red-500/80 hover:bg-red-500 text-white transition cursor-pointer"                          >
@@ -365,7 +388,7 @@ export default function AddToolPanel() {
                           </button>
                           <button
                             onClick={() => setConfirmClear(false)}
-                            className="text-[11px] font-semibold px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-white/50 hover:text-white/80 transition cursor-pointer"
+                            className="text-[11px] font-semibold px-2 py-0.5 rounded bg-input border border-border text-foreground/50 hover:text-foreground/80 transition cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -373,7 +396,7 @@ export default function AddToolPanel() {
                       ) : (
                         <button
                           onClick={() => setConfirmClear(true)}
-                          className="w-full text-left text-[14px] text-white/40 hover:text-red-400 transition cursor-pointer px-1"
+                          className="w-full text-left text-[14px] text-foreground/40 hover:text-red-400 transition cursor-pointer px-1"
                         >
                           Clear all favorites
                         </button>
@@ -385,7 +408,7 @@ export default function AddToolPanel() {
                     moduleRegistry[f.type]?.title.toLowerCase().includes(search.toLowerCase()) ||
                     moduleRegistry[f.type]?.description?.toLowerCase().includes(search.toLowerCase())
                   ).length === 0 ? (
-                    <div className="px-1 py-6 text-center text-sm text-white/60">
+                    <div className="px-1 py-6 text-center text-sm text-foreground/60">
                       {favorites.length === 0 ? "No favorites yet" : "No tools found"}
                     </div>
                   ) : (
@@ -410,10 +433,10 @@ export default function AddToolPanel() {
                                 disabled={isDisabled}
                                 className={getCardClass(m.type)}
                               >
-                                <div className="text-[13.5px] xl:text-[14px] 2xl:text-sm font-semibold text-white relative z-10">
+                                <div className="text-[13.5px] xl:text-[14px] 2xl:text-sm font-semibold text-foreground relative z-10">
                                   {m.title}
                                 </div>
-                                <div className="text-[10px] text-white/35 mt-0.5 relative z-10">
+                                <div className="text-[10px] text-foreground/35 mt-0.5 relative z-10">
                                   {new Date(f.favoritedAt).toLocaleDateString("en-GB", {
                                     day: "2-digit",
                                     month: "short",
@@ -434,13 +457,13 @@ export default function AddToolPanel() {
 
             <>
               {Object.entries(grouped).length === 0 && (
-                <div className="px-1 py-6 text-center text-sm text-white/60">
+                <div className="px-1 py-6 text-center text-sm text-foreground/60">
                   No tools found
                 </div>
               )}
               {Object.entries(grouped).map(([category, mods]) => (
                 <div key={category}>
-                  <div className="px-1 py-1 text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/50 font-bold tracking-wider">
+                  <div className="px-1 py-1 text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-muted-foreground font-bold tracking-wider">
                     {category.replace("-", " ")}
                   </div>
                   <div className="space-y-1">
@@ -456,10 +479,10 @@ export default function AddToolPanel() {
                             disabled={isDisabled}
                             className={getCardClass(m.type)}
                           >
-                            <div className="text-[13.5px] xl:text-[14px] 2xl:text-sm font-semibold text-white relative z-10">
+                            <div className="text-[13.5px] xl:text-[14px] 2xl:text-sm font-semibold text-foreground relative z-10">
                               {m.title}
                             </div>
-                            <div className="text-[11.5px] xl:text-[12px] 2xl:text-sm text-white/50 leading-tight relative z-10">
+                            <div className="text-[11.5px] xl:text-[12px] 2xl:text-sm text-foreground/50 leading-tight relative z-10">
                               {m.description}
                             </div>
                           </button>
@@ -475,5 +498,6 @@ export default function AddToolPanel() {
         </div>
       </div>
     </div>
+    </>
   );
 }

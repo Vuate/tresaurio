@@ -3,116 +3,102 @@ import { Icon } from "@iconify/react";
 const features = [
   {
     icon: "mdi:calculator-variant-outline",
-     title: "Total Cost Calculator",
-    description:
-      "Calculate the real cost of a trade. Combine Fee + Spread + Slippage + Funding into a single percentage.",
-    items: [
-      "Maker/taker fee calculation",
-      "Bid-ask spread measurement",
-      "Slippage estimation by size",
-      "Funding rate impact (futures)",
-    ],
+    title: "Total Cost Calculator",
+    description: "Calculate the real cost of a trade. Combine Fee + Spread + Slippage + Funding into a single percentage.",
+    items: ["Maker/taker fee calculation", "Bid-ask spread measurement", "Slippage estimation by size", "Funding rate impact (futures)"],
+    variant: "blue" as const,
   },
   {
     icon: "mdi:compare-horizontal",
-  title: "Exchange Comparison",
-    description:
-      "How much does the same trade cost on different exchanges? Compare Binance vs OKX vs Bybit vs Kraken.",
-    items: [
-      "Side-by-side cost comparison",
-      "Best/worst exchange highlighting",
-      "Annual savings projection",
-      "VIP tier recommendations",
-    ],
+    title: "Exchange Comparison",
+    description: "How much does the same trade cost on different exchanges? Compare Binance vs OKX vs Bybit vs Kraken.",
+    items: ["Side-by-side cost comparison", "Best/worst exchange highlighting", "Annual savings projection", "VIP tier recommendations"],
+    variant: "neutral" as const,
   },
   {
     icon: "mdi:percent-outline",
     title: "Fee Structure Analysis",
-    description:
-      "Analyze exchange fee structures in detail. Calculate VIP tiers, discount tokens (BNB, OKB), and volume-based rebates.",
-    items: [
-      "VIP tier fee schedules",
-      "Discount token (BNB/OKB) impact",
-      "Volume-based rebates",
-      "Maker rebate tracking",
-    ],
+    description: "Analyze exchange fee structures in detail. Calculate VIP tiers, discount tokens (BNB, OKB), and volume-based rebates.",
+    items: ["VIP tier fee schedules", "Discount token (BNB/OKB) impact", "Volume-based rebates", "Maker rebate tracking"],
+    variant: "neutral" as const,
   },
   {
     icon: "mdi:arrow-expand-horizontal",
     title: "Spread & Slippage",
-    description:
-      "Measure bid-ask spread and slippage at different order sizes. See the real cost for $10K, $100K, $1M trades.",
-    items: [
-      "Real-time spread monitoring",
-      "Slippage by order size",
-      "Liquidity depth analysis",
-      "Best execution strategies",
-    ],
+    description: "Measure bid-ask spread and slippage at different order sizes. See the real cost for $10K, $100K, $1M trades.",
+    items: ["Real-time spread monitoring", "Slippage by order size", "Liquidity depth analysis", "Best execution strategies"],
+    variant: "blue" as const,
   },
   {
     icon: "mdi:flash-outline",
     title: "Funding Rate Tracking",
-    description:
-      "Track funding rates for perpetual futures. Calculate the impact of positive/negative funding on trade costs.",
-    items: [
-      "8-hour funding rate tracking",
-      "Cumulative funding cost",
-      "Long/short pressure analysis",
-      "Funding arbitrage opportunities",
-    ],
+    description: "Track funding rates for perpetual futures. Calculate the impact of positive/negative funding on trade costs.",
+    items: ["8-hour funding rate tracking", "Cumulative funding cost", "Long/short pressure analysis", "Funding arbitrage opportunities"],
+    variant: "neutral" as const,
   },
   {
     icon: "mdi:speedometer",
     title: "Market Efficiency Score",
-    description:
-      "Calculate the market efficiency score (0-100) for each exchange and coin pair. Combine liquidity, spread, and execution quality into a single metric.",
-    items: [
-      "Composite efficiency score (0-100)",
-      "Liquidity rating",
-      "Spread tightness",
-      "Execution quality measurement",
-    ],
+    description: "Calculate the market efficiency score (0-100) for each exchange and coin pair.",
+    items: ["Composite efficiency score (0-100)", "Liquidity rating", "Spread tightness", "Execution quality measurement"],
+    variant: "blue" as const,
   },
 ];
 
 export default function MarketIntelligenceFeatures() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Capabilities
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           Key Features
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl text-[0.875rem] leading-[1.7]">
           Put your trading costs under the microscope and optimize them
         </p>
       </div>
 
-      <div className="features-grid grid gap-3 sm:gap-4 lg:gap-5 xl:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {features.map((feature, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4.5">
+        {features.map((feature, i) => (
           <div
-            key={index}
-            className="feature-card rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/10 bg-[#041F20]/95 p-4 sm:p-5 lg:p-6 xl:p-7 transition-all duration-300 hover:border-teal-400 hover:shadow-[0_8px_32px_rgba(25,216,208,0.2)] hover:-translate-y-1"
+            key={i}
+            className={[
+              "rounded-xl p-7 border transition-all duration-250",
+              "hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(0,0,0,0.3)]",
+              feature.variant === "blue"
+                ? "border-[#2563EB]/20"
+                : "bg-card border-border-sub",
+            ].join(" ")}
+            style={
+              feature.variant === "blue"
+                ? { background: "linear-gradient(145deg, rgba(37,99,235,0.08) 0%, var(--card) 60%)" }
+                : undefined
+            }
           >
-            <Icon
-              icon={feature.icon}
-              className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl mb-2 sm:mb-3 lg:mb-4 text-[#1A73E8]/65"
-            />
-
-            <h3 className="text-sm sm:text-base lg:text-lg xl:text-xl font-bold mb-2 sm:mb-3 text-white">
-              {feature.title}
-            </h3>
-
-            <p className="text-xs sm:text-sm lg:text-base text-gray-300 leading-relaxed mb-2.5 sm:mb-3 lg:mb-4">
-              {feature.description}
-            </p>
-
-            <ul className="space-y-1 sm:space-y-1.5 lg:space-y-2">
-              {feature.items.map((item, itemIndex) => (
-                <li
-                  key={itemIndex}
-                  className="text-xs sm:text-sm lg:text-base text-gray-400 pl-4 sm:pl-5 lg:pl-6 relative before:content-['✓'] before:absolute before:left-0 before:text-[#1A73E8] before:font-bold before:inline-block before:w-3 sm:before:w-4 lg:before:w-5 before:text-center"
-                >
+            <div
+              className={[
+                "w-10.5 h-10.5 rounded-[10px] flex items-center justify-center mb-4",
+                feature.variant === "blue"
+                  ? "bg-[#2563EB]/10 text-[#2563EB]"
+                  : "bg-input text-[#71717A]",
+              ].join(" ")}
+            >
+              <Icon icon={feature.icon} className="text-xl" />
+            </div>
+            <h3 className="text-[0.95rem] font-bold text-foreground mb-2">{feature.title}</h3>
+            <p className="text-[0.845rem] text-[#71717A] leading-[1.65] mb-4">{feature.description}</p>
+            <ul className="space-y-1.5">
+              {feature.items.map((item, j) => (
+                <li key={j} className="flex items-start gap-2 text-[0.845rem] text-[#71717A]">
+                  <span className="text-[#2563EB] font-bold mt-0.5 shrink-0">✓</span>
                   {item}
                 </li>
               ))}

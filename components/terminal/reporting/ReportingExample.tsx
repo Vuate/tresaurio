@@ -1,62 +1,81 @@
 const metrics = [
-  { label: "Total Portfolio", value: "$124,567", color: "text-white" },
-  { label: "24h Change", value: "+$3,245", color: "text-white" },
-  { label: "Unrealized PnL", value: "+$12,890", color: "text-white" },
-  { label: "Total Fees (24h)", value: "$89", color: "text-white" },
-  { label: "Best Performer", value: "SOL +12.4%", color: "text-white" },
-  { label: "Market Sentiment", value: "Bullish", color: "text-white" },
+  { label: "Total Portfolio", value: "$124,567", color: "text-foreground" },
+  { label: "24h Change", value: "+$3,245", color: "text-emerald-400" },
+  { label: "Unrealized PnL", value: "+$12,890", color: "text-emerald-400" },
+  { label: "Total Fees (24h)", value: "$89", color: "text-[#71717A]" },
+  { label: "Best Performer", value: "SOL +12.4%", color: "text-[#2563EB]" },
+  { label: "Market Sentiment", value: "Bullish", color: "text-emerald-400" },
 ];
 
 export default function ReportingExample() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Preview
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           Sample Report View
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           Daily Performance Report example
         </p>
       </div>
 
-<div className="relative bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
-  <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-white rounded-tl-xl sm:rounded-tl-2xl lg:rounded-tl-3xl" />
-  <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-white rounded-tr-xl sm:rounded-tr-2xl lg:rounded-tr-3xl" />
-  <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-white rounded-bl-xl sm:rounded-bl-2xl lg:rounded-bl-3xl" />
-  <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-white rounded-br-xl sm:rounded-br-2xl lg:rounded-br-3xl" />
-        <div className="bg-[#041F20]/95 rounded-lg sm:rounded-xl p-4 sm:p-5 lg:p-6 xl:p-8 border border-white/10">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-5 lg:mb-6 pb-3 sm:pb-4 border-b border-white/10 gap-2 sm:gap-0">
+      <div className="rounded-xl border border-border-sub bg-card p-6 lg:p-8">
+        {/* Report header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 pb-4 border-b border-border-sub gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-1 h-5 bg-[#2563EB] rounded-full inline-block shrink-0" />
             <div>
-              <div className="text-base sm:text-lg lg:text-xl font-bold">Daily Performance Report</div>
-              <div className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">
-                December 28, 2024 - 10:30 AM
-                </div>
+              <div className="text-[0.95rem] font-bold text-foreground">Daily Performance Report</div>
+              <div className="text-[0.72rem] text-[#71717A] mt-0.5">December 28, 2024 — 10:30 AM</div>
             </div>
           </div>
+          <span
+            className="px-3 py-1 rounded-full font-bold bg-[#2563EB]/15 text-[#2563EB] border border-[#2563EB]/25 uppercase"
+            style={{ fontSize: "0.625rem", letterSpacing: "0.05em" }}
+          >
+            Auto-Generated
+          </span>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-            {metrics.map((metric, index) => (
+        {/* Metrics grid */}
+        <div className="grid grid-cols-1 min-[380px]:grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+          {metrics.map((metric, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-border-sub bg-card-alt p-4 hover:border-[#2563EB]/25 transition-colors duration-250"
+            >
               <div
-                key={index}
-                className="bg-[#041F20] p-4 sm:p-5 rounded-lg sm:rounded-xl border border-white/10"
+                className="text-[#71717A] mb-1 uppercase"
+                style={{ fontSize: "0.68rem", letterSpacing: "0.08em", fontWeight: 600 }}
               >
-                <div className="text-[10px] sm:text-[11px] uppercase text-gray-400 tracking-wider mb-1.5 sm:mb-2">
-                  {metric.label}
-                </div>
-                <div className={`text-xl sm:text-2xl font-extrabold ${metric.color}`}>
-                  {metric.value}
-                </div>
+                {metric.label}
               </div>
-            ))}
-          </div>
-
-          <div className="mt-4 sm:mt-5 lg:mt-6 p-3 sm:p-4 bg-teal-900/10 rounded-lg border-l-4 border-[#1A73E8]">
-            <div className="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1">AI INSIGHT</div>
-            <div className="text-xs sm:text-sm text-white">
-              Portfolio showing strong momentum. SOL accumulation detected.
-              Consider taking partial profits above $130 resistance level.
+              <div className={`text-xl font-extrabold ${metric.color}`}>{metric.value}</div>
             </div>
+          ))}
+        </div>
+
+        {/* AI Insight */}
+        <div className="p-4 bg-[#2563EB]/5 border border-[#2563EB]/20 rounded-xl">
+          <div
+            className="font-bold text-[#2563EB] uppercase mb-1.5"
+            style={{ fontSize: "0.625rem", letterSpacing: "0.1em" }}
+          >
+            AI Insight
           </div>
+          <p className="text-[0.8rem] text-[#71717A] leading-[1.65]">
+            Portfolio showing strong momentum. SOL accumulation detected.
+            Consider taking partial profits above $130 resistance level.
+          </p>
         </div>
       </div>
     </section>

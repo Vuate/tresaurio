@@ -461,10 +461,10 @@ export default function SpotPositionsModule({ instanceId }: Props) {
     >
       {/* 🎯 Fully Responsive Header */}
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+        <span className="font-semibold text-foreground text-xs whitespace-nowrap">
           Spot Positions
         </span>
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
         <div className="flex-1 min-w-[20px]"></div>
@@ -474,9 +474,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             onClick={() => setExchangeOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-             bg-[#111318]
-              border border-white/10
-              text-white text-xs
+             bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -489,7 +489,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             )}
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${exchangeOpen ? "rotate-180" : ""}
               `}
@@ -508,7 +508,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       className={`
         absolute mt-1 z-50
         w-[120px]
-    bg-[#111318] border border-white/10
+    bg-secondary border border-border
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
@@ -531,7 +531,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             w-full px-3 py-2
             text-left text-xs
             bg-transparent cursor-pointer
-            text-white
+            text-foreground
             transition-colors
       hover:text-[#1A73E8]/65
             flex items-center justify-between
@@ -581,9 +581,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               }}
               className="
                 h-7 px-2 rounded-md
-                bg-white/5 border border-white/10
-                text-white/60 text-xs
-                hover:bg-white/10
+                bg-input border border-border
+                text-muted-foreground text-xs
+                hover:bg-black/10 dark:hover:bg-secondary
                 transition-colors
                 cursor-pointer
               "
@@ -603,9 +603,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
             }}
             className="
               h-7 px-3 rounded-md
-              bg-blue-500/20 border border-blue-500/30
-              text-blue-400 text-xs
-              hover:bg-blue-500/30
+              bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30
+              text-blue-600 dark:text-blue-300 text-xs
+              hover:bg-blue-500/25 dark:hover:bg-blue-500/30
               transition-all
               flex items-center gap-1.5
               cursor-pointer
@@ -628,7 +628,7 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
       {/* Last Sync Info - Fixed, no scroll */}
       {lastSync && (
-        <div className="mx-3 mb-2 text-white/40 text-xs flex-shrink-0">
+        <div className="mx-3 mb-2 text-muted-foreground text-xs flex-shrink-0">
           Last sync: {lastSync.toLocaleTimeString()}
         </div>
       )}
@@ -636,24 +636,24 @@ export default function SpotPositionsModule({ instanceId }: Props) {
       {/* Portfolio Summary - Fixed, no scroll, fully responsive grid */}
       <div className="px-3 pb-2 flex-shrink-0">
         <div className="grid grid-cols-2 @md:grid-cols-4 gap-1.5">
-          <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
-            <div className="text-white/40 text-[10px] mb-0.5 break-words leading-tight">
+          <div className="bg-input border border-border rounded-md p-2 min-w-0">
+            <div className="text-muted-foreground text-[10px] mb-0.5 break-words leading-tight">
               Investment
             </div>
-            <div className="text-white font-semibold text-xs break-words leading-tight">
+            <div className="text-foreground font-semibold text-xs break-words leading-tight">
               ${formatUSD(portfolio.totalInvestment)}
             </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
-            <div className="text-white/40 text-[10px] mb-0.5 break-words leading-tight">
+          <div className="bg-input border border-border rounded-md p-2 min-w-0">
+            <div className="text-muted-foreground text-[10px] mb-0.5 break-words leading-tight">
               Value
             </div>
-            <div className="text-white font-semibold text-xs break-words leading-tight">
+            <div className="text-foreground font-semibold text-xs break-words leading-tight">
               ${formatUSD(portfolio.currentValue)}
             </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
-            <div className="text-white/40 text-[10px] mb-0.5 break-words leading-tight">
+          <div className="bg-input border border-border rounded-md p-2 min-w-0">
+            <div className="text-muted-foreground text-[10px] mb-0.5 break-words leading-tight">
               Float PnL
             </div>
             <div
@@ -664,13 +664,13 @@ export default function SpotPositionsModule({ instanceId }: Props) {
               {portfolio.totalPnL >= 0 ? "+" : "-"}${formatUSD(Math.abs(portfolio.totalPnL))}
             </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-md p-2 min-w-0">
-            <div className="text-white/40 text-[10px] mb-0.5 break-words leading-tight">
+          <div className="bg-input border border-border rounded-md p-2 min-w-0">
+            <div className="text-muted-foreground text-[10px] mb-0.5 break-words leading-tight">
               Realized PnL
             </div>
             <div
               className={`font-semibold text-xs break-words leading-tight ${
-                realizedPnl === null ? "text-white/30" : realizedPnl >= 0 ? "text-emerald-400" : "text-red-400"
+                realizedPnl === null ? "text-muted-foreground" : realizedPnl >= 0 ? "text-emerald-400" : "text-red-400"
               }`}
             >
               {realizedPnl === null
@@ -687,9 +687,9 @@ export default function SpotPositionsModule({ instanceId }: Props) {
           onClick={() => setShowAddModal(true)}
           className="
             w-full py-2 rounded-md
-            bg-blue-500/20 border border-blue-500/30
-            text-blue-300 text-xs font-medium
-            hover:bg-blue-500/30
+            bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30
+            text-blue-600 dark:text-blue-300 text-xs font-medium
+            hover:bg-blue-500/25 dark:hover:bg-blue-500/30
             transition-all
             flex items-center justify-center gap-1.5
             cursor-pointer
@@ -710,15 +710,15 @@ export default function SpotPositionsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {spotPositions.length === 0 ? (
           <div className="flex items-center justify-center py-8">
-            <div className="text-center text-white/40 text-xs">
+            <div className="text-center text-muted-foreground text-xs">
               No positions yet. Sync from exchange or add manually.
             </div>
           </div>
@@ -735,11 +735,11 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               return (
                 <div
                   key={position.id}
-                  className="p-2.5 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-colors"
+                  className="p-2.5 rounded-md bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-colors"
                 >
                   {/* Header */}
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
-                    <span className="font-semibold text-white text-xs whitespace-nowrap">
+                    <span className="font-semibold text-foreground text-xs whitespace-nowrap">
                       {position.pair}
                     </span>
                     <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded text-[10px] uppercase font-semibold shrink-0">
@@ -752,7 +752,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                           removeSpotPosition(position.id);
                         }
                       }}
-                      className="p-1 rounded text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer shrink-0"
+                      className="p-1 rounded text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer shrink-0"
                       title="Remove"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -760,15 +760,15 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   </div>
 
                   {/* Formatted Pair */}
-                  <div className="text-white/30 text-[10px] mb-2 truncate">
+                  <div className="text-muted-foreground text-[10px] mb-2 truncate">
                     {position.formattedPair}
                   </div>
 
                   {/* Metrics Grid - Fully responsive */}
                   <div className="grid grid-cols-2 gap-1.5 text-[10px] mb-2">
-                   <div className="bg-white/5 rounded px-2 py-1.5 min-w-0 overflow-hidden">
+                   <div className="bg-input rounded px-2 py-1.5 min-w-0 overflow-hidden">
                       <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-white/50 leading-tight text-[9px]">Entry</span>
+                        <span className="text-muted-foreground leading-tight text-[9px]">Entry</span>
                         {editingEntryPriceId !== position.id && (
                           <button
                             onClick={() => {
@@ -777,7 +777,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                                 String(position.manualEntryPrice ?? position.entryPrice)
                               );
                             }}
-                            className="text-white/20 hover:text-yellow-400 transition-colors cursor-pointer"
+                            className="text-muted-foreground hover:text-yellow-400 transition-colors cursor-pointer"
                           >
                             <Pencil className="w-2.5 h-2.5" />
                           </button>
@@ -797,10 +797,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                               setEditingEntryPriceValue("");
                             }
                           }}
-                          className="w-full bg-white/10 border border-yellow-400/50 rounded px-1 py-0.5 text-yellow-400 text-[10px] font-semibold outline-none"
+                          className="w-full bg-secondary border border-yellow-400/50 rounded px-1 py-0.5 text-yellow-400 text-[10px] font-semibold outline-none"
                         />
                       ) : (
-                        <div className="text-white font-semibold break-words leading-tight truncate text-[10px]">
+                        <div className="text-foreground font-semibold break-words leading-tight truncate text-[10px]">
                           ${(position.manualEntryPrice ?? position.entryPrice).toLocaleString()}
                           {position.manualEntryPrice && (
                             <span className="text-yellow-400/60 text-[8px] ml-1">✎</span>
@@ -808,11 +808,11 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                         </div>
                       )}
                     </div>
-                    <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                    <div className="bg-input rounded px-2 py-1.5 min-w-0">
+                      <div className="text-muted-foreground mb-0.5 break-words leading-tight text-[9px]">
                         Current
                       </div>
-                      <div className="text-white font-semibold flex items-start gap-1 flex-wrap leading-tight">
+                      <div className="text-foreground font-semibold flex items-start gap-1 flex-wrap leading-tight">
                         <span className="break-words truncate">
                           $
                           {currentPrice.toLocaleString(undefined, {
@@ -833,35 +833,35 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                         )}
                       </div>
                     </div>
-                    <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                    <div className="bg-input rounded px-2 py-1.5 min-w-0">
+                      <div className="text-muted-foreground mb-0.5 break-words leading-tight text-[9px]">
                         Qty
                       </div>
-                      <div className="text-white font-semibold break-words leading-tight truncate">
+                      <div className="text-foreground font-semibold break-words leading-tight truncate">
                         {position.quantity.toLocaleString(undefined, {
                           minimumFractionDigits: 4,
                           maximumFractionDigits: 8,
                         })}
                       </div>
                     </div>
-                    <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                    <div className="bg-input rounded px-2 py-1.5 min-w-0">
+                      <div className="text-muted-foreground mb-0.5 break-words leading-tight text-[9px]">
                         Cost
                       </div>
-                      <div className="text-white font-semibold break-words leading-tight truncate">
+                      <div className="text-foreground font-semibold break-words leading-tight truncate">
                         ${formatUSD(position.totalCost)}
                       </div>
                     </div>
-                    <div className="bg-white/5 rounded px-2 py-1.5 min-w-0">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                    <div className="bg-input rounded px-2 py-1.5 min-w-0">
+                      <div className="text-muted-foreground mb-0.5 break-words leading-tight text-[9px]">
                         Value
                       </div>
-                      <div className="text-white font-semibold break-words leading-tight truncate">
+                      <div className="text-foreground font-semibold break-words leading-tight truncate">
                         ${formatUSD(currentValue)}
                       </div>
                     </div>
-                    <div className="bg-white/5 rounded px-2 py-1.5 min-w-0 overflow-hidden">
-                      <div className="text-white/50 mb-0.5 break-words leading-tight text-[9px]">
+                    <div className="bg-input rounded px-2 py-1.5 min-w-0 overflow-hidden">
+                      <div className="text-muted-foreground mb-0.5 break-words leading-tight text-[9px]">
                         P&L
                       </div>
                       <div
@@ -881,12 +881,12 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   </div>
 
                   {/* Footer */}
-                  <div className="text-white/30 text-[9px] pt-1.5 border-t border-white/5 truncate">
+                  <div className="text-muted-foreground text-[9px] pt-1.5 border-t border-border truncate">
                     Entry: {new Date(position.entryDate).toLocaleDateString()}
                   </div>
 
                   {position.notes && (
-                    <div className="text-white/40 text-[9px] pt-1.5 border-t border-white/5 mt-1.5 break-words">
+                    <div className="text-muted-foreground text-[9px] pt-1.5 border-t border-border mt-1.5 break-words">
                       📝 {position.notes}
                     </div>
                   )}
@@ -901,7 +901,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         <div
           className="
             fixed inset-0
-            bg-[#0a0e1a] z-[100]
+            bg-background z-[100]
             flex flex-col overflow-hidden
             animate-in fade-in slide-in-from-bottom-4 duration-200
           "
@@ -918,13 +918,13 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           onWheel={(e) => e.stopPropagation()}
         >
           {/* Modal Header */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <span className="text-white font-semibold text-xs whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-border bg-input flex-shrink-0">
+            <span className="text-foreground font-semibold text-xs whitespace-nowrap">
               Add Spot Position
             </span>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+              className="text-muted-foreground hover:text-foreground leading-none cursor-pointer transition-colors text-xl ml-auto"
             >
               ×
             </button>
@@ -939,17 +939,17 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20              [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20              [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-scrollbar-thumb-white/20              scrollbar-track-transparent
+scrollbar-thumb-foreground/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
               {/* Exchange */}
               <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                <label className="block text-muted-foreground mb-1.5 text-[10px] font-medium">
                   Exchange
                 </label>
                 <div ref={exchangeModalRef} className="relative">
@@ -958,12 +958,12 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                     className="
                           w-full h-9
                           flex items-center justify-between
-                          bg-white/5
-                          border border-white/10
+                          bg-input
+                          border border-border
                           rounded-md px-3
-                          text-white text-xs
+                          text-foreground text-xs
                           cursor-pointer
-                          hover:bg-white/8
+                          hover:bg-black/8 dark:hover:bg-white/8
                           transition-colors
                         "
                   >
@@ -973,7 +973,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         : "Select Exchange"}
                     </span>
                     <span
-                      className={`text-white/50 transition-transform ${exchangeModalOpen ? "rotate-180" : ""}`}
+                      className={`text-muted-foreground transition-transform ${exchangeModalOpen ? "rotate-180" : ""}`}
                     >
                       ▾
                     </span>
@@ -985,13 +985,13 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       className="
                               absolute z-50 mt-1 w-full
                               max-h-[120px] overflow-y-auto
-                              bg-[#0a0e1a]
-                              border border-white/10
+                              bg-background
+                              border border-border
                               rounded-none
                               shadow-lg
 
                               [&::-webkit-scrollbar]:w-1.5
-                              [&::-webkit-scrollbar-thumb]:bg-white/20
+                              [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
                               [&::-webkit-scrollbar-thumb]:rounded-full
                               [&::-webkit-scrollbar-track]:bg-transparent
                             "
@@ -1008,7 +1008,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         text-left text-xs
                         cursor-pointer
                         bg-transparent
-                        text-white
+                        text-foreground
                         transition-colors
                  hover:text-[#1A73E8]/65
                       "
@@ -1027,7 +1027,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
               {/* Base & Quote Assets */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                  <label className="block text-muted-foreground mb-1.5 text-[10px] font-medium">
                     Base Asset
                   </label>
                   <input
@@ -1040,11 +1040,11 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       })
                     }
                     placeholder="BTC"
-                    className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                    className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-emerald-500/50 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                  <label className="block text-muted-foreground mb-1.5 text-[10px] font-medium">
                     Quote Asset
                   </label>
                   <input
@@ -1057,7 +1057,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       })
                     }
                     placeholder="USDT"
-                    className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                    className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-emerald-500/50 transition-colors"
                   />
                 </div>
               </div>
@@ -1065,7 +1065,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
               {/* Entry Price & Quantity */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                  <label className="block text-muted-foreground mb-1.5 text-[10px] font-medium">
                     Entry Price
                   </label>
                   <input
@@ -1075,11 +1075,11 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       setFormData({ ...formData, entryPrice: e.target.value })
                     }
                     placeholder="0.00"
-                    className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                    className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-emerald-500/50 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                  <label className="block text-muted-foreground mb-1.5 text-[10px] font-medium">
                     Quantity
                   </label>
                   <input
@@ -1089,24 +1089,24 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       setFormData({ ...formData, quantity: e.target.value })
                     }
                     placeholder="0.00"
-                    className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                    className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-emerald-500/50 transition-colors"
                   />
                 </div>
               </div>
 
               {/* Total Cost */}
               <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                <label className="block text-muted-foreground mb-1.5 text-[10px] font-medium">
                   Total Cost
                 </label>
-                <div className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white/70 text-xs truncate">
+                <div className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-muted-foreground text-xs truncate">
                   ${totalCost}
                 </div>
               </div>
 
               {/* Entry Date */}
               <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                <label className="block text-muted-foreground mb-1.5 text-[10px] font-medium">
                   Entry Date
                 </label>
                 <input
@@ -1115,13 +1115,13 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                   onChange={(e) =>
                     setFormData({ ...formData, entryDate: e.target.value })
                   }
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                  className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-emerald-500/50 transition-colors"
                 />
               </div>
 
               {/* Notes */}
               <div>
-                <label className="block text-white/50 mb-1.5 text-[10px] font-medium">
+                <label className="block text-muted-foreground mb-1.5 text-[10px] font-medium">
                   Notes (Optional)
                 </label>
                 <input
@@ -1131,17 +1131,17 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                     setFormData({ ...formData, notes: e.target.value })
                   }
                   placeholder="Any notes..."
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-emerald-500/50 transition-colors"
+                  className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-emerald-500/50 transition-colors"
                 />
               </div>
             </div>
           </div>
 
           {/* Modal Footer */}
-          <div className="p-3 border-t border-white/10 flex-shrink-0">
+          <div className="p-3 border-t border-border flex-shrink-0">
             <button
               onClick={addPosition}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-md font-semibold text-xs cursor-pointer transition-colors"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-foreground py-2 rounded-md font-semibold text-xs cursor-pointer transition-colors"
             >
               Add Position
             </button>

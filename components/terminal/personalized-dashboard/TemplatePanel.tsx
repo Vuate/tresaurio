@@ -4,6 +4,7 @@ import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStor
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import AuthModal from "@/components/auth/AuthModal";
 
 export default function TemplatePanel() {
   const {
@@ -41,6 +42,8 @@ export default function TemplatePanel() {
   const [confirmOverwrite, setConfirmOverwrite] = useState(false);
   const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [clearingAll, setClearingAll] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   const effectiveNotesHeight = notesOpen
     ? notesBarHeight
@@ -81,7 +84,14 @@ export default function TemplatePanel() {
     }
   }, [templatesOpen]);
 
-   useEffect(() => {
+  useEffect(() => {
+    if (!templatesOpen) {
+      setShowAuthModal(false);
+      setAuthMode("login");
+    }
+  }, [templatesOpen]);
+
+  useEffect(() => {
     if (!lastResetAt) return;
     setTemplateName("");
     setConfirmLoadId(null);
@@ -233,20 +243,34 @@ const handleDelete = async (id: string) => {
 
   if (!session?.user) {
     return (
-<div
-  ref={panelRef}
-  style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
-className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#0C0E12] border border-white/[0.06] rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
->
-<div ref={headerRef} className="px-3 py-3 border-b border-white/[0.06]">
-          <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">
-            Templates
+      <>
+        <div
+          ref={panelRef}
+          style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
+          className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w-[320px] bg-card border border-border rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
+        >
+          <div ref={headerRef} className="px-3 py-3 border-b border-border">
+            <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">
+              Templates
+            </div>
+          </div>
+          <div className="p-4 text-sm text-muted-foreground">
+            <button
+              onClick={() => { setAuthMode("login"); setShowAuthModal(true); }}
+              className="text-[#2563EB] underline cursor-pointer font-medium"
+            >
+              Sign in
+            </button>
+            {" "}to use templates.
           </div>
         </div>
-        <div className="p-4 text-center">
-          <p className="text-sm text-white/50">Sign in to use templates.</p>
-        </div>
-      </div>
+        <AuthModal
+          open={showAuthModal}
+          mode={authMode}
+          onClose={() => setShowAuthModal(false)}
+          onChange={(m) => setAuthMode(m)}
+        />
+      </>
     );
   }
 
@@ -254,13 +278,13 @@ className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w
 <div
   ref={panelRef}
   style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
-className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w-[320px] bg-[#0C0E12] border border-white/[0.06] rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)]
+className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w-[320px] bg-card border border-border rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)]
 
  overflow-hidden select-none"
 >
       {/* Header */}
-<div ref={headerRef} className="px-3 py-3 border-b border-white/6">
-        <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-white">
+<div ref={headerRef} className="px-3 py-3 border-b border-border">
+        <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">
           Templates
         </div>
       </div>
@@ -270,12 +294,12 @@ className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w
     height: `calc(${availableHeight}px - ${headerHeight}px)`,
   }}
 ref={scrollRef}
-className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-white/40 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-input0 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
   onWheel={(e) => e.stopPropagation()}
   onScroll={() => { savedScrollRef.current = scrollRef.current?.scrollTop ?? 0; }}
 >
   {/* Save new template */}
-<div className="sticky top-0 z-10 px-3 pt-3 pb-2 bg-[#0C0E12] space-y-2 border-b border-white/[0.06]">   <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/50 font-bold tracking-wider px-1">
+<div className="sticky top-0 z-10 px-3 pt-3 pb-2 bg-card space-y-2 border-b border-border">   <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-muted-foreground font-bold tracking-wider px-1">
             Save Template
           </div>
           <div className="flex gap-2">
@@ -291,7 +315,7 @@ className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-trac
                 if (e.key === "Enter") handleSave();
               }}
               placeholder="Template name..."
-              className="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg bg-white/4 border border-white/8 text-xs text-white placeholder:text-white/30 outline-none focus:border-[#1A73E8]/50 transition"
+              className="flex-1 min-w-0 px-2.5 py-1.5 rounded-lg bg-input border border-border text-xs text-foreground placeholder:text-foreground/30 outline-none focus:border-[#1A73E8]/50 transition"
             />
             <button
               onClick={handleSave}
@@ -302,8 +326,8 @@ className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-trac
           </div>
           {/* Overwrite warning */}
 {confirmOverwrite && (
-<div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-white/3 border border-white/8">
-  <span className="text-[12px] sm:text-[13px] text-white/80">
+<div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-foreground/3 border border-border">
+  <span className="text-[12px] sm:text-[13px] text-foreground/80">
 A template with this name already exists. Overwrite it?
   </span>
 
@@ -316,7 +340,7 @@ A template with this name already exists. Overwrite it?
       </button>
       <button
         onClick={handleCancelConfirm}
-        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/65 border border-white/[0.08] transition cursor-pointer whitespace-nowrap"
+        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-foreground/40 hover:text-foreground/65 border border-border transition cursor-pointer whitespace-nowrap"
       >
         Cancel
       </button>
@@ -325,7 +349,7 @@ A template with this name already exists. Overwrite it?
 )}
           {/* Empty dashboard warning */}
           {!hasModules && (
-            <div className="text-[12px] text-white/30 px-1">
+            <div className="text-[12px] text-foreground/30 px-1">
               Add modules to save a template.
             </div>
           )}
@@ -334,13 +358,13 @@ A template with this name already exists. Overwrite it?
         {/* Saved templates list */}
         <div className="px-3 pb-3 pt-1 space-y-2">
           <div className="flex items-center justify-between px-1">
-            <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-white/50 font-bold tracking-wider">
+            <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-muted-foreground font-bold tracking-wider">
               Saved Templates
             </div>
             {templates.length > 0 && (
               <button
       onClick={() => { setConfirmClearAll(v => !v); setConfirmLoadId(null); setConfirmDeleteId(null); setConfirmOverwrite(false); }}          
-      className="text-[12px] text-white/30 hover:text-red-400 transition cursor-pointer"
+      className="text-[12px] text-foreground/30 hover:text-red-400 transition cursor-pointer"
               >
                 Clear All
               </button>
@@ -349,7 +373,7 @@ A template with this name already exists. Overwrite it?
 
           {confirmClearAll && (
             <div className="flex flex-col gap-2 px-2.5 py-2 rounded-lg bg-red-500/6 border border-red-400/20">
-              <span className="text-[12px] text-white/80">Delete all templates permanently?</span>
+              <span className="text-[12px] text-foreground/80">Delete all templates permanently?</span>
               <div className="flex gap-1.5">
                 <button
                   onClick={async () => {
@@ -370,7 +394,7 @@ A template with this name already exists. Overwrite it?
                 </button>
                 <button
                   onClick={handleCancelConfirm}
-                  className="flex-1 px-2 py-1 rounded text-[10px] font-semibold text-white/40 hover:text-white/65 border border-white/8 transition cursor-pointer"
+                  className="flex-1 px-2 py-1 rounded text-[10px] font-semibold text-foreground/40 hover:text-foreground/65 border border-border transition cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -380,19 +404,19 @@ A template with this name already exists. Overwrite it?
 
 
           {templates.length === 0 ? (
-            <div className="text-xs text-white/30 px-1 py-2">
+            <div className="text-xs text-foreground/30 px-1 py-2">
               No templates yet.
             </div>
           ) : (
             <div className="space-y-1">
               {templates.map((t) => (
                 <div key={t.id} className="space-y-1">
-            <div className="flex items-center justify-between rounded-lg px-3 py-2 bg-white/3 border border-white/6">
+            <div className="flex items-center justify-between rounded-lg px-3 py-2 bg-foreground/3 border border-border">
                     <div className="flex-1 min-w-0">
-                      <div className="text-[14px] xl:text-[15px] 2xl:text-base font-semibold text-white truncate">
+                      <div className="text-[14px] xl:text-[15px] 2xl:text-base font-semibold text-foreground truncate">
                         {t.name}
                       </div>
-                      <div className="text-[11px] text-white/60">
+                      <div className="text-[11px] text-foreground/60">
                         {new Date(t.updatedAt).toLocaleDateString("en-US")}
                       </div>
                     </div>
@@ -409,7 +433,7 @@ A template with this name already exists. Overwrite it?
                       <button
                         onClick={() => handleDelete(t.id)}
                         disabled={deletingId === t.id}
-                      className="px-2 py-1 rounded text-[10px] font-semibold text-white/40 bg-white/4 border border-white/8 hover:text-red-400 hover:border-red-400/30 hover:bg-red-400/8 transition cursor-pointer disabled:opacity-40"
+                      className="px-2 py-1 rounded text-[10px] font-semibold text-foreground/40 bg-input border border-border hover:text-red-400 hover:border-red-400/30 hover:bg-red-400/8 transition cursor-pointer disabled:opacity-40"
                       >
                         {deletingId === t.id ? "..." : "Delete"}
                       </button>
@@ -418,8 +442,8 @@ A template with this name already exists. Overwrite it?
 
                   {/* Load confirmation */}
           {confirmLoadId === t.id && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-white/3 border border-white/8">
-            <span className="text-[12px] sm:text-[13px] text-white/80">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-foreground/3 border border-border">
+            <span className="text-[12px] sm:text-[13px] text-foreground/80">
           This will replace your current dashboard. Continue?
           To avoid losing changes, you can save as a new template or overwrite your existing template before loading. </span>
 
@@ -432,7 +456,7 @@ A template with this name already exists. Overwrite it?
       </button>
       <button
         onClick={handleCancelConfirm}
-        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/65 border border-white/8 transition cursor-pointer whitespace-nowrap"
+        className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-foreground/40 hover:text-foreground/65 border border-border transition cursor-pointer whitespace-nowrap"
       >
         Cancel
       </button>
@@ -443,7 +467,7 @@ A template with this name already exists. Overwrite it?
                   {/* Delete confirmation */}
         {confirmDeleteId === t.id && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:justify-between px-2.5 sm:px-3 py-2 rounded-lg bg-red-500/6 border border-red-400/20">
-          <span className="text-[12px] sm:text-[13px] text-white/80">
+          <span className="text-[12px] sm:text-[13px] text-foreground/80">
             Delete this template permanently?
           </span>
 
@@ -456,7 +480,7 @@ A template with this name already exists. Overwrite it?
               </button>
               <button
                 onClick={handleCancelConfirm}
-                className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-white/40 hover:text-white/65 border border-white/8 transition cursor-pointer whitespace-nowrap"
+                className="flex-1 sm:flex-none px-2 py-1 rounded text-[10px] sm:text-[11px] font-semibold text-foreground/40 hover:text-foreground/65 border border-border transition cursor-pointer whitespace-nowrap"
               >
                 Cancel
               </button>

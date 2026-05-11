@@ -54,34 +54,34 @@ export default function RiskCalculatorModule({ instanceId }: Props) {
 
   return (
     <div className="space-y-3 text-xs">
-      <div className="flex items-center gap-2 text-white/70 font-semibold">
+      <div className="flex items-center gap-2 text-muted-foreground font-semibold">
         <Shield className="w-3 h-3" />
         <span>Risk Calculator</span>
       </div>
 
       <div className="space-y-2">
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             Account Size ($)
           </label>
           <input
             type="number"
             value={accountSize}
             onChange={(e) => setAccountSize(parseFloat(e.target.value) || 0)}
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            className="w-full bg-input border border-border rounded px-3 py-1.5 text-foreground"
             step="1000"
           />
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             Risk Per Trade (%)
           </label>
           <input
             type="number"
             value={riskPercent}
             onChange={(e) => setRiskPercent(parseFloat(e.target.value) || 0)}
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            className="w-full bg-input border border-border rounded px-3 py-1.5 text-foreground"
             step="0.5"
             min="0"
             max="100"
@@ -89,46 +89,46 @@ export default function RiskCalculatorModule({ instanceId }: Props) {
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             Entry Price
           </label>
           <input
             type="number"
             value={entryPrice}
             onChange={(e) => setEntryPrice(parseFloat(e.target.value) || 0)}
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            className="w-full bg-input border border-border rounded px-3 py-1.5 text-foreground"
             step="100"
           />
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             Stop Loss
           </label>
           <input
             type="number"
             value={stopLoss}
             onChange={(e) => setStopLoss(parseFloat(e.target.value) || 0)}
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            className="w-full bg-input border border-border rounded px-3 py-1.5 text-foreground"
             step="100"
           />
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px]">
+          <label className="block text-muted-foreground mb-1 text-[10px]">
             Take Profit
           </label>
           <input
             type="number"
             value={takeProfit}
             onChange={(e) => setTakeProfit(parseFloat(e.target.value) || 0)}
-            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-white"
+            className="w-full bg-input border border-border rounded px-3 py-1.5 text-foreground"
             step="100"
           />
         </div>
       </div>
 
-      <div className="border-t border-white/10 pt-3 space-y-2">
+      <div className="border-t border-border pt-3 space-y-2">
         <Row label="Position Size">{metrics.positionSize.toFixed(4)} BTC</Row>
 
         <Row label="Risk Amount">
@@ -141,7 +141,7 @@ export default function RiskCalculatorModule({ instanceId }: Props) {
           ${metrics.stopLossDistance.toLocaleString()}
         </Row>
 
-        <div className="border-t border-white/10 my-2" />
+        <div className="border-t border-border my-2" />
 
         <Row label="Potential Profit">
           <span className="text-emerald-400 font-semibold">
@@ -202,7 +202,7 @@ function Row({
 }) {
   return (
     <div className="flex justify-between">
-      <span className="text-white/50">{label}</span>
+      <span className="text-muted-foreground">{label}</span>
       <span>{children}</span>
     </div>
   );

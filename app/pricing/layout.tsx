@@ -6,10 +6,9 @@ export default function PricingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen w-full bg-[#031A1C]">
+    <div className="min-h-screen w-full bg-background">
       <Navbar />
-
-      <div className="pt-16 xl:pt-18 2xl:pt-20 px-4 xl:px-5 2xl:px-6">
+      <div className="pt-16 xl:pt-18 2xl:pt-20">
         {children}
       </div>
     </div>

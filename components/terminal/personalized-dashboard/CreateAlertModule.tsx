@@ -108,13 +108,13 @@ export default function CreateAlertModule({ instanceId }: Props) {
         )}
 
       <div className="space-y-3 text-xs">
-        <div className="flex items-center gap-2 font-semibold text-white/90">
+        <div className="flex items-center gap-2 font-semibold text-foreground">
           <Bell className="w-4 h-4" />
           <span>Create Price Alert</span>
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px] font-semibold">
+          <label className="block text-muted-foreground mb-1 text-[10px] font-semibold">
             Symbol
           </label>
           <div ref={symbolRef} className="relative">
@@ -123,10 +123,10 @@ export default function CreateAlertModule({ instanceId }: Props) {
               className="
                 w-full h-9
                 flex items-center justify-between
-bg-[#111318]
+bg-card
                 border border-emerald-500/20
                 rounded-none px-3
-                text-white text-xs
+                text-foreground text-xs
                 cursor-pointer
               "
             >
@@ -143,12 +143,12 @@ bg-[#111318]
                 className="
                   absolute z-50 mt-1 w-full
                   max-h-[96px] overflow-y-auto
-bg-[#111318]
+bg-card
                   border border-emerald-500/20
                   rounded-none
 
                   [&::-webkit-scrollbar]:w-1.5
- [&::-webkit-scrollbar-thumb]:bg-white/20                  [&::-webkit-scrollbar-thumb]:rounded-full
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20                  [&::-webkit-scrollbar-thumb]:rounded-full
                 "
               >
                 {SYMBOLS.map((s) => {
@@ -164,7 +164,7 @@ bg-[#111318]
                         text-left text-xs
                         cursor-pointer
                         bg-transparent
-                        text-white
+                        text-foreground
                         transition-colors
 hover:text-[#1A73E8]/65
                       "
@@ -179,7 +179,7 @@ hover:text-[#1A73E8]/65
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px] font-semibold">
+          <label className="block text-muted-foreground mb-1 text-[10px] font-semibold">
             Condition
           </label>
           <div ref={conditionRef} className="relative">
@@ -188,10 +188,10 @@ hover:text-[#1A73E8]/65
               className="
                 w-full h-9
                 flex items-center justify-between
-bg-[#111318]
-                border border-white/10
+bg-card
+                border border-border
                 rounded-none px-3
-                text-white text-xs
+                text-foreground text-xs
                 cursor-pointer
               "
             >
@@ -204,8 +204,8 @@ bg-[#111318]
             </button>
 
             {conditionOpen && (
-              <div className="absolute z-50 mt-1 w-full bg-[#111318]
- border border-white/10 rounded-none">
+              <div className="absolute z-50 mt-1 w-full bg-card
+ border border-border rounded-none">
                 <button
                   onClick={() => {
                     setCondition("above");
@@ -215,7 +215,7 @@ bg-[#111318]
                     w-full px-3 py-2
                     text-left text-xs
                     cursor-pointer
-                    text-white
+                    text-foreground
                     transition-colors
 hover:text-[#1A73E8]/65
                   "
@@ -232,7 +232,7 @@ hover:text-[#1A73E8]/65
                     w-full px-3 py-2
                     text-left text-xs
                     cursor-pointer
-                    text-white
+                    text-foreground
                     transition-colors
 hover:text-[#1A73E8]/65
                   "
@@ -245,7 +245,7 @@ hover:text-[#1A73E8]/65
         </div>
 
         <div>
-          <label className="block text-white/50 mb-1 text-[10px] font-semibold">
+          <label className="block text-muted-foreground mb-1 text-[10px] font-semibold">
             Target Price
           </label>
           <input
@@ -261,13 +261,13 @@ hover:text-[#1A73E8]/65
                handleCreateAlert();
               }
            }}
-  className="w-full h-9 rounded-lg bg-white/5 border border-white/10 px-3 text-white text-xs outline-none"
+  className="w-full h-9 rounded-lg bg-input border border-border px-3 text-foreground text-xs outline-none"
         />
         </div>
 
         <button
           onClick={handleCreateAlert}
-className="w-full h-9 rounded-lg bg-[#1A73E8] text-white text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"        >
+className="w-full h-9 rounded-lg bg-[#1A73E8] text-foreground text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"        >
           Create Alert
         </button>
       </div>

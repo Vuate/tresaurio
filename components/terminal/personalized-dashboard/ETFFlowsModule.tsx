@@ -167,11 +167,11 @@ export default function ETFFlowsModule({ instanceId }: Props) {
   return (
     <div className="h-full flex flex-col relative">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs">
+        <span className="font-semibold text-foreground text-xs">
           BTC ETF Flows
         </span>
         
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         {loadingCount === 0 && (
           <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
@@ -194,10 +194,9 @@ export default function ETFFlowsModule({ instanceId }: Props) {
         whitespace-nowrap
         ${
           sortBy === sort
-            ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+            ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
             : `
-                bg-white/10 text-white border-white/10
-      bg-white/10 text-white border-white/10
+                bg-secondary text-muted-foreground border-border
 hover:text-[#1A73E8]
 
               `
@@ -218,15 +217,15 @@ hover:text-[#1A73E8]
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-         [&::-webkit-scrollbar-thumb]:bg-white/20
+         [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {data.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-white/40 text-xs">
+          <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
             Loading ETF data...
           </div>
         ) : (
@@ -234,7 +233,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             {sortedData.map((etf) => (
               <div
                 key={etf.id}
-                className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
+                className="px-3 py-2 rounded-md bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-all"
               >
                 <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
                   <div
@@ -243,7 +242,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     }`}
                   />
 
-                  <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
+                  <div className="text-foreground font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
                     {etf.ticker}
                   </div>
 
@@ -261,20 +260,20 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   </div>
                 </div>
 
-                <div className="text-[10px] text-white/60 mb-2 break-words">
+                <div className="text-[10px] text-muted-foreground mb-2 break-words">
                   {etf.name}
                 </div>
 
                 <div className="space-y-1.5 mb-2">
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
-                    <span className="text-white/60 whitespace-nowrap">Flow (24h)</span>
+                    <span className="text-muted-foreground whitespace-nowrap">Flow (24h)</span>
                     <span
                       className={`font-bold font-mono whitespace-nowrap ${
                         etf.flow >= 0 ? "text-emerald-400" : "text-red-400"
                       }`}
                     >
                       {etf.loading ? (
-                        <span className="text-white/40">Loading...</span>
+                        <span className="text-muted-foreground">Loading...</span>
                       ) : (
                         <>
                           {etf.flow >= 0 ? "+" : ""}$
@@ -285,10 +284,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   </div>
 
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
-                    <span className="text-white/60 whitespace-nowrap">AUM</span>
-                    <span className="text-white font-mono font-medium whitespace-nowrap">
+                    <span className="text-muted-foreground whitespace-nowrap">AUM</span>
+                    <span className="text-foreground font-mono font-medium whitespace-nowrap">
                       {etf.loading ? (
-                        <span className="text-white/40">Loading...</span>
+                        <span className="text-muted-foreground">Loading...</span>
                       ) : (
                         `$${(etf.aum / 1000000000).toFixed(2)}B`
                       )}
@@ -297,7 +296,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 </div>
 
                 {!etf.loading && (
-                  <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${
                         etf.flow >= 0 ? "bg-emerald-500" : "bg-red-500"
@@ -314,8 +313,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         )}
       </div>
 
-      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
-        <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
+      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-border bg-input rounded-lg">
+        <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-1 sm:mb-1.5">
           Net Flow (24h)
         </div>
         <div

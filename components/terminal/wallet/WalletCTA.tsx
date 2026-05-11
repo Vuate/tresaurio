@@ -3,44 +3,39 @@ import Link from "next/link";
 export default function WalletCTA() {
   return (
     <div
-      className="
-        cta-section
-        mt-10 sm:mt-12 lg:mt-14 xl:mt-16 2xl:mt-18
-        rounded-xl sm:rounded-2xl lg:rounded-3xl
-        border border-teal-500/30
-        bg-[#041F20]/95
-        px-6 sm:px-8 lg:px-10 xl:px-12
-        py-10 sm:py-12 lg:py-14 xl:py-16
-        text-center
-      "
+      className="mt-12 lg:mt-16 rounded-xl border border-[#2563EB]/20 overflow-hidden"
+      style={{ background: "linear-gradient(145deg, rgba(37,99,235,0.08) 0%, var(--card) 60%)" }}
     >
-      <h2 className="cta-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-extrabold text-white mb-2 sm:mb-3 lg:mb-4">
-        Track Smart Money
-      </h2>
+      <div className="relative px-8 py-14 text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(37,99,235,0.07)_0%,transparent_70%)] pointer-events-none" />
 
-      <p className="cta-description mx-auto mt-2 sm:mt-3 lg:mt-4 xl:mt-5 max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed text-gray-300 px-4 mb-5 sm:mb-6 lg:mb-7 xl:mb-8">
-        Monitor whale movements in real-time, identify smart money patterns, and stay one step ahead in the market.
-      </p>
-
-      <Link
-        href="/personalized-dashboard"
-        className="
-          cta-button
-          inline-flex items-center gap-2 sm:gap-2.5 lg:gap-3
-          rounded-lg sm:rounded-xl lg:rounded-2xl
-          bg-[#1A73E8]
-          px-5 sm:px-6 lg:px-7 xl:px-8
-          py-2.5 sm:py-3 lg:py-3.5 xl:py-4
-          text-sm sm:text-base lg:text-lg xl:text-xl
-          font-bold
-          text-white
-          transition-all duration-300
-          hover:-translate-y-[3px]
-        "
-      >
-        <span>Go to Personalized Dashboard</span>
-        <span className="text-base sm:text-lg lg:text-xl xl:text-2xl">→</span>
-      </Link>
+        <div className="relative z-10">
+          <h2
+            className="font-extrabold text-foreground mb-4"
+            style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.2rem)", letterSpacing: "-0.025em" }}
+          >
+            Track Smart Money
+          </h2>
+          <p className="text-[#71717A] max-w-xl mx-auto mb-8 text-[0.875rem] leading-[1.7]">
+            Monitor whale movements in real-time, identify smart money patterns,
+            and stay one step ahead in the market.
+          </p>
+          <Link
+            href="/personalized-dashboard"
+            className="inline-flex items-center gap-2 bg-[#2563EB] border border-[#2563EB] hover:bg-[#1a55d5] hover:border-[#1a55d5] px-6 py-3 rounded-lg text-white font-semibold text-[0.9rem] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(37,99,235,0.38)] active:translate-y-0 active:shadow-none"
+          >
+            Go to Personalized Dashboard
+            <svg
+              width="16" height="16" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" strokeWidth="2"
+              strokeLinecap="round" strokeLinejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

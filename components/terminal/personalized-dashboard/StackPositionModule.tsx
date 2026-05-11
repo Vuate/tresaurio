@@ -83,12 +83,12 @@ export default function StackPositionModule({ instanceId }: Props) {
   return (
     <div ref={containerRef} className="h-full flex flex-col space-y-2 sm:space-y-3 text-xs overflow-visible">
       <div className="relative z-50 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
-        <div className="text-[10px] sm:text-xs text-white/60 flex items-center gap-2 flex-wrap">
-          <span className="font-semibold text-white/90 whitespace-nowrap">
+        <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-2 flex-wrap">
+          <span className="font-semibold text-foreground whitespace-nowrap">
             <span className="hidden xs:inline">Stack Tracker</span>
             <span className="xs:hidden">Stacks</span>
           </span>
-          <span className="text-white/40">•</span>
+          <span className="text-muted-foreground">•</span>
           <span className="text-emerald-400 whitespace-nowrap">LIVE</span>
         </div>
 
@@ -98,13 +98,13 @@ export default function StackPositionModule({ instanceId }: Props) {
       </div>
 
       <div className="flex-shrink-0 p-2 sm:p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20">
-        <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 sm:mb-1 leading-tight">
+        <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 sm:mb-1 leading-tight">
           Total Portfolio Value
         </div>
-        <div className="text-lg sm:text-xl font-bold text-white leading-tight">
+        <div className="text-lg sm:text-xl font-bold text-foreground leading-tight">
           ${totalValue.toLocaleString()}
         </div>
-        <div className="text-[9px] sm:text-[10px] text-white/40 mt-0.5">
+        <div className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5">
           {MOCK_STACKS.length} stacks tracked
         </div>
       </div>
@@ -113,14 +113,14 @@ export default function StackPositionModule({ instanceId }: Props) {
         className="
           flex-1 min-h-0
           overflow-y-auto overflow-x-hidden
-          px-1 sm:px-0
+          px-1 pr-3
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-1.5 sm:space-y-2">
@@ -129,7 +129,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             return (
               <div
                 key={stack.id}
-                className="rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-colors overflow-hidden"
+                className="rounded-lg bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-colors overflow-hidden"
               >
                 <button
                   onClick={() => {
@@ -145,20 +145,20 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 >
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                      <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/60 shrink-0" />
-                      <div className="font-semibold text-white text-xs sm:text-sm leading-tight truncate">
+                      <Layers className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground shrink-0" />
+                      <div className="font-semibold text-foreground text-xs sm:text-sm leading-tight truncate">
                         {stack.name}
                       </div>
                     </div>
                     <ChevronDown
-                      className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/40 transition-transform duration-200 shrink-0 ${
+                      className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground transition-transform duration-200 shrink-0 ${
                         isExpanded ? "rotate-180" : ""
                       }`}
                     />
                   </div>
 
                   <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2">
-                    <span className="text-[9px] sm:text-[10px] text-white/60 leading-tight whitespace-nowrap">
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground leading-tight whitespace-nowrap">
                       {stack.category}
                     </span>
                     <span
@@ -183,7 +183,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   </div>
 
                   <div className="flex items-center justify-between gap-2 mb-1.5 min-w-0">
-                    <span className="text-sm sm:text-base font-bold text-white leading-tight truncate">
+                    <span className="text-sm sm:text-base font-bold text-foreground leading-tight truncate">
                       ${stack.totalValue.toLocaleString()}
                     </span>
                     <span className="text-xs sm:text-sm text-blue-400 font-semibold whitespace-nowrap flex-shrink-0">
@@ -191,7 +191,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     </span>
                   </div>
 
-                  <div className="h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-1.5 sm:h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
                       style={{ width: `${stack.allocation}%` }}
@@ -200,8 +200,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 </button>
 
                 {isExpanded && (
-                  <div className="px-2 sm:px-3 pb-2 sm:pb-2.5 pt-1 border-t border-white/5 animate-in slide-in-from-top-2 duration-200">
-                    <div className="text-[9px] sm:text-[10px] text-white/50 mb-1.5 font-medium">
+                  <div className="px-2 sm:px-3 pb-2 sm:pb-2.5 pt-1 border-t border-border animate-in slide-in-from-top-2 duration-200">
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-1.5 font-medium">
                       Tokens in Stack:
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -210,7 +210,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                           key={token}
                           className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded border text-[9px] sm:text-[10px] font-semibold ${
                             CATEGORY_COLORS[stack.category] ||
-                            "text-white/60 bg-white/5 border-white/10"
+                            "text-muted-foreground bg-input border-border"
                           }`}
                         >
                           {token}
@@ -225,10 +225,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         </div>
       </div>
 
-      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
+      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-border bg-input rounded-lg">
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <div className="min-w-0">
-            <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 leading-tight">
+            <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 leading-tight">
               Best Performer
             </div>
             <div className="text-xs sm:text-sm font-semibold text-emerald-400 leading-tight truncate">
@@ -238,10 +238,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             </div>
           </div>
           <div className="text-right min-w-0">
-            <div className="text-[9px] sm:text-[10px] text-white/50 mb-0.5 leading-tight">
+            <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-0.5 leading-tight">
               Total Stacks
             </div>
-            <div className="text-xs sm:text-sm font-semibold text-white leading-tight">
+            <div className="text-xs sm:text-sm font-semibold text-foreground leading-tight">
               {MOCK_STACKS.length}
             </div>
           </div>

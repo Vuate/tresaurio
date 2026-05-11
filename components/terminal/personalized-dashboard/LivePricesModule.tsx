@@ -220,7 +220,7 @@ export default function LivePricesModule({
   if (!isMounted) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="text-white/40 text-xs">Loading...</div>
+        <div className="text-muted-foreground text-xs">Loading...</div>
       </div>
     );
   }
@@ -228,11 +228,11 @@ export default function LivePricesModule({
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+        <span className="font-semibold text-foreground text-xs whitespace-nowrap">
           Live Prices ({marketType === "spot" ? "Spot" : "Futures"})
         </span>
         
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
 
@@ -261,9 +261,9 @@ onClick={(e) => {
 }}
             className="
               h-7 px-3 rounded-md
-             bg-[#111318] 
-              border border-white/10
-              text-white text-xs
+             bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -273,7 +273,7 @@ onClick={(e) => {
             <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${exchangeOpen ? "rotate-180" : ""}
               `}
@@ -290,13 +290,13 @@ onClick={(e) => {
                 w-[120px]
                 max-h-[160px]
                 overflow-y-auto
-              bg-[#111318] border border-white/10
+              bg-secondary border border-border
                 rounded-md
                 shadow-lg
                 animate-in fade-in slide-in-from-top-2 duration-200
 
                 [&::-webkit-scrollbar]:w-1.5
-              [&::-webkit-scrollbar-thumb]:bg-white/20
+              [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
                 [&::-webkit-scrollbar-thumb]:rounded-full
                 [&::-webkit-scrollbar-track]:bg-transparent
               `}
@@ -312,7 +312,7 @@ onClick={(e) => {
                     w-full px-3 py-2
                     text-left text-xs
                     bg-transparent cursor-pointer
-                    text-white
+                    text-foreground
                     transition-colors
                hover:text-[#1A73E8]/65
                   "
@@ -326,7 +326,7 @@ onClick={(e) => {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+          className="h-7 px-3 rounded-md bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
         >
           <Plus className="w-3 h-3" />
           Add
@@ -341,16 +341,16 @@ onClick={(e) => {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-    [&::-webkit-scrollbar-thumb]:bg-white/20
+    [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-2">
           {watchlist.length === 0 ? (
-            <div className="text-center py-8 text-white/40 text-xs">
+            <div className="text-center py-8 text-muted-foreground text-xs">
               No symbols in watchlist. Click "Add" to add some.
             </div>
           ) : (
@@ -363,7 +363,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               return (
                 <div
                   key={symbol}
-                  className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
+                  className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 px-3 py-2 rounded-md bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-all"
                 >
                   <div
                     className={`font-semibold shrink-0 ${
@@ -377,32 +377,32 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                     )}
                   </div>
 
-                  <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
+                  <div className="text-foreground font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
                     {symbol}
                   </div>
 
-                  <div className="text-white/40 leading-tight text-[10px] whitespace-nowrap shrink-0">
+                  <div className="text-muted-foreground leading-tight text-[10px] whitespace-nowrap shrink-0">
                     {exchange.toUpperCase()}
                   </div>
 
-                  <div className="text-white/40 leading-tight text-[10px] shrink-0">
+                  <div className="text-muted-foreground leading-tight text-[10px] shrink-0">
                     •
                   </div>
 
-                  <div className="text-white/40 leading-tight text-[10px] whitespace-nowrap shrink-0">
+                  <div className="text-muted-foreground leading-tight text-[10px] whitespace-nowrap shrink-0">
                     {marketType === "spot" ? "SPOT" : "FUTURES"}
                   </div>
 
                   <div className="flex-1 min-w-[10px]"></div>
 
-                  <div className="text-white font-mono leading-tight text-xs whitespace-nowrap shrink-0">
+                  <div className="text-foreground font-mono leading-tight text-xs whitespace-nowrap shrink-0">
                     {price > 0 ? (
                       `$${price.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: price < 1 ? 6 : 2,
                       })}`
                     ) : (
-                      <span className="text-white/40">Loading...</span>
+                      <span className="text-muted-foreground">Loading...</span>
                     )}
                   </div>
 
@@ -420,7 +420,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   <button
                     onClick={() => removeSymbol(symbol)}
                     className="
-                      text-white/40
+                      text-muted-foreground
                       hover:text-red-400
                       transition-all
                       cursor-pointer
@@ -441,7 +441,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         <div 
           className="
             fixed inset-0
-            bg-[#0a0e1a] z-[100]
+            bg-background z-[100]
             flex flex-col overflow-hidden
             animate-in fade-in slide-in-from-bottom-4 duration-200
           "
@@ -457,13 +457,13 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <span className="text-white font-semibold text-xs whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-border bg-input flex-shrink-0">
+            <span className="text-foreground font-semibold text-xs whitespace-nowrap">
               Add Symbol ({marketType === "spot" ? "Spot" : "Futures"})
             </span>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+              className="text-muted-foreground hover:text-foreground leading-none cursor-pointer transition-colors text-xl ml-auto"
             >
               ×
             </button>
@@ -475,17 +475,17 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-             [&::-webkit-scrollbar-thumb]:bg-white/20
+             [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-scrollbar-thumb-white/20              scrollbar-track-transparent
+scrollbar-thumb-foreground/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
               <div className="space-y-2">
-                <label className="block text-white/50 font-medium text-[10px]">
+                <label className="block text-muted-foreground font-medium text-[10px]">
                   Add Custom Pair
                 </label>
                 <div className="flex flex-wrap items-center gap-2">
@@ -495,10 +495,10 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       value={baseAsset}
                       onChange={(e) => setBaseAsset(e.target.value.toUpperCase())}
                       placeholder="Base (e.g. BTC)"
-                      className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                      className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                     />
                   </div>
-                  <div className="text-white/40 font-bold text-xs shrink-0">/</div>
+                  <div className="text-muted-foreground font-bold text-xs shrink-0">/</div>
                   <div className="flex-1 min-w-[140px]">
                     <input
                       type="text"
@@ -508,18 +508,18 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         e.key === "Enter" && addSymbol(baseAsset, quoteAsset)
                       }
                       placeholder="Quote (e.g. USDT)"
-                      className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                      className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                     />
                   </div>
                   <button
                     onClick={() => addSymbol(baseAsset, quoteAsset)}
                     disabled={!baseAsset || !quoteAsset}
-                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
+                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed text-foreground rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <div className="text-white/40 text-[10px]">
+                <div className="text-muted-foreground text-[10px]">
                   💡 Example: BTC / USDT ={" "}
                   {exchange === "okx" || exchange === "coinbase"
                     ? "BTC-USDT"
@@ -528,7 +528,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
               </div>
 
               <div>
-                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                <label className="block text-muted-foreground mb-2 font-medium text-[10px]">
                   Popular Base Assets
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -543,9 +543,9 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         whitespace-nowrap
                         ${
                           baseAsset === asset
-                            ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                            ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                             : `
-                    bg-white/10 text-white border-white/10
+                    bg-secondary text-foreground border-border
                     hover:text-[#1A73E8]
 
                               `
@@ -559,7 +559,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
               </div>
 
               <div>
-                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                <label className="block text-muted-foreground mb-2 font-medium text-[10px]">
                   Popular Quote Assets
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -574,9 +574,9 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         whitespace-nowrap
                         ${
                           quoteAsset === asset
-                            ? "bg-emerald-500/30 text-emerald-300 border-emerald-500/50"
+                            ? "bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-600 dark:text-emerald-300 border-emerald-500/40 dark:border-emerald-500/50"
                             : `
-                  bg-white/10 text-white border-white/10
+                  bg-secondary text-foreground border-border
                 hover:text-[#1A73E8]
 
                               `

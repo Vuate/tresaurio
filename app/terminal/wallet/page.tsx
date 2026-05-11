@@ -7,10 +7,10 @@ import WalletCTA from "@/components/terminal/wallet/WalletCTA";
 
 export default function WalletPage() {
   return (
-    <div className="min-h-screen bg-[#031A1C] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <WalletHero />
 
-      <div className="w-full mx-auto px-6 py-8">
+      <div className="w-full mx-auto px-3 sm:px-6 py-8">
         <WalletFeatures />
         <WalletPatterns />
         <WalletTransferFeed />

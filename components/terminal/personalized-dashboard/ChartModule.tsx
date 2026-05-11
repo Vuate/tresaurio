@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useEffect, useRef, memo } from 'react';
+import { useTheme } from 'next-themes';
 
 interface ChartModuleProps {
   instanceId: string;  
 }
 
-function TradingViewWidget({ instanceId }: ChartModuleProps) {  
+function TradingViewWidget({ instanceId }: ChartModuleProps) {
   const container = useRef<HTMLDivElement>(null);
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     if (!container.current) return;
@@ -23,7 +25,7 @@ function TradingViewWidget({ instanceId }: ChartModuleProps) {
       "symbol": "BINANCE:BTCUSDT",
       "interval": "D",
       "timezone": "Etc/UTC",
-      "theme": "dark",
+      "theme": resolvedTheme === "dark" ? "dark" : "light",
       "style": "1",
       "locale": "en",
       "toolbar_bg": "#f1f3f6",
@@ -40,7 +42,7 @@ function TradingViewWidget({ instanceId }: ChartModuleProps) {
         container.current.innerHTML = '';
       }
     };
-  }, [instanceId]);  
+  }, [instanceId, resolvedTheme]);  
 
   return (
     <div 

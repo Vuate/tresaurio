@@ -457,9 +457,9 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             onClick={() => setExchangeDropdownOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-            bg-[#111318] 
-              border border-white/10
-              text-white text-xs
+            bg-card 
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -476,7 +476,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
             </div>
             <span
               className={`
-                text-white/50 text-[10px] shrink-0
+                text-muted-foreground text-[10px] shrink-0
                 transition-transform duration-200
                 ${exchangeDropdownOpen ? "rotate-180" : ""}
               `}
@@ -500,7 +500,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                 className={`
                  absolute z-[999]
                  w-[140px]
-             bg-[#111318] border border-white/10
+             bg-card border border-border
 
                   rounded-lg
                   overflow-hidden
@@ -508,7 +508,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                   animate-in fade-in duration-200
 
                   [&::-webkit-scrollbar]:w-1.5
-                  [&::-webkit-scrollbar-thumb]:bg-white/20
+                  [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
                   [&::-webkit-scrollbar-thumb]:rounded-full
                   [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -529,7 +529,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                       w-full px-3 py-2
                       text-left text-xs
                       bg-transparent cursor-pointer
-                      text-white
+                      text-foreground
                       transition-colors
                  hover:text-[#1A73E8]/65
                       flex items-center justify-between
@@ -562,7 +562,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                 }
                 setShowSelectModal(true);
               }}
-              className="h-7 px-2 bg-white/5 border border-white/10 text-white/60 rounded-lg text-xs hover:bg-white/10 transition-colors cursor-pointer"
+              className="h-7 px-2 bg-input border border-border text-muted-foreground rounded-lg text-xs hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer"
               title="Change Connection"
             >
               <Key className="w-3 h-3" />
@@ -577,7 +577,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
               }
               setShowSelectModal(true);
             }}
-            className="h-7 px-2.5 sm:px-3 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-lg text-xs hover:bg-blue-500/30 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+            className="h-7 px-2.5 sm:px-3 bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 rounded-lg text-xs hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
           >
             <Key className="w-3 h-3" />
             <span>Connect</span>
@@ -593,7 +593,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
       )}
 
       {lastSync && (
-        <div className="px-2 sm:px-3 mb-2 text-white/40 text-[10px] flex-shrink-0">
+        <div className="px-2 sm:px-3 mb-2 text-muted-foreground text-[10px] flex-shrink-0">
           Last sync: {lastSync.toLocaleTimeString()}
         </div>
       )}
@@ -606,11 +606,11 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-        [&::-webkit-scrollbar-thumb]:bg-white/20
+        [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
     {positions.length === 0 && (
@@ -625,7 +625,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
        placeholder="Symbol (e.g. BTCUSDT)"
        value={symbol}
        onChange={(e) => setSymbol(e.target.value)}
-       className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+       className="w-full bg-input border border-border rounded-lg px-3 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
     />
     
 
@@ -634,8 +634,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 onClick={() => setSide("long")}
                 className={`py-2 rounded-lg text-xs transition font-semibold cursor-pointer ${
                   side === "long"
-                    ? "bg-emerald-500 text-white"
-                    : "bg-white/5 text-white/50 hover:bg-white/10"
+                    ? "bg-emerald-500 text-foreground"
+                    : "bg-input text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
                 }`}
               >
                 Long
@@ -644,8 +644,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 onClick={() => setSide("short")}
                 className={`py-2 rounded-lg text-xs transition font-semibold cursor-pointer ${
                   side === "short"
-                    ? "bg-red-500 text-white"
-                    : "bg-white/5 text-white/50 hover:bg-white/10"
+                    ? "bg-red-500 text-foreground"
+                    : "bg-input text-muted-foreground hover:bg-black/10 dark:hover:bg-white/10"
                 }`}
               >
                 Short
@@ -657,7 +657,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               placeholder="Entry Price"
               value={entry}
               onChange={(e) => setEntry(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full bg-input border border-border rounded-lg px-3 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
             />
 
             <input
@@ -665,12 +665,12 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               placeholder="Size"
               value={size}
               onChange={(e) => setSize(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full bg-input border border-border rounded-lg px-3 py-2 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
             />
 
             <div>
               <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-                <label className="text-white/50 text-[10px] font-medium whitespace-nowrap">Leverage</label>
+                <label className="text-muted-foreground text-[10px] font-medium whitespace-nowrap">Leverage</label>
                 <input
                   type="number"
                   min="1"
@@ -678,7 +678,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   value={leverageInput}
                   onChange={(e) => handleLeverageInputChange(e.target.value)}
                   onBlur={handleLeverageInputBlur}
-                  className="w-16 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white text-xs outline-none text-right focus:border-blue-500/50 transition-colors shrink-0"
+                  className="w-16 bg-input border border-border rounded-lg px-2 py-1 text-foreground text-xs outline-none text-right focus:border-blue-500/50 transition-colors shrink-0"
                 />
               </div>
               <input
@@ -693,12 +693,12 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
             <button
               onClick={addManualPosition}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition text-xs font-semibold cursor-pointer"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-foreground py-2 rounded-lg transition text-xs font-semibold cursor-pointer"
             >
               Add Position
             </button>
 
-            <div className="text-center text-white/40 text-xs py-4">
+            <div className="text-center text-muted-foreground text-xs py-4">
               No futures positions. Sync from exchange or add manually.
             </div>
           </div>
@@ -725,33 +725,33 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
               const isProfit = totalNetPnL >= 0;
 
               return (
-                <div className="mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10">
+                <div className="mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-border">
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[10px] text-white/50">Float PnL</span>
+                    <span className="text-[10px] text-muted-foreground">Float PnL</span>
                     <span className={`text-sm font-bold ${isProfit ? "text-emerald-400" : "text-red-400"}`}>
                       {isProfit ? "+" : ""}${totalNetPnL.toFixed(2)} ({isProfit ? "+" : ""}{totalPnlPercent.toFixed(2)}%)
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-white/50">Realized PnL</span>
+                      <span className="text-[10px] text-muted-foreground">Realized PnL</span>
                       {(["today", "7d", "30d", "all"] as const).map((f) => (
                         <button
                           key={f}
                           onClick={() => setPnlFilter(f)}
-                          className={`text-[9px] px-1.5 py-0.5 rounded ${pnlFilter === f ? "bg-white/20 text-white" : "text-white/30 hover:text-white/60"}`}
+                          className={`text-[9px] px-1.5 py-0.5 rounded ${pnlFilter === f ? "bg-black/10 dark:bg-white/20 text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                         >
                           {f === "today" ? "1D" : f === "7d" ? "7D" : f === "30d" ? "30D" : "All"}
                         </button>
                       ))}
                     </div>
-                    <span className={`text-sm font-bold ${realizedPnl === null ? "text-white/30" : realizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                    <span className={`text-sm font-bold ${realizedPnl === null ? "text-muted-foreground" : realizedPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}>
                       {realizedPnl === null
                         ? (loadingRealized ? "..." : "—")
                         : `${realizedPnl >= 0 ? "+" : ""}$${realizedPnl.toFixed(2)}`}
                     </span>
                   </div>
-                  <div className="text-[9px] text-white/40 mt-1.5 truncate">
+                  <div className="text-[9px] text-muted-foreground mt-1.5 truncate">
                     {positions.length} position{positions.length > 1 ? "s" : ""} • ${totalValue.toFixed(2)} total value
                   </div>
                 </div>
@@ -779,7 +779,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 return (
                   <div
                     key={pos.id}
-                    className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
+                    className="px-3 py-2 rounded-lg bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-all"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 mb-1">
                       <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -788,55 +788,55 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                         ) : (
                           <TrendingDown className="w-3 h-3 text-red-400 shrink-0" />
                         )}
-                        <span className="text-sm font-semibold text-white truncate">
+                        <span className="text-sm font-semibold text-foreground truncate">
                           {pos.symbol.replace("USDT", "")}
                         </span>
-                        <span className="text-[10px] text-white/40 whitespace-nowrap shrink-0">
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
                           {pos.leverage}x
                         </span>
                       </div>
 
                       <button
                         onClick={() => removePosition(pos.id)}
-                        className="text-white/40 hover:text-red-400 transition-colors shrink-0 cursor-pointer"
+                        className="text-muted-foreground hover:text-red-400 transition-colors shrink-0 cursor-pointer"
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </div>
 
                     <div className="text-[11px] space-y-0.5">
-                      <div className="flex justify-between text-white/50">
+                      <div className="flex justify-between text-muted-foreground">
                         <span>Entry</span>
                         <span className="truncate ml-2">${pos.entryPrice.toLocaleString('en-US')}</span>
                       </div>
 
-                      <div className="flex justify-between text-white/50">
+                      <div className="flex justify-between text-muted-foreground">
                         <span>Current</span>
                         <span className="truncate ml-2">${currentPrice.toLocaleString('en-US')}</span>
                       </div>
 
-                      <div className="flex justify-between text-white/50">
+                      <div className="flex justify-between text-muted-foreground">
                         <span>Size</span>
                         <span className="truncate ml-2">{pos.size}</span>
                       </div>
 
-                      <div className="flex justify-between text-white/50">
+                      <div className="flex justify-between text-muted-foreground">
                         <span>Size (USDT)</span>
                         <span className="truncate ml-2">${sizeUSDT.toFixed(2)}</span>
                       </div>
 
-                      <div className="flex justify-between text-white/50">
+                      <div className="flex justify-between text-muted-foreground">
                         <span>Initial Margin</span>
                         <span className="truncate ml-2">${initialMargin.toFixed(2)}</span>
                       </div>
 
                       {fundingRate && (
-                        <div className="flex justify-between items-center text-white/50 pt-1 border-t border-white/10">
+                        <div className="flex justify-between items-center text-muted-foreground pt-1 border-t border-border">
                           <div className="flex items-center gap-1">
                             <span>Funding</span>
                             <button
                               onClick={() => refreshFundingRate(pos.symbol)}
-                              className="text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+                              className="text-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
                             >
                               <RefreshCw className="w-3 h-3" />
                             </button>
@@ -853,7 +853,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                               {fundingRate.fundingRate.toFixed(4)}%
                             </div>
                             {fundingCost !== null && (
-                              <div className="text-[9px] text-white/30 truncate">
+                              <div className="text-[9px] text-muted-foreground truncate">
                                 ~${Math.abs(fundingCost).toFixed(2)}/8h
                               </div>
                             )}
@@ -862,14 +862,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                       )}
 
                       {loadingFunding && !fundingRate && (
-                        <div className="flex justify-between text-white/30 text-[10px] pt-1 border-t border-white/10">
+                        <div className="flex justify-between text-muted-foreground text-[10px] pt-1 border-t border-border">
                           <span>Funding</span>
                           <span>Loading...</span>
                         </div>
                       )}
 
-                      <div className="flex justify-between font-semibold pt-1 border-t border-white/10">
-                        <span className="text-white/70">PnL</span>
+                      <div className="flex justify-between font-semibold pt-1 border-t border-border">
+                        <span className="text-muted-foreground">PnL</span>
                         <span className={`truncate ml-2 ${isProfit ? "text-emerald-400" : "text-red-400"}`}>
                           {isProfit ? "+" : ""}${pnl.toFixed(2)} ({isProfit ? "+" : ""}
                           {pnlPercent.toFixed(2)}%)

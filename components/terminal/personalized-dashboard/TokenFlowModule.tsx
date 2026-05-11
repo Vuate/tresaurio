@@ -279,11 +279,11 @@ export default function TokenFlowModule({ instanceId }: Props) {
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs">
+        <span className="font-semibold text-foreground text-xs">
           Token Flow
         </span>
         
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         {!loading && (
           <span className="flex items-center gap-1.5 text-xs whitespace-nowrap">
@@ -299,9 +299,9 @@ export default function TokenFlowModule({ instanceId }: Props) {
             onClick={() => setTokenDropdownOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-           bg-[#111318]
-              border border-white/10
-              text-white text-xs
+           bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -316,7 +316,7 @@ export default function TokenFlowModule({ instanceId }: Props) {
             </span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${tokenDropdownOpen ? "rotate-180" : ""}
               `}
@@ -337,14 +337,14 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
         w-[160px]
         max-h-[200px]
         overflow-y-auto
-    bg-[#111318] border border-white/10
+    bg-secondary border border-border
 
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
         [&::-webkit-scrollbar]:w-1.5
-  [&::-webkit-scrollbar-thumb]:bg-white/20
+  [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -359,7 +359,7 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
             w-full px-3 py-2
             text-left text-xs
             bg-transparent cursor-pointer
-            text-white
+            text-foreground
             transition-colors
   hover:text-[#1A73E8]/65
             flex items-center justify-between
@@ -379,7 +379,7 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+          className="h-7 px-3 rounded-md bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
         >
           <Plus className="w-3 h-3" />
           Add
@@ -391,7 +391,7 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
           {selectedTokens.map((token) => (
             <span
               key={token}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] border border-blue-500/30"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 text-[10px] border border-blue-500/50 dark:border-blue-500/30"
             >
               {token}
               <button
@@ -413,14 +413,14 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {loading && data.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-white/40 text-xs">
+          <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
             Loading flow data...
           </div>
         ) : error ? (
@@ -432,10 +432,10 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
             {data.map((flow) => (
               <div
                 key={flow.chain}
-                className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
+                className="px-3 py-2 rounded-md bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-all"
               >
                 <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
-                  <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
+                  <div className="text-foreground font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
                     {flow.chain}
                   </div>
 
@@ -456,7 +456,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
                   <div className="flex-1 min-w-[10px]"></div>
 
-                  <div className="text-[10px] text-white/60 whitespace-nowrap shrink-0">
+                  <div className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
                     TVL: ${(flow.tvl / 1000000000).toFixed(2)}B
                   </div>
                 </div>
@@ -464,22 +464,22 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 <div className="space-y-1.5 mb-2">
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
                     <span className="text-emerald-400 whitespace-nowrap">↓ Inflow</span>
-                    <span className="text-white font-mono font-medium whitespace-nowrap">
+                    <span className="text-foreground font-mono font-medium whitespace-nowrap">
                       ${(flow.inflow / 1000000).toFixed(1)}M
                     </span>
                   </div>
 
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
                     <span className="text-red-400 whitespace-nowrap">↑ Outflow</span>
-                    <span className="text-white font-mono font-medium whitespace-nowrap">
+                    <span className="text-foreground font-mono font-medium whitespace-nowrap">
                       ${(flow.outflow / 1000000).toFixed(1)}M
                     </span>
                   </div>
 
-                  <div className="h-px bg-white/10 my-1" />
+                  <div className="h-px bg-black/10 dark:bg-white/10 my-1" />
 
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-sm">
-                    <span className="text-white/80 font-medium whitespace-nowrap">Net Flow</span>
+                    <span className="text-muted-foreground font-medium whitespace-nowrap">Net Flow</span>
                     <span
                       className={`font-bold font-mono whitespace-nowrap ${
                         flow.net >= 0 ? "text-emerald-400" : "text-red-400"
@@ -491,14 +491,14 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   </div>
 
                   <div className="flex flex-wrap justify-between items-center gap-x-2 gap-y-1 text-xs">
-                    <span className="text-white/60 whitespace-nowrap">Volume (24h)</span>
-                    <span className="text-white/80 font-mono whitespace-nowrap">
+                    <span className="text-muted-foreground whitespace-nowrap">Volume (24h)</span>
+                    <span className="text-muted-foreground font-mono whitespace-nowrap">
                       ${(flow.volume24h / 1000000).toFixed(1)}M
                     </span>
                   </div>
                 </div>
 
-                <div className="flex gap-1 h-2 rounded-full overflow-hidden bg-white/10">
+                <div className="flex gap-1 h-2 rounded-full overflow-hidden bg-black/10 dark:bg-white/10">
                   <div
                     className="bg-emerald-500 transition-all"
                     style={{
@@ -518,8 +518,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         )}
       </div>
 
-      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
-        <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
+      <div className="flex-shrink-0 p-2 sm:p-3 border-t border-border bg-input rounded-lg">
+        <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-1 sm:mb-1.5">
           Total Net Flow (24h)
         </div>
         <div
@@ -539,7 +539,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         <div 
           className="
             fixed inset-0
-            bg-[#0a0e1a] z-[100]
+            bg-background z-[100]
             flex flex-col overflow-hidden
             animate-in fade-in slide-in-from-bottom-4 duration-200
           "
@@ -555,13 +555,13 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <span className="text-white font-semibold text-xs whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-border bg-input flex-shrink-0">
+            <span className="text-foreground font-semibold text-xs whitespace-nowrap">
               Add Token
             </span>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+              className="text-muted-foreground hover:text-foreground leading-none cursor-pointer transition-colors text-xl ml-auto"
             >
               ×
             </button>
@@ -573,16 +573,16 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20              [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20              [&::-webkit-scrollbar-thumb]:rounded-full
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-scrollbar-thumb-white/20              scrollbar-track-transparent
+scrollbar-thumb-foreground/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
               <div className="space-y-2">
-                <label className="block text-white/50 font-medium text-[10px]">
+                <label className="block text-muted-foreground font-medium text-[10px]">
                   Add Custom Token
                 </label>
                 <div className="flex flex-wrap items-center gap-2">
@@ -593,24 +593,24 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       onChange={(e) => setNewToken(e.target.value.toUpperCase())}
                       onKeyDown={(e) => e.key === "Enter" && addToken()}
                       placeholder="Enter token symbol (e.g. LINK)"
-                      className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                      className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                     />
                   </div>
                   <button
                     onClick={addToken}
                     disabled={!newToken.trim()}
-                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
+                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed text-foreground rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <div className="text-white/40 text-[10px]">
+                <div className="text-muted-foreground text-[10px]">
                   💡 Example: LINK, UNI, AAVE
                 </div>
               </div>
 
               <div>
-                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                <label className="block text-muted-foreground mb-2 font-medium text-[10px]">
                   Popular Tokens
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -625,9 +625,9 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         whitespace-nowrap
                         ${
                           newToken === tok
-                            ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                            ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                             : `
-                                bg-white/10 text-white border-white/10
+                                bg-secondary text-foreground border-border
                               hover:text-[#1A73E8]
 
                               `

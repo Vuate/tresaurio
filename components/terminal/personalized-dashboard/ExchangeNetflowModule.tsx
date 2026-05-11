@@ -291,12 +291,12 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs">
+        <span className="font-semibold text-foreground text-xs">
           Exchange Netflow
         </span>
         
         {/* Separator dot */}
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         {/* LIVE indicator - Can wrap independently */}
         {loadingCount === 0 && (
@@ -315,9 +315,9 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
             onClick={() => setSymbolDropdownOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-              bg-[#111318] 
-              border border-white/10
-              text-white text-xs
+              bg-card 
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -327,7 +327,7 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
             <span>{selectedSymbol}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${symbolDropdownOpen ? "rotate-180" : ""}
               `}
@@ -353,14 +353,14 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
       }}
       className="
         overflow-y-auto
-      bg-[#111318] border border-white/10
+      bg-card border border-border
 
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
         [&::-webkit-scrollbar]:w-1.5
- [&::-webkit-scrollbar-thumb]:bg-white/20
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
          [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -383,7 +383,7 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
             }}
             className="
               flex-1 text-left
-              text-white
+              text-foreground
            hover:text-[#1A73E8]/65
                cursor-pointer
             "
@@ -397,7 +397,7 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
                 removeSymbol(sym);
               }}
               className="
-                text-white/40
+                text-muted-foreground
                 hover:text-red-400
                 transition-colors
                 cursor-pointer
@@ -418,7 +418,7 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
         {/* Add Button - Can wrap independently */}
         <button
           onClick={() => setShowAddModal(true)}
-          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+          className="h-7 px-3 rounded-md bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
         >
           <Plus className="w-3 h-3" />
           Add
@@ -437,9 +437,9 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
               cursor-pointer
               ${
                 timeframe === tf
-                  ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                  ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                   : `
-                      bg-white/10 text-white border-white/10
+                      bg-secondary text-muted-foreground border-border
                       hover:text-[#1A73E8]
                     `
               }
@@ -458,17 +458,17 @@ export default function ExchangeNetflowModule({ instanceId }: Props) {
           overflow-y-auto
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
-        [&::-webkit-scrollbar-thumb]:bg-white/20
+        [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40          scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40          scrollbar-thin
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         <div className="space-y-2">
           {data.map((d) => (
             <div
               key={d.exchange}
-              className="px-3 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/8 transition-all"
+              className="px-3 py-2 rounded-md bg-input border border-border hover:bg-black/8 dark:hover:bg-white/8 transition-all"
             >
               {/* Card Header - Fully Responsive */}
               <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 mb-2">
@@ -480,7 +480,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                 />
 
                 {/* Exchange Name */}
-                <div className="text-white font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
+                <div className="text-foreground font-semibold leading-tight text-xs whitespace-nowrap shrink-0">
                   {d.exchange}
                 </div>
 
@@ -505,9 +505,9 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
   {/* Inflow */}
   <div className="flex justify-between items-center gap-2 text-xs">
     <span className="text-emerald-400 shrink-0">↓ Inflow</span>
-    <span className="text-white font-mono text-right truncate">
+    <span className="text-foreground font-mono text-right truncate">
       {d.loading ? (
-        <span className="text-white/40">Loading...</span>
+        <span className="text-muted-foreground">Loading...</span>
       ) : (
         `$${d.inflow > 1000000
           ? (d.inflow / 1000000).toFixed(2) + "M"
@@ -519,9 +519,9 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
   {/* Outflow */}
   <div className="flex justify-between items-center gap-2 text-xs">
     <span className="text-red-400 shrink-0">↑ Outflow</span>
-    <span className="text-white font-mono text-right truncate">
+    <span className="text-foreground font-mono text-right truncate">
       {d.loading ? (
-        <span className="text-white/40">Loading...</span>
+        <span className="text-muted-foreground">Loading...</span>
       ) : (
         `$${d.outflow > 1000000
           ? (d.outflow / 1000000).toFixed(2) + "M"
@@ -530,18 +530,18 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
     </span>
   </div>
 
-  <div className="h-px bg-white/10 my-1" />
+  <div className="h-px bg-black/10 dark:bg-white/10 my-1" />
 
   {/* Net Flow */}
   <div className="flex justify-between items-center gap-2 text-sm">
-    <span className="text-white/80 font-medium shrink-0">Net Flow</span>
+    <span className="text-muted-foreground font-medium shrink-0">Net Flow</span>
     <span
       className={`font-bold font-mono text-right truncate ${
         d.net >= 0 ? "text-emerald-400" : "text-red-400"
       }`}
     >
       {d.loading ? (
-        <span className="text-white/40 text-xs">Loading...</span>
+        <span className="text-muted-foreground text-xs">Loading...</span>
       ) : (
         <>
           {d.net >= 0 ? "+" : "-"}$
@@ -556,7 +556,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               {/* Flow Bar */}
               {!d.loading && (d.inflow + d.outflow) > 0 && (
-                <div className="flex gap-1 h-2 rounded-full overflow-hidden bg-white/10">
+                <div className="flex gap-1 h-2 rounded-full overflow-hidden bg-black/10 dark:bg-white/10">
                   <div
                     className="bg-emerald-500 transition-all"
                     style={{
@@ -576,8 +576,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         </div>
       </div>
 
-<div className="flex-shrink-0 p-2 sm:p-3 border-t border-white/10 bg-white/5 rounded-lg">
-  <div className="text-[9px] sm:text-[10px] text-white/60 mb-1 sm:mb-1.5">
+<div className="flex-shrink-0 p-2 sm:p-3 border-t border-border bg-input rounded-lg">
+  <div className="text-[9px] sm:text-[10px] text-muted-foreground mb-1 sm:mb-1.5">
     Total Net Flow ({timeframe.toUpperCase()})
   </div>
   <div 
@@ -600,7 +600,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         <div 
           className="
             fixed inset-0
-            bg-[#0a0e1a] z-[100]
+            bg-background z-[100]
             flex flex-col overflow-hidden
             animate-in fade-in slide-in-from-bottom-4 duration-200
           "
@@ -617,13 +617,13 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           onWheel={(e) => e.stopPropagation()}
         >
           {/* Modal Header */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <span className="text-white font-semibold text-xs whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-border bg-input flex-shrink-0">
+            <span className="text-foreground font-semibold text-xs whitespace-nowrap">
               Add Symbol
             </span>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+              className="text-muted-foreground hover:text-foreground leading-none cursor-pointer transition-colors text-xl ml-auto"
             >
               ×
             </button>
@@ -636,18 +636,18 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-             [&::-webkit-scrollbar-thumb]:bg-white/20
+             [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-scrollbar-thumb-white/20              scrollbar-track-transparent
+scrollbar-thumb-foreground/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
               {/* Custom Symbol Input */}
               <div className="space-y-2">
-                <label className="block text-white/50 font-medium text-[10px]">
+                <label className="block text-muted-foreground font-medium text-[10px]">
                   Add Custom Symbol
                 </label>
                 <div className="flex flex-wrap items-center gap-2">
@@ -658,25 +658,25 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                       onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
                       onKeyDown={(e) => e.key === "Enter" && addSymbol()}
                       placeholder="Enter symbol (e.g. BTC, ETH)"
-                      className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                      className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                     />
                   </div>
                   <button
                     onClick={addSymbol}
                     disabled={!newSymbol.trim()}
-                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
+                    className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed text-foreground rounded-md font-semibold transition-all cursor-pointer text-xs shrink-0"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <div className="text-white/40 text-[10px]">
+                <div className="text-muted-foreground text-[10px]">
                   💡 Example: BTC, ETH, SOL
                 </div>
               </div>
 
               {/* Popular Symbols */}
               <div>
-                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                <label className="block text-muted-foreground mb-2 font-medium text-[10px]">
                   Popular Symbols
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -691,9 +691,9 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         whitespace-nowrap
                         ${
                           newSymbol === sym
-                            ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                            ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                             : `
-                          bg-white/10 text-white border-white/10
+                          bg-secondary text-muted-foreground border-border
                           hover:text-[#1A73E8]
 
                               `

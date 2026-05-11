@@ -7,7 +7,7 @@ import NewsCTA from "@/components/terminal/news/NewsCTA";
 
 export default function NewsPage() {
   return (
-    <div className="min-h-screen bg-[#031A1C] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <NewsHero />
 
       <div className="w-full mx-auto px-6 py-8">

@@ -25,7 +25,7 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
 
   if (alerts.length === 0) {
     return (
-      <div className="text-center text-white/40 py-4 text-[10px] flex flex-col items-center gap-2">
+      <div className="text-center text-muted-foreground py-4 text-[10px] flex flex-col items-center gap-2">
         <Bell className="w-8 h-8 opacity-30" />
         <span>No active alerts</span>
       </div>
@@ -42,16 +42,16 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
               p-2.5 rounded-lg
               border transition-colors
               min-w-0
-              bg-white/5 border-white/10
+              bg-input border-border
             "
           >
             {/* Header Row - Fully Responsive */}
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
               {/* Alert Icon */}
-              <Bell className="w-3 h-3 text-white/40 shrink-0" />
+              <Bell className="w-3 h-3 text-muted-foreground shrink-0" />
 
               {/* Symbol */}
-              <span className="text-sm font-semibold text-white whitespace-nowrap shrink-0">
+              <span className="text-sm font-semibold text-foreground whitespace-nowrap shrink-0">
                 {a.symbol.replace("USDT", "")}
               </span>
 
@@ -59,7 +59,7 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
               <div className="flex-1 min-w-[10px]"></div>
 
               {/* Status - Always Waiting */}
-              <span className="text-[11px] font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 text-teal-400">
+              <span className="text-[11px] font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 text-teal-600 dark:text-teal-400">
                 <Bell className="w-3 h-3" />
                 <span>Waiting</span>
               </span>
@@ -77,9 +77,9 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
                 }}
                 className="
                   h-6 w-6 rounded-md
-                  border border-white/10
-                  bg-white/5
-                  text-white/60
+                  border border-border
+                  bg-input
+                  text-muted-foreground
                   cursor-pointer
                   hover:bg-red-500/80
                   hover:text-white
@@ -94,7 +94,7 @@ export default function ActiveAlertsModule({ instanceId }: Props) {
 
             {/* Info Rows - Fully Responsive */}
             <div className="space-y-0.5">
-              <div className="text-[11px] text-white/50 break-words leading-tight">
+              <div className="text-[11px] text-foreground/70 dark:text-foreground/60 break-words leading-tight">
                 {a.condition === "above" ? "Above" : "Below"} $
                 {a.target.toLocaleString()}
               </div>

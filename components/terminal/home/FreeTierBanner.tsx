@@ -9,11 +9,11 @@ export default function FreeTierBanner() {
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 xl:gap-9 2xl:gap-10">
           {/* LEFT TEXT */}
           <div className="max-w-2xl">
-            <h3 className="text-2xl xl:text-3xl 2xl:text-4xl font-extrabold text-white tracking-wide">
+            <h3 className="text-2xl xl:text-3xl 2xl:text-4xl font-extrabold text-foreground tracking-wide">
                 You're Using the Trader (Free) Plan
             </h3>
 
-            <p className="text-gray-300 text-xs xl:text-sm 2xl:text-[15px] leading-relaxed mt-2 xl:mt-2.5 2xl:mt-3">
+            <p className="text-foreground/70 text-xs xl:text-sm 2xl:text-[15px] leading-relaxed mt-2 xl:mt-2.5 2xl:mt-3">
               Upgrade to the Pro plan for advanced market tools, deep analytics, 
               and risk management features.
             </p>

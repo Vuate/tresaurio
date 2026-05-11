@@ -371,10 +371,10 @@ export default function FundingRateModule({ instanceId }: Props) {
   return (
     <div className={`h-full flex flex-col relative ${showAddModal ? 'overflow-hidden' : ''}`}>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 flex-shrink-0">
-        <span className="font-semibold text-white/90 text-xs whitespace-nowrap">
+        <span className="font-semibold text-foreground text-xs whitespace-nowrap">
           Funding Rate
         </span>
-        <span className="text-white/40 text-xs">•</span>
+        <span className="text-muted-foreground text-xs">•</span>
         
         {connected ? (
           <span className="text-emerald-400 text-xs whitespace-nowrap">LIVE</span>
@@ -389,9 +389,9 @@ export default function FundingRateModule({ instanceId }: Props) {
             onClick={() => setExchangeOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-            bg-[#111318] 
-              border border-white/10
-              text-white text-xs
+            bg-card 
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -401,7 +401,7 @@ export default function FundingRateModule({ instanceId }: Props) {
             <span>{EXCHANGES.find((e) => e.id === exchange)?.name}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${exchangeOpen ? "rotate-180" : ""}
               `}
@@ -445,14 +445,14 @@ export default function FundingRateModule({ instanceId }: Props) {
       }}
       className="
         overflow-y-auto
-       bg-[#111318]
+       bg-card
         border border-emerald-500/20
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
         [&::-webkit-scrollbar]:w-1.5
-       [&::-webkit-scrollbar-thumb]:bg-white/20
+       [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -468,7 +468,7 @@ export default function FundingRateModule({ instanceId }: Props) {
             w-full px-3 py-2
             text-left text-xs
             bg-transparent cursor-pointer
-            text-white
+            text-foreground
             transition-colors
           hover:text-[#1A73E8]/65
 
@@ -488,9 +488,9 @@ export default function FundingRateModule({ instanceId }: Props) {
             onClick={() => setSymbolOpen((v) => !v)}
             className="
               h-7 px-3 rounded-md
-            bg-[#111318]
-              border border-white/10
-              text-white text-xs
+            bg-card
+              border border-border
+              text-foreground text-xs
               flex items-center gap-1.5
               cursor-pointer
               transition-all
@@ -500,7 +500,7 @@ export default function FundingRateModule({ instanceId }: Props) {
             <span>{selectedSymbol}</span>
             <span
               className={`
-                text-white/50 text-[10px]
+                text-muted-foreground text-[10px]
                 transition-transform duration-200
                 ${symbolOpen ? "rotate-180" : ""}
               `}
@@ -544,14 +544,14 @@ export default function FundingRateModule({ instanceId }: Props) {
       }}
       className="
         overflow-y-auto
-       bg-[#111318] border border-white/10
+       bg-card border border-border
 
         rounded-md
         shadow-lg
         animate-in fade-in slide-in-from-top-2 duration-200
 
         [&::-webkit-scrollbar]:w-1.5
-       [&::-webkit-scrollbar-thumb]:bg-white/20
+       [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -567,7 +567,7 @@ export default function FundingRateModule({ instanceId }: Props) {
             w-full px-3 py-2
             text-left text-xs
             bg-transparent cursor-pointer
-            text-white
+            text-foreground
             transition-colors
           hover:text-[#1A73E8]/65
 
@@ -583,7 +583,7 @@ export default function FundingRateModule({ instanceId }: Props) {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="h-7 px-3 rounded-md bg-blue-500/20 border border-blue-500/30 text-blue-300 hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
+          className="h-7 px-3 rounded-md bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-all flex items-center gap-1 cursor-pointer font-medium text-xs whitespace-nowrap"
         >
           <Plus className="w-3 h-3" />
           Add
@@ -599,22 +599,22 @@ export default function FundingRateModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5
           [&::-webkit-scrollbar-track]:bg-transparent
- [&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
-      [&::-webkit-scrollbar-thumb:hover]:bg-white/40
+ [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20          [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
 
           scrollbar-thin
-scrollbar-thumb-white/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/20          scrollbar-track-transparent
         "
       >
         {loading && (
-          <div className="flex flex-col items-center justify-center py-8 text-white/40">
-            <div className="w-5 h-5 border-2 border-white/20 border-t-blue-400 rounded-full animate-spin mb-2" />
+          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+            <div className="w-5 h-5 border-2 border-black/20 dark:border-white/20 border-t-blue-400 rounded-full animate-spin mb-2" />
             <span className="text-[11px]">Connecting to {exchange.toUpperCase()}...</span>
           </div>
         )}
 
         {!loading && !data && (
-          <div className="flex flex-col items-center justify-center py-8 text-white/40">
+          <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <AlertCircle className="w-5 h-5 mb-2 text-yellow-400/60" />
             <span className="text-[11px]">No data from {exchange.toUpperCase()}</span>
           </div>
@@ -623,8 +623,8 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         {data && (
           <>
             {/* Current Funding Rate */}
-            <div className="bg-white/5 border border-white/10 rounded-md p-2">
-              <div className="text-white/40 mb-0.5 text-[9px] leading-tight">Current Funding Rate</div>
+            <div className="bg-input border border-border rounded-md p-2">
+              <div className="text-muted-foreground mb-0.5 text-[9px] leading-tight">Current Funding Rate</div>
               <div className="flex flex-col gap-0.5">
                 <span
                   className={`text-base font-bold leading-none break-all ${
@@ -634,26 +634,26 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
                   {fundingRatePercent >= 0 ? "+" : ""}
                   {fundingRatePercent.toFixed(4)}%
                 </span>
-                <span className="text-white/40 text-[9px] leading-none">
+                <span className="text-muted-foreground text-[9px] leading-none">
                   ({annualizedRate.toFixed(1)}% APR)
                 </span>
               </div>
             </div>
 
             {/* Next Funding */}
-            <div className="bg-white/5 border border-white/10 rounded-md p-2">
-              <div className="flex items-center gap-1 text-white/40 mb-0.5 text-[9px] leading-tight">
+            <div className="bg-input border border-border rounded-md p-2">
+              <div className="flex items-center gap-1 text-muted-foreground mb-0.5 text-[9px] leading-tight">
                 <Clock className="w-2.5 h-2.5 shrink-0" />
                 Next Funding In
               </div>
-              <div className="text-sm font-bold text-white leading-none">
+              <div className="text-sm font-bold text-foreground leading-none">
                 {hours}h {minutes}m
               </div>
             </div>
 
             {/* Sentiment */}
-            <div className="bg-white/5 border border-white/10 rounded-md p-2 flex flex-wrap justify-between items-center gap-2">
-              <span className="text-white/50 text-[9px] leading-tight">Market Sentiment</span>
+            <div className="bg-input border border-border rounded-md p-2 flex flex-wrap justify-between items-center gap-2">
+              <span className="text-muted-foreground text-[9px] leading-tight">Market Sentiment</span>
               <span
                 className={`font-semibold flex items-center gap-0.5 text-[10px] leading-tight whitespace-nowrap ${
                   fundingRatePercent > 0.01
@@ -684,7 +684,7 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
         <div 
           className="
             fixed inset-0
-            bg-[#0a0e1a] z-[100]
+            bg-background z-[100]
             flex flex-col overflow-hidden
             animate-in fade-in slide-in-from-bottom-4 duration-200
           "
@@ -700,13 +700,13 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
           onMouseDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-white/10 bg-white/5 flex-shrink-0">
-            <span className="text-white font-semibold text-xs whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 border-b border-border bg-input flex-shrink-0">
+            <span className="text-foreground font-semibold text-xs whitespace-nowrap">
               Add Symbol
             </span>
             <button
               onClick={() => setShowAddModal(false)}
-              className="text-white/50 hover:text-white leading-none cursor-pointer transition-colors text-xl ml-auto"
+              className="text-muted-foreground hover:text-foreground leading-none cursor-pointer transition-colors text-xl ml-auto"
             >
               ×
             </button>
@@ -718,17 +718,17 @@ scrollbar-thumb-white/20          scrollbar-track-transparent
 
               [&::-webkit-scrollbar]:w-1.5
               [&::-webkit-scrollbar-track]:bg-transparent
-       [&::-webkit-scrollbar-thumb]:bg-white/20
+       [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
               [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
-scrollbar-thumb-white/20              scrollbar-track-transparent
+scrollbar-thumb-foreground/20              scrollbar-track-transparent
             "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="space-y-3">
               <div className="space-y-2">
-                <label className="block text-white/50 font-medium text-[10px]">
+                <label className="block text-muted-foreground font-medium text-[10px]">
                   Add Custom Symbol
                 </label>
                 <input
@@ -745,15 +745,15 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                     }
                   }}
                   placeholder="Enter symbol (e.g. BTCUSDT)"
-                  className="w-full bg-white/5 border border-white/10 rounded-md px-2.5 py-1.5 text-white text-xs outline-none focus:border-blue-500/50 transition-colors"
+                  className="w-full bg-input border border-border rounded-md px-2.5 py-1.5 text-foreground text-xs outline-none focus:border-blue-500/50 transition-colors"
                 />
-                <div className="text-white/40 text-[10px]">
+                <div className="text-muted-foreground text-[10px]">
                   💡 Example: BTCUSDT, ETHUSDT
                 </div>
               </div>
 
               <div>
-                <label className="block text-white/50 mb-2 font-medium text-[10px]">
+                <label className="block text-muted-foreground mb-2 font-medium text-[10px]">
                   Popular Symbols
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -772,9 +772,9 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                         whitespace-nowrap
                         ${
                           symbols.includes(s)
-                    ? "bg-blue-500/30 text-blue-300 border-blue-500/50"
+                    ? "bg-blue-500/20 dark:bg-blue-500/30 text-blue-600 dark:text-blue-300 border-blue-500/40 dark:border-blue-500/50"
                             : `
-                    bg-white/10 text-white border-white/10
+                    bg-secondary text-muted-foreground border-border
                       hover:text-[#1A73E8]
 
                               `
@@ -797,7 +797,7 @@ scrollbar-thumb-white/20              scrollbar-track-transparent
                   setShowAddModal(false);
                 }}
                 disabled={!newSymbol.trim()}
-                className="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white rounded-md font-semibold transition-all cursor-pointer text-xs"
+                className="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed text-foreground rounded-md font-semibold transition-all cursor-pointer text-xs"
               >
                 Add Custom Symbol
               </button>

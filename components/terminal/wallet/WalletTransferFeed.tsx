@@ -4,7 +4,7 @@ const transfers = [
   {
     icon: "mdi:bank-transfer-out",
     type: "EXCHANGE OUTFLOW",
-    badgeType: "outflow",
+    badgeType: "outflow" as const,
     amount: "320 BTC",
     address: "Binance → 0x7a2b...4f3c (Unknown)",
     usd: "$13.6M",
@@ -13,7 +13,7 @@ const transfers = [
   {
     icon: "mdi:bank-transfer-in",
     type: "EXCHANGE INFLOW",
-    badgeType: "inflow",
+    badgeType: "inflow" as const,
     amount: "1,250 ETH",
     address: "0x9c4d...8a1b (Unknown) → Coinbase",
     usd: "$3.67M",
@@ -22,7 +22,7 @@ const transfers = [
   {
     icon: "mdi:arrow-expand-horizontal",
     type: "WHALE MOVEMENT",
-    badgeType: "outflow",
+    badgeType: "outflow" as const,
     amount: "5,000,000 USDT",
     address: "0x3f2a...9d7e → 0x8b1c...4f2a",
     usd: "$5.0M",
@@ -32,58 +32,73 @@ const transfers = [
 
 export default function WalletTransferFeed() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Live Preview
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           Transfer Feed Example
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           Real-time whale transfer view
         </p>
       </div>
 
-      <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
-        <div className="flex flex-col gap-2.5 sm:gap-3">
-          {transfers.map((transfer, index) => (
+      <div className="rounded-xl border border-border-sub bg-card p-3 sm:p-6 lg:p-8">
+        {/* Panel header */}
+        <div className="flex justify-between items-center gap-3 mb-5 pb-4 border-b border-border-sub flex-wrap">
+          <div className="text-[0.95rem] font-bold text-foreground">Live Transfer Feed</div>
+          <span
+            className="px-3 py-1 rounded-full font-bold bg-[#2563EB]/15 text-[#2563EB] border border-[#2563EB]/25 uppercase shrink-0 whitespace-nowrap"
+            style={{ fontSize: "0.625rem", letterSpacing: "0.05em" }}
+          >
+            Live
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {transfers.map((transfer, i) => (
             <div
-              key={index}
-              className="bg-[#041F20]/95 border border-white/10 rounded-lg sm:rounded-xl p-4 sm:p-5 grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-4 sm:gap-5 items-center"
+              key={i}
+              className="flex items-start gap-2 sm:gap-3 rounded-xl border border-border-sub bg-card-alt p-3 sm:p-4 lg:p-5 transition-all duration-250 hover:-translate-y-0.5 hover:border-[#2563EB]/25 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
             >
-              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-teal-500/10 rounded-lg sm:rounded-xl">
-                <Icon
-                  icon={transfer.icon}
-                  className="text-white text-xl sm:text-2xl"
-                />
+              {/* Icon box */}
+              <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center rounded-[10px] bg-[#2563EB]/10 border border-[#2563EB]/20">
+                <Icon icon={transfer.icon} className="text-base sm:text-xl text-[#2563EB]" />
               </div>
 
-              <div className="flex-1">
-                <div className="mb-1">
-                  <span
-                    className={`inline-block px-2 sm:px-2.5 lg:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-bold uppercase ${
-                      transfer.badgeType === "inflow"
-                        ? "bg-green-500/20 text-green-500"
-                        : "bg-red-500/20 text-red-500"
-                    }`}
-                  >
-                    {transfer.type}
-                  </span>
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                {/* Badge */}
+                <span
+                  className={`inline-block px-2 py-0.5 rounded-lg font-bold uppercase mb-1.5 border whitespace-nowrap ${
+                    transfer.badgeType === "inflow"
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      : "bg-red-500/10 text-red-400 border-red-500/20"
+                  }`}
+                  style={{ fontSize: "0.575rem", letterSpacing: "0.03em" }}
+                >
+                  {transfer.type}
+                </span>
+
+                {/* Amount + USD */}
+                <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                  <span className="text-[0.85rem] sm:text-[0.9rem] font-bold text-foreground">{transfer.amount}</span>
+                  <span className="text-[0.85rem] sm:text-[0.95rem] font-bold text-foreground shrink-0">{transfer.usd}</span>
                 </div>
 
-                <div className="text-base sm:text-lg font-bold text-white mb-0.5 sm:mb-1">
-                  {transfer.amount}
+                {/* Address + Time */}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[0.68rem] sm:text-[0.72rem] text-[#71717A] font-mono break-all">{transfer.address}</span>
+                  <span className="text-[0.68rem] sm:text-[0.72rem] text-[#71717A] shrink-0">{transfer.time}</span>
                 </div>
-
-                <div className="text-[10px] sm:text-[11px] text-gray-400 font-mono">
-                  {transfer.address}
-                </div>
-              </div>
-
-              <div className="text-right">
-                <div className="text-lg sm:text-xl font-bold text-white">
-                  {transfer.usd}
-                </div>
-
-                <div className="text-[10px] sm:text-[11px] text-gray-400">{transfer.time}</div>
               </div>
             </div>
           ))}

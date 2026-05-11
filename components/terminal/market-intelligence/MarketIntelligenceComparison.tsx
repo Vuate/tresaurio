@@ -1,108 +1,138 @@
 const exchangeData = [
-  {
-    name: "Binance",
-    badge: "BEST",
-    badgeType: "best",
-    fee: "$40",
-    spread: "$15",
-    slippage: "$7",
-    total: "$62",
-  },
-  {
-    name: "OKX",
-    fee: "$45",
-    spread: "$18",
-    slippage: "$9",
-    total: "$72",
-  },
-  {
-    name: "Bybit",
-    fee: "$42",
-    spread: "$22",
-    slippage: "$11",
-    total: "$75",
-  },
-  {
-    name: "Kraken",
-    badge: "WORST",
-    badgeType: "worst",
-    fee: "$50",
-    spread: "$35",
-    slippage: "$19",
-    total: "$104",
-  },
+  { name: "Binance", badge: "BEST", badgeType: "best" as const, fee: "$40", spread: "$15", slippage: "$7", total: "$62" },
+  { name: "OKX", fee: "$45", spread: "$18", slippage: "$9", total: "$72" },
+  { name: "Bybit", fee: "$42", spread: "$22", slippage: "$11", total: "$75" },
+  { name: "Kraken", badge: "WORST", badgeType: "worst" as const, fee: "$50", spread: "$35", slippage: "$19", total: "$104" },
 ];
 
 export default function MarketIntelligenceComparison() {
   return (
-    <section className="mb-10 sm:mb-12 lg:mb-14 xl:mb-16 2xl:mb-18">
-      {/* Section Header */}
-      <div className="section-header mb-6 sm:mb-7 lg:mb-8 xl:mb-9 2xl:mb-10 text-center">
-        <h2 className="section-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-extrabold text-white">
+    <section className="mb-12 lg:mb-16">
+      <div className="text-center mb-10">
+        <span
+          className="font-bold uppercase text-[#2563EB]"
+          style={{ fontSize: "0.68rem", letterSpacing: "0.16em" }}
+        >
+          Comparison
+        </span>
+        <h2
+          className="font-extrabold text-foreground mt-2 mb-3"
+          style={{ fontSize: "clamp(1.75rem, 3.8vw, 2.7rem)", letterSpacing: "-0.025em", lineHeight: 1.15 }}
+        >
           Exchange Comparison
         </h2>
-        <p className="section-description mt-1.5 sm:mt-2 lg:mt-2.5 xl:mt-3 text-gray-400 max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto text-xs sm:text-sm lg:text-base xl:text-lg px-4">
+        <p className="text-[#71717A] max-w-xl mx-auto text-[0.875rem] leading-[1.7]">
           Cost comparison across different exchanges for a $100,000 BTC trade
         </p>
       </div>
 
-      {/* Visual Example Container */}
-      <div className="bg-[#041F20] rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 xl:p-12 border border-white/10">
-        <div className="bg-[#041F20]/95 rounded-xl sm:rounded-2xl overflow-hidden border border-white/10">
-          {/* Table Header */}
-          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-3 sm:gap-4 p-3 sm:p-4 md:px-5 lg:px-6 border-b border-white/10 bg-teal-500/10 font-bold text-[11px] sm:text-xs lg:text-[13px]">
-            <div>Exchange</div>
-            <div className="text-center">Fee</div>
-            <div className="text-center">Spread</div>
-            <div className="text-center">Slippage</div>
-            <div className="text-center">Total Cost</div>
-          </div>
+      <div className="rounded-xl border border-border-sub bg-card p-6 lg:p-8">
+        <div className="flex items-center gap-2 mb-5 pb-4 border-b border-border-sub">
+          <span className="w-1 h-5 bg-[#2563EB] rounded-full inline-block shrink-0" />
+          <span className="text-[0.95rem] font-bold text-foreground">BTC/USDT — $100,000 Trade</span>
+        </div>
 
-          {/* Table Rows */}
-          {exchangeData.map((exchange, index) => (
+        {/* Mobile: stacked cards */}
+        <div className="sm:hidden space-y-2">
+          {exchangeData.map((ex, i) => (
             <div
-              key={index}
-              className={`grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-3 sm:gap-4 p-3 sm:p-4 md:px-5 lg:px-6 items-center ${
-                index !== exchangeData.length - 1
-                  ? "border-b border-white/10"
-                  : ""
-              }`}
+              key={i}
+              className={[
+                "rounded-xl border p-4 transition-colors",
+                ex.badgeType === "best"
+                  ? "bg-emerald-500/5 border-emerald-500/20"
+                  : ex.badgeType === "worst"
+                  ? "bg-red-500/5 border-red-500/20"
+                  : "bg-card-alt border-border-sub",
+              ].join(" ")}
             >
-              {/* Exchange Name + Badge */}
-              <div className="text-xs sm:text-sm">
-                <strong>{exchange.name}</strong>
-                {exchange.badge && (
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[0.9rem] font-semibold text-foreground">{ex.name}</span>
+                {ex.badge && (
                   <span
-                    className={`inline-block ml-2 px-2 sm:px-2.5 lg:px-3 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-bold ${
-                      exchange.badgeType === "best"
-                        ? "bg-green-500/20 text-green-500"
-                        : "bg-red-500/20 text-red-500"
+                    className={`px-2 py-0.5 rounded-md font-bold border ${
+                      ex.badgeType === "best"
+                        ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
+                        : "bg-red-500/15 text-red-400 border-red-500/20"
                     }`}
+                    style={{ fontSize: "0.6rem", letterSpacing: "0.04em" }}
                   >
-                    {exchange.badge}
+                    {ex.badge}
                   </span>
                 )}
               </div>
-
-              {/* Fee */}
-              <div className="text-xs sm:text-sm text-gray-300 text-center">
-                {exchange.fee}
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: "Fee", value: ex.fee, bold: false },
+                  { label: "Spread", value: ex.spread, bold: false },
+                  { label: "Slippage", value: ex.slippage, bold: false },
+                  { label: "Total Cost", value: ex.total, bold: true },
+                ].map((m) => (
+                  <div key={m.label} className="flex items-center justify-between gap-1">
+                    <span className="font-bold uppercase text-[#71717A]" style={{ fontSize: "0.6rem", letterSpacing: "0.08em" }}>
+                      {m.label}
+                    </span>
+                    <span className={`text-[0.78rem] ${m.bold ? "font-bold text-foreground" : "text-[#71717A]"}`}>
+                      {m.value}
+                    </span>
+                  </div>
+                ))}
               </div>
+            </div>
+          ))}
+        </div>
 
-              {/* Spread */}
-              <div className="text-xs sm:text-sm text-gray-300 text-center">
-                {exchange.spread}
+        {/* Desktop: table */}
+        <div className="hidden sm:block rounded-xl overflow-hidden border border-border-sub">
+          {/* Table header */}
+          <div
+            className="grid px-5 py-3 border-b border-border-sub"
+            style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", background: "rgba(37,99,235,0.08)" }}
+          >
+            {["Exchange", "Fee", "Spread", "Slippage", "Total Cost"].map((h) => (
+              <div
+                key={h}
+                className={`font-bold uppercase text-[#71717A] ${h !== "Exchange" ? "text-center" : ""}`}
+                style={{ fontSize: "0.72rem", letterSpacing: "0.08em" }}
+              >
+                {h}
               </div>
+            ))}
+          </div>
 
-              {/* Slippage */}
-              <div className="text-xs sm:text-sm text-gray-300 text-center">
-                {exchange.slippage}
+          {exchangeData.map((ex, i) => (
+            <div
+              key={i}
+              className={[
+                "grid px-5 py-3.5 items-center transition-colors",
+                i < exchangeData.length - 1 ? "border-b border-border-sub" : "",
+                ex.badgeType === "best"
+                  ? "bg-emerald-500/5"
+                  : ex.badgeType === "worst"
+                  ? "bg-red-500/5"
+                  : "hover:bg-foreground/3",
+              ].join(" ")}
+              style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr" }}
+            >
+              <div className="flex items-center gap-2 text-[0.875rem] font-semibold text-foreground">
+                {ex.name}
+                {ex.badge && (
+                  <span
+                    className={`px-2 py-0.5 rounded-md font-bold border ${
+                      ex.badgeType === "best"
+                        ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
+                        : "bg-red-500/15 text-red-400 border-red-500/20"
+                    }`}
+                    style={{ fontSize: "0.6rem", letterSpacing: "0.04em" }}
+                  >
+                    {ex.badge}
+                  </span>
+                )}
               </div>
-
-              {/* Total Cost */}
-              <div className="text-xs sm:text-sm text-center">
-                <strong>{exchange.total}</strong>
-              </div>
+              <div className="text-[0.875rem] text-[#71717A] text-center">{ex.fee}</div>
+              <div className="text-[0.875rem] text-[#71717A] text-center">{ex.spread}</div>
+              <div className="text-[0.875rem] text-[#71717A] text-center">{ex.slippage}</div>
+              <div className="text-[0.875rem] font-bold text-foreground text-center">{ex.total}</div>
             </div>
           ))}
         </div>
