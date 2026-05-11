@@ -11,6 +11,8 @@ const NEXTAUTH_INTERNAL_PREFIXES = [
   '/api/auth/csrf',
   '/api/auth/providers',
   '/api/auth/_log',
+  // Browser CSP violation reports carry no CSRF token — exempt from check.
+  '/api/csp-report',
 ];
 
 // Kimlik doğrulaması gerektirmeyen, herkese açık piyasa verisi endpoint'leri.
