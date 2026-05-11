@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { apiFetch } from "@/lib/api-client";
 
 export interface ExchangeConnection {
   id: string;
@@ -60,7 +61,7 @@ export function useExchangeKeys(): UseExchangeKeysReturn {
 
   const deleteKey = useCallback(async (id: string): Promise<boolean> => {
     try {
-      const response = await fetch(`/api/exchange/keys?id=${id}`, {
+      const response = await apiFetch(`/api/exchange/keys?id=${id}`, {
         method: "DELETE",
       });
       const data = await response.json();
@@ -76,7 +77,7 @@ export function useExchangeKeys(): UseExchangeKeysReturn {
 
   const updateLabel = useCallback(async (id: string, label: string): Promise<boolean> => {
     try {
-      const response = await fetch("/api/exchange/keys", {
+      const response = await apiFetch("/api/exchange/keys", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, label }),
@@ -97,7 +98,7 @@ export function useExchangeKeys(): UseExchangeKeysReturn {
   const refreshPermissions = useCallback(
     async (id: string): Promise<RefreshPermissionsResult> => {
       try {
-        const response = await fetch("/api/exchange/keys/permissions", {
+        const response = await apiFetch("/api/exchange/keys/permissions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ keyId: id }),

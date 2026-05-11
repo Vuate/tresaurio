@@ -9,6 +9,7 @@ import type {
 import { moduleRegistry } from "@/lib/personalized-dashboard/moduleRegistry";
 import { defaultModules } from "@/lib/personalized-dashboard/defaultModules";
 import { useDashboardNotificationStore } from "@/store/dashboardNotificationStore";
+import { apiFetch } from "@/lib/api-client";
 
 export const MAX_ZOOM = 2;
 export const WORLD_WIDTH = 8000;
@@ -235,7 +236,7 @@ resetDashboard: async () => {
       lastResetAt: Date.now(),
     });
     try {
-      await fetch("/api/dashboard", {
+      await apiFetch("/api/dashboard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -420,7 +421,7 @@ resetDashboard: async () => {
         ? get().favorites.filter((f) => f.type !== type)
         : [{ type, favoritedAt: Date.now() }, ...get().favorites];
       set({ favorites: updated });
-      fetch("/api/dashboard/favorites", {
+      apiFetch("/api/dashboard/favorites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ favorites: updated }),
@@ -429,7 +430,7 @@ resetDashboard: async () => {
 
     clearFavorites: () => {
       set({ favorites: [] });
-      fetch("/api/dashboard/favorites", {
+      apiFetch("/api/dashboard/favorites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ favorites: [] }),
@@ -522,16 +523,16 @@ if (modules && modules.length > 0) {
 saveToDB: async () => {
   try {
     const { modules, notes, alerts, zoom, panX, panY, lockedModules, uiBlocked } = get();
-    await fetch("/api/dashboard", {
+    await apiFetch("/api/dashboard", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-layout: { 
-          modules, 
-          notes, 
-          alerts, 
-          zoom, 
-          panX, 
+layout: {
+          modules,
+          notes,
+          alerts,
+          zoom,
+          panX,
           panY,
           lockedModules: Array.from(lockedModules),
           uiBlocked,
@@ -559,7 +560,7 @@ layout: {
     saveTemplate: async (name: string) => {
       try {
         const { modules, zoom, panX, panY, lockedModules, uiBlocked  } = get();
-        const res = await fetch("/api/dashboard/templates", {
+        const res = await apiFetch("/api/dashboard/templates", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -626,7 +627,7 @@ if (!res.ok) throw new Error("Failed to load template");
 
     deleteTemplate: async (id: string) => {
       try {
-        const res = await fetch(`/api/dashboard/templates/${id}`, {
+        const res = await apiFetch(`/api/dashboard/templates/${id}`, {
           method: "DELETE",
         });
         if (!res.ok) return;
@@ -639,7 +640,7 @@ if (!res.ok) throw new Error("Failed to load template");
     clearAllTemplates: async () => {
       const ids = get().templates.map((t) => t.id);
       for (const id of ids) {
-        await fetch(`/api/dashboard/templates/${id}`, { method: "DELETE" });
+        await apiFetch(`/api/dashboard/templates/${id}`, { method: "DELETE" });
       }
       set({ templates: [] });
     },
