@@ -16,6 +16,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
     // signUp: "/signup", // Custom signup page
   },
+  cookies: {
+    sessionToken: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax", // OAuth callback flow için Strict yerine Lax
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    csrfToken: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,

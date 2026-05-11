@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { apiFetch } from "@/lib/api-client";
 
 interface PasswordRequirement {
   label: string;
@@ -60,7 +61,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     }
 
     try {
-      const res = await fetch("/api/auth/signup", {
+      const res = await apiFetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
