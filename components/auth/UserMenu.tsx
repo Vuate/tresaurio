@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { usePersonalizedDashboardStore } from "@/store/personalizedDashboardStore";
 
 import {
@@ -23,7 +22,6 @@ interface UserMenuProps {
 
 export default function UserMenu({ variant = "default", compact = false, onClose }: UserMenuProps) {
   const { data: session } = useSession();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const setUserMenuOpen = usePersonalizedDashboardStore((s) => s.setUserMenuOpen);
@@ -76,7 +74,7 @@ export default function UserMenu({ variant = "default", compact = false, onClose
 
   const menuItems = [
     { icon: User,     label: "Profile",       onClick: () => {}, disabled: true },
-    { icon: Key,      label: "API Keys",      onClick: () => { router.push("/terminal/settings/api-keys"); setOpen(false); setUserMenuOpen(false); onClose?.(); }, disabled: false },
+    { icon: Key,      label: "API Keys",      onClick: () => {}, disabled: true },
     { icon: Wallet,   label: "Balance",        onClick: () => {}, badge: "Demo", disabled: true },
     { icon: History,  label: "Recent Orders",  onClick: () => {}, disabled: true },
     { icon: Settings, label: "Settings",       onClick: () => {}, disabled: true },

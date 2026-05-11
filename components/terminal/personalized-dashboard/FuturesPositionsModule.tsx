@@ -570,14 +570,9 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
           </div>
         ) : (
           <button
-            onClick={() => {
-              if (!session) {
-                setShowAuthModal(true);
-                return;
-              }
-              setShowSelectModal(true);
-            }}
-            className="h-7 px-2.5 sm:px-3 bg-blue-500/15 dark:bg-blue-500/20 border border-blue-500/50 dark:border-blue-500/30 text-blue-600 dark:text-blue-300 rounded-lg text-xs hover:bg-blue-500/25 dark:hover:bg-blue-500/30 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0"
+            disabled
+            className="h-7 px-2.5 sm:px-3 bg-input border border-border text-muted-foreground/40 rounded-lg text-xs flex items-center gap-1.5 cursor-not-allowed opacity-40 whitespace-nowrap shrink-0"
+            title="Coming soon"
           >
             <Key className="w-3 h-3" />
             <span>Connect</span>
