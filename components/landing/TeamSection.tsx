@@ -170,11 +170,18 @@ export function TeamSection() {
 
     const onTouchEnd = () => {
       setTimeout(() => { pausedRef.current = false; }, 80);
+      dirLockRef.current = null;
+    };
+
+    const onTouchCancel = () => {
+      pausedRef.current = false;
+      dirLockRef.current = null;
     };
 
     track.addEventListener("touchstart", onTouchStart, { passive: true });
     track.addEventListener("touchmove", onTouchMove, { passive: false });
     track.addEventListener("touchend", onTouchEnd, { passive: true });
+    track.addEventListener("touchcancel", onTouchCancel, { passive: true });
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -182,6 +189,7 @@ export function TeamSection() {
       track.removeEventListener("touchstart", onTouchStart);
       track.removeEventListener("touchmove", onTouchMove);
       track.removeEventListener("touchend", onTouchEnd);
+      track.removeEventListener("touchcancel", onTouchCancel);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
