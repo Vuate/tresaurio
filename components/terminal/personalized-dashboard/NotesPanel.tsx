@@ -323,33 +323,33 @@ useEffect(() => {
               bg-foreground/3 px-3 xl:px-3.5 2xl:px-4 py-2 xl:py-2.5 2xl:py-3 text-xs xl:text-[13px] 2xl:text-sm text-foreground/80
               relative group"
                   >
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeNote(n.id);
-                        useDashboardNotificationStore.getState().push({
-                          type: "success",
-                          title: "Note Deleted",
-                          description: "Your note has been removed",
-                        });
-                      }}
-                      className="absolute top-2 right-2 
-                        transition-opacity duration-200
-                        w-5 h-5 xl:w-5.5 xl:h-5.5 2xl:w-6 2xl:h-6
-                        flex items-center justify-center
-                        rounded
-                        bg-red-500/20 hover:bg-red-500/30
-                        text-red-400 hover:text-red-300
-                        text-xs xl:text-sm 2xl:text-base
-                        cursor-pointer
-                        transition-colors duration-200"
-                      title="Delete note"
-                    >
-                      ✕
-                    </button>
-
-                    <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-foreground/40 mb-1 xl:mb-1.5 2xl:mb-2">
-                      {new Date(n.createdAt).toLocaleString()}
+                    <div className="flex items-start justify-between gap-1 mb-1 xl:mb-1.5 2xl:mb-2">
+                      <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] text-foreground/40 leading-tight min-w-0 wrap-break-word">
+                        {new Date(n.createdAt).toLocaleString()}
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeNote(n.id);
+                          useDashboardNotificationStore.getState().push({
+                            type: "success",
+                            title: "Note Deleted",
+                            description: "Your note has been removed",
+                          });
+                        }}
+                        className="shrink-0
+                          w-5 h-5 xl:w-5.5 xl:h-5.5 2xl:w-6 2xl:h-6
+                          flex items-center justify-center
+                          rounded
+                          bg-red-500/20 hover:bg-red-500/30
+                          text-red-400 hover:text-red-300
+                          text-xs xl:text-sm 2xl:text-base
+                          cursor-pointer
+                          transition-colors duration-200"
+                        title="Delete note"
+                      >
+                        ✕
+                      </button>
                     </div>
                     
                     <div className="break-words whitespace-pre-wrap overflow-hidden">
