@@ -101,7 +101,7 @@ scrollbar-thumb-foreground/20            scrollbar-track-transparent
                   e.stopPropagation();
                   removeNote(n.id);
                   useDashboardNotificationStore.getState().push({
-                    type: "success",
+                    type: "info",
                     title: "Note Deleted",
                     description: "Your note has been removed",
                   });

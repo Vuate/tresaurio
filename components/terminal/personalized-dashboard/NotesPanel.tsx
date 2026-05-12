@@ -332,7 +332,7 @@ useEffect(() => {
                           e.stopPropagation();
                           removeNote(n.id);
                           useDashboardNotificationStore.getState().push({
-                            type: "success",
+                            type: "info",
                             title: "Note Deleted",
                             description: "Your note has been removed",
                           });

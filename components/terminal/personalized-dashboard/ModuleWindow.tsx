@@ -88,7 +88,7 @@ useEffect(() => {
     if (usePersonalizedDashboardStore.getState().uiBlocked) return;
     removeModule(module.id);
     useDashboardNotificationStore.getState().push({
-      type: "success",
+      type: "info",
       title: "Module Removed",
       description: `${module.title} removed from dashboard`,
     });
@@ -816,7 +816,7 @@ title={module.minimized ? "Restore" : "Minimize"}
     if (usePersonalizedDashboardStore.getState().uiBlocked) return;
     removeModule(module.id);
     useDashboardNotificationStore.getState().push({
-      type: "success",
+      type: "info",
       title: "Module Removed",
       description: `${module.title} removed from dashboard`,
     });

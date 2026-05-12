@@ -267,7 +267,7 @@ hover:text-[#1A73E8]/65
 
         <button
           onClick={handleCreateAlert}
-className="w-full h-9 rounded-lg bg-[#1A73E8] text-foreground text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"        >
+className="w-full h-9 rounded-lg bg-[#1A73E8] text-white text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"        >
           Create Alert
         </button>
       </div>
