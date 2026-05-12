@@ -396,12 +396,14 @@ export default function Navbar() {
             ))}
           </div>
           <ThemeToggle />
-          <Button
-            onClick={() => router.push("/personalized-dashboard")}
-            className={btnLogin}
-          >
-            Start Free
-          </Button>
+          {!isLoggedIn && (
+            <Button
+              onClick={() => router.push("/personalized-dashboard")}
+              className={btnLogin}
+            >
+              Start Free
+            </Button>
+          )}
           {isLoggedIn ? (
             <UserMenu />
           ) : (
