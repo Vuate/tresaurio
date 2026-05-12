@@ -8,7 +8,7 @@ export default function TerminalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div data-route="terminal" className="min-h-screen bg-background text-foreground">
       <ScrollRestorer />
       <Navbar />
 

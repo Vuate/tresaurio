@@ -327,6 +327,11 @@ useEffect(() => {
                       onClick={(e) => {
                         e.stopPropagation();
                         removeNote(n.id);
+                        useDashboardNotificationStore.getState().push({
+                          type: "success",
+                          title: "Note Deleted",
+                          description: "Your note has been removed",
+                        });
                       }}
                       className="absolute top-2 right-2 
                         transition-opacity duration-200

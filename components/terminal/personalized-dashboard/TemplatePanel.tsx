@@ -283,23 +283,14 @@ className="fixed left-2 sm:left-4 z-40 w-[240px] sm:w-[260px] xl:w-[280px] 2xl:w
  overflow-hidden select-none"
 >
       {/* Header */}
-<div ref={headerRef} className="px-3 py-3 border-b border-border">
-        <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">
-          Templates
+<div ref={headerRef}>
+        <div className="px-3 py-3 border-b border-border">
+          <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">
+            Templates
+          </div>
         </div>
-      </div>
-
-<div
-  style={{
-    height: `calc(${availableHeight}px - ${headerHeight}px)`,
-  }}
-ref={scrollRef}
-className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-input0 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
-  onWheel={(e) => e.stopPropagation()}
-  onScroll={() => { savedScrollRef.current = scrollRef.current?.scrollTop ?? 0; }}
->
-  {/* Save new template */}
-<div className="sticky top-0 z-10 px-3 pt-3 pb-2 bg-card space-y-2 border-b border-border">   <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-muted-foreground font-bold tracking-wider px-1">
+        {/* Save new template */}
+        <div className="px-3 pt-3 pb-2 bg-card space-y-2 border-b border-border">   <div className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] uppercase text-muted-foreground font-bold tracking-wider px-1">
             Save Template
           </div>
           <div className="flex gap-2">
@@ -320,7 +311,7 @@ className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-trac
             <button
               onClick={handleSave}
               disabled={!templateName.trim() || saving || !hasModules}
-              className="shrink-0 px-3 py-1.5 rounded-lg bg-[#1A73E8] text-xs font-semibold text-white whitespace-nowrap hover:bg-[#1A73E8]/85 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"            >
+              className="shrink-0 min-w-[60px] px-3 py-1.5 rounded-lg bg-[#1A73E8] text-xs font-semibold text-white whitespace-nowrap hover:bg-[#1A73E8]/85 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"            >
               {saving ? "..." : "Save"}
             </button>
           </div>
@@ -354,7 +345,15 @@ A template with this name already exists. Overwrite it?
             </div>
           )}
         </div>
+      </div>
 
+      <div
+        ref={scrollRef}
+        style={{ height: `calc(${availableHeight}px - ${headerHeight}px)` }}
+        className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/40 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
+        onWheel={(e) => e.stopPropagation()}
+        onScroll={() => { savedScrollRef.current = scrollRef.current?.scrollTop ?? 0; }}
+      >
         {/* Saved templates list */}
         <div className="px-3 pb-3 pt-1 space-y-2">
           <div className="flex items-center justify-between px-1">
