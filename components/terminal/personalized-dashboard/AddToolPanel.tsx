@@ -272,45 +272,31 @@ export default function AddToolPanel() {
       style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
       className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-card border border-border rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
     >
-      <div
-        ref={headerRef}
-        className="flex items-center justify-between px-3 py-3 border-b border-border select-none bg-card relative z-10"
-      >
-        <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">Add Tool</div>
-        <button
-          onClick={() => {
-            const next = !showFavorites;
-            setShowFavorites(next);
-            setConfirmClear(false);
-            const target = next ? savedScrollFavorites.current : savedScrollNormal.current;
-            requestAnimationFrame(() => {
+      <div ref={headerRef}>
+        <div className="flex items-center justify-between px-3 py-3 border-b border-border select-none bg-card relative z-10">
+          <div className="text-[13px] xl:text-[13.5px] 2xl:text-sm font-semibold text-foreground">Add Tool</div>
+          <button
+            onClick={() => {
+              const next = !showFavorites;
+              setShowFavorites(next);
+              setConfirmClear(false);
+              const target = next ? savedScrollFavorites.current : savedScrollNormal.current;
               requestAnimationFrame(() => {
-                if (scrollRef.current) scrollRef.current.scrollTop = target;
+                requestAnimationFrame(() => {
+                  if (scrollRef.current) scrollRef.current.scrollTop = target;
+                });
               });
-            });
-          }}
-          className={`text-[11px] xl:text-[11.5px] 2xl:text-xs font-semibold px-2.5 py-1 rounded-md border transition cursor-pointer ${
-            showFavorites
-              ? "bg-yellow-400/15 border-yellow-400/40 text-yellow-300"
-              : "bg-input border-border text-foreground/50 hover:text-foreground"
-          }`}
-        >
-          Favorites{favorites.length > 0 ? ` (${favorites.length})` : ""}
-        </button>
-      </div>
-
-      <div
-        ref={scrollRef}
-        style={{ height: `calc(${availableHeight}px - ${headerHeight}px)` }}
-        className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/40 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
-        onScroll={(e) => {
-          const top = (e.currentTarget as HTMLDivElement).scrollTop;
-          if (showFavorites) savedScrollFavorites.current = top;
-          else savedScrollNormal.current = top;
-        }}
-        onWheel={(e) => { e.stopPropagation(); }}
-      >
-        <div className="sticky top-0 z-20 px-3 pt-3 pb-2 bg-card border-b border-border">
+            }}
+            className={`text-[11px] xl:text-[11.5px] 2xl:text-xs font-semibold px-2.5 py-1 rounded-md border transition cursor-pointer ${
+              showFavorites
+                ? "bg-yellow-400/15 border-yellow-400/40 text-yellow-300"
+                : "bg-input border-border text-foreground/50 hover:text-foreground"
+            }`}
+          >
+            Favorites{favorites.length > 0 ? ` (${favorites.length})` : ""}
+          </button>
+        </div>
+        <div className="px-3 pt-3 pb-2 bg-card border-b border-border">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-foreground/30 pointer-events-none" />
             <input
@@ -360,7 +346,19 @@ export default function AddToolPanel() {
             )}
           </div>
         </div>
+      </div>
 
+      <div
+        ref={scrollRef}
+        style={{ height: `calc(${availableHeight}px - ${headerHeight}px)` }}
+        className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/40 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
+        onScroll={(e) => {
+          const top = (e.currentTarget as HTMLDivElement).scrollTop;
+          if (showFavorites) savedScrollFavorites.current = top;
+          else savedScrollNormal.current = top;
+        }}
+        onWheel={(e) => { e.stopPropagation(); }}
+      >
         <div className="p-3 pt-1 space-y-4">
           {showFavorites ? (
             <>

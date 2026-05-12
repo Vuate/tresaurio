@@ -661,7 +661,8 @@ const onResizeMouseDown = useCallback((e: React.MouseEvent, dir: ResizeDir) => {
   return (
     <div
       ref={ref}
-      data-module-window 
+      data-module-window
+      data-module
       className={`absolute rounded-2xl border backdrop-blur
         select-none overflow-hidden
             ${isLocked
@@ -863,7 +864,7 @@ title="Remove Module"
 
            {!module.minimized && (
 <div className="overflow-hidden relative" style={{ height: `calc(100% - ${headerHeight}px)` }}>
-       <div 
+       <div
          onWheel={(e) => e.stopPropagation()}
       className="
         h-full overflow-auto p-4
@@ -884,6 +885,7 @@ title="Remove Module"
               scrollbar-track-transparent
             "
             style={{
+              touchAction: 'pan-y',
               fontSize: responsiveFontSize,
               transform: `scale(${moduleZoom / 100})`,
               transformOrigin: "top left",

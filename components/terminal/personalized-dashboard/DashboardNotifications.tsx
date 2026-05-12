@@ -36,6 +36,7 @@ export default function DashboardNotifications() {
 
   return (
     <div
+      data-notification
       className="fixed right-4 z-9999 flex flex-col gap-2.5"
       style={{ top: (topBarHeight || 64) + 16 }}
     >

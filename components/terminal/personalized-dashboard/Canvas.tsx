@@ -63,7 +63,8 @@ if (target.closest('[data-minimap]')) return;
       if (
         target.closest('[data-module-header]') ||
         target.closest('[data-module-resize]') ||
-        target.closest('input, textarea, select, button, [contenteditable]')
+        target.closest('[data-module]') ||
+        target.closest('input, textarea, select, button, [contenteditable], a[href], [data-notification]')
       ) return;
       isPanningRef.current = true;
       startRef.current = {
@@ -72,6 +73,7 @@ if (target.closest('[data-minimap]')) return;
       };
       e.preventDefault();
     } else if (e.touches.length === 2) {
+      if ((e.target as HTMLElement).closest('[data-module]')) return;
       isPanningRef.current = false;
       const dx = e.touches[1].clientX - e.touches[0].clientX;
       const dy = e.touches[1].clientY - e.touches[0].clientY;
@@ -82,6 +84,7 @@ if (target.closest('[data-minimap]')) return;
 
   const onTouchMove = (e: TouchEvent) => {
     if (usePersonalizedDashboardStore.getState().uiBlocked) return;
+    if ((e.target as HTMLElement).closest('[data-module]')) return;
     e.preventDefault();
 
     if (e.touches.length === 1 && isPanningRef.current) {

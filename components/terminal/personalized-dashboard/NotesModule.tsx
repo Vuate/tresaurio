@@ -100,6 +100,11 @@ scrollbar-thumb-foreground/20            scrollbar-track-transparent
                 onClick={(e) => {
                   e.stopPropagation();
                   removeNote(n.id);
+                  useDashboardNotificationStore.getState().push({
+                    type: "success",
+                    title: "Note Deleted",
+                    description: "Your note has been removed",
+                  });
                 }}
                 className="absolute top-1.5 right-1.5
                   w-5 h-5
@@ -160,7 +165,7 @@ scrollbar-thumb-foreground/20            scrollbar-track-transparent
           <div className="mt-2 mb-3 flex justify-end">
 <button
   onClick={handleSave}
-  className="self-end px-4 py-1.5 rounded-md bg-[#1A73E8] text-foreground text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"
+  className="self-end px-4 py-1.5 rounded-md bg-[#1A73E8] text-white text-xs font-semibold hover:bg-[#1A73E8]/85 transition cursor-pointer"
 >
   Save Note
 </button>
