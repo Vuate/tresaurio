@@ -21,7 +21,7 @@ const cspDirectives = [
   "font-src 'self'",
   // Google OAuth profile pictures; data: for SVG/canvas; blob: for exports.
   // s2.coinmarketcap.com: coin logo images in HomeLivePrices.
-  "img-src 'self' data: blob: https://*.googleusercontent.com https://s2.coinmarketcap.com",
+  "img-src 'self' data: blob: https://*.googleusercontent.com https://s2.coinmarketcap.com https://assets.coingecko.com",
   [
     "connect-src 'self'",
     // Binance REST + data mirror

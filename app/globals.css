@@ -189,6 +189,10 @@
       transform: none;
       transition: none;
     }
+    [data-route="terminal"] .animate-in,
+    [data-route="dashboard"] .animate-in {
+      animation: none !important;
+    }
   }
 
   /* ── Grid background ── */
