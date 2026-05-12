@@ -598,7 +598,7 @@ export default function Navbar() {
                           : "bg-transparent text-foreground/40 hover:text-foreground/70"
                       }`}
                     >
-                      {t === "light" ? "Light" : t === "dark" ? "Dark" : "Auto"}
+                      {t === "light" ? "Light" : t === "dark" ? "Dark" : "System"}
                     </button>
                   ))}
                 </div>
