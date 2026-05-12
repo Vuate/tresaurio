@@ -269,6 +269,7 @@ export default function AddToolPanel() {
     />
     <div
       ref={panelRef}
+      data-ui-panel
       style={{ top: topBarHeight + 16, maxHeight: availableHeight }}
       className="fixed left-4 z-40 w-[260px] xl:w-[280px] 2xl:w-[320px] bg-card border border-border rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden select-none"
     >
