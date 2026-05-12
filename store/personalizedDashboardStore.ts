@@ -252,7 +252,7 @@ resetDashboard: async () => {
         }),
       });
             useDashboardNotificationStore.getState().push({
-        type: "success",
+        type: "info",
         title: "Dashboard Reset",
         description: "Dashboard has been reset to default.",
       });

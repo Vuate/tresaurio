@@ -314,7 +314,7 @@ onClick={(e) => {
             setUIBlocked(true);
             setConfirmLock(false);
             closeAllPanels();
-            notify({ type: "success", title: "Dashboard Locked", description: "Layout is locked." });
+            notify({ type: "info", title: "Dashboard Locked", description: "Layout is locked." });
           }}
         className="flex-1 px-2 py-1 rounded-lg text-[11px] sm:text-[12px] font-semibold text-white bg-[#1A73E8] hover:bg-[#1A73E8]/85 transition cursor-pointer"
         >

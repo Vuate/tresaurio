@@ -227,7 +227,7 @@ const handleDelete = async (id: string) => {
     try {
       const name = templates.find((t) => t.id === id)?.name || "Template";
       await deleteTemplate(id);
-      notify({ type: "success", title: "Template Deleted", description: `"${name}" deleted.` });
+      notify({ type: "info", title: "Template Deleted", description: `"${name}" deleted.` });
     } catch {
       notify({ type: "error", title: "Delete Failed", description: "Could not delete template." });
     }
@@ -381,7 +381,7 @@ A template with this name already exists. Overwrite it?
                     setConfirmClearAll(false);
                     try {
                       await clearAllTemplates();
-                      notify({ type: "success", title: "Templates Cleared", description: "All templates deleted." });
+                      notify({ type: "info", title: "Templates Cleared", description: "All templates deleted." });
                     } catch {
                       notify({ type: "error", title: "Failed", description: "Could not clear templates." });
                     }

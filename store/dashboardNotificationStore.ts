@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 export type DashboardNotification = {
   id: string;
-  type: "success" | "error";
+  type: "success" | "error" | "info";
   title: string;
   description?: string;
 };
