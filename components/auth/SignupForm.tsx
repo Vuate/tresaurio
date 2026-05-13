@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { apiFetch } from "@/lib/api-client";
 
 interface PasswordRequirement {
@@ -27,6 +28,9 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
   const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirement[]>([]);
   const [showRequirements, setShowRequirements] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { requirements } = validatePassword(e.target.value);
@@ -60,11 +64,22 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       return;
     }
 
+    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    if (siteKey && !turnstileToken) {
+      setError("Please complete the CAPTCHA.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await apiFetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email,
+          password,
+          turnstileToken: turnstileToken ?? "dev-bypass",
+        }),
       });
 
       const data = await res.json();
@@ -72,6 +87,14 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
       if (!res.ok) {
         setError(data.error || "Registration failed");
         setLoading(false);
+        return;
+      }
+
+      if (data.requiresVerification) {
+        setVerificationEmail(email);
+        setVerificationSent(true);
+        setLoading(false);
+        onSuccess?.();
         return;
       }
 
@@ -109,6 +132,40 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     placeholder:text-muted-foreground
     disabled:opacity-60
   `;
+
+  if (verificationSent) {
+    return (
+      <div className="text-center space-y-4 py-4">
+        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-foreground/5 border border-border mx-auto">
+          <svg className="w-6 h-6 text-foreground/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div>
+          <p className="text-sm font-medium text-foreground">Check your email</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            We sent a verification link to{" "}
+            <span className="text-foreground font-medium">{verificationEmail}</span>.
+            Click it to activate your account.
+          </p>
+        </div>
+        <p className="text-[11px] text-muted-foreground">
+          Didn&apos;t receive it? Check your spam folder or{" "}
+          <button
+            type="button"
+            className="underline underline-offset-2 hover:text-foreground transition-colors"
+            onClick={() => {
+              setVerificationSent(false);
+              setTurnstileToken(null);
+            }}
+          >
+            try again
+          </button>
+          .
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -194,6 +251,16 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
           <span className="underline underline-offset-2">privacy policy</span>.
         </span>
       </label>
+
+      {/* Turnstile CAPTCHA — only renders when site key is configured */}
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          onSuccess={setTurnstileToken}
+          onExpire={() => setTurnstileToken(null)}
+          options={{ theme: "dark", size: "flexible" }}
+        />
+      )}
 
       {/* Error */}
       {error && (

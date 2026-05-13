@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { verifyAdminSessionToken, COOKIE_NAME } from "@/lib/admin-session";
+
+function isAuthenticated(request: NextRequest): boolean {
+  const token = request.cookies.get(COOKIE_NAME)?.value;
+  if (!token) return false;
+  return verifyAdminSessionToken(token);
+}
 
 export async function GET(request: NextRequest) {
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  const authHeader = request.headers.get("x-admin-password");
-
-  if (!adminPassword || authHeader !== adminPassword) {
+  if (!isAuthenticated(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

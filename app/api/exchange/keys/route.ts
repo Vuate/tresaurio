@@ -13,6 +13,7 @@ import {
   ApiKeyInput,
 } from "@/lib/services/apiKeyService";
 import { detectApiKeyPermissions } from "@/lib/services/exchangeService";
+import { isValidLabel } from "@/lib/sanitize";
 
 // GET /api/exchange/keys - List all API keys
 export async function GET(request: NextRequest) {
@@ -85,6 +86,16 @@ export async function POST(request: NextRequest) {
         { success: false, error: `${body.exchange} requires a passphrase` },
         { status: 400 }
       );
+    }
+
+    // Validate optional label — reject HTML/XSS payloads
+    if (body.label !== undefined && body.label !== null && body.label !== "") {
+      if (!isValidLabel(String(body.label))) {
+        return NextResponse.json(
+          { success: false, error: "Invalid label: only letters, numbers, spaces, hyphens, and underscores are allowed (max 50 chars)" },
+          { status: 400 }
+        );
+      }
     }
 
     const input: ApiKeyInput = {
@@ -171,6 +182,13 @@ export async function PATCH(request: NextRequest) {
     if (!body.id || !body.label) {
       return NextResponse.json(
         { success: false, error: "Missing required fields: id, label" },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidLabel(String(body.label))) {
+      return NextResponse.json(
+        { success: false, error: "Invalid label: only letters, numbers, spaces, hyphens, and underscores are allowed (max 50 chars)" },
         { status: 400 }
       );
     }

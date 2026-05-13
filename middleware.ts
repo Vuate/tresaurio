@@ -13,6 +13,8 @@ const NEXTAUTH_INTERNAL_PREFIXES = [
   '/api/auth/_log',
   // Browser CSP violation reports carry no CSRF token — exempt from check.
   '/api/csp-report',
+  // Admin auth endpoint handles its own security (password + HMAC session).
+  '/api/admin/auth',
 ];
 
 // Kimlik doğrulaması gerektirmeyen, herkese açık piyasa verisi endpoint'leri.
@@ -72,6 +74,11 @@ export function middleware(req: NextRequest) {
   const origin = req.headers.get('origin') ?? '';
   const method = req.method;
 
+  // Block direct access to /admin/* — the panel is only reachable via /yonetim/*.
+  if (pathname.startsWith('/admin')) {
+    return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+  }
+
   const isPublic = isPublicDataEndpoint(pathname);
   const allowedOrigins = getAllowedOrigins();
   const isAllowed = origin !== '' && allowedOrigins.includes(origin);
@@ -126,5 +133,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: '/api/:path*',
+  matcher: ['/api/:path*', '/admin/:path*'],
 };
