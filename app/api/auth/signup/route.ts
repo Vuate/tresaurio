@@ -1,43 +1,84 @@
-// app/api/auth/signup/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { containsDangerousContent, stripHtml } from "@/lib/sanitize";
+import { checkSignupRateLimit } from "@/lib/ratelimit";
+import { generateVerificationToken, sendVerificationEmail } from "@/lib/email";
+
+const signupSchema = z
+  .object({
+    name: z.string().min(2).max(50),
+    email: z.email().max(254),
+    password: z.string().min(8).max(128),
+    turnstileToken: z.string().min(1),
+  })
+  .strict(); // reject any extra fields (mass assignment prevention)
+
+async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  // Skip verification in dev if key is not configured
+  if (!secret) {
+    console.warn("TURNSTILE_SECRET_KEY not set — skipping CAPTCHA verification");
+    return true;
+  }
+
+  const res = await fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ secret, response: token, remoteip: ip }),
+    }
+  );
+
+  const data = await res.json() as { success: boolean };
+  return data.success;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, password } = body;
-    const rawName: string | undefined = body.name;
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      "127.0.0.1";
 
-    // Validation
-    if (!email || !password) {
+    // IP-based rate limit: max 3 signups per hour
+    const rateLimit = await checkSignupRateLimit(ip);
+    if (!rateLimit.success) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "Too many signup attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
+    // Parse & validate — strict schema rejects unknown fields
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const parsed = signupSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid request body", details: parsed.error.issues },
         { status: 400 }
       );
     }
 
-    if (password.length < 8) {
+    const { name, email, password, turnstileToken } = parsed.data;
+    // role / isAdmin / verified / balance — never read from request, always set server-side
+
+    // CAPTCHA verification
+    const captchaOk = await verifyTurnstile(turnstileToken, ip);
+    if (!captchaOk) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
+        { error: "CAPTCHA verification failed. Please try again." },
         { status: 400 }
       );
     }
 
-    if (rawName && containsDangerousContent(rawName)) {
-      return NextResponse.json(
-        { error: "Invalid name" },
-        { status: 400 }
-      );
-    }
-    const name = rawName ? stripHtml(rawName).slice(0, 100) : undefined;
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
         { error: "This email is already registered" },
@@ -45,23 +86,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user with emailVerified set (skip email verification)
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        emailVerified: new Date(), // Auto-verify user
+        // emailVerified intentionally omitted — set only after email confirmation
       },
+    });
+
+    // Generate and store verification token (24h TTL)
+    const token = generateVerificationToken();
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    });
+
+    // Send email non-blocking — don't fail signup if email delivery fails
+    sendVerificationEmail(email, token).catch((err) => {
+      console.error("Failed to send verification email:", err);
     });
 
     return NextResponse.json(
       {
-        message: "Account created. You can now log in.",
-        requiresVerification: false,
+        message:
+          "Account created. Please check your email to verify your account.",
+        requiresVerification: true,
         user: {
           id: user.id,
           name: user.name,
@@ -72,9 +127,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Signup error:", error);
-    return NextResponse.json(
-      { error: "An error occurred" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }

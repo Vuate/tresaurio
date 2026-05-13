@@ -218,3 +218,13 @@ model EarlyAccess {
 
   @@index([email])
 }
+
+// ==================== SECURITY MODELS ====================
+
+model SignupAttempt {
+  id        String   @id @default(cuid())
+  ip        String
+  createdAt DateTime @default(now())
+
+  @@index([ip, createdAt])
+}

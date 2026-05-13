@@ -157,8 +157,9 @@ className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-
           />
           <SidebarItem
             title="Transfer"
-            active={pathname === "/terminal/transfer"}
-            onClick={() => router.push("/terminal/transfer")}
+            soon
+            active={false}
+            onClick={() => {}}
           />
           <SidebarItem
             title="Reporting"
@@ -171,8 +172,9 @@ className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-
         <SidebarSection title="SETTINGS">
           <SidebarItem
             title="API Keys"
-            active={pathname === "/terminal/settings/api-keys"}
-            onClick={() => router.push("/terminal/settings/api-keys")}
+            soon
+            active={false}
+            onClick={() => {}}
           />
         </SidebarSection>
 
@@ -193,15 +195,25 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
   );
 }
 
-function SidebarItem({ title, onClick, active }: { title: string; onClick: () => void; active?: boolean; }) {
+function SidebarItem({ title, onClick, active, soon }: { title: string; onClick: () => void; active?: boolean; soon?: boolean; }) {
   return (
 <button
-  onClick={onClick}
-  className={`w-full text-left rounded-lg px-3 py-2.5 text-[13px] xl:text-[13.5px] 2xl:text-sm transition border cursor-pointer ${active ? "bg-[#1A73E8]/15 border-[#1A73E8]/35 text-foreground" : "bg-foreground/3 border-border text-foreground hover:bg-[#1A73E8]/10 hover:border-[#1A73E8]/25"
+  onClick={soon ? undefined : onClick}
+  disabled={soon}
+  className={`w-full text-left rounded-lg px-3 py-2.5 text-[13px] xl:text-[13.5px] 2xl:text-sm transition border flex items-center justify-between ${
+    soon
+      ? "bg-foreground/3 border-border text-muted-foreground opacity-50 cursor-not-allowed"
+      : active
+        ? "bg-[#1A73E8]/15 border-[#1A73E8]/35 text-foreground cursor-pointer"
+        : "bg-foreground/3 border-border text-foreground hover:bg-[#1A73E8]/10 hover:border-[#1A73E8]/25 cursor-pointer"
   }`}
 >
-  {title}
+  <span>{title}</span>
+  {soon && (
+    <span className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
+      Soon
+    </span>
+  )}
 </button>
-
   );
 }
