@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { isValidTemplateName } from "@/lib/sanitize";
 
 // GET — Fetch all user templates
 export async function GET() {
@@ -41,6 +42,13 @@ export async function POST(request: NextRequest) {
     if (!name || !layout) {
       return NextResponse.json(
         { error: "name and layout are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidTemplateName(String(name))) {
+      return NextResponse.json(
+        { error: "Invalid template name: only letters, numbers, spaces, and basic punctuation are allowed (max 100 chars)" },
         { status: 400 }
       );
     }

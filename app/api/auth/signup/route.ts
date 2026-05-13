@@ -2,11 +2,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { containsDangerousContent, stripHtml } from "@/lib/sanitize";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, password } = body;
+    const { email, password } = body;
+    const rawName: string | undefined = body.name;
 
     // Validation
     if (!email || !password) {
@@ -22,6 +24,14 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    if (rawName && containsDangerousContent(rawName)) {
+      return NextResponse.json(
+        { error: "Invalid name" },
+        { status: 400 }
+      );
+    }
+    const name = rawName ? stripHtml(rawName).slice(0, 100) : undefined;
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
