@@ -342,7 +342,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
           animate-in fade-in slide-in-from-top-2 duration-200
 
           [&::-webkit-scrollbar]:w-1
-       [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+       [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
           [&::-webkit-scrollbar-thumb]:rounded-full
           [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -430,7 +430,7 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
             </button>
             <button
               onClick={() => { setShowAddForm(false); setNewSymbol(""); }}
-              className="px-1.5 py-1 rounded text-[10px] bg-secondary text-muted-foreground hover:bg-black/10 dark:hover:bg-white/20 transition-colors cursor-pointer shrink-0"
+              className="px-1.5 py-1 rounded text-[10px] bg-secondary text-muted-foreground hover:bg-black/10 dark:hover:bg-white/40 transition-colors cursor-pointer shrink-0"
             >
               <X className="w-2.5 h-2.5" />
             </button>
@@ -450,11 +450,11 @@ export default function MarketEfficiencyModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1
           [&::-webkit-scrollbar-track]:bg-transparent
-   [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+   [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/50 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/60
           scrollbar-thin
-scrollbar-thumb-foreground/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/40          scrollbar-track-transparent
         "
       >
         {/* Error State */}

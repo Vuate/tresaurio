@@ -158,7 +158,7 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
                    absolute z-[999] w-full
                   bg-card border border-border rounded-lg shadow-xl overflow-hidden
                    animate-in fade-in duration-200
- [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+ [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
                      [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-transparent
                     ${shouldOpenLeft ? 'right-0' : 'left-0'}
@@ -213,7 +213,7 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
                    absolute z-[999] w-full
                 bg-card border border-border rounded-lg shadow-xl overflow-hidden
                  animate-in fade-in duration-200
-                    [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+                    [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-track]:bg-transparent
                     ${shouldOpenLeft ? 'right-0' : 'left-0'}
@@ -264,12 +264,12 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-   [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+   [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
           [&::-webkit-scrollbar-thumb]:rounded-full
-         [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+         [&::-webkit-scrollbar-thumb:hover]:bg-black/50 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/60
 
           scrollbar-thin
-scrollbar-thumb-foreground/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/40          scrollbar-track-transparent
         "
       >
         {error && (

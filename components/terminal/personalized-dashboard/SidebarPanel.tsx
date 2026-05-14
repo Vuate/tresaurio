@@ -113,7 +113,7 @@ className="flex items-center justify-between px-3 py-3 border-b border-border se
   style={{
     maxHeight: `calc(${availableHeight}px - ${headerHeight}px)`,
   }}
-className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/40 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
+className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/60 scrollbar-thin scrollbar-thumb-foreground/40 scrollbar-track-transparent"
   onWheel={(e) => {e.stopPropagation();}}
 >
         <div className="space-y-1">
