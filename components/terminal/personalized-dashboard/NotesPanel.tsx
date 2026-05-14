@@ -279,7 +279,7 @@ useEffect(() => {
                     
                     scrollbar-thin
                scrollbar-thumb-foreground/40
-                    scrollbar-track-transparent
+                    scrollbar-track-transparent [scrollbar-color:rgba(0,0,0,0.5)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.5)_transparent]
                   "
                 />
               </div>
@@ -310,7 +310,7 @@ useEffect(() => {
 
                 scrollbar-thin
                 scrollbar-thumb-foreground/40
-                scrollbar-track-transparent
+                scrollbar-track-transparent [scrollbar-color:rgba(0,0,0,0.5)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.5)_transparent]
               ">
                 {notes.length === 0 && (
                   <div className="text-xs xl:text-[13px] 2xl:text-sm text-foreground/40">No notes yet</div>

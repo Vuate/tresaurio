@@ -352,7 +352,7 @@ export default function AddToolPanel() {
       <div
         ref={scrollRef}
         style={{ height: `calc(${availableHeight}px - ${headerHeight}px)` }}
-        className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/60 scrollbar-thin scrollbar-thumb-foreground/40 scrollbar-track-transparent"
+        className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:cursor-pointer [&::-webkit-scrollbar-thumb:hover]:bg-foreground/60 scrollbar-thin scrollbar-thumb-foreground/40 scrollbar-track-transparent [scrollbar-color:rgba(0,0,0,0.5)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.5)_transparent]"
         onScroll={(e) => {
           const top = (e.currentTarget as HTMLDivElement).scrollTop;
           if (showFavorites) savedScrollFavorites.current = top;

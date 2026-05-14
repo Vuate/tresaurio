@@ -115,7 +115,7 @@ export default function SelectConnectionModal({
           [&::-webkit-scrollbar-track]:bg-transparent
           [&::-webkit-scrollbar-thumb]:bg-teal-400/40
           [&::-webkit-scrollbar-thumb]:rounded-full
-          scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent
+          scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent [scrollbar-color:rgba(0,0,0,0.5)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.5)_transparent]
         "
       >
         {loading ? (
