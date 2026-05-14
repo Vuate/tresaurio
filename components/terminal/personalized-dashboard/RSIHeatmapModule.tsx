@@ -271,11 +271,11 @@ export default function RSIHeatmapModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-        [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+        [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/50 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/60
           scrollbar-thin
-scrollbar-thumb-foreground/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/40          scrollbar-track-transparent
         "
       >
         <div className="space-y-1.5 sm:space-y-2">
@@ -304,7 +304,7 @@ scrollbar-thumb-foreground/20          scrollbar-track-transparent
                 <div className="flex-1 min-w-0">
                   <div className="h-1.5 sm:h-2 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                     {data.loading ? (
-                      <div className="h-full bg-black/15 dark:bg-white/20 animate-pulse" />
+                      <div className="h-full bg-black/15 dark:bg-white/40 animate-pulse" />
                     ) : (
                       <div
                         className={`h-full ${getRSIColor(data.rsi)} transition-all`}

@@ -508,7 +508,7 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
                   animate-in fade-in duration-200
 
                   [&::-webkit-scrollbar]:w-1.5
-                  [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+                  [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
                   [&::-webkit-scrollbar-thumb]:rounded-full
                   [&::-webkit-scrollbar-track]:bg-transparent
 
@@ -601,11 +601,11 @@ export default function FuturesPositionsModule({ instanceId }: Props) {
 
           [&::-webkit-scrollbar]:w-1.5 sm:[&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-        [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+        [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
           [&::-webkit-scrollbar-thumb]:rounded-full
-[&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
+[&::-webkit-scrollbar-thumb:hover]:bg-black/50 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/60
           scrollbar-thin
-scrollbar-thumb-foreground/20          scrollbar-track-transparent
+scrollbar-thumb-foreground/40          scrollbar-track-transparent
         "
       >
     {positions.length === 0 && (
@@ -734,7 +734,7 @@ scrollbar-thumb-foreground/20          scrollbar-track-transparent
                         <button
                           key={f}
                           onClick={() => setPnlFilter(f)}
-                          className={`text-[9px] px-1.5 py-0.5 rounded ${pnlFilter === f ? "bg-black/10 dark:bg-white/20 text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                          className={`text-[9px] px-1.5 py-0.5 rounded ${pnlFilter === f ? "bg-black/10 dark:bg-white/40 text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                         >
                           {f === "today" ? "1D" : f === "7d" ? "7D" : f === "30d" ? "30D" : "All"}
                         </button>

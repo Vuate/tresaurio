@@ -240,7 +240,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
         animate-in fade-in slide-in-from-top-2 duration-200
         
         [&::-webkit-scrollbar]:w-1.5
-    [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20
+    [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40
         [&::-webkit-scrollbar-thumb]:rounded-full
         [&::-webkit-scrollbar-track]:bg-transparent
       "
@@ -266,7 +266,7 @@ export default function SlippageMonitorModule({ instanceId }: Props) {
 
       <div
         ref={contentRef}
-        className="flex-1 min-h-0 px-3 pb-3 overflow-y-auto space-y-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent  [&::-webkit-scrollbar-thumb]:bg-black/20 dark:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent"
+        className="flex-1 min-h-0 px-3 pb-3 overflow-y-auto space-y-2.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent  [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-black/50 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/60 scrollbar-thin scrollbar-thumb-foreground/40 scrollbar-track-transparent"
       >
         <div>
           <label className="text-[10px] text-muted-foreground mb-1 block">Symbol</label>
