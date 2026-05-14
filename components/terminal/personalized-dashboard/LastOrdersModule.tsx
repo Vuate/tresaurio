@@ -269,7 +269,7 @@ className="text-[#1A73E8]/70 hover:text-[#1A73E8] transition-colors cursor-point
          [&::-webkit-scrollbar-thumb:hover]:bg-black/50 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/60
 
           scrollbar-thin
-scrollbar-thumb-foreground/40          scrollbar-track-transparent
+scrollbar-thumb-foreground/40          scrollbar-track-transparent [scrollbar-color:rgba(0,0,0,0.5)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.5)_transparent]
         "
       >
         {error && (

@@ -882,7 +882,7 @@ title="Remove Module"
 [&::-webkit-scrollbar-thumb:hover]:bg-black/30 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/40
               scrollbar-thin
               scrollbar-thumb-[#1A73E8]/30
-              scrollbar-track-transparent
+              scrollbar-track-transparent [scrollbar-color:rgba(0,0,0,0.5)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.5)_transparent]
             "
             style={{
               touchAction: 'pan-y',

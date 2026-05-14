@@ -416,7 +416,7 @@ const shouldOpenLeft = buttonRect ? (buttonRect.left + 160 > window.innerWidth) 
  [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40          [&::-webkit-scrollbar-thumb]:rounded-full
 [&::-webkit-scrollbar-thumb:hover]:bg-black/50 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/60
           scrollbar-thin
-scrollbar-thumb-foreground/40          scrollbar-track-transparent
+scrollbar-thumb-foreground/40          scrollbar-track-transparent [scrollbar-color:rgba(0,0,0,0.5)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.5)_transparent]
         "
       >
         {loading && data.length === 0 ? (
@@ -576,7 +576,7 @@ scrollbar-thumb-foreground/40          scrollbar-track-transparent
  [&::-webkit-scrollbar-thumb]:bg-black/40 dark:[&::-webkit-scrollbar-thumb]:bg-white/40              [&::-webkit-scrollbar-thumb]:rounded-full
 [&::-webkit-scrollbar-thumb:hover]:bg-black/50 dark:[&::-webkit-scrollbar-thumb:hover]:bg-white/60
               scrollbar-thin
-scrollbar-thumb-foreground/40              scrollbar-track-transparent
+scrollbar-thumb-foreground/40              scrollbar-track-transparent [scrollbar-color:rgba(0,0,0,0.5)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.5)_transparent]
             "
             onClick={(e) => e.stopPropagation()}
           >
