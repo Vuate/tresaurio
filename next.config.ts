@@ -15,8 +15,9 @@ const isDev = process.env.NODE_ENV === "development";
 // Alternative.me). All values audited in docs/security/cdn-audit.md.
 const cspDirectives = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' https://s3.tradingview.com https://s.tradingview.com https://charting-library.tradingview-widget.com",
+  "style-src 'self' 'unsafe-inline' https://s3.tradingview.com",
+  "frame-src 'self' https://s.tradingview.com https://www.tradingview.com",
   // next/font/google self-hosts at build time — no external font CDN needed.
   "font-src 'self'",
   // Google OAuth profile pictures; data: for SVG/canvas; blob: for exports.

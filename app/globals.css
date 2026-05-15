@@ -478,6 +478,12 @@
   .scroll-top svg { width: 16px; height: 16px; }
 }
 
+/* ── Mobile: fix dropdown scroll inside module windows ── */
+[data-module] .overflow-y-auto {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+
 /* ── Touch: disable hover effects ── */
 @media (hover: none) {
   .feat-card:hover { transform: none; box-shadow: none; }
