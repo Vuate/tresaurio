@@ -122,44 +122,44 @@ className="p-3 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-
             active={pathname === "/terminal/home"}
             onClick={() => router.push("/terminal/home")}
           />
+        </div>
+
+        {/* TRADE */}
+        <SidebarSection title="TRADE">
           <SidebarItem
             title="Trade & Portfolio"
             active={pathname === "/terminal/trade"}
             onClick={() => router.push("/terminal/trade")}
-          />
-        </div>
-
-        {/* INSIGHTS */}
-        <SidebarSection title="INSIGHTS">
-          <SidebarItem
-            title="News"
-            active={pathname === "/terminal/news"}
-            onClick={() => router.push("/terminal/news")}
-          />
-          <SidebarItem
-            title="Staking"
-            active={pathname === "/terminal/staking"}
-            onClick={() => router.push("/terminal/staking")}
-          />
-          <SidebarItem
-            title="Wallet Tracker"
-            active={pathname === "/terminal/wallet"}
-            onClick={() => router.push("/terminal/wallet")}
-          />
-        </SidebarSection>
-
-        {/* ADVANCED */}
-        <SidebarSection title="ADVANCED">
-          <SidebarItem
-            title="Market Microstructure"
-            active={pathname === "/terminal/market-intelligence"}
-            onClick={() => router.push("/terminal/market-intelligence")}
           />
           <SidebarItem
             title="Transfer"
             soon
             active={false}
             onClick={() => {}}
+          />
+          <SidebarItem
+            title="Staking"
+            active={pathname === "/terminal/staking"}
+            onClick={() => router.push("/terminal/staking")}
+          />
+        </SidebarSection>
+
+        {/* ANALYTICS */}
+        <SidebarSection title="ANALYTICS">
+          <SidebarItem
+            title="News"
+            active={pathname === "/terminal/news"}
+            onClick={() => router.push("/terminal/news")}
+          />
+          <SidebarItem
+            title="Wallet Tracker"
+            active={pathname === "/terminal/wallet"}
+            onClick={() => router.push("/terminal/wallet")}
+          />
+          <SidebarItem
+            title="Market Intelligence"
+            active={pathname === "/terminal/market-intelligence"}
+            onClick={() => router.push("/terminal/market-intelligence")}
           />
           <SidebarItem
             title="Reporting"
