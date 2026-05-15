@@ -195,7 +195,7 @@ function DropdownMenu({ items, onClose }: { items: NavItem[]; onClose: () => voi
             <span className="text-[0.84rem] font-medium text-foreground/70 whitespace-nowrap">
               {item.label}
               {item.disabled && (
-                <span className="ml-1.5 text-[0.7rem] text-foreground/35">Soon</span>
+                <span className="ml-1.5 text-[0.7rem] text-foreground/35">Coming Soon</span>
               )}
             </span>
           </button>
@@ -381,19 +381,18 @@ export default function Navbar() {
         {/* Desktop Right */}
         <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
           <div className="flex items-center rounded-lg border border-border-sub overflow-hidden">
-            {(["TR", "EN"] as const).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={`px-3 py-1.5 text-xs font-semibold transition-all duration-150 cursor-pointer ${
-                  lang === l
-                    ? "bg-[#2563EB] text-white"
-                    : "bg-transparent text-foreground/50 hover:text-foreground"
-                }`}
-              >
-                {l}
-              </button>
-            ))}
+            <button
+              disabled
+              title="Coming Soon"
+              className="px-3 py-1.5 text-xs font-semibold cursor-not-allowed opacity-30 bg-transparent text-foreground/50"
+            >
+              TR
+            </button>
+            <button
+              className="px-3 py-1.5 text-xs font-semibold transition-all duration-150 cursor-pointer bg-[#2563EB] text-white"
+            >
+              EN
+            </button>
           </div>
           <ThemeToggle />
           {!isLoggedIn && (
@@ -536,8 +535,8 @@ export default function Navbar() {
                       {item.label}
                     </span>
                     {item.disabled && (
-                      <span className="text-[0.6rem] font-semibold px-1.5 py-0.5 rounded-md bg-foreground/6 text-foreground/30 uppercase tracking-wide shrink-0">
-                        Soon
+                      <span className="text-[0.6rem] font-semibold px-1.5 py-0.5 rounded-md bg-foreground/6 text-foreground/30 shrink-0">
+                        Coming Soon
                       </span>
                     )}
                   </button>
@@ -574,19 +573,18 @@ export default function Navbar() {
               <div className="px-4 pb-5 pt-1 flex items-center gap-2.5">
                 {/* Language toggle */}
                 <div className="flex items-center rounded-lg border border-border-sub overflow-hidden shrink-0">
-                  {(["TR", "EN"] as const).map((l) => (
-                    <button
-                      key={l}
-                      onClick={() => setLang(l)}
-                      className={`px-3.5 py-1.5 text-[0.72rem] font-semibold transition-all duration-150 cursor-pointer ${
-                        lang === l
-                          ? "bg-[#2563EB] text-white"
-                          : "bg-transparent text-foreground/45 hover:text-foreground"
-                      }`}
-                    >
-                      {l}
-                    </button>
-                  ))}
+                  <button
+                    disabled
+                    title="Coming Soon"
+                    className="px-3.5 py-1.5 text-[0.72rem] font-semibold cursor-not-allowed opacity-30 bg-transparent text-foreground/45"
+                  >
+                    TR
+                  </button>
+                  <button
+                    className="px-3.5 py-1.5 text-[0.72rem] font-semibold transition-all duration-150 cursor-pointer bg-[#2563EB] text-white"
+                  >
+                    EN
+                  </button>
                 </div>
                 {/* Theme toggle */}
                 <div className="flex items-center flex-1 rounded-lg border border-border-sub overflow-hidden">

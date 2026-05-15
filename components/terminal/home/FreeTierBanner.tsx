@@ -19,34 +19,30 @@ export default function FreeTierBanner() {
             </p>
           </div>
 
-          <div className="group">
+          <div className="flex flex-col items-end gap-2">
             <button
+              disabled
               className="
-                relative overflow-hidden
-                px-8 xl:px-10 2xl:px-12
+                relative flex items-center gap-3
+                px-7 xl:px-9 2xl:px-10
                 py-3 xl:py-3.5 2xl:py-4
-                rounded-xl xl:rounded-2xl 2xl:rounded-2xl
-                text-sm xl:text-[15px] 2xl:text-base
-                font-semibold text-white
-                bg-gradient-to-br bg-[#1A73E8]
+                rounded-xl xl:rounded-2xl
+                cursor-not-allowed
+                bg-foreground/6 border border-border
                 transition-all duration-300
-                hover:scale-[1.01]
-                active:scale-100
-                cursor-pointer
               "
             >
-              <span
-                className="
-                  absolute inset-0 
-                  translate-x-[-130%]
-                  bg-gradient-to-r from-transparent via-white/60 to-transparent
-                  opacity-0
-                  transition-all duration-700 ease-out
-                  pointer-events-none
-                  group-hover:opacity-70 group-hover:translate-x-[130%]
-                "
-              />
-              Upgrade to Pro
+              <svg className="w-4 h-4 text-foreground/35 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <span className="flex flex-col items-start">
+                <span className="text-[0.65rem] xl:text-[0.7rem] font-semibold uppercase tracking-widest text-foreground/35 leading-none mb-0.5">
+                  Upgrade to Pro
+                </span>
+                <span className="text-sm xl:text-[15px] font-bold text-foreground/50 leading-none">
+                  Coming Soon
+                </span>
+              </span>
             </button>
           </div>
         </div>

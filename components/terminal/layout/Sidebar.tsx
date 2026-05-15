@@ -57,41 +57,13 @@ export default function Sidebar() {
           active={isActive("/terminal/home")}
         />
 
+        <SectionLabel label="TRADE" />
+
         <NavItem
           href="/terminal/trade"
           icon={<Icon icon="mdi:briefcase-variant-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
           label="Trade & Portfolio"
           active={isActive("/terminal/trade")}
-        />
-
-        <SectionLabel label="INSIGHTS" />
-
-        <NavItem
-          href="/terminal/news"
-          icon={<Icon icon="mdi:newspaper-variant-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
-          label="News"
-          active={isActive("/terminal/news")}
-        />
-        <NavItem
-          href="/terminal/staking"
-          icon={<Icon icon="material-symbols:savings-rounded" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
-          label="Staking"
-          active={isActive("/terminal/staking")}
-        />
-        <NavItem
-          href="/terminal/wallet"
-          icon={<Icon icon="lucide:wallet" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
-          label="Wallet Tracker"
-          active={isActive("/terminal/wallet")}
-        />
-
-        <SectionLabel label="ADVANCED" />
-
-        <NavItem
-          href="/terminal/market-intelligence"
-          icon={<Icon icon="mdi:chart-box-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
-          label="Market Microstructure"
-          active={isActive("/terminal/market-intelligence")}
         />
         <div className="relative opacity-40">
           <NavItem
@@ -103,6 +75,33 @@ export default function Sidebar() {
           />
           <div className="absolute inset-0 cursor-not-allowed" />
         </div>
+        <NavItem
+          href="/terminal/staking"
+          icon={<Icon icon="material-symbols:savings-rounded" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          label="Staking"
+          active={isActive("/terminal/staking")}
+        />
+
+        <SectionLabel label="ANALYTICS" />
+
+        <NavItem
+          href="/terminal/news"
+          icon={<Icon icon="mdi:newspaper-variant-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          label="News"
+          active={isActive("/terminal/news")}
+        />
+        <NavItem
+          href="/terminal/wallet"
+          icon={<Icon icon="lucide:wallet" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          label="Wallet Tracker"
+          active={isActive("/terminal/wallet")}
+        />
+        <NavItem
+          href="/terminal/market-intelligence"
+          icon={<Icon icon="mdi:chart-box-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
+          label="Market Intelligence"
+          active={isActive("/terminal/market-intelligence")}
+        />
         <NavItem
           href="/terminal/reporting"
           icon={<Icon icon="mdi:file-chart-outline" className="w-4 h-4 xl:w-[18px] xl:h-[18px] 2xl:w-5 2xl:h-5" />}
@@ -182,7 +181,7 @@ function NavItem({
 
       {soon && (
         <span className="ml-1.5 text-[0.62rem] font-medium text-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          Soon
+          Coming Soon
         </span>
       )}
     </Link>
