@@ -211,7 +211,7 @@ function SidebarItem({ title, onClick, active, soon }: { title: string; onClick:
   <span>{title}</span>
   {soon && (
     <span className="text-[10px] xl:text-[10.5px] 2xl:text-[11px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
-      Soon
+      Coming Soon
     </span>
   )}
 </button>

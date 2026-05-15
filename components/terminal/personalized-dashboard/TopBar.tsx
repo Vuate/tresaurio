@@ -417,19 +417,22 @@ onClick={(e) => {
           {settingsOpen && (
             <div className="fixed top-13 sm:top-14 md:top-16 right-2 sm:right-3 md:right-4 lg:absolute lg:top-full lg:right-0 lg:mt-3 w-72 max-w-[calc(100vw-16px)] p-3.5 rounded-xl bg-card border border-[#1A73E8]/35 shadow-lg z-60">
               <div className="flex gap-1 mb-2.5">
-                {[
-                  { src: "/flag-tr.svg", label: "Türkçe" },
-                  { src: "/flag-us.svg", label: "English" },
-                ].map(({ src, label }) => (
+                <div className="flex-1" title="Coming Soon">
                   <button
-                    key={label}
                     disabled
-                    className="flex-1 flex items-center justify-center gap-2 px-2.5 py-2 rounded-lg bg-foreground/5 border border-border cursor-not-allowed opacity-60"
+                    className="w-full flex items-center justify-center gap-2 px-2.5 py-2 rounded-lg bg-foreground/5 border border-border cursor-not-allowed opacity-35"
                   >
-                    <img src={src} alt={label} className="w-5 h-auto rounded-sm shrink-0" />
-                    <span className="text-[0.78rem] font-medium text-foreground/60">{label}</span>
+                    <img src="/flag-tr.svg" alt="Türkçe" className="w-5 h-auto rounded-sm shrink-0" />
+                    <span className="text-[0.78rem] font-medium text-foreground/60">Türkçe</span>
                   </button>
-                ))}
+                </div>
+                <button
+                  disabled
+                  className="flex-1 flex items-center justify-center gap-2 px-2.5 py-2 rounded-lg bg-[#1A73E8]/20 border border-[#1A73E8]/50 cursor-not-allowed"
+                >
+                  <img src="/flag-us.svg" alt="English" className="w-5 h-auto rounded-sm shrink-0" />
+                  <span className="text-[0.78rem] font-medium text-[#1A73E8]">English</span>
+                </button>
               </div>
               <div className="flex gap-1">
                 {([

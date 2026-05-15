@@ -182,7 +182,7 @@ function NavItem({
 
       {soon && (
         <span className="ml-1.5 text-[0.62rem] font-medium text-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          Soon
+          Coming Soon
         </span>
       )}
     </Link>
