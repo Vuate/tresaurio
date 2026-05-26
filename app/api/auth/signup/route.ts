@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { checkSignupRateLimit } from "@/lib/ratelimit";
-import { generateVerificationToken, sendVerificationEmail } from "@/lib/email";
 
 const signupSchema = z
   .object({
@@ -93,30 +92,13 @@ export async function POST(request: NextRequest) {
         name,
         email,
         password: hashedPassword,
-        // emailVerified intentionally omitted — set only after email confirmation
+        emailVerified: new Date(),
       },
-    });
-
-    // Generate and store verification token (24h TTL)
-    const token = generateVerificationToken();
-    await prisma.verificationToken.create({
-      data: {
-        identifier: email,
-        token,
-        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      },
-    });
-
-    // Send email non-blocking — don't fail signup if email delivery fails
-    sendVerificationEmail(email, token).catch((err) => {
-      console.error("Failed to send verification email:", err);
     });
 
     return NextResponse.json(
       {
-        message:
-          "Account created. Please check your email to verify your account.",
-        requiresVerification: true,
+        message: "Account created successfully.",
         user: {
           id: user.id,
           name: user.name,

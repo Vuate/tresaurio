@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { apiFetch } from "@/lib/api-client";
 import { FadeUp } from "@/components/landing/ui/FadeUp";
 import { SectionHead } from "@/components/landing/ui/SectionHead";
 
@@ -20,7 +21,7 @@ export function EarlyAccessSection() {
       const formData = new FormData(e.currentTarget);
       formData.set("lang", "en");
 
-      const res = await fetch("/api/submit-form", { method: "POST", body: formData });
+      const res = await apiFetch("/api/submit-form", { method: "POST", body: formData });
       const data = await res.json();
 
       if (data.success) {
