@@ -46,6 +46,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const passwordConfirm = formData.get("passwordConfirm") as string;
@@ -76,6 +77,7 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          name,
           email,
           password,
           turnstileToken: turnstileToken ?? "dev-bypass",
@@ -176,6 +178,16 @@ export default function SignupForm({ onSuccess }: { onSuccess?: () => void }) {
     >
       {/* Inputs */}
       <div className="space-y-2.5 xl:space-y-2.75 2xl:space-y-3">
+        <input
+          type="text"
+          name="name"
+          autoComplete="name"
+          placeholder="Name"
+          required
+          disabled={loading}
+          aria-label="Name"
+          className={inputClass}
+        />
         <input
           type="email"
           name="email"
