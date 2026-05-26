@@ -60,10 +60,8 @@ export async function POST(req: NextRequest) {
 
   let dbSaved = false;
   try {
-    await prisma.earlyAccess.upsert({
-      where: { email },
-      update: { name, telegram: telegram || null, message: message || null, ipAddress: ip },
-      create: { name, email, telegram: telegram || null, message: message || null, ipAddress: ip },
+    await prisma.earlyAccess.create({
+      data: { name, email, telegram: telegram || null, message: message || null, ipAddress: ip },
     });
     dbSaved = true;
   } catch (err) {
